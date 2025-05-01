@@ -23,7 +23,7 @@ class ErrorEmbedUtil {
     fun createErrorEmbed(errorMessage: String): MessageEmbed {
         return EmbedBuilder()
             .setDescription("❌ | $errorMessage")
-            .setColor(Color.RED)
+            .setColor(colors.red)
             .build()
     }
 }

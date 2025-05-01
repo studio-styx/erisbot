@@ -1,0 +1,50 @@
+{
+  "name": "bot",
+  "description": "Commands to view the bot's information",
+  "subcommands": {
+    "info": {
+      "name": "info",
+      "description": "Shows information about the bot",
+      "embed": {
+        "title": "✨ My Information",
+        "description": [
+          "**🤖 Did you know...**\n",
+          "> • I was created by **Studio Styx** – learn more using the `/bot creators` command\n",
+          "> • I speak up to three languages: **Brazilian Portuguese**, **American English**, and **Spanish from Spain**\n",
+          "> • My name, **Éris**, is a reference to the Greek goddess of discord\n",
+          "> • I was developed with **Kotlin** and **JDA**\n",
+          "> • I'm an open-source bot – check out my [GitHub](https://github.com/studio-styx/erisbot)\n\n",
+          "**📌 Additional Information**\n",
+          "```yaml\n",
+          "Developer      : Studio Styx\n",
+          "Version        : $version\n",
+          "Created on     : 04/26/25\n",
+          "Language       : Kotlin\n",
+          "Framework      : JDA\n",
+          "```"
+        ],
+        "footer": "Executed by $user"
+      },
+      "errors": {
+        "versionNotFound": "Not Found"
+      }
+    },
+    "creators": {
+      "name": "creators",
+      "description": "Shows information about the bot's creators (studio styx)",
+      "embed": {
+        "title": "Studio Styx",
+        "description": [
+          "## Developers\n",
+          "> - BirdTool\n",
+          "## Designers\n",
+          "> - Kael\n",
+          "> - Baradela\n",
+          "## translators\n",
+          "> - BirdTool\n",
+          "> - Baradela"
+        ]
+      }
+    }
+  }
+}

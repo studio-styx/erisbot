@@ -112,7 +112,7 @@ class CommandHandler : ListenerAdapter() {
             }
         } catch (e: Exception) {
             val errorEmbedUtil = ErrorEmbedUtil()
-            errorEmbedUtil.sendErrorEmbed(event, "Erro ao executar o comando: ${e.message}")
+            errorEmbedUtil.sendErrorEmbed(event, "Erro ao executar o comando: `${e.message}`")
             e.printStackTrace()
         }
     }

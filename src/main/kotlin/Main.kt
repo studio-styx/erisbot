@@ -20,7 +20,6 @@ fun main() {
     val commandsRegister = CommandsRegister()
     commandsRegister.registerCommands(jda)
 
-    // Registrar o CommandHandler como listener
     jda.addEventListener(CommandHandler())
 
     println("Bot iniciado com sucesso!")
