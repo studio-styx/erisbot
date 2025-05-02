@@ -45,6 +45,10 @@
           "> - Baradela"
         ]
       }
+    },
+    "commands": {
+      "name": "comandos",
+      "description": "Ver todos os meus comandos"
     }
   }
 }

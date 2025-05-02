@@ -4,6 +4,7 @@ import io.github.cdimascio.dotenv.Dotenv
 import net.dv8tion.jda.api.JDABuilder
 import net.dv8tion.jda.api.requests.GatewayIntent
 import studio.styx.erisbot.core.handlers.CommandHandler
+import studio.styx.erisbot.core.handlers.EventsHandler
 import studio.styx.erisbot.core.registers.CommandsRegister
 
 fun main() {
@@ -21,6 +22,7 @@ fun main() {
     commandsRegister.registerCommands(jda)
 
     jda.addEventListener(CommandHandler())
+    jda.addEventListener(EventsHandler())
 
     println("Bot iniciado com sucesso!")
 }

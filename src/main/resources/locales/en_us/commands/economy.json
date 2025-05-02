@@ -1,0 +1,78 @@
+{
+  "name": "economy",
+  "description": "Roleplay commands",
+  "subcommandgroups": {
+    "honesty": {
+      "name": "honesty",
+      "description": "Honest commands",
+      "subcommands": {
+        "balance": {
+          "name": "balance",
+          "description": "Check your balance",
+          "options": {
+            "user": {
+              "name": "user",
+              "description": "User to see balance"
+            }
+          },
+          "content": "**Balance of:** $user \n╰**Money:** `$money` \n    ╰**Bank:** `$bank`",
+          "errors": {
+                "userIsBot": "You can't see the balance of a bot"
+          }
+        },
+        "work": {
+          "name": "work",
+          "description": "Work to earn money"
+        },
+        "daily": {
+          "name": "daily",
+          "description": "Get your daily money"
+        },
+        "deposit": {
+          "name": "deposit",
+          "description": "Deposit money into your bank"
+        },
+        "withdraw": {
+          "name": "withdraw",
+          "description": "Withdraw money from your bank"
+        }
+      }
+    },
+    "casino": {
+      "name": "casino",
+      "description": "Casino commands",
+      "subcommands": {
+        "slots": {
+          "name": "slots",
+          "description": "Play slots"
+        },
+        "blackjack": {
+          "name": "blackjack",
+          "description": "Play blackjack"
+        },
+        "roulette": {
+          "name": "roulette",
+          "description": "Play roulette"
+        }
+      }
+    },
+    "dishonest": {
+      "name": "dishonest",
+      "description": "Dishonest commands",
+      "subcommands": {
+        "rob": {
+          "name": "rob",
+          "description": "Rob someone"
+        },
+        "steal": {
+          "name": "steal",
+          "description": "Steal from someone"
+        },
+        "scam": {
+          "name": "scam",
+          "description": "Scam someone"
+        }
+      }
+    }
+  }
+}

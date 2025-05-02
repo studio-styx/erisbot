@@ -2,11 +2,14 @@ package studio.styx.erisbot.core.handlers
 
 import io.github.cdimascio.dotenv.Dotenv
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
+import net.dv8tion.jda.api.exceptions.PermissionException
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData
 import studio.styx.erisbot.core.registers.SlashCommand
 import studio.styx.utils.ErrorEmbedUtil
+import studio.styx.utils.Translate
 import java.io.File
+import java.util.Locale
 
 class CommandHandler : ListenerAdapter() {
     private val commands = mutableMapOf<String, SlashCommand>()

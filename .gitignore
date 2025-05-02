@@ -47,3 +47,5 @@ bin/
 ### Files ###
 
 .env
+
+*.sqlite

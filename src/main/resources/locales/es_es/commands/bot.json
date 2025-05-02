@@ -45,6 +45,10 @@
           "> - Baradela"
         ]
       }
+    },
+    "commands": {
+      "name": "comandos",
+      "description": "ver todos los comandos del bot"
     }
   }
 }

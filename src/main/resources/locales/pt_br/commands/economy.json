@@ -1,0 +1,78 @@
+{
+  "name": "economia",
+  "description": "Comandos de roleplay",
+  "subcommandgroups": {
+    "honesty": {
+      "name": "honesto",
+      "description": "Comandos honestos",
+      "subcommands": {
+        "balance": {
+          "name": "saldo",
+          "description": "Verifique seu saldo",
+          "options": {
+            "user": {
+              "name": "usuário",
+              "description": "Usuário para ver o saldo"
+            }
+          },
+          "content": "**Saldo de:** $user \n ╰**Dinheiro:** `$money` \n    ╰**Banco:** `$bank`",
+          "errors": {
+            "userIsBot": "Você não pode ver o saldo de um bot"
+          }
+        },
+        "work": {
+          "name": "trabalhar",
+          "description": "Trabalhe para ganhar dinheiro"
+        },
+        "daily": {
+          "name": "diário",
+          "description": "Pegue seu dinheiro diário"
+        },
+        "deposit": {
+          "name": "depositar",
+          "description": "Deposite dinheiro no banco"
+        },
+        "withdraw": {
+          "name": "sacar",
+          "description": "Saque dinheiro do banco"
+        }
+      }
+    },
+    "casino": {
+      "name": "casino",
+      "description": "Comandos de cassino",
+      "subcommands": {
+        "slots": {
+          "name": "caça-níqueis",
+          "description": "Jogue caça-níqueis"
+        },
+        "blackjack": {
+          "name": "blackjack",
+          "description": "Jogue blackjack"
+        },
+        "roulette": {
+          "name": "roleta",
+          "description": "Jogue roleta"
+        }
+      }
+    },
+    "dishonest": {
+      "name": "desonesto",
+      "description": "Comandos desonestos",
+      "subcommands": {
+        "rob": {
+          "name": "roubar",
+          "description": "Roube alguém"
+        },
+        "steal": {
+          "name": "furtar",
+          "description": "Furte de alguém"
+        },
+        "scam": {
+          "name": "golpear",
+          "description": "Aplique um golpe em alguém"
+        }
+      }
+    }
+  }
+}

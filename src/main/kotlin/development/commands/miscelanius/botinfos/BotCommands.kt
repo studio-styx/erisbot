@@ -1,8 +1,11 @@
 package development.commands.miscelanius.botinfos
 
 import net.dv8tion.jda.api.EmbedBuilder
+import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
+import net.dv8tion.jda.api.exceptions.PermissionException
 import net.dv8tion.jda.api.interactions.commands.build.CommandData
+import studio.styx.erisbot.core.exceptionHandlers.ErrorEmbedPermission
 import studio.styx.erisbot.core.registers.SlashCommand
 import studio.styx.utils.ErrorEmbedUtil
 import studio.styx.utils.SlashCommandTranslate
@@ -33,25 +36,41 @@ class BotCommands : SlashCommand {
                 val version = getVersionFromBuildGradle() ?: translator.getTranslate(
                     "commands", "bot", "subcommands.info.errors.versionNotFound"
                 ) ?: "Unknown"
-                val embed = EmbedBuilder()
-                    .setTitle(translator.getTranslate("commands", "bot", "subcommands.info.embed.title") ?: "Informações")
-                    .setDescription(
-                        translator.getTranslate(
-                            "commands", "bot", "subcommands.info.embed.description",
-                            placeholders = mapOf("user" to event.user.name, "version" to version)
-                        ) ?: ""
-                    )
-                    .setColor(colors.pink)
-                    .setThumbnail(event.jda.selfUser.avatarUrl)
-                    .setTimestamp(java.time.Instant.now())
-                    .setFooter(
-                        translator.getTranslate(
-                            "commands", "bot", "subcommands.info.embed.footer",
-                            mapOf("user" to event.user.name)
-                        ) ?: "", event.user.avatarUrl
-                    )
 
-                event.replyEmbeds(embed.build()).setEphemeral(true).queue()
+                val title = translator.getTranslate("commands", "bot", "subcommands.info.embed.title")
+                val description = translator.getTranslate(
+                    "commands", "bot", "subcommands.info.embed.description",
+                    placeholders = mapOf("user" to event.user.name, "version" to version)
+                ) ?: ""
+
+                val footer = translator.getTranslate(
+                    "commands", "bot", "subcommands.info.embed.footer",
+                    mapOf("user" to event.user.name)
+                ) ?: ""
+
+                try {
+                    val embed = EmbedBuilder()
+                        .setTitle(title ?: "Informações")
+                        .setDescription(description)
+                        .setColor(colors.pink)
+                        .setThumbnail(event.jda.selfUser.avatarUrl)
+                        .setTimestamp(java.time.Instant.now())
+                        .setFooter(footer, event.user.avatarUrl)
+
+                    event.replyEmbeds(embed.build()).setEphemeral(true).queue()
+                } catch (e: PermissionException) {
+                    if (e.permission == Permission.MESSAGE_EMBED_LINKS) {
+                        val embed = ErrorEmbedPermission(
+                            title, description, footer
+                        )
+                        embed.sendTranslatedEmbed(event)
+                    } else {
+                        val embed = ErrorEmbedUtil()
+
+                        embed.sendErrorEmbed(event, "Algum erro ocorreu")
+                    }
+                }
+
             }
             "creators" -> {
                 val embed = EmbedBuilder()
@@ -80,6 +99,10 @@ class BotCommands : SlashCommand {
                 SlashCommandTranslate.SubcommandConfig(
                     name = "creators",
                     description = "See all infos from the bot creators"
+                ),
+                SlashCommandTranslate.SubcommandConfig(
+                    name = "commands",
+                    description = "See all commands"
                 )
             )
         )
