@@ -1,140 +1,75 @@
 package studio.styx.erisbot.core.repository
 
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import org.jetbrains.exposed.sql.insert
+import org.jetbrains.exposed.sql.transactions.transaction
+import org.jetbrains.exposed.sql.update
 import studio.styx.erisbot.core.dtos.UserDTO
 import studio.styx.logic.DatabaseManager
 import studio.styx.logic.UsersTable
 
-class UserRepository(val user: String) {
-    val database = DatabaseManager
-
+class UserRepository(private val userId: String) {
     init {
         DatabaseManager.registerTable(UsersTable)
         DatabaseManager.initialize("database.sqlite")
     }
 
     private fun ensureUserExists() {
-        database.transaction {
-            val userExists = UsersTable.select(UsersTable.id eq user).count() > 0
-            if (!userExists) {
-                createUser()
+        transaction {
+            val exists = UsersTable.select(UsersTable.id eq userId).count() > 0
+            if (!exists) {
+                UsersTable.insert {
+                    it[id] = userId
+                    it[money] = 0.0
+                    it[bank] = 50.0
+                    it[xp] = 0
+                }
             }
         }
     }
 
-    fun getUser(): UserDTO? {
-        ensureUserExists()
-        return DatabaseManager.queryOne<UserDTO>(
-            "SELECT * FROM users WHERE id = ?",
-            listOf(user)
-        ) { rs ->
+    fun getUser(): UserDTO? = transaction {
+        UsersTable.select(UsersTable.id eq userId).map {
             UserDTO(
-                id = rs.getString("id"),
-                money = rs.getDouble("money"),
-                bank = rs.getDouble("bank"),
-                xp = rs.getInt("xp")
+                id = it[UsersTable.id],
+                money = it[UsersTable.money],
+                bank = it[UsersTable.bank],
+                xp = it[UsersTable.xp]
             )
+        }.firstOrNull()
+    }
+
+    fun getMoney(): Double = getUser()?.money ?: 0.0
+    fun getBank(): Double = getUser()?.bank ?: 0.0
+    fun getXP(): Int = getUser()?.xp ?: 0
+
+    fun setMoney(money: Double) = transaction {
+        UsersTable.update({ UsersTable.id eq userId }) {
+            it[UsersTable.money] = money
         }
     }
 
-    fun getMoney(): Double {
-        ensureUserExists()
-        val userData = getUser()
-        return userData?.money ?: 0.0
+    fun setBank(bank: Double) = transaction {
+        UsersTable.update({ UsersTable.id eq userId }) {
+            it[UsersTable.bank] = bank
+        }
     }
 
-    fun getBank(): Double {
-        ensureUserExists()
-        val userData = getUser()
-        return userData?.bank ?: 0.0
+    fun setXP(xp: Int) = transaction {
+        UsersTable.update({ UsersTable.id eq userId }) {
+            it[UsersTable.xp] = xp
+        }
     }
 
-    fun getXP(): Int {
-        ensureUserExists()
-        val userData = getUser()
-        return userData?.xp ?: 0
+    fun deposit(amount: Double) = transaction {
+        val user = getUser() ?: return@transaction
+        setMoney(user.money - amount)
+        setBank(user.bank + amount)
     }
 
-    fun setMoney(money: Double) {
-        ensureUserExists()
-        DatabaseManager.execute(
-            "UPDATE users SET money = ? WHERE id = ?",
-            listOf(money, user)
-        )
-    }
-
-    fun setBank(bank: Double) {
-        ensureUserExists()
-        DatabaseManager.execute(
-            "UPDATE users SET bank = ? WHERE id = ?",
-            listOf(bank, user)
-        )
-    }
-
-    fun setXP(xp: Int) {
-        ensureUserExists()
-        DatabaseManager.execute(
-            "UPDATE users SET xp = ? WHERE id = ?",
-            listOf(xp, user)
-        )
-    }
-
-    fun addMoney(money: Double) {
-        ensureUserExists()
-        val currentMoney = getMoney()
-        setMoney(currentMoney + money)
-    }
-
-    fun subMoney(money: Double) {
-        ensureUserExists()
-        val currentMoney = getMoney()
-        setMoney(currentMoney - money)
-    }
-
-    fun addBank(bank: Double) {
-        ensureUserExists()
-        val currentBank = getBank()
-        setBank(currentBank + bank)
-    }
-
-    fun subBank(bank: Double) {
-        ensureUserExists()
-        val currentBank = getBank()
-        setBank(currentBank - bank)
-    }
-
-    fun addXP(xp: Int) {
-        ensureUserExists()
-        val currentXP = getXP()
-        setXP(currentXP + xp)
-    }
-
-    fun subXP(xp: Int) {
-        ensureUserExists()
-        val currentXP = getXP()
-        setXP(currentXP - xp)
-    }
-
-    fun deposit(money: Double) {
-        ensureUserExists()
-        val currentMoney = getMoney()
-        val currentBank = getBank()
-        setMoney(currentMoney - money)
-        setBank(currentBank + money)
-    }
-
-    fun withdraw(money: Double) {
-        ensureUserExists()
-        val currentMoney = getMoney()
-        val currentBank = getBank()
-        setMoney(currentMoney + money)
-        setBank(currentBank - money)
-    }
-
-    fun createUser() {
-        DatabaseManager.execute(
-            "INSERT INTO users (id, money, bank, xp) VALUES (?, ?, ?, ?)",
-            listOf(user, 0.0, 50.0, 0)
-        )
+    fun withdraw(amount: Double) = transaction {
+        val user = getUser() ?: return@transaction
+        setMoney(user.money + amount)
+        setBank(user.bank - amount)
     }
 }

@@ -2,6 +2,7 @@ package studio.styx.erisbot.core.handlers
 
 import io.github.cdimascio.dotenv.Dotenv
 import net.dv8tion.jda.api.EmbedBuilder
+import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.exceptions.PermissionException
 import net.dv8tion.jda.api.hooks.ListenerAdapter
@@ -43,7 +44,7 @@ class EventsHandler : ListenerAdapter() {
 
                 event.channel.sendMessageEmbeds(embed.build()).queue()
             } catch (e: PermissionException) {
-                if (e.permission.getName() == "MessageEmbed") {
+                if (e.permission == Permission.MESSAGE_EMBED_LINKS) {
                     val message = "### Olá, eu sou a Éris! um bot de código aberto criado para ajudar você a se divertir\n" +
                             "</bot info:$botCommandId> - veja mais sobre mim\n" +
                             "</bot commands:$botCommandId> - veja meus comandos!"

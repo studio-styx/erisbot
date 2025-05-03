@@ -30,11 +30,23 @@
         },
         "deposit": {
           "name": "depositar",
-          "description": "Deposita dinero en tu banco"
+          "description": "Deposita dinero en tu banco",
+          "options": {
+            "amount": {
+              "name": "valor",
+              "description": "cantidad a depositar en el banco"
+            }
+          }
         },
         "withdraw": {
           "name": "retirar",
-          "description": "Retira dinero de tu banco"
+          "description": "Retira dinero de tu banco",
+          "options": {
+            "amount": {
+              "name": "valor",
+              "description": "cantidad a retira en el banco"
+            }
+          }
         }
       }
     },

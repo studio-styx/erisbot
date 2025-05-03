@@ -4,6 +4,7 @@ import development.commands.economy.honesty.Balance
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.interactions.commands.OptionType
 import net.dv8tion.jda.api.interactions.commands.build.CommandData
+import development.commands.economy.honesty.Deposit
 import studio.styx.erisbot.core.registers.SlashCommand
 import studio.styx.utils.ErrorEmbedUtil
 import studio.styx.utils.SlashCommandTranslate
@@ -23,6 +24,10 @@ class RpCenterCommands : SlashCommand {
                     "balance" -> {
                         val balance = Balance()
                         balance.execute(event)
+                    }
+                    "deposit" -> {
+                        val deposit = Deposit()
+                        deposit.execute(event)
                     }
 
                     else -> {
@@ -66,11 +71,27 @@ class RpCenterCommands : SlashCommand {
                         ),
                         SlashCommandTranslate.SubcommandConfig(
                             name = "deposit",
-                            description = "Deposit money into your bank"
+                            description = "Deposit money into your bank",
+                            options = listOf(
+                                SlashCommandTranslate.OptionConfig(
+                                    type = OptionType.NUMBER,
+                                    name = "amount",
+                                    description = "Amount to deposit",
+                                    required = true
+                                )
+                            )
                         ),
                         SlashCommandTranslate.SubcommandConfig(
                             name = "withdraw",
-                            description = "Withdraw money from your bank"
+                            description = "Withdraw money from your bank",
+                            options = listOf(
+                                SlashCommandTranslate.OptionConfig(
+                                    type = OptionType.NUMBER,
+                                    name = "amount",
+                                    description = "amount to withdraw",
+                                    required = true
+                                )
+                            )
                         ),
                     )
                 ),
