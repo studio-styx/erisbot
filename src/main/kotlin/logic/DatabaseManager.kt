@@ -5,7 +5,6 @@ import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.Transaction
 import org.jetbrains.exposed.sql.transactions.TransactionManager
-import org.jetbrains.exposed.sql.transactions.transaction
 import java.sql.Connection
 import java.sql.PreparedStatement
 import java.sql.ResultSet
@@ -64,6 +63,46 @@ object DatabaseManager {
         return lock.withLock {
             check(database != null) { "Database not initialized" }
             TransactionManager.current().connection.connection as Connection
+        }
+    }
+
+    fun executeRawQuery(query: String): Map<String, Any> {
+        return try {
+            DatabaseManager.transaction {
+                val connection = DatabaseManager.getConnection()
+                val statement = connection.createStatement()
+
+                if (query.trim().startsWith("SELECT", ignoreCase = true)) {
+                    val rs = statement.executeQuery(query)
+                    val result = mutableListOf<Map<String, Any?>>()
+                    val metaData = rs.metaData
+
+                    while (rs.next()) {
+                        val row = mutableMapOf<String, Any?>()
+                        for (i in 1..metaData.columnCount) {
+                            row[metaData.getColumnName(i)] = rs.getObject(i)
+                        }
+                        result.add(row)
+                    }
+
+                    if (result.isEmpty()) {
+                        mapOf<String, Any>("status" to "not found")
+                    } else {
+                        mapOf<String, Any>("status" to "success", "data" to result)
+                    }
+                } else {
+                    val updateCount = statement.executeUpdate(query)
+                    mapOf<String, Any>(
+                        "status" to "success",
+                        "affected_rows" to updateCount
+                    )
+                }
+            } as Map<String, Any> // Cast explícito para o tipo de retorno
+        } catch (e: Exception) {
+            mapOf<String, Any>(
+                "status" to "error",
+                "message" to (e.message ?: "Unknown error")
+            )
         }
     }
 

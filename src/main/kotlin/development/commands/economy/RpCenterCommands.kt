@@ -5,6 +5,7 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 import net.dv8tion.jda.api.interactions.commands.OptionType
 import net.dv8tion.jda.api.interactions.commands.build.CommandData
 import development.commands.economy.honesty.Deposit
+import development.commands.economy.honesty.Withdraw
 import studio.styx.erisbot.core.registers.SlashCommand
 import studio.styx.utils.ErrorEmbedUtil
 import studio.styx.utils.SlashCommandTranslate
@@ -19,7 +20,7 @@ class RpCenterCommands : SlashCommand {
         val ErrorEmbedUtil = ErrorEmbedUtil()
 
         when (event.subcommandGroup) {
-            "honesty" -> {
+            "general" -> {
                 when (event.subcommandName) {
                     "balance" -> {
                         val balance = Balance()
@@ -28,6 +29,10 @@ class RpCenterCommands : SlashCommand {
                     "deposit" -> {
                         val deposit = Deposit()
                         deposit.execute(event)
+                    }
+                    "withdraw" -> {
+                        val withdraw = Withdraw()
+                        withdraw.execute(event)
                     }
 
                     else -> {
@@ -46,7 +51,7 @@ class RpCenterCommands : SlashCommand {
         return translator.getTranslatedCommandData(
             subcommandGroups = listOf(
                 SlashCommandTranslate.SubcommandGroupConfig(
-                    name = "honesty",
+                    name = "general",
                     description = "Rp commands",
                     subcommands = listOf(
                         SlashCommandTranslate.SubcommandConfig(
@@ -120,11 +125,7 @@ class RpCenterCommands : SlashCommand {
                         SlashCommandTranslate.SubcommandConfig(
                             name = "rob",
                             description = "Rob someone",
-                        ),
-                        SlashCommandTranslate.SubcommandConfig(
-                            name = "steal",
-                            description = "Steal from someone"
-                        ),
+                        )
                         SlashCommandTranslate.SubcommandConfig(
                             name = "scam",
                             description = "Scam someone"

@@ -6,6 +6,8 @@ import net.dv8tion.jda.api.requests.GatewayIntent
 import studio.styx.erisbot.core.handlers.CommandHandler
 import studio.styx.erisbot.core.handlers.EventsHandler
 import studio.styx.erisbot.core.registers.CommandsRegister
+import studio.styx.logic.DatabaseManager
+import studio.styx.logic.UsersTable
 
 fun main() {
     val dotenv = Dotenv.configure().load()
@@ -25,4 +27,15 @@ fun main() {
     jda.addEventListener(EventsHandler())
 
     println("Bot iniciado com sucesso!")
+    try {
+        initBot()
+        println("Database inicializada com sucesso!")
+    } catch (e: Exception) {
+        e.printStackTrace()
+    }
+}
+
+fun initBot() {
+    DatabaseManager.initialize("database.sqlite")
+    DatabaseManager.registerTable(UsersTable)
 }
