@@ -1,0 +1,19 @@
+{
+    "embed": {
+        "title": "Mi información",
+        "description": [
+            "## Curiosidades",
+            "- ¡Soy un bot divertido con muchos comandos interesantes!",
+            "- Mi nombre Eris está inspirado en la diosa griega de la discordia y la confusión.",
+            "- Mi desarrollador es **Studio Styx**",
+            "- Soy un bot de código abierto. Puedes encontrarme en mi [GitHub](https://github.com/studio-styx/erisbot)",
+            "",
+            "### Extras",
+            "- **Idioma:** `TypeScript`",
+            "- **Biblioteca:** `Discord.js`",
+            "- **Servidor:** `Bun`",
+            "- **Base de datos:** `SQLite` + `Prisma`",
+            "- **Alojamiento:** `Discloud`"
+        ]
+    }
+}

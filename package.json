@@ -1,0 +1,57 @@
+{
+  "name": "erisbot",
+  "type": "module",
+  "main": "build/index.js",
+  "scripts": {
+    "check": "tsc --noEmit && echo ✔ Ok",
+    "build": "tsc",
+    "dev": "bun ./src/index.ts",
+    "dev:dev": "bun --env-file .env.dev ./src/index.ts",
+    "watch": "bun ./src/index.ts",
+    "watch:dev": "bun --watch --env-file .env.dev ./src/index.ts",
+    "start": "bun .",
+    "start:dev": "bun --env-file .env.dev ."
+  },
+  "dependencies": {
+    "@magicyan/discord": "1.4.6",
+    "@prisma/client": "^6.7.0",
+    "chalk": "5.4.1",
+    "discord.js": "14.19.3",
+    "fast-glob": "3.3.3",
+    "prisma": "^6.7.0",
+    "rou3": "0.5.1",
+    "zod": "3.24.1"
+  },
+  "devDependencies": {
+    "@types/node": "20.17.12",
+    "tsx": "4.19.3",
+    "typescript": "5.7.2"
+  },
+  "imports": {
+    "#database": [
+      "./build/database/index.js"
+    ],
+    "#base": [
+      "./build/discord/base/index.js"
+    ],
+    "#functions": [
+      "./build/functions/index.js"
+    ],
+    "#menus": [
+      "./build/menus/index.js"
+    ],
+    "#settings": [
+      "./build/settings/index.js"
+    ],
+    "#tools": [
+      "./build/tools/index.js"
+    ],
+    "#server": [
+      "./build/server/index.js"
+    ],
+    "#lib": [
+      "./build/lib/index.js"
+    ]
+  },
+  "baseVersion": "1.2.6"
+}
