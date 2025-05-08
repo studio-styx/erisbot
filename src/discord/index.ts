@@ -8,19 +8,21 @@ export const { createCommand, createEvent, createResponder } = setupCreators({
         onNotFound: (interaction) => {
             const embed = new EmbedBuilder({
                 description: `Command not found!`,
-                color: parseInt(settings.colors.danger, 16)
-            })
+                color: parseInt(settings.colors.danger.replace("#", ""), 16)
+            });
 
-            interaction.reply({ embeds: [embed], flags });
+            interaction.reply({ embeds: [embed] });
             return;
         },
         onError(error, interaction) {
             const embed = new EmbedBuilder({
                 description: `**An error occurred while executing the command: \`${error instanceof Error ? error.message : "Unknown error"}\`**`,
-                color: parseInt(settings.colors.danger, 16)
-            })
+                color: parseInt(settings.colors.danger.replace("#", ""), 16)
+            });
 
-            interaction.reply({ embeds: [embed], flags });
+            console.error(error);
+
+            interaction.reply({ embeds: [embed] });
             return;
         },
     }

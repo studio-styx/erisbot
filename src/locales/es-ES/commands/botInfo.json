@@ -1,19 +1,18 @@
 {
-    "embed": {
-        "title": "Mi información",
-        "description": [
-            "## Curiosidades",
-            "- ¡Soy un bot divertido con muchos comandos interesantes!",
-            "- Mi nombre Eris está inspirado en la diosa griega de la discordia y la confusión.",
-            "- Mi desarrollador es **Studio Styx**",
-            "- Soy un bot de código abierto. Puedes encontrarme en mi [GitHub](https://github.com/studio-styx/erisbot)",
-            "",
-            "### Extras",
-            "- **Idioma:** `TypeScript`",
-            "- **Biblioteca:** `Discord.js`",
-            "- **Servidor:** `Bun`",
-            "- **Base de datos:** `SQLite` + `Prisma`",
-            "- **Alojamiento:** `Discloud`"
-        ]
-    }
+  "info": {
+    "aboutTitle": "## Sobre mí",
+    "aboutDescription": "- ¡Soy un bot de economía y diversión!\n- Fui programado originalmente en Kotlin pero actualmente estoy hecho en TypeScript\n- Mi nombre Éris es una referencia a la diosa griega de la discordia\n- Soy un bot de código abierto, puedes encontrarme en mi GitHub",
+    "githubButton": "Visita mi GitHub",
+    "featuresTitle": "## Características",
+    "featuresList": "- **Lenguaje**: `TypeScript`\n- **Librería**: `discord.js`\n- **Desarrollador**: `Studio Styx`\n- **Hospedaje**: `Discloud`",
+    "discordJs": "Discord.js",
+    "developer": "Desarrollador",
+    "host": "Discloud"
+  },
+  "creators": {
+    "title": "**Creadores**\nVe a continuación los participantes de Studio Styx",
+    "birdtool": "**BirdTool**\n-# ╰ Desarrollador y traductor",
+    "santos": "**Santos**\n-# ╰ Diseñador",
+    "lay": "**Lay**\n-# ╰ Diseñador y traductor"
+  }
 }
