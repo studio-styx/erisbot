@@ -53,6 +53,9 @@
     ],
     "#lib": [
       "./build/lib/index.js"
+    ],
+    "#utils": [
+      "./build/utils/index.js"
     ]
   },
   "baseVersion": "1.2.6"

@@ -1,7 +1,9 @@
 import { createCommand } from "#base";
-import { ApplicationCommandOptionType, ApplicationCommandType, ButtonBuilder, ButtonStyle, EmbedBuilder } from "discord.js";
+import { ApplicationCommandOptionType, ApplicationCommandType, ButtonBuilder, ButtonStyle, EmbedBuilder, Interaction } from "discord.js";
 import { brBuilder, createContainer, createRow, createSection, createSeparator } from "@magicyan/discord";
 import i18next from "i18next";
+import { menus } from "#menus";
+import { getCommandId } from "#utils";
 
 createCommand({
     name: "bot",
@@ -141,6 +143,12 @@ createCommand({
                     flags: ["Ephemeral"],
                     embeds: [embed]
                 })
+                return;
+            }
+            case "commands": {
+                const commandId = await getCommandId(interaction, "bot")
+                
+                interaction.reply(menus.commands(commandId, "bot"))
                 return;
             }
         }

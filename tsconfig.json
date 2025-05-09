@@ -36,6 +36,7 @@
 			"#lib": ["./lib/index.ts"],
 			"#emojis": ["../emojis.json"],
 			"#types/*": ["./@types/*"],
+			"#utils": ["./utils/index.ts"],
 		}
 	},
 	
