@@ -37,6 +37,7 @@
 			"#emojis": ["../emojis.json"],
 			"#types/*": ["./@types/*"],
 			"#utils": ["./utils/index.ts"],
+			"#prisma": ["../prisma/prisma/client.d.ts"]
 		}
 	},
 	

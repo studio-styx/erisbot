@@ -56,6 +56,9 @@
     ],
     "#utils": [
       "./build/utils/index.js"
+    ],
+    "#prisma/client": [
+      "./prisma/prisma/client.js"
     ]
   },
   "baseVersion": "1.2.6"

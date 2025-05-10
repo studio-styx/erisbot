@@ -1,29 +1,22 @@
 import { setupCreators } from "#base";
-import { settings } from "#settings";
-import { EmbedBuilder } from "discord.js";
+import { res } from "#utils";
 
 export const { createCommand, createEvent, createResponder } = setupCreators({
     commands: {
         guilds: ["1172930138770526248"],
         onNotFound: (interaction) => {
-            const embed = new EmbedBuilder({
-                description: `Command not found!`,
-                color: parseInt(settings.colors.danger.replace("#", ""), 16)
-            });
-
-            interaction.reply({ embeds: [embed] });
-            return;
+            interaction.reply(res.danger("Command not found!", { flags: ["Ephemeral"] }));
         },
         onError(error, interaction) {
-            const embed = new EmbedBuilder({
-                description: `**An error occurred while executing the command: \`${error instanceof Error ? error.message : "Unknown error"}\`**`,
-                color: parseInt(settings.colors.danger.replace("#", ""), 16)
-            });
-
             console.error(error);
 
-            interaction.reply({ embeds: [embed] });
-            return;
+            const errorMessage = `**An error occurred while executing the command: \`${error instanceof Error ? error.message : "Unknown error"}\`**`;
+
+            if (interaction.deferred) {
+                interaction.editReply(res.danger(errorMessage));
+            } else if (!interaction.replied) {
+                interaction.reply(res.danger(errorMessage));
+            }
         },
-    }
+    },
 });
