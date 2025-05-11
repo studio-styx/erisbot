@@ -1,5 +1,10 @@
 import { createCommand } from "#base";
-import { ApplicationCommandOptionType, ApplicationCommandType, EmbedBuilder } from "discord.js";
+import { PrismaClient } from "#prisma/client";
+import { icon, res } from "#utils";
+import { brBuilder } from "@magicyan/discord";
+import { ApplicationCommandOptionType, ApplicationCommandType, time } from "discord.js";
+
+const prisma = new PrismaClient();
 
 createCommand({
     name: "miscelanius",
@@ -40,6 +45,21 @@ createCommand({
                     }
                 }
             ]
+        },
+        {
+            name: "cooldowns",
+            description: "see your cooldowns",
+            type: ApplicationCommandOptionType.Subcommand,
+            nameLocalizations: {
+                "pt-BR": "cooldowns",
+                "en-US": "cooldowns",
+                "es-ES": "cooldowns",
+            },
+            descriptionLocalizations: {
+                "pt-BR": "veja seus cooldowns",
+                "en-US": "see your cooldowns",
+                "es-ES": "vea sus cooldowns",
+            }
         }
     ],
     async run(interaction){
@@ -59,7 +79,26 @@ createCommand({
                 await interaction.editReply({ content: `Tempo acabou! Contei até **${count.toLocaleString()}**.` });
             
                 return;
-            }            
+            }    
+            case "cooldowns": {
+                const userCooldowns = await prisma.cooldowns.findMany({
+                    where: {
+                        user: interaction.user.id
+                    }
+                })
+
+                if (userCooldowns.length === 0) {
+                    interaction.reply(res.danger(`${icon.error} | você não tem cooldowns.`));
+                    return;
+                }
+
+                const now = new Date();
+
+                const text = userCooldowns.map(c => `**${c.name}**: ${c.willEndIn > now ? time(c.willEndIn, "R") : "Expirado"}`).join("\n");
+
+                interaction.reply(res.success(text, { flags: [], timestamp: now.toISOString(), title: "Cooldowns" }))
+                return;
+            }        
         }
     }
 });

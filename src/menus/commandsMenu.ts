@@ -1,6 +1,7 @@
 import { settings } from "#settings";
+import { icon } from "#utils";
 import { brBuilder, createRow } from "@magicyan/discord";
-import { ButtonBuilder, ButtonStyle, EmbedBuilder, Interaction, StringMappedInteractionTypes, StringSelectMenuBuilder, type InteractionReplyOptions } from "discord.js";
+import { EmbedBuilder, StringSelectMenuBuilder, type InteractionReplyOptions } from "discord.js";
 
 export function commandsMenu<R>(commandId: string, page: "economy" | "bot" | "adventure"): R {
     const embed = new EmbedBuilder({
@@ -56,10 +57,10 @@ export function commandsMenu<R>(commandId: string, page: "economy" | "bot" | "ad
                 customId: "menu/help/commands",
                 placeholder: "Select a category",
                 options: [
-                    { label: "Economy", value: "economy" },
-                    { label: "Bot", value: "bot" },
-                    { label: "Adventure", value: "adventure" },
-                    { label: "Fun", value: "fun" },
+                    { label: "Economy", value: "economy", emoji: icon.money_bag, default: commandId === "economy" },
+                    { label: "Bot", value: "bot", emoji: icon.bot, default: commandId === "bot" },
+                    { label: "Adventure", value: "adventure", emoji: "🏔️", default: commandId === "adventure" },
+                    { label: "Fun", value: "fun", emoji: "🎠", default: commandId === "fun" },
                 ]
             })
         )

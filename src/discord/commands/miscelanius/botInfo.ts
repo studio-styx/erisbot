@@ -1,5 +1,5 @@
 import { createCommand } from "#base";
-import { ApplicationCommandOptionType, ApplicationCommandType, ButtonBuilder, ButtonStyle, EmbedBuilder, Interaction } from "discord.js";
+import { ApplicationCommandOptionType, ApplicationCommandType, ButtonBuilder, ButtonStyle, EmbedBuilder } from "discord.js";
 import { brBuilder, createContainer, createRow, createSection, createSeparator } from "@magicyan/discord";
 import i18next from "i18next";
 import { menus } from "#menus";
@@ -94,7 +94,7 @@ createCommand({
                     interaction.reply(t("embedlink"));
                     return
                 }
-                const t = (key: string) => i18next.t(`commands/botInfo:info.${key}`);
+                const t = (key: string) => i18next.t(`commands/botInfo:info.${key}`);   
 
                 const container = createContainer({
                     accentColor: "#a13d67",

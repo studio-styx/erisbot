@@ -1,0 +1,63 @@
+{
+    "general": {
+        "balance": {
+            "description": "**Saldo de:** {{mention}}",
+            "field1Title": "{{emoji}} dinheiro",
+            "field2Title": "{{emoji}} banco",
+            "field1": "╰ Ꞩ {{money}}",
+            "field2": "╰ Ꞩ {{bank}}",
+            "logMessage1": "Consultou o saldo de {{id}}",
+            "logMessage2": "Consultou o próprio saldo"
+        },
+        "deposit": {
+            "noFunds": "{{emoji}} | Você não possui dinheiro para depositar.",
+            "noBankFunds": "{{emoji}} | Você não possui saldo no banco para sacar.",
+            "success": "{{emoji}} | Depositado Ꞩ {{value}} com sucesso!",
+            "error": "❌ | Erro ao processar o depósito: {{error}}",
+            "embed": {
+                "description": "**Saldo de:** {{mention}}",
+                "field1": "{{emoji}} Dinheiro",
+                "field2": "{{emoji}} Banco",
+                "fieldValue": "╰ Ꞩ {{value}}"
+            },
+            "logMessage": "Depositado Ꞩ {{value}}"
+        },
+        "withdraw": {
+            "noFunds": "{{emoji}} | Você não possui dinheiro para depositar.",
+            "noBankFunds": "{{emoji}} | Você não possui saldo no banco para sacar.",
+            "success": "{{emoji}} | Sacado Ꞩ {{value}} com sucesso!",
+            "error": "❌ | Erro ao processar o saque: {{error}}",
+            "embed": {
+                "description": "**Saldo de:** {{mention}}",
+                "field1": "{{emoji}} Dinheiro",
+                "field2": "{{emoji}} Banco",
+                "fieldValue": "╰ Ꞩ {{value}}"
+            },
+            "logMessage": "Sacado Ꞩ {{value}}"
+        },
+        "daily": {
+            "cooldown": "{{emoji}} | Você poderá resgatar sua recompensa diária novamente {{time}}!",
+            "bankEmpty": "{{emoji}} | O banco não tem dinheiro o suficiente para te pagar!",
+            "logBankEmpty": "O banco não tem dinheiro suficiente para pagar",
+            "success": "{{emoji}} | Você resgatou sua recompensa diária de **{{value}}** stx!",
+            "embed": {
+                "description": "**Saldo de:** {{mention}}",
+                "field1": "{{emoji}} Dinheiro",
+                "field2": "{{emoji}} Banco",
+                "fieldValue": "╰ Ꞩ {{value}}"
+            }
+        },
+        "transfer": {
+            "cooldown": "{{emoji}} | Você não pode transferir dinheiro agora! Tente novamente {{time}}",
+            "botTransfer": "{{emoji}} | Você não pode transferir dinheiro para um bot!",
+            "selfTransfer": "{{emoji}} | Você não pode transferir dinheiro para você mesmo!",
+            "minAmount": "{{emoji}} | Você não pode transferir menos de 15 stx!",
+            "notRegistered": "Não registrado",
+            "transferMessage": "{{emoji}} | {{author}} transferiu **Ꞩ {{value}}** para: {{target}}\n-# ╰ id da transação: {{transactionId}}",
+            "authorBalance": "**Saldo** de {{author}}: `Ꞩ {{money}}` \n **Banco** de {{author}}: `Ꞩ {{bank}}`",
+            "targetBalance": "**Saldo** de {{target}}: `Ꞩ {{money}}` \n **Banco** de {{target}}: `Ꞩ {{bank}}`",
+            "logSent": "Transferência de dinheiro para {{targetId}}",
+            "logReceived": "Recebeu transferência de dinheiro de {{authorId}}"
+        }
+    }
+}

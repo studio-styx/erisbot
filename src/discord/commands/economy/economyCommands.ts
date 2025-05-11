@@ -1,13 +1,8 @@
 import { createCommand } from "#base";
-import { ApplicationCommandType, ApplicationCommandOptionType, userMention, time } from "discord.js";
+import { ApplicationCommandType, ApplicationCommandOptionType } from "discord.js";
 import { PrismaClient } from "#prisma";
-import { res } from "#utils";
-import { brBuilder, createEmbed } from "@magicyan/discord";
 import i18next from "i18next";
-import { settings } from "#settings";
-import { readFile, writeFile } from "fs/promises";
-import path from "path";
-import { registerLog } from "#functions";
+import { generalEconomyCommands } from "./generalEconomyCommands.js";
 
 const prisma = new PrismaClient();
 
@@ -102,6 +97,7 @@ createCommand({
                             name: "amount",
                             description: "value to deposit",
                             type: ApplicationCommandOptionType.Number,
+                            minValue: 1,
                             nameLocalizations: {
                                 "pt-BR": "valor",
                                 "en-US": "value",
@@ -134,6 +130,7 @@ createCommand({
                             name: "amount",
                             description: "value to withdraw",
                             type: ApplicationCommandOptionType.Number,
+                            minValue: 1,
                             nameLocalizations: {
                                 "pt-BR": "valor",
                                 "en-US": "value",
@@ -161,6 +158,41 @@ createCommand({
                     name: "transfer",
                     description: "transfer money to another user",
                     type: ApplicationCommandOptionType.Subcommand,
+                    options: [
+                        {
+                            name: "user",
+                            description: "user to transfer money",
+                            required: true,
+                            type: ApplicationCommandOptionType.User,
+                            nameLocalizations: {
+                                "pt-BR": "usuário",
+                                "en-US": "user",
+                                "es-ES": "usuario",
+                            },
+                            descriptionLocalizations: {
+                                "pt-BR": "usuário para transferir dinheiro",
+                                "en-US": "user to transfer money",
+                                "es-ES": "usuario para transferir dinero",
+                            }
+                        },
+                        {
+                            name: "amount",
+                            description: "value to transfer",
+                            type: ApplicationCommandOptionType.Number,
+                            minValue: 15,
+                            required: true,
+                            nameLocalizations: {
+                                "pt-BR": "valor",
+                                "en-US": "value",
+                                "es-ES": "valor",
+                            },
+                            descriptionLocalizations: {
+                                "pt-BR": "valor a transferir",
+                                "en-US": "value to transfer",
+                                "es-ES": "valor para transferir",
+                            }
+                        }
+                    ],
                     nameLocalizations: {
                         "pt-BR": "transferir",
                         "en-US": "transfer",
@@ -342,223 +374,11 @@ createCommand({
     async run(interaction) {
         const { options } = interaction;
         const subCommandGroup = options.getSubcommandGroup()
-        const subCommand = options.getSubcommand();
         await i18next.changeLanguage(interaction.locale);
 
         switch (subCommandGroup) {
             case "general": {
-                switch (subCommand) {
-                    case "balance": {
-                        const id = options.getUser("user")?.id || interaction.user.id;
-                        const userData = await prisma.user.findUnique({
-                            where: {
-                                id
-                            },
-                            select: {
-                                money: true,
-                                bank: true
-                            }
-                        });
-
-                        const money = typeof userData?.money === "number" ? userData.money : 0;
-                        const bank = typeof userData?.bank === "number" ? userData.bank : 0;
-
-                        const embed = createEmbed({
-                            description: `**Saldo de:** ${userMention(id)}`,
-                            fields: [
-                                { name: "Dinheiro", value: "╰" + money.toLocaleString("pt-BR", { style: "currency", currency: "BRL" }), inline: true },
-                                { name: "Banco", value: "╰" + bank.toLocaleString("pt-BR", { style: "currency", currency: "BRL" }), inline: true }
-                            ],
-                            color: settings.colors.success
-                        })
-
-                        interaction.reply({ embeds: [embed] })
-                        await registerLog(id != interaction.user.id ? `Consultou o saldo de ${id}` : `Consultou o próprio saldo`, "info", 0, id)
-                        return
-                    }
-                    case "withdraw":
-                    case "deposit": {
-                        let value = interaction.options.getNumber("amount")!;
-
-                        await interaction.deferReply({ flags: ["Ephemeral"] });
-
-                        const id = interaction.user.id;
-                        let userData = await prisma.user.findUnique({
-                            where: { id },
-                            select: { money: true, bank: true },
-                        });
-
-                        if (!userData) {
-                            userData = await prisma.user.create({ data: { id } });
-                        }
-
-                        
-                        let newUser: { money: number; bank: number };
-                        
-                        try {
-                            if (subCommand === "deposit") {
-                                if (userData.money === 0) {
-                                    interaction.editReply(res.danger("Você não possui dinheiro para realizar essa ação."));
-                                    return;
-                                }
-                                if (value > userData.money) value = userData.money;
-                                newUser = await prisma.user.update({
-                                    where: { id },
-                                    data: {
-                                        money: { decrement: value },
-                                        bank: { increment: value },
-                                    },
-                                    select: { money: true, bank: true },
-                                });
-                            } else {
-                                if (userData.bank === 0) {
-                                    interaction.editReply(res.danger("Você não possui dinheiro para realizar essa ação."));
-                                    return;
-                                }
-                                if (value > userData.bank) value = userData.bank;
-                                newUser = await prisma.user.update({
-                                    where: { id },
-                                    data: {
-                                        money: { increment: value },
-                                        bank: { decrement: value },
-                                    },
-                                    select: { money: true, bank: true },
-                                });
-                            }
-
-                            await interaction.editReply(
-                                res.success(`${subCommand === "deposit" ? "Depositado" : "Sacado"} ${value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })} com sucesso!`, {
-                                    embeds: [
-                                        createEmbed({
-                                            description: `**Saldo atual:**`,
-                                            fields: [
-                                                {
-                                                    name: "Dinheiro",
-                                                    value: "╰" + newUser.money.toLocaleString("pt-BR", { style: "currency", currency: "BRL" }),
-                                                    inline: true,
-                                                },
-                                                {
-                                                    name: "Banco",
-                                                    value: "╰" + newUser.bank.toLocaleString("pt-BR", { style: "currency", currency: "BRL" }),
-                                                    inline: true,
-                                                },
-                                            ],
-                                            color: "#ffffff",
-                                        }),
-                                    ]
-                                })
-                            );
-
-                            await registerLog(
-                                `${subCommand === "deposit" ? "Depositado" : "Sacado"} ${value} com sucesso!`,
-                                "info",
-                                1,
-                                id
-                            );
-                        } catch (error) {
-                            console.error(error);
-                            await interaction.editReply(
-                                res.danger(`Erro ao processar a transação: ${error instanceof Error ? error.message : "Erro desconhecido"}`)
-                            );
-                        }
-                        return;
-                    }
-                    case "daily": {
-                        const id = interaction.user.id
-                        await interaction.deferReply()
-
-                        const bankFilePath = path.join(__dirname, "../../../jsons/bank.json");
-                        const { bankMoney }: { bankMoney: number } = JSON.parse(await readFile(bankFilePath, "utf-8"));
-
-                        const dailyValue = Math.floor(Math.random() * 101);
-
-                        if (dailyValue > bankMoney) {
-                            interaction.editReply(res.danger("O banco não tem dinheiro o suficiente para te pagar!"))
-                            await registerLog("O banco não tem dinheiro suficiente para pagar", "error", 3, id)
-                            return
-                        }
-
-                        const now = new Date();
-
-                        const cooldownData = await prisma.cooldowns.findFirst({
-                            where: {
-                                user: id,
-                                AND: {
-                                    name: "daily"
-                                }
-                            },
-                            select: {
-                                willEndIn: true,
-                                id: true
-                            }
-                        });
-
-                        const cooldown = cooldownData?.willEndIn ?? now;
-                        const cooldownId = cooldownData?.id;
-
-                        if (cooldown > now) {
-                            interaction.editReply(res.danger(`Você poderá resgatar sua recompensa diária novamente ${time(cooldown, "R")}!`))
-                            return;
-                        } else {
-                            const willEnd = new Date(now.getTime() + 24 * 60 * 60 * 1000);
-
-                            if (cooldownId) {
-                                await prisma.cooldowns.update({
-                                    where: { id: cooldownId },
-                                    data: { willEndIn: willEnd }
-                                });
-                            } else {
-                                await prisma.cooldowns.create({
-                                    data: {
-                                        user: id,
-                                        name: "daily",
-                                        willEndIn: willEnd
-                                    }
-                                });
-                            }
-
-                        }
-
-                        const existingUser = await prisma.user.findUnique({ where: { id } });
-
-                        if (!existingUser) {
-                            await prisma.user.create({
-                                data: {
-                                    id
-                                }
-                            });
-                        }
-
-                        const newUser = await prisma.user.update({
-                            where: {
-                                id
-                            },
-                            data: {
-                                money: {
-                                    increment: dailyValue
-                                },
-                                bank: {
-                                    decrement: dailyValue
-                                }
-                            }
-                        })
-
-                        interaction.editReply(res.success(`Você resgatou **${dailyValue}** reais!`, {
-                            embeds: [
-                                createEmbed({
-                                    description: `**Saldo atual:**`,
-                                    fields: [
-                                        { name: "Dinheiro", value: "╰" + newUser?.money.toLocaleString("pt-BR", { style: "currency", currency: "BRL" }), inline: true },
-                                        { name: "Banco", value: "╰" + newUser?.bank.toLocaleString("pt-BR", { style: "currency", currency: "BRL" }), inline: true }
-                                    ],
-                                    color: "#ffffff"
-                                })
-                            ],
-                            flags: []
-                        }))
-                        return;
-                    }
-                }
+                await generalEconomyCommands(interaction)
             }
         }
     }

@@ -114,6 +114,9 @@ Prisma.NullTypes = {
  */
 
 exports.Prisma.TransactionIsolationLevel = makeStrictEnum({
+  ReadUncommitted: 'ReadUncommitted',
+  ReadCommitted: 'ReadCommitted',
+  RepeatableRead: 'RepeatableRead',
   Serializable: 'Serializable'
 });
 
@@ -130,7 +133,8 @@ exports.Prisma.LogsScalarFieldEnum = {
   message: 'message',
   timestamp: 'timestamp',
   level: 'level',
-  type: 'type'
+  type: 'type',
+  name: 'name'
 };
 
 exports.Prisma.CooldownsScalarFieldEnum = {
@@ -144,6 +148,11 @@ exports.Prisma.CooldownsScalarFieldEnum = {
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
+};
+
+exports.Prisma.QueryMode = {
+  default: 'default',
+  insensitive: 'insensitive'
 };
 
 

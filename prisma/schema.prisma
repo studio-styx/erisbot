@@ -10,30 +10,31 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
-  url = "file:../database.sqlite"
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 model user {
-  id          String    @id
-  money       Float    @default(0.0)
-  bank        Float    @default(50.0)
-  xp          Int       @default(0)
+  id    String  @id
+  money Decimal @default(0.0) @db.Decimal(12, 2)
+  bank  Decimal @default(50.0) @db.Decimal(12, 2)
+  xp    Int     @default(0)
 }
 
 model logs {
-  id          Int       @id @default(autoincrement())
-  user        String
-  message     String
-  timestamp   DateTime  @default(now())
-  level       Int       @default(0)
-  type        String    @default("info")
+  id        Int      @id @default(autoincrement())
+  user      String
+  message   String
+  timestamp DateTime @default(now())
+  level     Int      @default(0)
+  type      String   @default("info")
+  name      String   @default("action")
 }
 
 model cooldowns {
-  id          Int       @id @default(autoincrement())
-  user        String
-  name        String
-  timestamp   DateTime  @default(now())
-  willEndIn   DateTime
+  id        Int      @id @default(autoincrement())
+  user      String
+  name      String
+  timestamp DateTime @default(now())
+  willEndIn DateTime
 }

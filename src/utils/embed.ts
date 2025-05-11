@@ -17,7 +17,7 @@ export const res: Res = Object.create({}, Object.entries(settings.colors)
                 if (options && "embeds" in options && Array.isArray(options.embeds)){
                     options.embeds.unshift(embed);
                 }
-                const defaults = { fetchReply: true, ephemeral: true, embeds: [embed] };
+                const defaults = { withResponse: true, flags: ["Ephemeral"], embeds: [embed] };
                 return Object.assign(defaults, options);
             }
         }

@@ -1,5 +1,4 @@
-import { res } from "./embed.js";
-import { getCommandId } from "./getCommandId.js";
-import { loadTranslations } from "./loadTranslactions.js";
-
-export { getCommandId, loadTranslations, res }
+export * from "./getCommandId.js"
+export * from "./loadTranslactions.js"
+export * from "./embed.js"
+export * from "./emojis.js"

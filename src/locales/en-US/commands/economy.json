@@ -1,0 +1,63 @@
+{
+    "general": {
+        "balance": {
+            "description": "**Balance of:** {{mention}}",
+            "field1Title": "{{emoji}} Cash",
+            "field2Title": "{{emoji}} Bank",
+            "field1": "╰ Ꞩ {{money}}",
+            "field2": "╰ Ꞩ {{bank}}",
+            "logMessage1": "Checked balance of {{id}}",
+            "logMessage2": "Checked own balance"
+        },
+        "deposit": {
+            "noFunds": "{{emoji}} | You don't have money to deposit.",
+            "noBankFunds": "{{emoji}} | You don't have enough balance to withdraw.",
+            "success": "{{emoji}} | Deposited Ꞩ {{value}} successfully!",
+            "error": "❌ | Error processing deposit: {{error}}",
+            "embed": {
+                "description": "**Balance of:** {{mention}}",
+                "field1": "{{emoji}} Cash",
+                "field2": "{{emoji}} Bank",
+                "fieldValue": "╰ Ꞩ {{value}}"
+            },
+            "logMessage": "Deposited Ꞩ {{value}}"
+        },
+        "withdraw": {
+            "noFunds": "{{emoji}} | You don't have money to deposit.",
+            "noBankFunds": "{{emoji}} | You don't have enough balance to withdraw.",
+            "success": "{{emoji}} | Withdrawn Ꞩ {{value}} successfully!",
+            "error": "❌ | Error processing withdrawal: {{error}}",
+            "embed": {
+                "description": "**Balance of:** {{mention}}",
+                "field1": "{{emoji}} Cash",
+                "field2": "{{emoji}} Bank",
+                "fieldValue": "╰ Ꞩ {{value}}"
+            },
+            "logMessage": "Withdrawn Ꞩ {{value}}"
+        },
+        "daily": {
+            "cooldown": "{{emoji}} | You can claim your daily reward again {{time}}!",
+            "bankEmpty": "{{emoji}} | The bank doesn't have enough money to pay you!",
+            "logBankEmpty": "The bank doesn't have enough money to pay",
+            "success": "{{emoji}} | You claimed your daily reward of **{{value}}** stx!",
+            "embed": {
+                "description": "**Balance of:** {{mention}}",
+                "field1": "{{emoji}} Cash",
+                "field2": "{{emoji}} Bank",
+                "fieldValue": "╰ Ꞩ {{value}}"
+            }
+        },
+        "transfer": {
+            "cooldown": "{{emoji}} | You can't transfer money now! Try again {{time}}",
+            "botTransfer": "{{emoji}} | You can't transfer money to a bot!",
+            "selfTransfer": "{{emoji}} | You can't transfer money to yourself!",
+            "minAmount": "{{emoji}} | You can't transfer less than 15 stx!",
+            "notRegistered": "Not registered",
+            "transferMessage": "{{emoji}} | {{author}} transferred **Ꞩ {{value}}** to: {{target}}\n-# ╰ transaction id: {{transactionId}}",
+            "authorBalance": "**Balance** of {{author}}: `Ꞩ {{money}}` \n **Bank** of {{author}}: `Ꞩ {{bank}}`",
+            "targetBalance": "**Balance** of {{target}}: `Ꞩ {{money}}` \n **Bank** of {{target}}: `Ꞩ {{bank}}`",
+            "logSent": "Money transfer to {{targetId}}",
+            "logReceived": "Received money transfer from {{authorId}}"
+        }
+    }
+}

@@ -1064,28 +1064,28 @@ export namespace Prisma {
   }
 
   export type UserAvgAggregateOutputType = {
-    money: number | null
-    bank: number | null
+    money: Decimal | null
+    bank: Decimal | null
     xp: number | null
   }
 
   export type UserSumAggregateOutputType = {
-    money: number | null
-    bank: number | null
+    money: Decimal | null
+    bank: Decimal | null
     xp: number | null
   }
 
   export type UserMinAggregateOutputType = {
     id: string | null
-    money: number | null
-    bank: number | null
+    money: Decimal | null
+    bank: Decimal | null
     xp: number | null
   }
 
   export type UserMaxAggregateOutputType = {
     id: string | null
-    money: number | null
-    bank: number | null
+    money: Decimal | null
+    bank: Decimal | null
     xp: number | null
   }
 
@@ -1220,8 +1220,8 @@ export namespace Prisma {
 
   export type UserGroupByOutputType = {
     id: string
-    money: number
-    bank: number
+    money: Decimal
+    bank: Decimal
     xp: number
     _count: UserCountAggregateOutputType | null
     _avg: UserAvgAggregateOutputType | null
@@ -1279,8 +1279,8 @@ export namespace Prisma {
     objects: {}
     scalars: $Extensions.GetPayloadResult<{
       id: string
-      money: number
-      bank: number
+      money: Prisma.Decimal
+      bank: Prisma.Decimal
       xp: number
     }, ExtArgs["result"]["user"]>
     composites: {}
@@ -1706,8 +1706,8 @@ export namespace Prisma {
    */
   interface userFieldRefs {
     readonly id: FieldRef<"user", 'String'>
-    readonly money: FieldRef<"user", 'Float'>
-    readonly bank: FieldRef<"user", 'Float'>
+    readonly money: FieldRef<"user", 'Decimal'>
+    readonly bank: FieldRef<"user", 'Decimal'>
     readonly xp: FieldRef<"user", 'Int'>
   }
     
@@ -1914,6 +1914,7 @@ export namespace Prisma {
      * The data used to create many users.
      */
     data: userCreateManyInput | userCreateManyInput[]
+    skipDuplicates?: boolean
   }
 
   /**
@@ -1932,6 +1933,7 @@ export namespace Prisma {
      * The data used to create many users.
      */
     data: userCreateManyInput | userCreateManyInput[]
+    skipDuplicates?: boolean
   }
 
   /**
@@ -2102,6 +2104,7 @@ export namespace Prisma {
     timestamp: Date | null
     level: number | null
     type: string | null
+    name: string | null
   }
 
   export type LogsMaxAggregateOutputType = {
@@ -2111,6 +2114,7 @@ export namespace Prisma {
     timestamp: Date | null
     level: number | null
     type: string | null
+    name: string | null
   }
 
   export type LogsCountAggregateOutputType = {
@@ -2120,6 +2124,7 @@ export namespace Prisma {
     timestamp: number
     level: number
     type: number
+    name: number
     _all: number
   }
 
@@ -2141,6 +2146,7 @@ export namespace Prisma {
     timestamp?: true
     level?: true
     type?: true
+    name?: true
   }
 
   export type LogsMaxAggregateInputType = {
@@ -2150,6 +2156,7 @@ export namespace Prisma {
     timestamp?: true
     level?: true
     type?: true
+    name?: true
   }
 
   export type LogsCountAggregateInputType = {
@@ -2159,6 +2166,7 @@ export namespace Prisma {
     timestamp?: true
     level?: true
     type?: true
+    name?: true
     _all?: true
   }
 
@@ -2255,6 +2263,7 @@ export namespace Prisma {
     timestamp: Date
     level: number
     type: string
+    name: string
     _count: LogsCountAggregateOutputType | null
     _avg: LogsAvgAggregateOutputType | null
     _sum: LogsSumAggregateOutputType | null
@@ -2283,6 +2292,7 @@ export namespace Prisma {
     timestamp?: boolean
     level?: boolean
     type?: boolean
+    name?: boolean
   }, ExtArgs["result"]["logs"]>
 
   export type logsSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -2292,6 +2302,7 @@ export namespace Prisma {
     timestamp?: boolean
     level?: boolean
     type?: boolean
+    name?: boolean
   }, ExtArgs["result"]["logs"]>
 
   export type logsSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -2301,6 +2312,7 @@ export namespace Prisma {
     timestamp?: boolean
     level?: boolean
     type?: boolean
+    name?: boolean
   }, ExtArgs["result"]["logs"]>
 
   export type logsSelectScalar = {
@@ -2310,9 +2322,10 @@ export namespace Prisma {
     timestamp?: boolean
     level?: boolean
     type?: boolean
+    name?: boolean
   }
 
-  export type logsOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "user" | "message" | "timestamp" | "level" | "type", ExtArgs["result"]["logs"]>
+  export type logsOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "user" | "message" | "timestamp" | "level" | "type" | "name", ExtArgs["result"]["logs"]>
 
   export type $logsPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "logs"
@@ -2324,6 +2337,7 @@ export namespace Prisma {
       timestamp: Date
       level: number
       type: string
+      name: string
     }, ExtArgs["result"]["logs"]>
     composites: {}
   }
@@ -2753,6 +2767,7 @@ export namespace Prisma {
     readonly timestamp: FieldRef<"logs", 'DateTime'>
     readonly level: FieldRef<"logs", 'Int'>
     readonly type: FieldRef<"logs", 'String'>
+    readonly name: FieldRef<"logs", 'String'>
   }
     
 
@@ -2958,6 +2973,7 @@ export namespace Prisma {
      * The data used to create many logs.
      */
     data: logsCreateManyInput | logsCreateManyInput[]
+    skipDuplicates?: boolean
   }
 
   /**
@@ -2976,6 +2992,7 @@ export namespace Prisma {
      * The data used to create many logs.
      */
     data: logsCreateManyInput | logsCreateManyInput[]
+    skipDuplicates?: boolean
   }
 
   /**
@@ -3985,6 +4002,7 @@ export namespace Prisma {
      * The data used to create many cooldowns.
      */
     data: cooldownsCreateManyInput | cooldownsCreateManyInput[]
+    skipDuplicates?: boolean
   }
 
   /**
@@ -4003,6 +4021,7 @@ export namespace Prisma {
      * The data used to create many cooldowns.
      */
     data: cooldownsCreateManyInput | cooldownsCreateManyInput[]
+    skipDuplicates?: boolean
   }
 
   /**
@@ -4149,6 +4168,9 @@ export namespace Prisma {
    */
 
   export const TransactionIsolationLevel: {
+    ReadUncommitted: 'ReadUncommitted',
+    ReadCommitted: 'ReadCommitted',
+    RepeatableRead: 'RepeatableRead',
     Serializable: 'Serializable'
   };
 
@@ -4171,7 +4193,8 @@ export namespace Prisma {
     message: 'message',
     timestamp: 'timestamp',
     level: 'level',
-    type: 'type'
+    type: 'type',
+    name: 'name'
   };
 
   export type LogsScalarFieldEnum = (typeof LogsScalarFieldEnum)[keyof typeof LogsScalarFieldEnum]
@@ -4196,6 +4219,14 @@ export namespace Prisma {
   export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
 
 
+  export const QueryMode: {
+    default: 'default',
+    insensitive: 'insensitive'
+  };
+
+  export type QueryMode = (typeof QueryMode)[keyof typeof QueryMode]
+
+
   /**
    * Field references
    */
@@ -4209,9 +4240,23 @@ export namespace Prisma {
 
 
   /**
-   * Reference to a field of type 'Float'
+   * Reference to a field of type 'String[]'
    */
-  export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
+  export type ListStringFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'String[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'Decimal'
+   */
+  export type DecimalFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Decimal'>
+    
+
+
+  /**
+   * Reference to a field of type 'Decimal[]'
+   */
+  export type ListDecimalFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Decimal[]'>
     
 
 
@@ -4223,9 +4268,37 @@ export namespace Prisma {
 
 
   /**
+   * Reference to a field of type 'Int[]'
+   */
+  export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
+    
+
+
+  /**
    * Reference to a field of type 'DateTime'
    */
   export type DateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime'>
+    
+
+
+  /**
+   * Reference to a field of type 'DateTime[]'
+   */
+  export type ListDateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'Float'
+   */
+  export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
+    
+
+
+  /**
+   * Reference to a field of type 'Float[]'
+   */
+  export type ListFloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float[]'>
     
   /**
    * Deep Input Types
@@ -4237,8 +4310,8 @@ export namespace Prisma {
     OR?: userWhereInput[]
     NOT?: userWhereInput | userWhereInput[]
     id?: StringFilter<"user"> | string
-    money?: FloatFilter<"user"> | number
-    bank?: FloatFilter<"user"> | number
+    money?: DecimalFilter<"user"> | Decimal | DecimalJsLike | number | string
+    bank?: DecimalFilter<"user"> | Decimal | DecimalJsLike | number | string
     xp?: IntFilter<"user"> | number
   }
 
@@ -4254,8 +4327,8 @@ export namespace Prisma {
     AND?: userWhereInput | userWhereInput[]
     OR?: userWhereInput[]
     NOT?: userWhereInput | userWhereInput[]
-    money?: FloatFilter<"user"> | number
-    bank?: FloatFilter<"user"> | number
+    money?: DecimalFilter<"user"> | Decimal | DecimalJsLike | number | string
+    bank?: DecimalFilter<"user"> | Decimal | DecimalJsLike | number | string
     xp?: IntFilter<"user"> | number
   }, "id">
 
@@ -4276,8 +4349,8 @@ export namespace Prisma {
     OR?: userScalarWhereWithAggregatesInput[]
     NOT?: userScalarWhereWithAggregatesInput | userScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"user"> | string
-    money?: FloatWithAggregatesFilter<"user"> | number
-    bank?: FloatWithAggregatesFilter<"user"> | number
+    money?: DecimalWithAggregatesFilter<"user"> | Decimal | DecimalJsLike | number | string
+    bank?: DecimalWithAggregatesFilter<"user"> | Decimal | DecimalJsLike | number | string
     xp?: IntWithAggregatesFilter<"user"> | number
   }
 
@@ -4291,6 +4364,7 @@ export namespace Prisma {
     timestamp?: DateTimeFilter<"logs"> | Date | string
     level?: IntFilter<"logs"> | number
     type?: StringFilter<"logs"> | string
+    name?: StringFilter<"logs"> | string
   }
 
   export type logsOrderByWithRelationInput = {
@@ -4300,6 +4374,7 @@ export namespace Prisma {
     timestamp?: SortOrder
     level?: SortOrder
     type?: SortOrder
+    name?: SortOrder
   }
 
   export type logsWhereUniqueInput = Prisma.AtLeast<{
@@ -4312,6 +4387,7 @@ export namespace Prisma {
     timestamp?: DateTimeFilter<"logs"> | Date | string
     level?: IntFilter<"logs"> | number
     type?: StringFilter<"logs"> | string
+    name?: StringFilter<"logs"> | string
   }, "id">
 
   export type logsOrderByWithAggregationInput = {
@@ -4321,6 +4397,7 @@ export namespace Prisma {
     timestamp?: SortOrder
     level?: SortOrder
     type?: SortOrder
+    name?: SortOrder
     _count?: logsCountOrderByAggregateInput
     _avg?: logsAvgOrderByAggregateInput
     _max?: logsMaxOrderByAggregateInput
@@ -4338,6 +4415,7 @@ export namespace Prisma {
     timestamp?: DateTimeWithAggregatesFilter<"logs"> | Date | string
     level?: IntWithAggregatesFilter<"logs"> | number
     type?: StringWithAggregatesFilter<"logs"> | string
+    name?: StringWithAggregatesFilter<"logs"> | string
   }
 
   export type cooldownsWhereInput = {
@@ -4396,50 +4474,50 @@ export namespace Prisma {
 
   export type userCreateInput = {
     id: string
-    money?: number
-    bank?: number
+    money?: Decimal | DecimalJsLike | number | string
+    bank?: Decimal | DecimalJsLike | number | string
     xp?: number
   }
 
   export type userUncheckedCreateInput = {
     id: string
-    money?: number
-    bank?: number
+    money?: Decimal | DecimalJsLike | number | string
+    bank?: Decimal | DecimalJsLike | number | string
     xp?: number
   }
 
   export type userUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
-    money?: FloatFieldUpdateOperationsInput | number
-    bank?: FloatFieldUpdateOperationsInput | number
+    money?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    bank?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     xp?: IntFieldUpdateOperationsInput | number
   }
 
   export type userUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
-    money?: FloatFieldUpdateOperationsInput | number
-    bank?: FloatFieldUpdateOperationsInput | number
+    money?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    bank?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     xp?: IntFieldUpdateOperationsInput | number
   }
 
   export type userCreateManyInput = {
     id: string
-    money?: number
-    bank?: number
+    money?: Decimal | DecimalJsLike | number | string
+    bank?: Decimal | DecimalJsLike | number | string
     xp?: number
   }
 
   export type userUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
-    money?: FloatFieldUpdateOperationsInput | number
-    bank?: FloatFieldUpdateOperationsInput | number
+    money?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    bank?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     xp?: IntFieldUpdateOperationsInput | number
   }
 
   export type userUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
-    money?: FloatFieldUpdateOperationsInput | number
-    bank?: FloatFieldUpdateOperationsInput | number
+    money?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    bank?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     xp?: IntFieldUpdateOperationsInput | number
   }
 
@@ -4449,6 +4527,7 @@ export namespace Prisma {
     timestamp?: Date | string
     level?: number
     type?: string
+    name?: string
   }
 
   export type logsUncheckedCreateInput = {
@@ -4458,6 +4537,7 @@ export namespace Prisma {
     timestamp?: Date | string
     level?: number
     type?: string
+    name?: string
   }
 
   export type logsUpdateInput = {
@@ -4466,6 +4546,7 @@ export namespace Prisma {
     timestamp?: DateTimeFieldUpdateOperationsInput | Date | string
     level?: IntFieldUpdateOperationsInput | number
     type?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
   }
 
   export type logsUncheckedUpdateInput = {
@@ -4475,6 +4556,7 @@ export namespace Prisma {
     timestamp?: DateTimeFieldUpdateOperationsInput | Date | string
     level?: IntFieldUpdateOperationsInput | number
     type?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
   }
 
   export type logsCreateManyInput = {
@@ -4484,6 +4566,7 @@ export namespace Prisma {
     timestamp?: Date | string
     level?: number
     type?: string
+    name?: string
   }
 
   export type logsUpdateManyMutationInput = {
@@ -4492,6 +4575,7 @@ export namespace Prisma {
     timestamp?: DateTimeFieldUpdateOperationsInput | Date | string
     level?: IntFieldUpdateOperationsInput | number
     type?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
   }
 
   export type logsUncheckedUpdateManyInput = {
@@ -4501,6 +4585,7 @@ export namespace Prisma {
     timestamp?: DateTimeFieldUpdateOperationsInput | Date | string
     level?: IntFieldUpdateOperationsInput | number
     type?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
   }
 
   export type cooldownsCreateInput = {
@@ -4558,8 +4643,8 @@ export namespace Prisma {
 
   export type StringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
-    in?: string[]
-    notIn?: string[]
+    in?: string[] | ListStringFieldRefInput<$PrismaModel>
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel>
     lt?: string | StringFieldRefInput<$PrismaModel>
     lte?: string | StringFieldRefInput<$PrismaModel>
     gt?: string | StringFieldRefInput<$PrismaModel>
@@ -4567,24 +4652,25 @@ export namespace Prisma {
     contains?: string | StringFieldRefInput<$PrismaModel>
     startsWith?: string | StringFieldRefInput<$PrismaModel>
     endsWith?: string | StringFieldRefInput<$PrismaModel>
+    mode?: QueryMode
     not?: NestedStringFilter<$PrismaModel> | string
   }
 
-  export type FloatFilter<$PrismaModel = never> = {
-    equals?: number | FloatFieldRefInput<$PrismaModel>
-    in?: number[]
-    notIn?: number[]
-    lt?: number | FloatFieldRefInput<$PrismaModel>
-    lte?: number | FloatFieldRefInput<$PrismaModel>
-    gt?: number | FloatFieldRefInput<$PrismaModel>
-    gte?: number | FloatFieldRefInput<$PrismaModel>
-    not?: NestedFloatFilter<$PrismaModel> | number
+  export type DecimalFilter<$PrismaModel = never> = {
+    equals?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    in?: Decimal[] | DecimalJsLike[] | number[] | string[] | ListDecimalFieldRefInput<$PrismaModel>
+    notIn?: Decimal[] | DecimalJsLike[] | number[] | string[] | ListDecimalFieldRefInput<$PrismaModel>
+    lt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    lte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    not?: NestedDecimalFilter<$PrismaModel> | Decimal | DecimalJsLike | number | string
   }
 
   export type IntFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel>
-    in?: number[]
-    notIn?: number[]
+    in?: number[] | ListIntFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
     lt?: number | IntFieldRefInput<$PrismaModel>
     lte?: number | IntFieldRefInput<$PrismaModel>
     gt?: number | IntFieldRefInput<$PrismaModel>
@@ -4627,8 +4713,8 @@ export namespace Prisma {
 
   export type StringWithAggregatesFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
-    in?: string[]
-    notIn?: string[]
+    in?: string[] | ListStringFieldRefInput<$PrismaModel>
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel>
     lt?: string | StringFieldRefInput<$PrismaModel>
     lte?: string | StringFieldRefInput<$PrismaModel>
     gt?: string | StringFieldRefInput<$PrismaModel>
@@ -4636,32 +4722,33 @@ export namespace Prisma {
     contains?: string | StringFieldRefInput<$PrismaModel>
     startsWith?: string | StringFieldRefInput<$PrismaModel>
     endsWith?: string | StringFieldRefInput<$PrismaModel>
+    mode?: QueryMode
     not?: NestedStringWithAggregatesFilter<$PrismaModel> | string
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedStringFilter<$PrismaModel>
     _max?: NestedStringFilter<$PrismaModel>
   }
 
-  export type FloatWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: number | FloatFieldRefInput<$PrismaModel>
-    in?: number[]
-    notIn?: number[]
-    lt?: number | FloatFieldRefInput<$PrismaModel>
-    lte?: number | FloatFieldRefInput<$PrismaModel>
-    gt?: number | FloatFieldRefInput<$PrismaModel>
-    gte?: number | FloatFieldRefInput<$PrismaModel>
-    not?: NestedFloatWithAggregatesFilter<$PrismaModel> | number
+  export type DecimalWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    in?: Decimal[] | DecimalJsLike[] | number[] | string[] | ListDecimalFieldRefInput<$PrismaModel>
+    notIn?: Decimal[] | DecimalJsLike[] | number[] | string[] | ListDecimalFieldRefInput<$PrismaModel>
+    lt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    lte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    not?: NestedDecimalWithAggregatesFilter<$PrismaModel> | Decimal | DecimalJsLike | number | string
     _count?: NestedIntFilter<$PrismaModel>
-    _avg?: NestedFloatFilter<$PrismaModel>
-    _sum?: NestedFloatFilter<$PrismaModel>
-    _min?: NestedFloatFilter<$PrismaModel>
-    _max?: NestedFloatFilter<$PrismaModel>
+    _avg?: NestedDecimalFilter<$PrismaModel>
+    _sum?: NestedDecimalFilter<$PrismaModel>
+    _min?: NestedDecimalFilter<$PrismaModel>
+    _max?: NestedDecimalFilter<$PrismaModel>
   }
 
   export type IntWithAggregatesFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel>
-    in?: number[]
-    notIn?: number[]
+    in?: number[] | ListIntFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
     lt?: number | IntFieldRefInput<$PrismaModel>
     lte?: number | IntFieldRefInput<$PrismaModel>
     gt?: number | IntFieldRefInput<$PrismaModel>
@@ -4676,8 +4763,8 @@ export namespace Prisma {
 
   export type DateTimeFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    in?: Date[] | string[]
-    notIn?: Date[] | string[]
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
     lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
@@ -4692,6 +4779,7 @@ export namespace Prisma {
     timestamp?: SortOrder
     level?: SortOrder
     type?: SortOrder
+    name?: SortOrder
   }
 
   export type logsAvgOrderByAggregateInput = {
@@ -4706,6 +4794,7 @@ export namespace Prisma {
     timestamp?: SortOrder
     level?: SortOrder
     type?: SortOrder
+    name?: SortOrder
   }
 
   export type logsMinOrderByAggregateInput = {
@@ -4715,6 +4804,7 @@ export namespace Prisma {
     timestamp?: SortOrder
     level?: SortOrder
     type?: SortOrder
+    name?: SortOrder
   }
 
   export type logsSumOrderByAggregateInput = {
@@ -4724,8 +4814,8 @@ export namespace Prisma {
 
   export type DateTimeWithAggregatesFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    in?: Date[] | string[]
-    notIn?: Date[] | string[]
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
     lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
@@ -4772,12 +4862,12 @@ export namespace Prisma {
     set?: string
   }
 
-  export type FloatFieldUpdateOperationsInput = {
-    set?: number
-    increment?: number
-    decrement?: number
-    multiply?: number
-    divide?: number
+  export type DecimalFieldUpdateOperationsInput = {
+    set?: Decimal | DecimalJsLike | number | string
+    increment?: Decimal | DecimalJsLike | number | string
+    decrement?: Decimal | DecimalJsLike | number | string
+    multiply?: Decimal | DecimalJsLike | number | string
+    divide?: Decimal | DecimalJsLike | number | string
   }
 
   export type IntFieldUpdateOperationsInput = {
@@ -4794,8 +4884,8 @@ export namespace Prisma {
 
   export type NestedStringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
-    in?: string[]
-    notIn?: string[]
+    in?: string[] | ListStringFieldRefInput<$PrismaModel>
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel>
     lt?: string | StringFieldRefInput<$PrismaModel>
     lte?: string | StringFieldRefInput<$PrismaModel>
     gt?: string | StringFieldRefInput<$PrismaModel>
@@ -4806,21 +4896,21 @@ export namespace Prisma {
     not?: NestedStringFilter<$PrismaModel> | string
   }
 
-  export type NestedFloatFilter<$PrismaModel = never> = {
-    equals?: number | FloatFieldRefInput<$PrismaModel>
-    in?: number[]
-    notIn?: number[]
-    lt?: number | FloatFieldRefInput<$PrismaModel>
-    lte?: number | FloatFieldRefInput<$PrismaModel>
-    gt?: number | FloatFieldRefInput<$PrismaModel>
-    gte?: number | FloatFieldRefInput<$PrismaModel>
-    not?: NestedFloatFilter<$PrismaModel> | number
+  export type NestedDecimalFilter<$PrismaModel = never> = {
+    equals?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    in?: Decimal[] | DecimalJsLike[] | number[] | string[] | ListDecimalFieldRefInput<$PrismaModel>
+    notIn?: Decimal[] | DecimalJsLike[] | number[] | string[] | ListDecimalFieldRefInput<$PrismaModel>
+    lt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    lte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    not?: NestedDecimalFilter<$PrismaModel> | Decimal | DecimalJsLike | number | string
   }
 
   export type NestedIntFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel>
-    in?: number[]
-    notIn?: number[]
+    in?: number[] | ListIntFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
     lt?: number | IntFieldRefInput<$PrismaModel>
     lte?: number | IntFieldRefInput<$PrismaModel>
     gt?: number | IntFieldRefInput<$PrismaModel>
@@ -4830,8 +4920,8 @@ export namespace Prisma {
 
   export type NestedStringWithAggregatesFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
-    in?: string[]
-    notIn?: string[]
+    in?: string[] | ListStringFieldRefInput<$PrismaModel>
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel>
     lt?: string | StringFieldRefInput<$PrismaModel>
     lte?: string | StringFieldRefInput<$PrismaModel>
     gt?: string | StringFieldRefInput<$PrismaModel>
@@ -4845,26 +4935,26 @@ export namespace Prisma {
     _max?: NestedStringFilter<$PrismaModel>
   }
 
-  export type NestedFloatWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: number | FloatFieldRefInput<$PrismaModel>
-    in?: number[]
-    notIn?: number[]
-    lt?: number | FloatFieldRefInput<$PrismaModel>
-    lte?: number | FloatFieldRefInput<$PrismaModel>
-    gt?: number | FloatFieldRefInput<$PrismaModel>
-    gte?: number | FloatFieldRefInput<$PrismaModel>
-    not?: NestedFloatWithAggregatesFilter<$PrismaModel> | number
+  export type NestedDecimalWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    in?: Decimal[] | DecimalJsLike[] | number[] | string[] | ListDecimalFieldRefInput<$PrismaModel>
+    notIn?: Decimal[] | DecimalJsLike[] | number[] | string[] | ListDecimalFieldRefInput<$PrismaModel>
+    lt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    lte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    not?: NestedDecimalWithAggregatesFilter<$PrismaModel> | Decimal | DecimalJsLike | number | string
     _count?: NestedIntFilter<$PrismaModel>
-    _avg?: NestedFloatFilter<$PrismaModel>
-    _sum?: NestedFloatFilter<$PrismaModel>
-    _min?: NestedFloatFilter<$PrismaModel>
-    _max?: NestedFloatFilter<$PrismaModel>
+    _avg?: NestedDecimalFilter<$PrismaModel>
+    _sum?: NestedDecimalFilter<$PrismaModel>
+    _min?: NestedDecimalFilter<$PrismaModel>
+    _max?: NestedDecimalFilter<$PrismaModel>
   }
 
   export type NestedIntWithAggregatesFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel>
-    in?: number[]
-    notIn?: number[]
+    in?: number[] | ListIntFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
     lt?: number | IntFieldRefInput<$PrismaModel>
     lte?: number | IntFieldRefInput<$PrismaModel>
     gt?: number | IntFieldRefInput<$PrismaModel>
@@ -4877,10 +4967,21 @@ export namespace Prisma {
     _max?: NestedIntFilter<$PrismaModel>
   }
 
+  export type NestedFloatFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel>
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatFilter<$PrismaModel> | number
+  }
+
   export type NestedDateTimeFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    in?: Date[] | string[]
-    notIn?: Date[] | string[]
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
     lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
@@ -4890,8 +4991,8 @@ export namespace Prisma {
 
   export type NestedDateTimeWithAggregatesFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    in?: Date[] | string[]
-    notIn?: Date[] | string[]
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
     lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
