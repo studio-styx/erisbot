@@ -13,7 +13,7 @@ createResponder({
         
         const companys = await prisma.company.findMany()
 
-        interaction.update(menus.jobs.avaibleJobs(companys, pageN))
+        interaction.editReply(menus.jobs.avaibleJobs(companys, pageN))
         return;
     },
 });

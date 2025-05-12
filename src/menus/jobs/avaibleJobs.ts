@@ -2,7 +2,7 @@ import { Prisma } from "#prisma/client";
 import { settings } from "#settings";
 import { icon, res } from "#utils";
 import { brBuilder, createContainer, createRow, createSection, createSeparator } from "@magicyan/discord";
-import { ButtonBuilder, ButtonStyle, type InteractionReplyOptions } from "discord.js";
+import { ButtonBuilder, ButtonStyle, StringSelectMenuBuilder, type InteractionReplyOptions } from "discord.js";
 
 interface Company {
     description: string | null;
@@ -36,11 +36,11 @@ export function avaibleJobsMenu<R>(companys: Company[], page: number): R {
         components.push(
             createSection({
                 content: brBuilder(
-                    `${index + 1}. **${job.name}**`,
-                    `**Dificuldade:** ${job.difficulty}`,
-                    `**Descrição:** ${job.description || "\`sem descrição\`"}`,
-                    `**Xp necessário:** ${job.experience}`,
-                    `**Salário:** ${job.wage}`,
+                    `${startIndex + index + 1}. **${job.name}**`,
+                    `> **Dificuldade:** ${job.difficulty}`,
+                    `> **Descrição:** ${job.description || "\`sem descrição\`"}`,
+                    `> **Xp necessário:** ${job.experience}`,
+                    `> **Salário:** Ꞩ ${job.wage}`,
                 ),
                 button: new ButtonBuilder({
                     customId: `companys/interview/${job.id}`,
@@ -56,7 +56,7 @@ export function avaibleJobsMenu<R>(companys: Company[], page: number): R {
     });
     
 
-    const buttons = [
+    const rows = [
         createRow(
             new ButtonBuilder({
                 customId: `companys/jobs/${page - 1}`,
@@ -80,6 +80,6 @@ export function avaibleJobsMenu<R>(companys: Company[], page: number): R {
 
     return ({
         flags: ["IsComponentsV2"],
-        components: [container, ...buttons]
+        components: [container, ...rows]
     } satisfies InteractionReplyOptions) as R;
 }

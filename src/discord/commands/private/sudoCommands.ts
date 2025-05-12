@@ -46,55 +46,48 @@ createCommand({
                 await prisma.company.createMany({
                     data: [
                         {
-                            name: 'TechNova',
-                            description: 'Empresa de tecnologia de ponta focada em IA.',
-                            difficulty: 3,
-                            experience: 150,
-                            wage: 350.00,
-                            expectations: [
-                                { skill: 'Resolução de Problemas', level: 4 },
-                                { skill: 'Conhecimento em IA', level: 5 }
-                            ]
+                            name: "Entregas Rápidas",
+                            description: "Empresa de entregas leves e locais.",
+                            difficulty: 1,
+                            experience: 0,
+                            wage: 80.00,
+                            expectations: ["Pontualidade", "Agilidade"]
                         },
                         {
-                            name: 'AgroMax',
-                            description: 'Cooperativa agrícola de grande porte.',
+                            name: "Café do Bairro",
+                            description: "Atendimento em balcão e serviço de mesa.",
+                            difficulty: 1,
+                            experience: 0,
+                            wage: 75.00,
+                            expectations: ["Simpatia", "Boa comunicação"]
+                        },
+                        {
+                            name: "Tecno Office",
+                            description: "Serviços administrativos em empresa de TI.",
                             difficulty: 2,
-                            experience: 80,
+                            experience: 25,
+                            wage: 150.00,
+                            expectations: ["Organização", "Conhecimento básico em informática"]
+                        },
+                        {
+                            name: "Auto Elétrica Souza",
+                            description: "Ajudante para serviços de manutenção elétrica.",
+                            difficulty: 3,
+                            experience: 30,
                             wage: 180.00,
-                            expectations: [
-                                { skill: 'Trabalho em equipe', level: 3 },
-                                { skill: 'Pontualidade', level: 2 }
-                            ]
+                            expectations: ["Responsabilidade", "Conhecimento técnico"]
                         },
                         {
-                            name: 'Designo',
-                            description: 'Agência de design gráfico e branding.',
-                            difficulty: 4,
-                            experience: 200,
-                            wage: 270.00,
-                            expectations: [
-                                { skill: 'Criatividade', level: 5 },
-                                { skill: 'Domínio de ferramentas Adobe', level: 4 }
-                            ]
-                        },
-                        {
-                            name: 'SafeBank',
-                            description: 'Banco digital focado em segurança e inovação.',
-                            difficulty: 5,
-                            experience: 300,
-                            wage: 420.00,
-                            expectations: [
-                                { skill: 'Segurança da informação', level: 5 },
-                                { skill: 'Atenção a detalhes', level: 4 }
-                            ]
+                            name: "Agência Criativa Pixel",
+                            description: "Criação de posts para redes sociais.",
+                            difficulty: 2,
+                            experience: 40,
+                            wage: 200.00,
+                            expectations: ["Criatividade", "Conhecimento em design"]
                         }
-                    ].map(company => ({
-                        ...company,
-                        expectations: company.expectations as any
-                    }))
+                    ]
                 });
-                
+
                 interaction.editReply(res.success("Empresas de teste adicionadas com sucesso."))
                 return;
             }
