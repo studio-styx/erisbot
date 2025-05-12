@@ -124,12 +124,13 @@ exports.Prisma.UserScalarFieldEnum = {
   id: 'id',
   money: 'money',
   bank: 'bank',
-  xp: 'xp'
+  xp: 'xp',
+  companyId: 'companyId'
 };
 
-exports.Prisma.LogsScalarFieldEnum = {
+exports.Prisma.LogScalarFieldEnum = {
   id: 'id',
-  user: 'user',
+  userId: 'userId',
   message: 'message',
   timestamp: 'timestamp',
   level: 'level',
@@ -137,12 +138,22 @@ exports.Prisma.LogsScalarFieldEnum = {
   name: 'name'
 };
 
-exports.Prisma.CooldownsScalarFieldEnum = {
+exports.Prisma.CooldownScalarFieldEnum = {
   id: 'id',
-  user: 'user',
+  userId: 'userId',
   name: 'name',
   timestamp: 'timestamp',
   willEndIn: 'willEndIn'
+};
+
+exports.Prisma.CompanyScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  description: 'description',
+  difficulty: 'difficulty',
+  experience: 'experience',
+  wage: 'wage',
+  expectations: 'expectations'
 };
 
 exports.Prisma.SortOrder = {
@@ -150,16 +161,32 @@ exports.Prisma.SortOrder = {
   desc: 'desc'
 };
 
+exports.Prisma.JsonNullValueInput = {
+  JsonNull: Prisma.JsonNull
+};
+
 exports.Prisma.QueryMode = {
   default: 'default',
   insensitive: 'insensitive'
 };
 
+exports.Prisma.NullsOrder = {
+  first: 'first',
+  last: 'last'
+};
+
+exports.Prisma.JsonNullValueFilter = {
+  DbNull: Prisma.DbNull,
+  JsonNull: Prisma.JsonNull,
+  AnyNull: Prisma.AnyNull
+};
+
 
 exports.Prisma.ModelName = {
-  user: 'user',
-  logs: 'logs',
-  cooldowns: 'cooldowns'
+  User: 'User',
+  Log: 'Log',
+  Cooldown: 'Cooldown',
+  Company: 'Company'
 };
 
 /**

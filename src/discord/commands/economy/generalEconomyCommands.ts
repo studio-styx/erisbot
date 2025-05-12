@@ -1,5 +1,6 @@
 import { Store } from "#base";
 import { registerLog } from "#functions";
+import { menus } from "#menus";
 import { Prisma, PrismaClient } from "#prisma/client";
 import { settings } from "#settings";
 import { icon, res } from "#utils";
@@ -169,8 +170,8 @@ export async function generalEconomyCommands(interaction: ChatInputCommandIntera
         
             const now = new Date();
         
-            const cooldownData = await prisma.cooldowns.findFirst({
-                where: { user: id, name: "daily" },
+            const cooldownData = await prisma.cooldown.findFirst({
+                where: { userId: id, name: "daily" },
                 select: { willEndIn: true, id: true }
             });
         
@@ -198,13 +199,13 @@ export async function generalEconomyCommands(interaction: ChatInputCommandIntera
             // Define novo cooldown
             const willEnd = new Date(now.getTime() + 24 * 60 * 60 * 1000);
             if (cooldownData?.id) {
-                await prisma.cooldowns.update({
+                await prisma.cooldown.update({
                     where: { id: cooldownData.id },
                     data: { willEndIn: willEnd }
                 });
             } else {
-                await prisma.cooldowns.create({
-                    data: { user: id, name: "daily", willEndIn: willEnd }
+                await prisma.cooldown.create({
+                    data: { userId: id, name: "daily", willEndIn: willEnd }
                 });
             }
         
@@ -378,6 +379,12 @@ export async function generalEconomyCommands(interaction: ChatInputCommandIntera
             }
 
             interaction.editReply({ embeds: [embed] });
+            return;
+        }
+        case "jobs": {
+            const companys = await prisma.company.findMany();
+
+            interaction.reply(menus.jobs.avaibleJobs(companys, 0))
             return;
         }
     }

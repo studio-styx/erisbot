@@ -4,12 +4,12 @@ const prisma = new PrismaClient()
 
 export async function registerLog(message: string, type: "error" | "warn" | "info" | "debug", level: number = 0, user: string, name: string = "action") {
     if (process.env.NODE_ENV === "development") return;
-    const result = await prisma.logs.create({
+    const result = await prisma.log.create({
         data: {
             message,
             type,
             level,
-            user,
+            userId: user,
             name,
         }
     })

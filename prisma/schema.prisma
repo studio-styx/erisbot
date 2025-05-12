@@ -14,16 +14,21 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model user {
-  id    String  @id
-  money Decimal @default(0.0) @db.Decimal(12, 2)
-  bank  Decimal @default(50.0) @db.Decimal(12, 2)
-  xp    Int     @default(0)
+model User {
+  id         String   @id
+  money      Decimal  @default(0.0) @db.Decimal(12, 2)
+  bank       Decimal  @default(50.0) @db.Decimal(12, 2)
+  xp         Int      @default(0)
+  company    Company? @relation(fields: [companyId], references: [id], onDelete: SetNull)
+  companyId  Int?
+  logs       Log[]
+  cooldowns  Cooldown[]
 }
 
-model logs {
+model Log {
   id        Int      @id @default(autoincrement())
-  user      String
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
   message   String
   timestamp DateTime @default(now())
   level     Int      @default(0)
@@ -31,10 +36,22 @@ model logs {
   name      String   @default("action")
 }
 
-model cooldowns {
+model Cooldown {
   id        Int      @id @default(autoincrement())
-  user      String
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
   name      String
   timestamp DateTime @default(now())
   willEndIn DateTime
+}
+
+model Company {
+  id           Int     @id @default(autoincrement())
+  name         String
+  description  String?
+  difficulty   Int     @default(1)
+  experience   Int     @default(0)
+  wage         Decimal @default(100.0) @db.Decimal(12, 2)
+  expectations Json
+  workers      User[]
 }

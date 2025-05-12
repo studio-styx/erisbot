@@ -233,6 +233,21 @@ createCommand({
                         "en-US": "check the shop",
                         "es-ES": "ver la tienda",
                     }
+                },
+                {
+                    name: "jobs",
+                    description: "search for a job",
+                    type: ApplicationCommandOptionType.Subcommand,
+                    nameLocalizations: {
+                        "pt-BR": "empregos",
+                        "en-US": "jobs",
+                        "es-ES": "emplegos",
+                    },
+                    descriptionLocalizations: {
+                        "pt-BR": "procurar um emprego",
+                        "en-US": "search for a job",
+                        "es-ES": "buscar un empleo",
+                    }
                 }
             ]
         },

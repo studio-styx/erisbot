@@ -3,59 +3,7 @@ import { PrismaClient } from "#prisma/client";
 import { res } from "#utils";
 import { ApplicationCommandOptionType, ApplicationCommandType } from "discord.js";
 
-// Inicializa o Prisma Client
 const prisma = new PrismaClient();
-
-// Estrutura de cache
-interface CacheEntry {
-    data: any;
-    timestamp: number;
-}
-const cache = new Map<string, CacheEntry>();
-const CACHE_DURATION = 40_000; // 40 segundos em milissegundos
-
-// Função para obter as tabelas do esquema do Prisma
-async function getTables(): Promise<string[]> {
-    const tables = Object.keys(prisma).filter(
-        (key) => !key.startsWith("_") && !key.startsWith("$")
-    );
-    return tables;
-}
-
-// Função para buscar dados de uma tabela específica
-async function getTableData(table: string): Promise<any[]> {
-    try {
-        const data = await (prisma as any)[table].findMany();
-        return data;
-    } catch (error) {
-        console.error(`Erro ao buscar dados da tabela ${table}:`, error);
-        return [];
-    }
-}
-
-// Função para obter dados do cache ou do banco
-async function getCachedData(key: string, fetchFn: () => Promise<any>): Promise<any> {
-    const cached = cache.get(key);
-    const now = Date.now();
-
-    if (cached && now - cached.timestamp < CACHE_DURATION) {
-        return cached.data;
-    }
-
-    const data = await fetchFn();
-    cache.set(key, { data, timestamp: now });
-    return data;
-}
-
-// Limpeza periódica do cache
-setInterval(() => {
-    const now = Date.now();
-    for (const [key, entry] of cache) {
-        if (now - entry.timestamp >= CACHE_DURATION) {
-            cache.delete(key);
-        }
-    }
-}, 60_000); // Executa a cada 60 segundos
 
 createCommand({
     name: "sudo",
@@ -75,6 +23,11 @@ createCommand({
                 }
             ],
         },
+        {
+            name: "test",
+            description: "test function",
+            type: ApplicationCommandOptionType.Subcommand,
+        }
     ],
     async run(interaction) {
         if (interaction.user.id !== "1171963692984844401") {
@@ -85,7 +38,65 @@ createCommand({
 
         switch (subcommand) {
             case "database": {
-
+                interaction.reply(res.danger("Not happening"))
+                return;
+            }
+            case "test": {
+                await interaction.deferReply({ flags })
+                await prisma.company.createMany({
+                    data: [
+                        {
+                            name: 'TechNova',
+                            description: 'Empresa de tecnologia de ponta focada em IA.',
+                            difficulty: 3,
+                            experience: 150,
+                            wage: 350.00,
+                            expectations: [
+                                { skill: 'Resolução de Problemas', level: 4 },
+                                { skill: 'Conhecimento em IA', level: 5 }
+                            ]
+                        },
+                        {
+                            name: 'AgroMax',
+                            description: 'Cooperativa agrícola de grande porte.',
+                            difficulty: 2,
+                            experience: 80,
+                            wage: 180.00,
+                            expectations: [
+                                { skill: 'Trabalho em equipe', level: 3 },
+                                { skill: 'Pontualidade', level: 2 }
+                            ]
+                        },
+                        {
+                            name: 'Designo',
+                            description: 'Agência de design gráfico e branding.',
+                            difficulty: 4,
+                            experience: 200,
+                            wage: 270.00,
+                            expectations: [
+                                { skill: 'Criatividade', level: 5 },
+                                { skill: 'Domínio de ferramentas Adobe', level: 4 }
+                            ]
+                        },
+                        {
+                            name: 'SafeBank',
+                            description: 'Banco digital focado em segurança e inovação.',
+                            difficulty: 5,
+                            experience: 300,
+                            wage: 420.00,
+                            expectations: [
+                                { skill: 'Segurança da informação', level: 5 },
+                                { skill: 'Atenção a detalhes', level: 4 }
+                            ]
+                        }
+                    ].map(company => ({
+                        ...company,
+                        expectations: company.expectations as any
+                    }))
+                });
+                
+                interaction.editReply(res.success("Empresas de teste adicionadas com sucesso."))
+                return;
             }
         }
     },
