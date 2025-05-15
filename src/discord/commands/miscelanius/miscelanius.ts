@@ -81,9 +81,9 @@ createCommand({
                 return;
             }    
             case "cooldowns": {
-                const userCooldowns = await prisma.cooldowns.findMany({
+                const userCooldowns = await prisma.cooldown.findMany({
                     where: {
-                        user: interaction.user.id
+                        userId: interaction.user.id
                     }
                 })
 
