@@ -61,14 +61,15 @@ createResponder({
                 ?.map(({ question, answer }) => `Pergunta: ${question}\nResposta: ${answer || "(sem resposta)"}`)
                 .join("\n\n") ?? "Não foram encontradas perguntas e respostas.";
 
+                
 
             interface GeminiResponse {
                 contracted: boolean;
                 reason: string;
             }
-
+            
             const company = await prisma.company.findUnique({ where: { id: Number(companyId) } });
-
+            
             if (!company) {
                 interaction.update(resv2.danger(`${icon.error} | oh oh, por algum motivo não foi possivel encontrar a empresa ${companyId}`))
                 await registerLog(
@@ -80,6 +81,26 @@ createResponder({
                 )
                 return;
             }
+            const companyExpectations = (company?.expectations as string[] | { level: number, skill: string }[])
+
+            let companyExpectationsFormatted: string;
+
+            if (Array.isArray(companyExpectations)) {
+                if (typeof companyExpectations[0] === "string") {
+                    companyExpectationsFormatted = companyExpectations.join(", ").replace(/, ([^,]*)$/, " e $1");
+                } else {
+                    companyExpectationsFormatted = companyExpectations
+                        .map((expectation) => 
+                            typeof expectation === "object" && "skill" in expectation 
+                                ? `habilidade: "${expectation.skill}" level: ${expectation.level}` 
+                                : "Expectativa inválida"
+                        )
+                        .join(", ");
+                }
+            } else {
+                companyExpectationsFormatted = "Expectativas da empresa não foram definidas corretamente.";
+            }
+            
 
             const prompt = `
                 Você é um entrevistador de IA. Sua tarefa é avaliar o candidato "${interaction.user.displayName}" para uma vaga na empresa "${company.name}".
@@ -88,9 +109,10 @@ createResponder({
                 ${company.description}
 
                 A empresa espera que seus funcionários tenham os seguintes valores e qualidades:
-                ${company.expectations}
+                ${companyExpectationsFormatted}
 
                 A dificuldade da entrevista é ${company.difficulty}/10 (sendo 1 muito fácil e 10 extremamente difícil).
+                dificuldade 3 pra baixo não requer muito profissionalismo nas respostas, apenas de 4 para cima
 
                 Sua função é analisar as respostas do candidato com base nas perguntas feitas. Avalie se:
 
@@ -122,6 +144,7 @@ createResponder({
 
             try {
                 const result = await generateGeminiContent(prompt);
+                console.log(prompt)
                 console.log(result)
                 if (!result.success || !result.text) {
                     interaction.editReply(resv2.danger(`${icon.error} | um erro ocorreu ao gerar sua requisição!`));
@@ -157,6 +180,14 @@ createResponder({
                 }
 
                 interaction.editReply(resv2.success(`${icon.success} | você foi contratado com sucesso! detalhes: \n**${geminiResponse.reason}**`))
+                await prisma.user.update({
+                    where: {
+                        id: userid
+                    },
+                    data: {
+                        companyId: company.id
+                    }
+                })
                 await registerLog(
                     `Usuário foi contratado com sucesso para trabalhar na empresa ${company.name}`,
                     "info",

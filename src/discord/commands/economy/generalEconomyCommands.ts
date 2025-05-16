@@ -387,5 +387,62 @@ export async function generalEconomyCommands(interaction: ChatInputCommandIntera
             interaction.reply(menus.jobs.avaibleJobs(companys, 0))
             return;
         }
+        case "work": {
+            await interaction.deferReply();
+
+            try {
+                const user = await prisma.user.findUnique({
+                    where: {
+                        id: interaction.user.id
+                    }
+                })
+
+                if (!user || !user.companyId) {
+                    interaction.editReply(res.danger(`${icon.denied} | Você não tem um emprego! use \`/economy general jobs\` para pegar um emprego`))
+                    return;
+                }
+
+                const now = new Date();
+
+                const cooldown = await prisma.cooldown.findFirst({
+                    where: {
+                        userId: interaction.user.id,
+                        AND: {
+                            name: "work"
+                        }
+                    },
+                    select: {
+                        willEndIn: true
+                    }
+                });
+
+                if (cooldown && cooldown.willEndIn > now) {
+                    interaction.editReply(res.danger(`${icon.denied} | Você não pode trabalhar, você poderá trabalhar ${time(cooldown.willEndIn, "R") }`))
+                    return;
+                }
+
+                const company = await prisma.company.findUnique({
+                    where: {
+                        id: user.companyId
+                    }
+                })
+
+                if (!company) {
+                    interaction.editReply(res.danger(`${icon.error} | não foi possivel achar a empresa ${user.companyId} aonde trabalha!`));
+                    await registerLog(
+                        `Erro grave, empresa ${user.companyId} não encontrada!`,
+                        "error",
+                        999,
+                        interaction.user.id,
+                        "company"
+                    )
+                    return;
+                }
+            } catch (error) {
+                console.error(error);
+                interaction.editReply(res.danger(`${icon.error} | Um erro inesperado aconteceu!`))
+                return;
+            }
+        }
     }
 }

@@ -1,10 +1,7 @@
 import { createCommand } from "#base";
 import { ApplicationCommandType, ApplicationCommandOptionType } from "discord.js";
-import { PrismaClient } from "#prisma";
 import i18next from "i18next";
 import { generalEconomyCommands } from "./generalEconomyCommands.js";
-
-const prisma = new PrismaClient();
 
 createCommand({
     name: "economy",
