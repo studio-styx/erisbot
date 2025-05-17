@@ -39,6 +39,7 @@
             "cooldown": "{{emoji}} | Você poderá resgatar sua recompensa diária novamente {{time}}!",
             "bankEmpty": "{{emoji}} | O banco não tem dinheiro o suficiente para te pagar!",
             "logBankEmpty": "O banco não tem dinheiro suficiente para pagar",
+            "logMessage": "Recebeu o daily diário de {{value}} stx!",
             "success": "{{emoji}} | Você resgatou sua recompensa diária de **{{value}}** stx!",
             "embed": {
                 "description": "**Saldo de:** {{mention}}",

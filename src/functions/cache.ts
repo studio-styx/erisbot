@@ -26,3 +26,17 @@ export function updateInterviewAnswer(userId: string, companyId: string, page: n
 export function clearInterviewQuestions(userId: string, companyId: string): void {
   cache.del(`${userId}:${companyId}`);
 }
+
+// geral
+
+export function getCache(name: string): any {
+  return cache.get(name)
+}
+
+export function setCache(name: string, value: any): void {
+  cache.set(name, value);
+}
+
+export function clearCache(name: string): void {
+  cache.del(name);
+}

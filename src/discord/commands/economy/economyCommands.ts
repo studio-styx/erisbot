@@ -2,6 +2,9 @@ import { createCommand } from "#base";
 import { ApplicationCommandType, ApplicationCommandOptionType } from "discord.js";
 import i18next from "i18next";
 import { generalEconomyCommands } from "./generalEconomyCommands.js";
+import { PrismaClient } from "#prisma/client";
+
+const prisma = new PrismaClient();
 
 createCommand({
     name: "economy",
@@ -386,6 +389,13 @@ createCommand({
     async run(interaction) {
         const { options } = interaction;
         const subCommandGroup = options.getSubcommandGroup()
+
+        await prisma.user.upsert({
+            where: { id: interaction.user.id },
+            update: {},
+            create: { id: interaction.user.id }
+        })
+
         await i18next.changeLanguage(interaction.locale);
 
         switch (subCommandGroup) {

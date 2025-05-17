@@ -39,6 +39,7 @@
             "cooldown": "{{emoji}} | ¡Podrás reclamar tu recompensa diaria nuevamente {{time}}!",
             "bankEmpty": "{{emoji}} | ¡El banco no tiene suficiente dinero para pagarte!",
             "logBankEmpty": "El banco no tiene suficiente dinero para pagar",
+            "logMessage": "Reclamaste tu recompensa diaria de **{{value}}** stx",
             "success": "{{emoji}} | ¡Reclamaste tu recompensa diaria de **{{value}}** stx!",
             "embed": {
                 "description": "**Saldo de:** {{mention}}",

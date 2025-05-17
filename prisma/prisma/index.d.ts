@@ -6092,6 +6092,7 @@ export namespace Prisma {
 
   export type CooldownWhereUniqueInput = Prisma.AtLeast<{
     id?: number
+    userId_name?: CooldownUserIdNameCompoundUniqueInput
     AND?: CooldownWhereInput | CooldownWhereInput[]
     OR?: CooldownWhereInput[]
     NOT?: CooldownWhereInput | CooldownWhereInput[]
@@ -6100,7 +6101,7 @@ export namespace Prisma {
     timestamp?: DateTimeFilter<"Cooldown"> | Date | string
     willEndIn?: DateTimeFilter<"Cooldown"> | Date | string
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
-  }, "id">
+  }, "id" | "userId_name">
 
   export type CooldownOrderByWithAggregationInput = {
     id?: SortOrder
@@ -6695,6 +6696,11 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedDateTimeFilter<$PrismaModel>
     _max?: NestedDateTimeFilter<$PrismaModel>
+  }
+
+  export type CooldownUserIdNameCompoundUniqueInput = {
+    userId: string
+    name: string
   }
 
   export type CooldownCountOrderByAggregateInput = {

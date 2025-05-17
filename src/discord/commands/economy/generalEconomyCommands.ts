@@ -1,11 +1,12 @@
 import { Store } from "#base";
-import { registerLog } from "#functions";
+import { registerLog, setCache } from "#functions";
+import { generateGeminiContent } from "#logic";
 import { menus } from "#menus";
 import { Prisma, PrismaClient } from "#prisma/client";
 import { settings } from "#settings";
-import { icon, res } from "#utils";
-import { createContainer, createEmbed, createSeparator } from "@magicyan/discord";
-import { ChatInputCommandInteraction, time, userMention } from "discord.js";
+import { icon, res, resv2 } from "#utils";
+import { brBuilder, createContainer, createEmbed, createRow, createSeparator, createTextDisplay } from "@magicyan/discord";
+import { ButtonBuilder, ButtonStyle, ChatInputCommandInteraction, time, userMention } from "discord.js";
 import { readFile } from "fs/promises";
 import i18next from "i18next";
 import path from "path";
@@ -147,7 +148,7 @@ export async function generalEconomyCommands(interaction: ChatInputCommandIntera
                             })
                         ]
                     }
-                ));
+                    ));
 
                 await registerLog(
                     t("logMessage", { value }),
@@ -167,35 +168,35 @@ export async function generalEconomyCommands(interaction: ChatInputCommandIntera
         case "daily": {
             const id = interaction.user.id;
             await interaction.deferReply();
-        
+
             const now = new Date();
-        
+
             const cooldownData = await prisma.cooldown.findFirst({
                 where: { userId: id, name: "daily" },
                 select: { willEndIn: true, id: true }
             });
-        
+
             const t = (key: string, options?: any) => i18next.t(`commands/economy:general.daily.${key}`, options) as string;
-        
+
             if (cooldownData?.willEndIn && cooldownData.willEndIn > now) {
-                interaction.editReply(res.danger(t("cooldown", { 
-                    emoji: icon.denied, 
-                    time: time(cooldownData.willEndIn, "R") 
+                interaction.editReply(res.danger(t("cooldown", {
+                    emoji: icon.denied,
+                    time: time(cooldownData.willEndIn, "R")
                 })));
                 return;
             }
-        
+
             const bankFilePath = path.join(__dirname, "../../../jsons/bank.json");
             const { bankMoney }: { bankMoney: number } = JSON.parse(await readFile(bankFilePath, "utf-8"));
-        
+
             const dailyValue = Math.floor(Math.random() * 101);
-        
+
             if (dailyValue > bankMoney) {
                 interaction.editReply(res.danger(t("bankEmpty", { emoji: icon.denied })));
                 await registerLog(t("logBankEmpty"), "error", 3, id);
                 return;
             }
-        
+
             // Define novo cooldown
             const willEnd = new Date(now.getTime() + 24 * 60 * 60 * 1000);
             if (cooldownData?.id) {
@@ -208,7 +209,7 @@ export async function generalEconomyCommands(interaction: ChatInputCommandIntera
                     data: { userId: id, name: "daily", willEndIn: willEnd }
                 });
             }
-        
+
             // Cria usuário se não existir e atualiza dinheiro
             const newUser = await prisma.user.upsert({
                 where: { id },
@@ -217,24 +218,24 @@ export async function generalEconomyCommands(interaction: ChatInputCommandIntera
                     money: { increment: new Prisma.Decimal(dailyValue) }
                 }
             });
-        
-            interaction.editReply(res.success(t("success", { 
-                emoji: icon.success, 
-                value: dailyValue 
+
+            interaction.editReply(res.success(t("success", {
+                emoji: icon.success,
+                value: dailyValue
             }), {
                 embeds: [
                     createEmbed({
                         description: t("embed.description", { mention: userMention(id) }),
                         fields: [
-                            { 
-                                name: t("embed.field1", { emoji: icon.money }), 
-                                value: t("embed.fieldValue", { value: newUser.money }), 
-                                inline: true 
+                            {
+                                name: t("embed.field1", { emoji: icon.money }),
+                                value: t("embed.fieldValue", { value: newUser.money }),
+                                inline: true
                             },
-                            { 
-                                name: t("embed.field2", { emoji: icon.bank }), 
-                                value: t("embed.fieldValue", { value: newUser.bank }), 
-                                inline: true 
+                            {
+                                name: t("embed.field2", { emoji: icon.bank }),
+                                value: t("embed.fieldValue", { value: newUser.bank }),
+                                inline: true
                             }
                         ],
                         color: "#ffffff"
@@ -242,52 +243,59 @@ export async function generalEconomyCommands(interaction: ChatInputCommandIntera
                 ],
                 flags: []
             }));
+
+            await registerLog(
+                t("logMessage", { value: dailyValue }),
+                "info",
+                4,
+                id
+            );
             return;
         }
         case "transfer": {
             const inCooldown = cooldowns.get(interaction.user.id);
             const t = (key: string, options?: any) => i18next.t(`commands/economy:general.transfer.${key}`, options) as string;
-        
+
             if (inCooldown && inCooldown > new Date()) {
-                interaction.reply(res.danger(t("cooldown", { 
+                interaction.reply(res.danger(t("cooldown", {
                     emoji: icon.denied,
-                    time: time(inCooldown, "R") 
+                    time: time(inCooldown, "R")
                 })));
                 return;
             }
-        
+
             const user = options.getUser("user", true);
             let value = options.getNumber("amount", true);
-        
+
             if (user.bot) {
                 interaction.reply(res.danger(t("botTransfer", { emoji: icon.denied })));
                 return;
             }
-        
+
             const authorId = interaction.user.id;
             const targetId = user.id;
-        
+
             await interaction.deferReply();
-        
+
             const author = await prisma.user.findUnique({ where: { id: authorId } })
                 || await prisma.user.create({ data: { id: authorId } });
             const target = await prisma.user.findUnique({ where: { id: targetId } })
                 || await prisma.user.create({ data: { id: targetId } });
-        
+
             if (authorId === targetId) {
                 interaction.editReply(res.danger(t("selfTransfer", { emoji: icon.denied })));
                 return;
             }
-            
+
             if (value > author.money.toNumber()) {
                 value = author.money.toNumber();
             }
-            
+
             if (value < 15) {
                 interaction.editReply(res.danger(t("minAmount", { emoji: icon.denied })));
                 return;
             }
-        
+
             const newAuthor = await prisma.user.update({
                 where: { id: authorId },
                 data: {
@@ -300,14 +308,14 @@ export async function generalEconomyCommands(interaction: ChatInputCommandIntera
                     money: { increment: new Prisma.Decimal(value) }
                 }
             });
-        
+
             const transfer = await registerLog(t("logSent", { targetId }), "info", 3, authorId, "transaction");
             await registerLog(t("logReceived", { authorId }), "info", 3, targetId, "transaction");
-        
+
             const container = createContainer({
                 accentColor: settings.colors.success,
                 components: [
-                    t("transferMessage", { 
+                    t("transferMessage", {
                         emoji: icon.success,
                         author: userMention(authorId),
                         value,
@@ -315,23 +323,23 @@ export async function generalEconomyCommands(interaction: ChatInputCommandIntera
                         transactionId: transfer?.id || t("notRegistered")
                     }),
                     createSeparator(),
-                    t("authorBalance", { 
+                    t("authorBalance", {
                         author: userMention(authorId),
                         money: newAuthor.money,
                         bank: newAuthor.bank
                     }),
                     createSeparator(),
-                    t("targetBalance", { 
+                    t("targetBalance", {
                         target: userMention(targetId),
                         money: newTarget.money,
                         bank: newTarget.bank
                     })
                 ]
             });
-        
+
             interaction.editReply({ flags: ["IsComponentsV2"], components: [container] });
             cooldowns.set(interaction.user.id, new Date(Date.now() + 60 * 1000), { time: 60 * 1000 });
-        
+
             return;
         }
         case "leaderboard": {
@@ -394,6 +402,10 @@ export async function generalEconomyCommands(interaction: ChatInputCommandIntera
                 const user = await prisma.user.findUnique({
                     where: {
                         id: interaction.user.id
+                    },
+                    include: {
+                        company: true,
+                        cooldowns: true
                     }
                 })
 
@@ -404,40 +416,162 @@ export async function generalEconomyCommands(interaction: ChatInputCommandIntera
 
                 const now = new Date();
 
-                const cooldown = await prisma.cooldown.findFirst({
+                const cooldown = user.cooldowns.find(cooldown => cooldown.name === "work");
+
+                if (cooldown && cooldown.willEndIn > now) {
+                    interaction.editReply(res.danger(`${icon.denied} | Você não pode trabalhar, você poderá trabalhar ${time(cooldown.willEndIn, "R")}`))
+                    return;
+                }
+
+                if (!user.company) {
+                    interaction.editReply(res.danger(`${icon.denied} | você não trabalha em nenhuma empresa! use \`/economy general jobs\` para pegar um emprego`));
+                    return;
+                }
+
+                const { company } = user
+
+                const percentage = 15 + (user.company.difficulty - 1) * 5; // Ajuste para testes: 15
+
+                if (Math.random() * 100 < percentage) {
+                    await interaction.editReply(resv2.warning(`${icon.waiting_white} aguarde...`));
+
+                    const companyExpectations = (company?.expectations as string[] | { level: number, skill: string }[]);
+                    let companyExpectationsFormatted: string;
+
+                    if (Array.isArray(companyExpectations)) {
+                        if (typeof companyExpectations[0] === "string") {
+                            companyExpectationsFormatted = companyExpectations.join(", ").replace(/, ([^,]*)$/, " e $1");
+                        } else {
+                            companyExpectationsFormatted = companyExpectations
+                                .map((expectation) =>
+                                    typeof expectation === "object" && "skill" in expectation
+                                        ? `habilidade: "${expectation.skill}" level: ${expectation.level}`
+                                        : "Expectativa inválida"
+                                )
+                                .join(", ");
+                        }
+                    } else {
+                        companyExpectationsFormatted = "Expectativas da empresa não foram definidas corretamente.";
+                    }
+
+                    const prompt = `
+                        O usuário ${interaction.user.displayName} está trabalhando em sua empresa. Crie um desafio realista com base nas seguintes informações:
+
+                            Nome da empresa: ${company.name}
+                            Descrição: ${company.description || "Nenhuma descrição definida"}
+                            Dificuldade: ${company.difficulty} (1 = muito fácil, 10 = muito difícil)
+                            Expectativas nos funcionários: ${companyExpectationsFormatted}
+
+                        Gere uma simulação de situação que poderia ocorrer no dia a dia de trabalho, de acordo com o nível de dificuldade. A situação deve exigir que o usuário diga como reagiria. Não é uma pergunta de entrevista.
+
+                        Retorne apenas a pergunta, sem explicações, sem aspas e sem comentários adicionais.
+                        Exemplo de formato (não reproduza o exemplo abaixo):
+                        Um cliente ficou bravo com o atendimento por [motivo] e espera que você resolva.
+                    `;
+
+                    const result = await generateGeminiContent(prompt);
+
+                    if (!result.success || !result.text) {
+                        interaction.editReply(resv2.danger(`${icon.error} | Um erro ocorreu ao gerar a requisição, você recebeu o dinheiro normal que receberia se não houvesse um desafio!`));
+                        await prisma.user.update({
+                            where: { id: interaction.user.id },
+                            data: { money: { increment: company.wage } }
+                        });
+
+                        console.error(result.error);
+
+                        await registerLog(
+                            "Erro ao gerar desafio para o usuário usando o gemini",
+                            "error",
+                            999,
+                            interaction.user.id,
+                            "work"
+                        );
+                        await registerLog(
+                            `Trabalhou e ganhou ${company.wage}`,
+                            "info",
+                            5,
+                            interaction.user.id,
+                            "work"
+                        );
+
+                        return;
+                    }
+
+                    const response = result.text;
+
+                    const container = createContainer({
+                        accentColor: settings.colors.warning,
+                        components: [
+                            brBuilder(
+                                "Um novo desafio surgiu!",
+                                "Responda a pergunta abaixo, como você reagiria a essa situação?",
+                                "-# ╰ obs: se você responder corretamente pode até ganhar um aumento hoje!"
+                            ),
+                            createSeparator(),
+                            createTextDisplay(response, 1),
+                            createRow(
+                                new ButtonBuilder({
+                                    customId: `company/work/${interaction.user.id}`,
+                                    label: "Responder",
+                                    style: ButtonStyle.Primary
+                                })
+                            )
+                        ]
+                    });
+
+                    setCache(`${interaction.user.id}-situation`, response);
+
+                    interaction.editReply({ flags: ["IsComponentsV2"], components: [container] });
+                } else {
+                    const newUser = await prisma.user.update({
+                        where: { id: interaction.user.id },
+                        data: { money: { increment: company.wage } }
+                    });
+
+                    interaction.editReply({
+                        flags: ["IsComponentsV2"],
+                        components: [
+                            createContainer({
+                                accentColor: settings.colors.success,
+                                components: [
+                                    brBuilder(
+                                        `${icon.success} | Você trabalhou e ganhou ${company.wage}!`,
+                                        `**Saldo de:** ${userMention(interaction.user.id)}`,
+                                        `${icon.money} Dinheiro: Ꞩ ${newUser.money}`,
+                                        `${icon.bank} Banco: Ꞩ ${newUser.bank}`
+                                    )
+                                ]
+                            })
+                        ]
+                    });
+
+                    await registerLog(
+                        `Trabalhou e ganhou ${company.wage}`,
+                        "info",
+                        5,
+                        interaction.user.id,
+                        "work"
+                    );
+                }
+
+                await prisma.cooldown.upsert({
                     where: {
-                        userId: interaction.user.id,
-                        AND: {
+                        userId_name: {
+                            userId: interaction.user.id,
                             name: "work"
                         }
                     },
-                    select: {
-                        willEndIn: true
+                    update: {
+                        willEndIn: new Date(now.getTime() + 1000 * 60 * 60)
+                    },
+                    create: {
+                        userId: interaction.user.id,
+                        name: "work",
+                        willEndIn: new Date(now.getTime() + 1000 * 60 * 60)
                     }
                 });
-
-                if (cooldown && cooldown.willEndIn > now) {
-                    interaction.editReply(res.danger(`${icon.denied} | Você não pode trabalhar, você poderá trabalhar ${time(cooldown.willEndIn, "R") }`))
-                    return;
-                }
-
-                const company = await prisma.company.findUnique({
-                    where: {
-                        id: user.companyId
-                    }
-                })
-
-                if (!company) {
-                    interaction.editReply(res.danger(`${icon.error} | não foi possivel achar a empresa ${user.companyId} aonde trabalha!`));
-                    await registerLog(
-                        `Erro grave, empresa ${user.companyId} não encontrada!`,
-                        "error",
-                        999,
-                        interaction.user.id,
-                        "company"
-                    )
-                    return;
-                }
+                return;
             } catch (error) {
                 console.error(error);
                 interaction.editReply(res.danger(`${icon.error} | Um erro inesperado aconteceu!`))

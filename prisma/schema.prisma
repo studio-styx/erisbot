@@ -43,6 +43,7 @@ model Cooldown {
   name      String
   timestamp DateTime @default(now())
   willEndIn DateTime
+  @@unique([userId, name])
 }
 
 model Company {

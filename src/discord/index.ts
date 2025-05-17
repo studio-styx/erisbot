@@ -17,6 +17,6 @@ export const { createCommand, createEvent, createResponder } = setupCreators({
             } else if (!interaction.replied) {
                 interaction.reply(res.danger(errorMessage));
             }
-        },
+        }
     },
 });

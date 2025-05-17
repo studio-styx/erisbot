@@ -39,6 +39,7 @@
             "cooldown": "{{emoji}} | You can claim your daily reward again {{time}}!",
             "bankEmpty": "{{emoji}} | The bank doesn't have enough money to pay you!",
             "logBankEmpty": "The bank doesn't have enough money to pay",
+            "logMessage": "You claimed your daily reward of **{{value}}** stx",
             "success": "{{emoji}} | You claimed your daily reward of **{{value}}** stx!",
             "embed": {
                 "description": "**Balance of:** {{mention}}",
