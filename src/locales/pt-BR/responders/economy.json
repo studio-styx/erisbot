@@ -1,0 +1,30 @@
+{
+    "general": {
+        "work": {
+            "not_your_command": "{{icon}} | Não foi você que executou esse comando",
+            "situation_expired": "{{icon}} | ops, parece que você demorou demais para responder e a situação foi deletada do cache! (ou já foi respondida)",
+            "modal": {
+                "title": "Desafio",
+                "response_label": "Resposta para o desafio",
+                "response_placeholder": "Responda o desafio aqui"
+            },
+            "analyzing_response": "{{icon}} Aguarde enquanto a IA analisa sua resposta.",
+            "user_not_found": "{{icon}} | Não foi possível encontrar você no banco de dados",
+            "no_company_error": "{{icon}} | Você não trabalha em nenhuma empresa!",
+            "expectation_format": "habilidade: \"{{skill}}\" level: {{level}}",
+            "invalid_expectation": "Expectativa inválida",
+            "invalid_company_expectations": "Expectativas da empresa não foram definidas corretamente.",
+            "no_description": "Nenhuma descrição definida",
+            "evaluation_prompt": "Avalie a resposta de um funcionário a uma situação simulada de trabalho. Use as informações abaixo para contextualizar a avaliação:\n\nNome da empresa: {{companyName}}\n\nDescrição da empresa: {{companyDescription}}\n\nDificuldade do desafio: {{difficulty}} (1 = muito fácil, 10 = muito difícil)\n\nExpectativas da empresa nos funcionários: {{expectations}}\n\nSituação simulada: {{situation}}\n\nResposta do usuário: {{response}}\n\nCom base nesses dados, avalie a resposta do usuário e retorne apenas um objeto JSON com o seguinte formato:\n\n{\n    \"bonus\": 0,\n    \"reason\": \"Explique aqui o motivo da nota, destacando pontos positivos e negativos da resposta.\"\n}\n\nRegras importantes:\n\n    bonus deve ser um número inteiro entre -5 e 5, sem decimais.\n\n    Use valores negativos para respostas ruins, positivos para boas e 0 se for neutra.\n\n    A razão deve ser clara, objetiva e útil para o usuário entender como melhorar.\n\n    Retorne apenas o JSON, sem comentários, sem explicações fora do objeto.",
+            "evaluation_error": "{{icon}} | um erro ocorreu ao gerar sua requisição!",
+            "negative_bonus_response": "{{icon}} | Sua resposta foi insatisfatória, por isso recebeu menos! valor recebido: **Ꞩ {{payValue}}** \n\n **Avaliação:** {{reason}}",
+            "positive_bonus_response": "{{icon}} | Sua resposta foi satisfatória, por isso recebeu mais! valor recebido: **Ꞩ {{payValue}}** \n\n **Avaliação:** {{reason}}",
+            "neutral_bonus_response": "{{icon}} | Sua resposta foi neutra, por isso recebeu o salário normal! valor recebido: **Ꞩ {{payValue}}** \n\n **Avaliação:** {{reason}}",
+            "log": {
+                "negative_bonus": "O trabalho do usuário foi ruim, levando **{{bonus}}%** de desconto do salário, recebendo: **Ꞩ {{payValue}}** de pagamento",
+                "positive_bonus": "O trabalho do usuário foi bom, levando **{{bonus}}%** de aumento do salário, recebendo: **Ꞩ {{payValue}}** de pagamento",
+                "neutral_bonus": "O trabalho do usuário foi neutro, recebendo: **Ꞩ {{payValue}}** de pagamento"
+            }
+        }
+    }
+}

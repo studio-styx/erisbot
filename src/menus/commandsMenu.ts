@@ -3,7 +3,7 @@ import { icon } from "#utils";
 import { brBuilder, createRow } from "@magicyan/discord";
 import { EmbedBuilder, StringSelectMenuBuilder, type InteractionReplyOptions } from "discord.js";
 
-export function commandsMenu<R>(commandId: string, page: "economy" | "bot" | "adventure"): R {
+export function commandsMenu<R>(commandId: string, page: "economy" | "bot" | "user"): R {
     const embed = new EmbedBuilder({
         title: "Commands",
         color: parseInt(settings.colors.fuchsia.replace("#", ""), 16),
@@ -21,18 +21,14 @@ export function commandsMenu<R>(commandId: string, page: "economy" | "bot" | "ad
                 `</economy general withdraw:${commandId}> - withdraw money from your bank`,
                 `</economy general transfer:${commandId}> - transfer money to another user`,
                 `</economy general leaderboard:${commandId}> - check the leaderboard`,
-                `</economy general shop:${commandId}> - check the shop`,
             ),
             inline: true
         }, {
             name: "",
             value: brBuilder(
-                `</economy cassino roulette:${commandId}> - play roulette`,
                 `</economy cassino slots:${commandId}> - play slots`,
-                `</economy cassino blackjack:${commandId}> - play blackjack`,
                 `</economy cassino coinflip:${commandId}> - play coinflip`,
-                `</economy dishonest rob:${commandId}> - rob another`,
-                `</economy dishonest scam:${commandId}> - scam another`,
+                `</economy cassino horse-racing:${commandId}> - bet in horse racing`,
             ),
             inline: true
         })
@@ -42,12 +38,18 @@ export function commandsMenu<R>(commandId: string, page: "economy" | "bot" | "ad
             value: brBuilder(
                 `</bot info:${commandId}> - check bot info`,
                 `</bot ping:${commandId}> - check bot ping`,
-                `</bot support:${commandId}> - check support server`,
-                `</bot invite:${commandId}> - check bot invite`,
                 `</bot creators:${commandId}> - check bot creators`,
                 `</bot commands:${commandId}> - check bot commands`,
             ),
             inline: true
+        })
+    } else if (page === "user") {
+        embed.addFields({
+            name: "",
+            value: brBuilder(
+                `</user logs:${commandId}> - check your logs`,
+                `</user avatar:${commandId}> - check your avatar`,
+            )
         })
     }
 
@@ -59,8 +61,7 @@ export function commandsMenu<R>(commandId: string, page: "economy" | "bot" | "ad
                 options: [
                     { label: "Economy", value: "economy", emoji: icon.money_bag, default: commandId === "economy" },
                     { label: "Bot", value: "bot", emoji: icon.bot, default: commandId === "bot" },
-                    { label: "Adventure", value: "adventure", emoji: "🏔️", default: commandId === "adventure" },
-                    { label: "Fun", value: "fun", emoji: "🎠", default: commandId === "fun" },
+                    { label: "User", value: "user", emoji: icon.investment_graph, default: commandId === "user" },
                 ]
             })
         )

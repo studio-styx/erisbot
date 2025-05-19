@@ -59,6 +59,34 @@
             "targetBalance": "**Balance** of {{target}}: `Ꞩ {{money}}` \n **Bank** of {{target}}: `Ꞩ {{bank}}`",
             "logSent": "Money transfer to {{targetId}}",
             "logReceived": "Received money transfer from {{authorId}}"
+        },
+        "work": {
+            "no_job": "{{icon}} | You don't have a job! Use `/economy general jobs` to get a job",
+            "cooldown": "{{icon}} | You can't work right now, you can work again {{time}}",
+            "no_company": "{{icon}} | You don't work for any company! Use `/economy general jobs` to get a job",
+            "waiting": "{{icon}} waiting...",
+            "expectation_format": "skill: \"{{skill}}\" level: {{level}}",
+            "invalid_expectation": "Invalid expectation",
+            "invalid_company_expectations": "Company expectations were not properly defined.",
+            "gemini_prompt": "The user {{displayName}} is working at their company. Create a realistic challenge based on the following information:\n\nCompany name: {{companyName}}\nDescription: {{companyDescription}}\nDifficulty: {{difficulty}} (1 = very easy, 10 = very hard)\nEmployee expectations: {{expectations}}\n\nGenerate a simulation of a situation that could occur in the daily work, according to the difficulty level. The situation should require the user to say how they would react. This is not an interview question.\n\nReturn only the question, without explanations, without quotes and without additional comments.\nExample format (do not reproduce the example below):\nA customer got angry with the service because [reason] and expects you to resolve it.",
+            "gemini_error": "{{icon}} | An error occurred while generating the request, you received the normal money you would get if there was no challenge!",
+            "challenge": {
+                "title": "A new challenge has appeared!",
+                "description": "Answer the question below, how would you react to this situation?",
+                "note": "-# ╰ note: if you answer correctly you might even get a raise today!",
+                "button": "Answer"
+            },
+            "success": {
+                "title": "{{icon}} | You worked and earned {{wage}}!",
+                "balance": "**Balance of:** {{user}}",
+                "money": "{{icon}} Money: Ꞩ {{money}}",
+                "bank": "{{icon}} Bank: Ꞩ {{bank}}"
+            },
+            "unexpected_error": "{{icon}} | An unexpected error occurred!",
+            "log": {
+                "gemini_error": "Error generating challenge for user using gemini",
+                "worked_normal": "Worked and earned {{wage}}"
+            }
         }
     }
 }

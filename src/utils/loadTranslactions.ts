@@ -1,21 +1,22 @@
-import i18next from "i18next";
+import i18next, { TFunction } from "i18next";
 import fs from "fs/promises";
 import path from "path";
 
 const localesPath = path.resolve("src/locales");
 
-export async function loadTranslations() {
-  // Inicialize o i18next primeiro
+export async function loadTranslations(): Promise<TFunction<"translation", undefined>> {
   if (!i18next.isInitialized) {
     await i18next.init({
-      fallbackLng: "en",
+      fallbackLng: {
+        "es-419": ["es-ES", "en-US"],
+        default: ["en-US"],
+      },
       ns: [],
       defaultNS: undefined,
       interpolation: { escapeValue: false },
     });
   }
 
-  // Carregue os arquivos de tradução
   const languages = await fs.readdir(localesPath);
 
   for (const lang of languages) {
@@ -28,9 +29,10 @@ export async function loadTranslations() {
         const filePath = path.join(localesPath, lang, section, file);
         const content = JSON.parse(await fs.readFile(filePath, "utf-8"));
         const namespace = `${section}/${file.replace(".json", "")}`;
-
         i18next.addResourceBundle(lang, namespace, content, true, true);
       }
     }
   }
+
+  return i18next.t;
 }

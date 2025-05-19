@@ -4,7 +4,6 @@ import { brBuilder, createContainer, createRow, createSection, createSeparator }
 import i18next from "i18next";
 import { menus } from "#menus";
 import { getCommandId } from "#utils";
-import { settings } from "#settings";
 
 createCommand({
     name: "bot",
@@ -94,7 +93,7 @@ createCommand({
                     interaction.reply(t("embedlink"));
                     return
                 }
-                const t = (key: string) => i18next.t(`commands/botInfo:info.${key}`);   
+                const t = (key: string) => i18next.t(`commands/botInfo:info.${key}`) as string;   
 
                 const container = createContainer({
                     accentColor: "#a13d67",

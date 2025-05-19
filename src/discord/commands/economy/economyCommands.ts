@@ -3,6 +3,7 @@ import { ApplicationCommandType, ApplicationCommandOptionType } from "discord.js
 import i18next from "i18next";
 import { generalEconomyCommands } from "./generalEconomyCommands.js";
 import { PrismaClient } from "#prisma/client";
+import { cassinoEconomyCommands } from "./cassinoEconomyCommands.js";
 
 const prisma = new PrismaClient();
 
@@ -267,24 +268,28 @@ createCommand({
             },
             options: [
                 {
-                    name: "roulette",
-                    description: "play roulette",
-                    type: ApplicationCommandOptionType.Subcommand,
-                    nameLocalizations: {
-                        "pt-BR": "roleta",
-                        "en-US": "roulette",
-                        "es-ES": "ruleta",
-                    },
-                    descriptionLocalizations: {
-                        "pt-BR": "jogue roleta",
-                        "en-US": "play roulette",
-                        "es-ES": "jugar a la ruleta",
-                    }
-                },
-                {
                     name: "slots",
                     description: "play slots",
                     type: ApplicationCommandOptionType.Subcommand,
+                    options: [
+                        {
+                            name: "amount",
+                            description: "amount to bet",
+                            type: ApplicationCommandOptionType.Number,
+                            required: true,
+                            minValue: 25,
+                            nameLocalizations: {
+                                "pt-BR": "valor",
+                                "en-US": "amount",
+                                "es-ES": "valor",
+                            },
+                            descriptionLocalizations: {
+                                "pt-BR": "valor a apostar",
+                                "en-US": "amount to bet",
+                                "es-ES": "valor a apostar",
+                            }
+                        }
+                    ],
                     nameLocalizations: {
                         "pt-BR": "caça-níqueis",
                         "en-US": "slots",
@@ -297,24 +302,64 @@ createCommand({
                     }
                 },
                 {
-                    name: "blackjack",
-                    description: "play blackjack",
-                    type: ApplicationCommandOptionType.Subcommand,
-                    nameLocalizations: {
-                        "pt-BR": "blackjack",
-                        "en-US": "blackjack",
-                        "es-ES": "blackjack",
-                    },
-                    descriptionLocalizations: {
-                        "pt-BR": "jogue blackjack",
-                        "en-US": "play blackjack",
-                        "es-ES": "jugar al blackjack",
-                    }
-                },
-                {
                     name: "coinflip",
                     description: "play coinflip",
                     type: ApplicationCommandOptionType.Subcommand,
+                    options: [
+                        {
+                            name: "amount",
+                            description: "the amount of coins to bet",
+                            type: ApplicationCommandOptionType.Number,
+                            required: true,
+                            minValue: 15,
+                            nameLocalizations: {
+                                "pt-BR": "aposta",
+                                "en-US": "amount",
+                                "es-ES": "apuesta"
+                            },
+                            descriptionLocalizations: {
+                                "pt-BR": "a quantidade de moedas a apostar",
+                                "en-US": "the amount of coins to bet",
+                                "es-ES": "la cantidad de monedas a apostar"
+                            }
+                        },
+                        {
+                            name: "side",
+                            description: "the side to bet on",
+                            type: ApplicationCommandOptionType.String,
+                            required: true,
+                            choices: [
+                                {
+                                    name: "heads",
+                                    value: "heads",
+                                    nameLocalizations: {
+                                        "pt-BR": "cara",
+                                        "en-US": "heads",
+                                        "es-ES": "cara"
+                                    }
+                                },
+                                {
+                                    name: "tails",
+                                    value: "tails",
+                                    nameLocalizations: {
+                                        "pt-BR": "coroa",
+                                        "en-US": "tails",
+                                        "es-ES": "coroa"
+                                    }
+                                }
+                            ],
+                            nameLocalizations: {
+                                "pt-BR": "lado",
+                                "en-US": "side",
+                                "es-ES": "lado"
+                            },
+                            descriptionLocalizations: {
+                                "pt-BR": "o lado a apostar",
+                                "en-US": "the side to bet on",
+                                "es-ES": "el lado a apostar"
+                            }
+                        }
+                    ],
                     nameLocalizations: {
                         "pt-BR": "caraoucoroa",
                         "en-US": "coinflip",
@@ -325,53 +370,66 @@ createCommand({
                         "en-US": "play coinflip",
                         "es-ES": "jugar cara o cruz",
                     }
-                }
-            ]
-        },
-        {
-            name: "dishonest",
-            description: "dishonest economy actions",
-            type: ApplicationCommandOptionType.SubcommandGroup,
-            nameLocalizations: {
-                "pt-BR": "desonesto",
-                "en-US": "dishonest",
-                "es-ES": "deshonesto",
-            },
-            descriptionLocalizations: {
-                "pt-BR": "ações econômicas desonestas",
-                "en-US": "dishonest economy actions",
-                "es-ES": "acciones económicas deshonestas",
-            },
-            options: [
-                {
-                    name: "rob",
-                    description: "rob another user",
-                    type: ApplicationCommandOptionType.Subcommand,
-                    nameLocalizations: {
-                        "pt-BR": "assaltar",
-                        "en-US": "rob",
-                        "es-ES": "robar",
-                    },
-                    descriptionLocalizations: {
-                        "pt-BR": "assaltar outro usuário",
-                        "en-US": "rob another user",
-                        "es-ES": "robar a otro usuario",
-                    }
                 },
                 {
-                    name: "scam",
-                    description: "scam another user",
+                    name: "horse-racing",
+                    description: "bet on horse racing",
                     type: ApplicationCommandOptionType.Subcommand,
                     nameLocalizations: {
-                        "pt-BR": "golpear",
-                        "en-US": "scam",
-                        "es-ES": "estafar",
+                        "pt-BR": "corrida-de-cavalos",
+                        "en-US": "horse-racing",
+                        "es-ES": "carreras-de-caballos",
                     },
                     descriptionLocalizations: {
-                        "pt-BR": "aplicar golpe em outro usuário",
-                        "en-US": "scam another user",
-                        "es-ES": "estafar a otro usuario",
-                    }
+                        "pt-BR": "apostar na corrida de cavalos",
+                        "en-US": "bet on horse racing",
+                        "es-ES": "apostar en carreras de caballos",
+                    },
+                    options: [
+                        {
+                            name: "amount",
+                            description: "amount to bet",
+                            type: ApplicationCommandOptionType.Number,
+                            required: true,
+                            minValue: 50,
+                            nameLocalizations: {
+                                "pt-BR": "quantia",
+                                "en-US": "amount",
+                                "es-ES": "cantidad"
+                            },
+                            descriptionLocalizations: {
+                                "pt-BR": "quantia a apostar",
+                                "en-US": "amount to bet",
+                                "es-ES": "cantidad a apostar"
+                            }
+                        },
+                        {
+                            name: "horse",
+                            description: "horse to bet",
+                            type: ApplicationCommandOptionType.String,
+                            required: true,
+                            choices: [
+                                { name: "purple", value: "purple", nameLocalizations: { "pt-BR": "roxo", "en-US": "purple", "es-ES": "morado" } },
+                                { name: "blue", value: "blue", nameLocalizations: { "pt-BR": "azul", "en-US": "blue", "es-ES": "azul" } },
+                                { name: "green", value: "green", nameLocalizations: { "pt-BR": "verde", "en-US": "green", "es-ES": "verde" } },
+                                { name: "yellow", value: "yellow", nameLocalizations: { "pt-BR": "amarelo", "en-US": "yellow", "es-ES": "amarillo" } },
+                                { name: "orange", value: "orange", nameLocalizations: { "pt-BR": "laranja", "en-US": "orange", "es-ES": "naranja" } },
+                                { name: "red", value: "red", nameLocalizations: { "pt-BR": "vermelho", "en-US": "red", "es-ES": "rojo" } },
+                                { name: "pink", value: "pink", nameLocalizations: { "pt-BR": "rosa", "en-US": "pink", "es-ES": "rosa" } },
+                                { name: "brown", value: "brown", nameLocalizations: { "pt-BR": "marrom", "en-US": "brown", "es-ES": "marrón" } },
+                            ],
+                            nameLocalizations: {
+                                "pt-BR": "cavalo",
+                                "en-US": "horse",
+                                "es-ES": "caballo"
+                            },
+                            descriptionLocalizations: {
+                                "pt-BR": "cavalo a apostar",
+                                "en-US": "horse to bet",
+                                "es-ES": "caballo"
+                            }
+                        }
+                    ]
                 }
             ]
         }
@@ -396,11 +454,12 @@ createCommand({
             create: { id: interaction.user.id }
         })
 
-        await i18next.changeLanguage(interaction.locale);
-
         switch (subCommandGroup) {
             case "general": {
                 await generalEconomyCommands(interaction)
+            }
+            case "cassino": {
+                await cassinoEconomyCommands(interaction)
             }
         }
     }

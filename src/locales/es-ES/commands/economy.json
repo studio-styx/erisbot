@@ -59,6 +59,34 @@
             "targetBalance": "**Saldo** de {{target}}: `Ꞩ {{money}}` \n **Banco** de {{target}}: `Ꞩ {{bank}}`",
             "logSent": "Transferencia de dinero a {{targetId}}",
             "logReceived": "Recibió transferencia de dinero de {{authorId}}"
+        },
+        "work": {
+            "no_job": "{{icon}} | ¡No tienes un trabajo! Usa `/economy general jobs` para conseguir un trabajo",
+            "cooldown": "{{icon}} | No puedes trabajar ahora, podrás trabajar {{time}}",
+            "no_company": "{{icon}} | ¡No trabajas para ninguna empresa! Usa `/economy general jobs` para conseguir un trabajo",
+            "waiting": "{{icon}} esperando...",
+            "expectation_format": "habilidad: \"{{skill}}\" nivel: {{level}}",
+            "invalid_expectation": "Expectativa inválida",
+            "invalid_company_expectations": "Las expectativas de la empresa no se definieron correctamente.",
+            "gemini_prompt": "El usuario {{displayName}} está trabajando en su empresa. Crea un desafío realista basado en la siguiente información:\n\nNombre de la empresa: {{companyName}}\nDescripción: {{companyDescription}}\nDificultad: {{difficulty}} (1 = muy fácil, 10 = muy difícil)\nExpectativas de los empleados: {{expectations}}\n\nGenera una simulación de una situación que podría ocurrir en el trabajo diario, según el nivel de dificultad. La situación debe requerir que el usuario diga cómo reaccionaría. No es una pregunta de entrevista.\n\nDevuelve solo la pregunta, sin explicaciones, sin comillas y sin comentarios adicionales.\nEjemplo de formato (no reproduzcas el ejemplo a continuación):\nUn cliente se enojó con el servicio por [razón] y espera que lo resuelvas.",
+            "gemini_error": "{{icon}} | ¡Ocurrió un error al generar la solicitud, recibiste el dinero normal que obtendrías si no hubiera un desafío!",
+            "challenge": {
+                "title": "¡Ha aparecido un nuevo desafío!",
+                "description": "Responde la pregunta a continuación, ¿cómo reaccionarías ante esta situación?",
+                "note": "-# ╰ nota: ¡si respondes correctamente incluso podrías obtener un aumento hoy!",
+                "button": "Responder"
+            },
+            "success": {
+                "title": "{{icon}} | ¡Trabajaste y ganaste {{wage}}!",
+                "balance": "**Saldo de:** {{user}}",
+                "money": "{{icon}} Dinero: Ꞩ {{money}}",
+                "bank": "{{icon}} Banco: Ꞩ {{bank}}"
+            },
+            "unexpected_error": "{{icon}} | ¡Ocurrió un error inesperado!",
+            "log": {
+                "gemini_error": "Error al generar desafío para el usuario usando gemini",
+                "worked_normal": "Trabajó y ganó {{wage}}"
+            }
         }
     }
 }

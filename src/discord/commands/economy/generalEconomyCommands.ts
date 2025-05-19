@@ -18,6 +18,9 @@ const cooldowns = new Store<Date>();
 export async function generalEconomyCommands(interaction: ChatInputCommandInteraction<"cached">) {
     const { options } = interaction
     const subCommand = options.getSubcommand()
+
+    await i18next.changeLanguage(interaction.locale);
+
     switch (subCommand) {
         case "balance": {
             const id = options.getUser("user")?.id || interaction.user.id;
@@ -272,8 +275,8 @@ export async function generalEconomyCommands(interaction: ChatInputCommandIntera
                 return;
             }
 
-            const authorId = interaction.user.id;
-            const targetId = user.id;
+            const authorId: string = interaction.user.id;
+            const targetId: string = user.id;
 
             await interaction.deferReply();
 
@@ -309,8 +312,8 @@ export async function generalEconomyCommands(interaction: ChatInputCommandIntera
                 }
             });
 
-            const transfer = await registerLog(t("logSent", { targetId }), "info", 3, authorId, "transaction");
-            await registerLog(t("logReceived", { authorId }), "info", 3, targetId, "transaction");
+            const transfer = await registerLog(t("logSent", { targetId: userMention(targetId) }), "info", 3, authorId, "transaction");
+            await registerLog(t("logReceived", { authorId: userMention(authorId) }), "info", 3, targetId, "transaction");
 
             const container = createContainer({
                 accentColor: settings.colors.success,
@@ -397,7 +400,9 @@ export async function generalEconomyCommands(interaction: ChatInputCommandIntera
         }
         case "work": {
             await interaction.deferReply();
-
+        
+            const t = (key: string, options?: any) => i18next.t(`commands/economy:general.work.${key}`, { ...options, lng: interaction.locale }) as string;
+        
             try {
                 const user = await prisma.user.findUnique({
                     where: {
@@ -408,36 +413,39 @@ export async function generalEconomyCommands(interaction: ChatInputCommandIntera
                         cooldowns: true
                     }
                 })
-
+        
                 if (!user || !user.companyId) {
-                    interaction.editReply(res.danger(`${icon.denied} | Você não tem um emprego! use \`/economy general jobs\` para pegar um emprego`))
+                    interaction.editReply(res.danger(t('no_job', { icon: icon.denied })))
                     return;
                 }
-
+        
                 const now = new Date();
-
+        
                 const cooldown = user.cooldowns.find(cooldown => cooldown.name === "work");
-
+        
                 if (cooldown && cooldown.willEndIn > now) {
-                    interaction.editReply(res.danger(`${icon.denied} | Você não pode trabalhar, você poderá trabalhar ${time(cooldown.willEndIn, "R")}`))
+                    interaction.editReply(res.danger(t('cooldown', { 
+                        icon: icon.denied,
+                        time: time(cooldown.willEndIn, "R")
+                    })))
                     return;
                 }
-
+        
                 if (!user.company) {
-                    interaction.editReply(res.danger(`${icon.denied} | você não trabalha em nenhuma empresa! use \`/economy general jobs\` para pegar um emprego`));
+                    interaction.editReply(res.danger(t('no_company', { icon: icon.denied })));
                     return;
                 }
-
+        
                 const { company } = user
-
-                const percentage = 15 + (user.company.difficulty - 1) * 5; // Ajuste para testes: 15
-
+        
+                const percentage = 30 + (user.company.difficulty - 1) * 5;
+        
                 if (Math.random() * 100 < percentage) {
-                    await interaction.editReply(resv2.warning(`${icon.waiting_white} aguarde...`));
-
+                    await interaction.editReply(resv2.warning(t('waiting', { icon: icon.waiting_white })));
+        
                     const companyExpectations = (company?.expectations as string[] | { level: number, skill: string }[]);
                     let companyExpectationsFormatted: string;
-
+        
                     if (Array.isArray(companyExpectations)) {
                         if (typeof companyExpectations[0] === "string") {
                             companyExpectationsFormatted = companyExpectations.join(", ").replace(/, ([^,]*)$/, " e $1");
@@ -445,90 +453,92 @@ export async function generalEconomyCommands(interaction: ChatInputCommandIntera
                             companyExpectationsFormatted = companyExpectations
                                 .map((expectation) =>
                                     typeof expectation === "object" && "skill" in expectation
-                                        ? `habilidade: "${expectation.skill}" level: ${expectation.level}`
-                                        : "Expectativa inválida"
+                                        ? t('expectation_format', {
+                                            skill: expectation.skill,
+                                            level: expectation.level
+                                        })
+                                        : t('invalid_expectation')
                                 )
                                 .join(", ");
                         }
                     } else {
-                        companyExpectationsFormatted = "Expectativas da empresa não foram definidas corretamente.";
+                        companyExpectationsFormatted = t('invalid_company_expectations');
                     }
-
-                    const prompt = `
-                        O usuário ${interaction.user.displayName} está trabalhando em sua empresa. Crie um desafio realista com base nas seguintes informações:
-
-                            Nome da empresa: ${company.name}
-                            Descrição: ${company.description || "Nenhuma descrição definida"}
-                            Dificuldade: ${company.difficulty} (1 = muito fácil, 10 = muito difícil)
-                            Expectativas nos funcionários: ${companyExpectationsFormatted}
-
-                        Gere uma simulação de situação que poderia ocorrer no dia a dia de trabalho, de acordo com o nível de dificuldade. A situação deve exigir que o usuário diga como reagiria. Não é uma pergunta de entrevista.
-
-                        Retorne apenas a pergunta, sem explicações, sem aspas e sem comentários adicionais.
-                        Exemplo de formato (não reproduza o exemplo abaixo):
-                        Um cliente ficou bravo com o atendimento por [motivo] e espera que você resolva.
-                    `;
-
+        
+                    const prompt = t('gemini_prompt', {
+                        displayName: interaction.user.displayName,
+                        companyName: company.name,
+                        companyDescription: company.description || t('no_description'),
+                        difficulty: company.difficulty,
+                        expectations: companyExpectationsFormatted
+                    });
+        
                     const result = await generateGeminiContent(prompt);
-
+        
                     if (!result.success || !result.text) {
-                        interaction.editReply(resv2.danger(`${icon.error} | Um erro ocorreu ao gerar a requisição, você recebeu o dinheiro normal que receberia se não houvesse um desafio!`));
+                        interaction.editReply(resv2.danger(t('gemini_error', { 
+                            icon: icon.error,
+                            wage: company.wage 
+                        })));
                         await prisma.user.update({
                             where: { id: interaction.user.id },
                             data: { money: { increment: company.wage } }
                         });
-
+        
                         console.error(result.error);
-
+        
                         await registerLog(
-                            "Erro ao gerar desafio para o usuário usando o gemini",
+                            t('log.gemini_error'),
                             "error",
                             999,
                             interaction.user.id,
                             "work"
                         );
                         await registerLog(
-                            `Trabalhou e ganhou ${company.wage}`,
+                            t('log.worked_normal', { wage: company.wage }),
                             "info",
                             5,
                             interaction.user.id,
                             "work"
                         );
-
+        
                         return;
                     }
-
+        
                     const response = result.text;
-
+        
                     const container = createContainer({
                         accentColor: settings.colors.warning,
                         components: [
                             brBuilder(
-                                "Um novo desafio surgiu!",
-                                "Responda a pergunta abaixo, como você reagiria a essa situação?",
-                                "-# ╰ obs: se você responder corretamente pode até ganhar um aumento hoje!"
+                                t('challenge.title'),
+                                t('challenge.description'),
+                                t('challenge.note')
                             ),
                             createSeparator(),
                             createTextDisplay(response, 1),
                             createRow(
                                 new ButtonBuilder({
                                     customId: `company/work/${interaction.user.id}`,
-                                    label: "Responder",
+                                    label: t('challenge.button'),
                                     style: ButtonStyle.Primary
                                 })
                             )
                         ]
                     });
-
+        
                     setCache(`${interaction.user.id}-situation`, response);
-
+        
                     interaction.editReply({ flags: ["IsComponentsV2"], components: [container] });
                 } else {
                     const newUser = await prisma.user.update({
                         where: { id: interaction.user.id },
-                        data: { money: { increment: company.wage } }
+                        data: { 
+                            money: { increment: company.wage }, 
+                            xp: { increment: Math.floor(Math.random() * (40 - 10 + 1)) + 10 } 
+                        }
                     });
-
+        
                     interaction.editReply({
                         flags: ["IsComponentsV2"],
                         components: [
@@ -536,25 +546,34 @@ export async function generalEconomyCommands(interaction: ChatInputCommandIntera
                                 accentColor: settings.colors.success,
                                 components: [
                                     brBuilder(
-                                        `${icon.success} | Você trabalhou e ganhou ${company.wage}!`,
-                                        `**Saldo de:** ${userMention(interaction.user.id)}`,
-                                        `${icon.money} Dinheiro: Ꞩ ${newUser.money}`,
-                                        `${icon.bank} Banco: Ꞩ ${newUser.bank}`
+                                        t('success.title', { 
+                                            icon: icon.success,
+                                            wage: company.wage 
+                                        }),
+                                        t('success.balance', { user: userMention(interaction.user.id) }),
+                                        t('success.money', { 
+                                            icon: icon.money,
+                                            money: newUser.money 
+                                        }),
+                                        t('success.bank', { 
+                                            icon: icon.bank,
+                                            bank: newUser.bank 
+                                        })
                                     )
                                 ]
                             })
                         ]
                     });
-
+        
                     await registerLog(
-                        `Trabalhou e ganhou ${company.wage}`,
+                        t('log.worked_normal', { wage: company.wage }),
                         "info",
                         5,
                         interaction.user.id,
                         "work"
                     );
                 }
-
+        
                 await prisma.cooldown.upsert({
                     where: {
                         userId_name: {
@@ -574,7 +593,7 @@ export async function generalEconomyCommands(interaction: ChatInputCommandIntera
                 return;
             } catch (error) {
                 console.error(error);
-                interaction.editReply(res.danger(`${icon.error} | Um erro inesperado aconteceu!`))
+                interaction.editReply(res.danger(t('unexpected_error', { icon: icon.error })))
                 return;
             }
         }

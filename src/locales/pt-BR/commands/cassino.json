@@ -1,0 +1,50 @@
+{
+    "horse_racing": {
+        "min_bet_error": "{{icon}} | Você não pode apostar menos de 50 STX",
+        "horses": {
+            "purple": "Roxo",
+            "blue": "Azul",
+            "green": "Verde",
+            "yellow": "Amarelo",
+            "orange": "Laranja",
+            "red": "Vermelho",
+            "pink": "Rosa",
+            "brown": "Marrom"
+        },
+        "embed": {
+            "finished_title": "🏁 Corrida Finalizada!",
+            "race_title": "🏇 Corrida de Cavalos",
+            "winner": "Vencedor",
+            "your_bet": "Sua aposta",
+            "result": "Resultado",
+            "win_message": "{{icon}} Você ganhou {{winAmount}} STX (total: {{totalAmount}})",
+            "lose_message": "{{icon}} Você perdeu {{amount}} STX"
+        },
+        "log": {
+            "win": "Apostou no cavalo {{horse}} e ganhou: **Ꞩ {{amount}}**",
+            "lose": "Apostou no cavalo {{horse}} e perdeu: **Ꞩ {{amount}}**"
+        }
+    },
+    "coinflip": {
+        "insufficient_funds": "{{icon}} Você não tem dinheiro suficiente para jogar.",
+        "win": "{{icon}} | A moeda caiu em {{result}}, você ganhou **{{amount}}** STX!",
+        "lose": "{{icon}} | A moeda caiu em {{result}}, você perdeu **{{amount}}** STX!",
+        "log": {
+            "win": "Jogou coinflip em {{side}} e ganhou **Ꞩ {{amount}}**",
+            "lose": "Jogou coinflip em {{side}} e perdeu **Ꞩ {{amount}}**"
+        }
+    },
+    "slots": {
+        "insufficient_funds": "{{icon}} Você não tem dinheiro suficiente para jogar.",
+        "embed": {
+            "title": "🎰 Caça-Níqueis",
+            "spinning": "\n\n{{slot1}} | {{slot2}} | -\n\nGirando...",
+            "win": "\n\n{{slot1}} | {{slot2}} | {{slot3}}\n\n{{icon}} **JACKPOT!** Você ganhou **{{amount}}** STX!",
+            "lose": "\n\n{{slot1}} | {{slot2}} | {{slot3}}\n\n{{icon}} Você perdeu **{{amount}}** STX!"
+        },
+        "log": {
+            "win": "Jogou slots e ganhou **Ꞩ {{amount}}**",
+            "lose": "Jogou slots e perdeu **Ꞩ {{amount}}**"
+        }
+    }
+}

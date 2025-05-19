@@ -5,6 +5,7 @@ import { PrismaClient } from "#prisma/client";
 import { icon, resv2, res } from "#utils";
 import { createModalFields } from "@magicyan/discord";
 import { TextInputStyle } from "discord.js";
+import i18next from "i18next";
 
 const prisma = new PrismaClient();
 
@@ -12,26 +13,29 @@ createResponder({
     customId: "company/work/:userId",
     types: [ResponderType.Button, ResponderType.ModalComponent], cache: "cached",
     async run(interaction, { userId }) {
+        await i18next.changeLanguage(interaction.locale);
+        const t = (key: string, options?: any) => i18next.t(`responders/economy:general.work.${key}`, { ...options, lng: interaction.locale }) as string;
+
         if (userId !== interaction.user.id) {
-            interaction.reply(res.danger(`${icon.denied} | Não foi você que executou esse comando`));
+            interaction.reply(res.danger(t('not_your_command', { icon: icon.denied })));
             return;
         }
 
         const situation: string | null | undefined = getCache(`${interaction.user.id}-situation`);
 
         if (!situation) {
-            interaction.update(res.danger(`${icon.denied} | ops, parece que você demorou demais para responder e a situação foi deletada do cache! (ou já foi respondida)`));
+            interaction.update(res.danger(t('situation_expired', { icon: icon.denied })));
             return;
         }
 
         if (interaction.isButton()) {
             interaction.showModal({
                 customId: `company/work/${userId}`,
-                title: "Desafio",
+                title: t('modal.title'),
                 components: createModalFields({
                     response: {
-                        label: "Resposta para o desafio",
-                        placeholder: "Responda o desafio aqui",
+                        label: t('modal.response_label'),
+                        placeholder: t('modal.response_placeholder'),
                         style: TextInputStyle.Paragraph,
                         required: true,
                     },
@@ -41,7 +45,7 @@ createResponder({
             const response = interaction.fields.getTextInputValue("response");
 
             await interaction.deferUpdate();
-            await interaction.editReply(resv2.warning(`${icon.waiting_white} Aguarde enquanto a IA analisa sua resposta.`));
+            await interaction.editReply(resv2.warning(t('analyzing_response', { icon: icon.waiting_white })));
 
             const user = await prisma.user.findUnique({
                 where: {
@@ -52,11 +56,11 @@ createResponder({
                 }
             })
             if (!user) {
-                interaction.editReply(resv2.danger(`${icon.error} | Não foi possível encontrar você no banco de dados`));
+                interaction.editReply(resv2.danger(t('user_not_found', { icon: icon.error })));
                 return;
             }
             if (!user.company) {
-                interaction.editReply(resv2.danger(`${icon.error} | Você não trabalha em nenhuma empresa!`));
+                interaction.editReply(resv2.danger(t('no_company_error', { icon: icon.error })));
                 return;
             }
 
@@ -73,48 +77,24 @@ createResponder({
                     companyExpectationsFormatted = companyExpectations
                         .map((expectation) => 
                             typeof expectation === "object" && "skill" in expectation 
-                                ? `habilidade: "${expectation.skill}" level: ${expectation.level}` 
-                                : "Expectativa inválida"
+                                ? t('expectation_format', { skill: expectation.skill, level: expectation.level })
+                                : t('invalid_expectation')
                         )
                         .join(", ");
                 }
             } else {
-                companyExpectationsFormatted = "Expectativas da empresa não foram definidas corretamente.";
+                companyExpectationsFormatted = t('invalid_company_expectations');
             }
 
+            const prompt = t('evaluation_prompt', {
+                companyName: company.name,
+                companyDescription: company.description || t('no_description'),
+                difficulty: company.difficulty,
+                expectations: companyExpectationsFormatted,
+                situation,
+                response
+            });
 
-            const prompt = `
-                Avalie a resposta de um funcionário a uma situação simulada de trabalho. Use as informações abaixo para contextualizar a avaliação:
-
-                    Nome da empresa: ${company.name}
-
-                    Descrição da empresa: ${company.description || "Nenhuma descrição definida"}
-
-                    Dificuldade do desafio: ${company.difficulty} (1 = muito fácil, 10 = muito difícil)
-
-                    Expectativas da empresa nos funcionários: ${companyExpectationsFormatted}
-
-                    Situação simulada: ${situation}
-
-                    Resposta do usuário: ${response}
-
-                Com base nesses dados, avalie a resposta do usuário e retorne apenas um objeto JSON com o seguinte formato:
-
-                {
-                    "bonus": 0,
-                    "reason": "Explique aqui o motivo da nota, destacando pontos positivos e negativos da resposta."
-                }
-
-                Regras importantes:
-
-                    bonus deve ser um número inteiro entre -5 e 5, sem decimais.
-
-                    Use valores negativos para respostas ruins, positivos para boas e 0 se for neutra.
-
-                    A razão deve ser clara, objetiva e útil para o usuário entender como melhorar.
-
-                    Retorne apenas o JSON, sem comentários, sem explicações fora do objeto.
-            `
             interface GeminiResponse {
                 bonus: number;
                 reason: string;
@@ -122,7 +102,7 @@ createResponder({
             const result = await generateGeminiContent(prompt)
 
             if (!result.success || !result.text) {
-                interaction.editReply(resv2.danger(`${icon.error} | um erro ocorreu ao gerar sua requisição!`));
+                interaction.editReply(resv2.danger(t('evaluation_error', { icon: icon.error })));
                 console.error(result);
                 return;
             }
@@ -147,36 +127,53 @@ createResponder({
 
             const payValue = wage * (1 + 0.1 * bonus);
 
-
             if (geminiResponse.bonus < 0) {
-                interaction.editReply(resv2.danger(`${icon.error} | Sua resposta foi insatisfatória, por isso recebeu menos! valor recebido: **Ꞩ ${payValue}** \n\n **Avaliação:** ${geminiResponse.reason}`));
+                interaction.editReply(resv2.danger(t('negative_bonus_response', {
+                    icon: icon.error,
+                    payValue,
+                    reason: geminiResponse.reason
+                })));
 
                 await registerLog(
-                    `O trabalho do usuário foi ruim, levando **${geminiResponse.bonus * 10}%** de desconto do salário, recebendo: **Ꞩ ${payValue}** de pagamento`,
+                    t('log.negative_bonus', { bonus: geminiResponse.bonus * 10, payValue }),
                     "info",
                     5,
                     interaction.user.id,
                     "work"
                 )
             } else if (geminiResponse.bonus > 0) {
-                interaction.editReply(resv2.success(`${icon.success} | Sua resposta foi satisfatória, por isso recebeu mais! valor recebido: **Ꞩ ${payValue}** \n\n **Avaliação:** ${geminiResponse.reason}`));
+                interaction.editReply(resv2.success(t('positive_bonus_response', {
+                    icon: icon.success,
+                    payValue,
+                    reason: geminiResponse.reason
+                })));
                 await registerLog(
-                    `O trabalho do usuário foi bom, levando **${geminiResponse.bonus * 10}%** de aumento do salário, recebendo: **Ꞩ ${payValue}** de pagamento`,
+                    t('log.positive_bonus', { bonus: geminiResponse.bonus * 10, payValue }),
                     "info",
                     5,
                     interaction.user.id,
                     "work"
                 )
             } else {
-                interaction.editReply(resv2.primary(`${icon.success} | Sua resposta foi neutra, por isso recebeu o salário normal! valor recebido: **Ꞩ ${payValue}** \n\n **Avaliação:** ${geminiResponse.reason}`));
+                interaction.editReply(resv2.primary(t('neutral_bonus_response', {
+                    icon: icon.success,
+                    payValue,
+                    reason: geminiResponse.reason
+                })));
                 await registerLog(
-                    `O trabalho do usuário foi neutro, recebendo: **Ꞩ ${payValue}** de pagamento`,
+                    t('log.neutral_bonus', { payValue }),
                     "info",
                     5,
                     interaction.user.id,
                     "work"
                 )
             }
+            const xpGain = geminiResponse.bonus < 0
+                ? Math.floor(Math.random() * 11) * -1
+                : geminiResponse.bonus === 0
+                ? Math.floor(Math.random() * 11)
+                : Math.floor(Math.random() * 51) + 10; 
+
             await prisma.user.update({
                 where: {
                     id: interaction.user.id
@@ -184,9 +181,12 @@ createResponder({
                 data: {
                     money: {
                         increment: payValue
+                    },
+                    xp: {
+                        increment: xpGain
                     }
                 }
-            })
+            });
 
             clearCache(`${userId}-situation`)
         }

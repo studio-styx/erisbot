@@ -5,6 +5,7 @@ import { menus } from "#menus";
 import { PrismaClient } from "#prisma/client";
 import { icon, resv2 } from "#utils";
 import { getInterviewQuestions, setInterviewQuestions } from "#functions";
+import i18next from "i18next";
 
 const prisma = new PrismaClient();
 
@@ -13,6 +14,9 @@ createResponder({
     types: [ResponderType.Button],
     cache: "cached",
     async run(interaction, { companyId }) {
+        await i18next.changeLanguage(interaction.locale);
+        const t = (key: string, options?: any): string => i18next.t(`responders/companys:interview.${key}`, { ...options, lng: interaction.locale }) as string;
+        
         const company = await prisma.company.findUnique({
             where: {
                 id: Number(companyId),
@@ -30,20 +34,23 @@ createResponder({
         });
 
         if (!company) {
-            interaction.reply(resv2.danger(`${icon.error} | não foi possível encontrar essa empresa`));
+            interaction.reply(resv2.danger(t('company_not_found', { icon: icon.error })));
             return;
         }
         if (user.companyId) {
-            interaction.reply(resv2.danger(`${icon.denied} | você já tem um emprego, use \`/economy general dismiss\` para sair do emprego atual`));
+            interaction.reply(resv2.danger(t('already_employed', { 
+                icon: icon.denied,
+                command: '/economy general dismiss'
+            })));
             return;
         }
-        //if (user.xp < company.experience) {
-        //    interaction.reply(resv2.danger(`${icon.denied} | você não tem xp suficiente para trabalhar nessa empresa`));
-        //    return;
-        //}
+        if (user.xp < company.experience) {
+            interaction.reply(resv2.danger(t('insufficient_xp', { icon: icon.denied })));
+            return;
+        }
         await interaction.deferReply()
 
-        await interaction.editReply(resv2.warning(`${icon.waiting_white} Aguarde enquanto o entrevistador chama a sua vez`));
+        await interaction.editReply(resv2.warning(t('waiting_interviewer', { icon: icon.waiting_white })));
 
         let questions = getInterviewQuestions(interaction.user.id, companyId);
 
@@ -51,42 +58,33 @@ createResponder({
 
         let companyExpectationsFormatted: string;
 
-            if (Array.isArray(companyExpectations)) {
-                if (typeof companyExpectations[0] === "string") {
-                    companyExpectationsFormatted = companyExpectations.join(", ").replace(/, ([^,]*)$/, " e $1");
-                } else {
-                    companyExpectationsFormatted = companyExpectations
-                        .map((expectation) => 
-                            typeof expectation === "object" && "skill" in expectation 
-                                ? `habilidade: "${expectation.skill}" level: ${expectation.level}` 
-                                : "Expectativa inválida"
-                        )
-                        .join(", ");
-                }
+        if (Array.isArray(companyExpectations)) {
+            if (typeof companyExpectations[0] === "string") {
+                companyExpectationsFormatted = companyExpectations.join(", ").replace(/, ([^,]*)$/, " e $1");
             } else {
-                companyExpectationsFormatted = "Expectativas da empresa não foram definidas corretamente.";
+                companyExpectationsFormatted = companyExpectations
+                    .map((expectation) => 
+                        typeof expectation === "object" && "skill" in expectation 
+                            ? t('expectation_format', { skill: expectation.skill, level: expectation.level })
+                            : t('invalid_expectation')
+                    )
+                    .join(", ");
             }
+        } else {
+            companyExpectationsFormatted = t('invalid_company_expectations');
+        }
 
         if (!questions) {
-            const prompt = `
-                Você é um entrevistador de IA. Você irá entrevistar o candidato "${interaction.user.displayName}" para uma vaga na empresa "${company.name}".
-
-                Descrição da empresa: ${company.description}
-
-                A empresa espera que seus funcionários tenham os seguintes valores e qualidades:
-                ${companyExpectationsFormatted}
-
-                A dificuldade da entrevista é ${company.difficulty}/10 (1 é muito fácil, 10 é extremamente difícil).
-
-                Gere exatamente 5 perguntas relevantes e desafiadoras para essa entrevista, levando em consideração o perfil da empresa e seus valores.
-                **Atenção:** se o nivel de dificuldade for 3 ou menos, as perguntas não devem conter perguntas como "o que você fez" e sim "o que você faria", porém se for superior adeque a dificuldade de acordo com o nível
-
-                Retorne **apenas** um array JSON **no formato exato**: ["pergunta1", "pergunta2", "pergunta3", "pergunta4", "pergunta5"]
-                Sem explicações ou texto adicional, apenas o array JSON.
-            `;
+            const prompt = t('interview_prompt', {
+                displayName: interaction.user.displayName,
+                companyName: company.name,
+                companyDescription: company.description,
+                expectations: companyExpectationsFormatted,
+                difficulty: company.difficulty
+            });
 
             await registerLog(
-                `começado a entrevista para a empresa: ${company.name}`,
+                t('log.interview_started', { companyName: company.name }),
                 "info",
                 1,
                 interaction.user.id,
@@ -97,7 +95,7 @@ createResponder({
                 const result = await generateGeminiContent(prompt);
                 
                 if (!result.success || !result.text) {
-                    interaction.editReply(resv2.danger(`${icon.error} | um erro ocorreu ao gerar sua requisição!`));
+                    interaction.editReply(resv2.danger(t('generation_error', { icon: icon.error })));
                     console.error(result);
                     return;
                 }
@@ -118,7 +116,7 @@ createResponder({
                 setInterviewQuestions(interaction.user.id, companyId, questions);
             } catch (error) {
                 console.error(error)
-                interaction.editReply(resv2.danger(`${icon.error} | um erro inesperado ocorreu ao gerar sua requisição!`));
+                interaction.editReply(resv2.danger(t('unexpected_error', { icon: icon.error })));
                 return;
             }
         }
