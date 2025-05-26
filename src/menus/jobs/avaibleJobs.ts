@@ -2,7 +2,7 @@ import { Prisma } from "#prisma/client";
 import { settings } from "#settings";
 import { icon, res } from "#utils";
 import { brBuilder, createContainer, createRow, createSection, createSeparator } from "@magicyan/discord";
-import { ButtonBuilder, ButtonStyle, StringSelectMenuBuilder, type InteractionReplyOptions } from "discord.js";
+import { ButtonBuilder, ButtonStyle, type InteractionReplyOptions } from "discord.js";
 
 interface Company {
     description: string | null;

@@ -3,7 +3,7 @@ import { res, icon } from "#utils";
 
 export const { createCommand, createEvent, createResponder } = setupCreators({
     commands: {
-        guilds: ["1172930138770526248"],
+        guilds: ["1172930138770526248", "1338980027529957396"],
         onNotFound: (interaction) => {
             interaction.reply(res.danger(`${icon.error} | Command not found!`, { flags: ["Ephemeral"] }));
         },
@@ -18,5 +18,5 @@ export const { createCommand, createEvent, createResponder } = setupCreators({
                 interaction.reply(res.danger(errorMessage));
             }
         }
-    },
+    }
 });

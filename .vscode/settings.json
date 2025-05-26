@@ -51,4 +51,16 @@
   "files.readonlyInclude": {
     "src/discord/base/**": true
   },
+  "sqltools.connections": [
+    {
+      "previewLimit": 50,
+      "server": "localhost",
+      "port": 5432,
+      "driver": "PostgreSQL",
+      "name": "DEVErisbotdb",
+      "database": "erisdb",
+      "username": "guilherme",
+      "password": "echelon"
+    }
+  ],
 }

@@ -156,6 +156,27 @@ exports.Prisma.CompanyScalarFieldEnum = {
   expectations: 'expectations'
 };
 
+exports.Prisma.StockScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  price: 'price',
+  description: 'description'
+};
+
+exports.Prisma.StockHistoryScalarFieldEnum = {
+  id: 'id',
+  stockId: 'stockId',
+  price: 'price',
+  date: 'date'
+};
+
+exports.Prisma.StockHoldingScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  stockId: 'stockId',
+  amount: 'amount'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -186,7 +207,10 @@ exports.Prisma.ModelName = {
   User: 'User',
   Log: 'Log',
   Cooldown: 'Cooldown',
-  Company: 'Company'
+  Company: 'Company',
+  Stock: 'Stock',
+  StockHistory: 'StockHistory',
+  StockHolding: 'StockHolding'
 };
 
 /**

@@ -11,7 +11,19 @@ createResponder({
         await interaction.deferUpdate();
         const pageN = Number(page);
         
-        const companys = await prisma.company.findMany()
+        const companys = await prisma.company.findMany({
+            orderBy: [
+                {
+                    experience: "asc"
+                },
+                {
+                    difficulty: "asc"
+                },
+                {
+                    wage: "desc"
+                }
+            ]
+        });
 
         interaction.editReply(menus.jobs.avaibleJobs(companys, pageN))
         return;

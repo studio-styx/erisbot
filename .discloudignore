@@ -21,7 +21,6 @@
 /.env.example
 /.eslintrc.json
 /.gitignore
-/tsconfig.json
 /package-lock.json
 /README.md
 

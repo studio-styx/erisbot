@@ -1,14 +1,4 @@
 {
-    "info": {
-        "aboutTitle": "## Sobre mim",
-        "aboutDescription": "- Eu sou um bot de economia e diversão!\n- Fui programada originalmente em kotlin mas atualmente sou feita em TypeScript\n- Meu nome Éris é em referência a deusa grega da discordia\n- Sou um bot de código aberto você pode me achar em meu github",
-        "githubButton": "Acessar meu Github",
-        "featuresTitle": "## Características",
-        "featuresList": "- **Linguagem**: `TypeScript`\n- **Biblioteca**: `discord.js`\n- **Desenvolvedor**: `Studio Styx`\n- **Hospedagem**: `Discloud`",
-        "discordJs": "Discord.js",
-        "developer": "Desenvolvedor",
-        "host": "Discloud"
-    },
     "creators": {
         "title": "**Criadores**\nVeja a seguir os participantes do Studio Styx",
         "birdtool": "**BirdTool**\n-# ╰ Desenvolvedor e tradutor",

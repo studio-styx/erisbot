@@ -15,14 +15,15 @@ datasource db {
 }
 
 model User {
-  id         String   @id
-  money      Decimal  @default(0.0) @db.Decimal(12, 2)
-  bank       Decimal  @default(50.0) @db.Decimal(12, 2)
-  xp         Int      @default(0)
-  company    Company? @relation(fields: [companyId], references: [id], onDelete: SetNull)
-  companyId  Int?
-  logs       Log[]
-  cooldowns  Cooldown[]
+  id        String         @id
+  money     Decimal        @default(0.0) @db.Decimal(12, 2)
+  bank      Decimal        @default(50.0) @db.Decimal(12, 2)
+  xp        Int            @default(0)
+  company   Company?       @relation(fields: [companyId], references: [id], onDelete: SetNull)
+  companyId Int?
+  logs      Log[]
+  cooldowns Cooldown[]
+  stocks    StockHolding[]
 }
 
 model Log {
@@ -43,6 +44,7 @@ model Cooldown {
   name      String
   timestamp DateTime @default(now())
   willEndIn DateTime
+
   @@unique([userId, name])
 }
 
@@ -55,4 +57,34 @@ model Company {
   wage         Decimal @default(100.0) @db.Decimal(12, 2)
   expectations Json
   workers      User[]
+}
+
+model Stock {
+  id          Int            @id @default(autoincrement())
+  name        String
+  price       Decimal        @db.Decimal(12, 2)
+  description String?
+  history     StockHistory[]
+  holders     StockHolding[]
+}
+
+model StockHistory {
+  id      Int      @id @default(autoincrement())
+  stock   Stock    @relation(fields: [stockId], references: [id], onDelete: Cascade)
+  stockId Int
+  price   Decimal  @db.Decimal(12, 2)
+  date    DateTime @default(now())
+
+  @@unique([stockId, date])
+}
+
+model StockHolding {
+  id      Int    @id @default(autoincrement())
+  user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId  String
+  stock   Stock  @relation(fields: [stockId], references: [id], onDelete: Cascade)
+  stockId Int
+  amount  Int    @default(0)
+
+  @@unique([userId, stockId])
 }

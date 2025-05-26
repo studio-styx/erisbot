@@ -1,9 +1,9 @@
 import { createCommand } from "#base";
 import { ApplicationCommandType, ApplicationCommandOptionType } from "discord.js";
-import i18next from "i18next";
 import { generalEconomyCommands } from "./generalEconomyCommands.js";
 import { PrismaClient } from "#prisma/client";
 import { cassinoEconomyCommands } from "./cassinoEconomyCommands.js";
+import { investmentsEconomyCommands } from "./investmentEconomyCommand.js";
 
 const prisma = new PrismaClient();
 
@@ -249,6 +249,21 @@ createCommand({
                         "en-US": "search for a job",
                         "es-ES": "buscar un empleo",
                     }
+                },
+                {
+                    name: "dismiss",
+                    description: "quit your job",
+                    type: ApplicationCommandOptionType.Subcommand,
+                    nameLocalizations: {
+                        "pt-BR": "demitir",
+                        "en-US": "dismiss",
+                        "es-ES": "demitir"
+                    },
+                    descriptionLocalizations: {
+                        "pt-BR": "deixar seu emprego",
+                        "en-US": "quit your job",
+                        "es-ES": "dejar su empleo",
+                    }
                 }
             ]
         },
@@ -432,6 +447,104 @@ createCommand({
                     ]
                 }
             ]
+        },
+        {
+            name: "investment",
+            description: "invest in stocks",
+            type: ApplicationCommandOptionType.SubcommandGroup,
+            nameLocalizations: {
+                "pt-BR": "investimento",
+                "en-US": "investment",
+                "es-ES": "inversión",
+            },
+            descriptionLocalizations: {
+                "pt-BR": "investir em ações",
+                "en-US": "invest in stocks",
+                "es-ES": "invertir en acciones",
+            },
+            options: [
+                {
+                    name: "buy",
+                    description: "buy stocks",
+                    type: ApplicationCommandOptionType.Subcommand,
+                    nameLocalizations: {
+                        "pt-BR": "comprar",
+                        "en-US": "buy",
+                        "es-ES": "comprar",
+                    },
+                    descriptionLocalizations: {
+                        "pt-BR": "comprar ações",
+                        "en-US": "buy stocks",
+                        "es-ES": "comprar acciones",
+                    },
+                    options: [
+                        {
+                            name: "amount",
+                            description: "amount to buy",
+                            type: ApplicationCommandOptionType.Number,
+                            required: true,
+                            minValue: 1,
+                            nameLocalizations: {
+                                "pt-BR": "quantia",
+                                "en-US": "amount",
+                                "es-ES": "cantidad"
+                            },
+                            descriptionLocalizations: {
+                                "pt-BR": "quantia a comprar",
+                                "en-US": "amount to buy",
+                                "es-ES": "cantidad a comprar"
+                            }
+                        },
+                        {
+                            name: "stock",
+                            description: "stock to buy",
+                            type: ApplicationCommandOptionType.String,
+                            required: true,
+                            autocomplete: true,
+                            nameLocalizations: {
+                                "pt-BR": "ação",
+                                "en-US": "stock",
+                                "es-ES": "acción"
+                            },
+                            descriptionLocalizations: {
+                                "pt-BR": "ação a comprar",
+                                "en-US": "stock to buy",
+                                "es-ES": "acción a comprar"
+                            }
+                        }
+                    ]
+                },
+                {
+                    name: "own-stocks",
+                    description: "see your stocks",
+                    type: ApplicationCommandOptionType.Subcommand,
+                    nameLocalizations: {
+                        "pt-BR": "ações-próprias",
+                        "en-US": "own-stocks",
+                        "es-ES": "acciones-propias"
+                    },
+                    descriptionLocalizations: {
+                        "pt-BR": "veja suas ações",
+                        "en-US": "see your stocks",
+                        "es-ES": "vea sus acciones"
+                    }
+                },
+                {
+                    name: "stocks",
+                    description: "see all stocks",
+                    type: ApplicationCommandOptionType.Subcommand,
+                    nameLocalizations: {
+                        "pt-BR": "ações",
+                        "en-US": "stocks",
+                        "es-ES": "acciones"
+                    },
+                    descriptionLocalizations: {
+                        "pt-BR": "veja todas as ações",
+                        "en-US": "see all stocks",
+                        "es-ES": "vea todas las acciones"
+                    }
+                }
+            ]
         }
     ],
     nameLocalizations: {
@@ -443,6 +556,37 @@ createCommand({
         "pt-BR": "comandos de economia",
         "en-US": "economy commands",
         "es-ES": "comandos de economía",
+    },
+    dmPermission: false,
+    async autocomplete(interaction) {
+        const { options } = interaction;
+        const subCommandGroup = options.getSubcommandGroup()
+        const subCommand = options.getSubcommand()
+        const focused = options.getFocused()
+
+        switch (subCommandGroup) {
+            case "investment": {
+                switch (subCommand) {
+                    case "buy": {
+                        const stocks = await prisma.stock.findMany({
+                            where: {
+                                OR: [
+                                    { name: { contains: focused, mode: "insensitive" } },
+                                    { description: { contains: focused, mode: "insensitive" } }
+                                ]
+                            }
+                        })
+
+                        const amount = options.getNumber("amount");
+
+                        return interaction.respond(stocks.map(stock => ({
+                            name: `${stock.id} - ${stock.name} price: ${stock.price.toNumber()} value to pay: ${amount ? amount * stock.price.toNumber() : "unknown"}`,
+                            value: `${stock.id}`
+                        })).slice(0, 25))
+                    }
+                }
+            }
+        }
     },
     async run(interaction) {
         const { options } = interaction;
@@ -460,6 +604,9 @@ createCommand({
             }
             case "cassino": {
                 await cassinoEconomyCommands(interaction)
+            }
+            case "investment": {
+                await investmentsEconomyCommands(interaction)
             }
         }
     }

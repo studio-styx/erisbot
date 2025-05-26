@@ -192,7 +192,7 @@ export async function generalEconomyCommands(interaction: ChatInputCommandIntera
             const bankFilePath = path.join(__dirname, "../../../jsons/bank.json");
             const { bankMoney }: { bankMoney: number } = JSON.parse(await readFile(bankFilePath, "utf-8"));
 
-            const dailyValue = Math.floor(Math.random() * 101);
+            const dailyValue = Math.floor(Math.random() * 51);
 
             if (dailyValue > bankMoney) {
                 interaction.editReply(res.danger(t("bankEmpty", { emoji: icon.denied })));
@@ -364,13 +364,14 @@ export async function generalEconomyCommands(interaction: ChatInputCommandIntera
             const nextUsers = users.slice(10, 20);
 
             const richestUser = interaction.client.users.cache.get(topUsers[0].id);
+            const findUser = (userid: string) => interaction.client.users.cache.get(userid);
 
             const embed = createEmbed({
                 title: "Leaderboard",
                 fields: [
                     {
                         name: "",
-                        value: topUsers.map((user, index) => `${index + 1}. ${userMention(user.id)} - **${user.money.add(user.bank).toNumber()}** stx`).join("\n"),
+                        value: topUsers.map((user, index) => `${index + 1}. ${findUser(user.id)?.displayName} - **${user.money.add(user.bank).toNumber()}** stx`).join("\n"),
                         inline: true
                     }
                 ],
@@ -393,7 +394,19 @@ export async function generalEconomyCommands(interaction: ChatInputCommandIntera
             return;
         }
         case "jobs": {
-            const companys = await prisma.company.findMany();
+            const companys = await prisma.company.findMany({
+                orderBy: [
+                    {
+                        experience: "asc"
+                    },
+                    {
+                        difficulty: "asc"
+                    },
+                    {
+                        wage: "desc"
+                    }
+                ]
+            });
 
             interaction.reply(menus.jobs.avaibleJobs(companys, 0))
             return;
@@ -535,7 +548,7 @@ export async function generalEconomyCommands(interaction: ChatInputCommandIntera
                         where: { id: interaction.user.id },
                         data: { 
                             money: { increment: company.wage }, 
-                            xp: { increment: Math.floor(Math.random() * (40 - 10 + 1)) + 10 } 
+                            xp: { increment: Math.floor(Math.random() * (25 - 10 + 1)) + 10 } 
                         }
                     });
         
@@ -582,12 +595,12 @@ export async function generalEconomyCommands(interaction: ChatInputCommandIntera
                         }
                     },
                     update: {
-                        willEndIn: new Date(now.getTime() + 1000 * 60 * 60)
+                        willEndIn: new Date(now.getTime() + (1000 * 60 * 60) * 2)
                     },
                     create: {
                         userId: interaction.user.id,
                         name: "work",
-                        willEndIn: new Date(now.getTime() + 1000 * 60 * 60)
+                        willEndIn: new Date(now.getTime() + (1000 * 60 * 60) * 2)
                     }
                 });
                 return;
@@ -596,6 +609,19 @@ export async function generalEconomyCommands(interaction: ChatInputCommandIntera
                 interaction.editReply(res.danger(t('unexpected_error', { icon: icon.error })))
                 return;
             }
+        }
+        case "dismiss": {
+            await interaction.deferReply({ flags });
+
+            await prisma.user.update({
+                where: { id: interaction.user.id },
+                data: {
+                    companyId: { set: null }
+                }
+            });
+
+            interaction.editReply(res.danger(`${icon.success} | você saiu do seu emprego!`));
+            return;
         }
     }
 }

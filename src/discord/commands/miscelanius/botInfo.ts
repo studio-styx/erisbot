@@ -83,64 +83,75 @@ createCommand({
     },
     async run(interaction) {
         await i18next.changeLanguage(interaction.locale);
+        const { user } = interaction
         switch (interaction.options.getSubcommand()) {
             case "info": {
-                const botMember = interaction.guild?.members.me;
-                const canEmbed = botMember?.permissionsIn(interaction.channel!).has('EmbedLinks');
+                const os = await import("os");
+                const djsVersion = require("discord.js").version || "14.x.x";
 
-                if (!canEmbed) {
-                    const t = (key: string) => i18next.t(`errors/missingPermissions:${key}`);
-                    interaction.reply(t("embedlink"));
-                    return
-                }
-                const t = (key: string) => i18next.t(`commands/botInfo:info.${key}`) as string;   
+                const formatBytes = (bytes: number) => {
+                    const gb = bytes / (1024 ** 3);
+                    const mb = bytes / (1024 ** 2);
+                    return gb >= 1
+                        ? `${gb.toFixed(2)} GB`
+                        : `${mb.toFixed(2)} MB`;
+                };
+
+                const ramUse = os.totalmem() - os.freemem();
+                const maxRam = os.totalmem();
+                const ramUsePercent = Math.round((ramUse / maxRam) * 100);
+
+                const cpu = os.cpus()[0];
+                const cpuModel = cpu.model;
+                const cpuSpeed = cpu.speed;
+                const cpuCores = os.cpus().length;
+                const cpuUsage = os.loadavg()[0];
+                const cpuUsagePercent = Math.round(cpuUsage * 100);
 
                 const container = createContainer({
                     accentColor: "#a13d67",
                     components: [
-                        t("aboutTitle"),
-                        createSection({
-                            content: t("aboutDescription"),
-                            thumbnail: interaction.client.user.displayAvatarURL()
-                        }),
-                        createRow(
-                            new ButtonBuilder({
-                                label: t("githubButton"),
-                                style: ButtonStyle.Link,
-                                url: "https://github.com/studio-styx/erisbot"
-                            })
+                        `## Olá ${user.displayName}, veja minhas informações abaixo!`,
+                        createSeparator(),
+                        brBuilder(
+                            `### Curiosidades`,
+                            `- Fui feita com TypeScript e [bun](https://bun.sh/) (runtime concorrente do node), mas era pra eu ter sido feita originalmente com Kotlin e JDA`,
+                            `- Minha desenvolvedora é o **Studio Styx**, comandado por **BirdTool**, saiba mais usando o comando \`/bot creators\``,
+                            `- Sou um bot de código aberto e meu código fonte está disponível no [GitHub](https://github.com/studio-styx/erisbot)`,
+                            `- Uso o banco de dados PostgreSQL hospedado pela [Supabase](https://supabase.com/)`,
+                            `- Sou hospedada pelo **Styx host** uma hospedagem própria do Studio Styx!`
                         ),
-                        createSeparator({ large: true }),
-                        brBuilder(t("featuresTitle"), "", t("featuresList")),
-                        createRow(
-                            new ButtonBuilder({
-                                label: t("discordJs"),
-                                style: ButtonStyle.Link,
-                                url: "https://discord.js.org"
-                            }),
-                            new ButtonBuilder({
-                                label: t("developer"),
-                                style: ButtonStyle.Secondary,
-                                customId: "redirects/botCreators"
-                            }),
-                            new ButtonBuilder({
-                                label: t("host"),
-                                style: ButtonStyle.Link,
-                                url: "https://discloud.com"
-                            })
+                        createSeparator(),
+                        brBuilder(
+                            `### 🧠 Informações teóricas`,
+                            `> **Versão do Bun:** ${process.versions.bun || "1.2.x"}`,
+                            `> **Versão do Discord.js:** ${djsVersion || "14.x.x"}`,
+                            `> **Versão do Constatic:** 1.2.6`,
+                            `> **Minha versão:** 0.3.5-beta2`
+                        ),
+                        createSeparator(),
+                        brBuilder(
+                            `### ⚙️ Informações de uso`,
+                            `> **Uso de memória:** ${formatBytes(ramUse)} — ${ramUsePercent}%`,
+                            `> **Memória total:** ${formatBytes(maxRam)}`,
+                            `> **Uso de CPU:** ${cpuUsagePercent}%`,
+                            `> **Modelo de CPU:** ${cpuModel}`,
+                            `> **Velocidade da CPU:** ${cpuSpeed} MHz`,
+                            `> **Núcleos:** ${cpuCores}`
                         )
                     ]
                 });
 
                 interaction.reply({
-                    flags: ["Ephemeral", "IsComponentsV2"],
+                    flags: ["IsComponentsV2"],
                     components: [container]
-                })
+                });
                 return;
             }
+
             case "creators": {
                 const t = (key: string) => i18next.t(`commands/botInfo:creators.${key}`);
-                
+
                 try {
                     const embed = new EmbedBuilder({
                         description: t("title"),
@@ -151,7 +162,7 @@ createCommand({
                         ],
                         color: 0x791b1b
                     });
-            
+
                     await interaction.reply({
                         flags: ["Ephemeral"],
                         embeds: [embed]
@@ -169,20 +180,20 @@ createCommand({
                     });
                 }
                 return;
-            }            
+            }
             case "commands": {
                 const commandId = await getCommandId(interaction, "bot")
-                
+
                 interaction.reply(menus.commands(commandId, "bot"))
                 return;
             }
             case "ping": {
                 const start = Date.now();
                 await interaction.deferReply({ flags });
-            
+
                 const apiPing = interaction.client.ws.ping < 1 ? 0 : interaction.client.ws.ping;
                 const botPing = Date.now() - start;
-            
+
                 try {
                     await interaction.editReply({
                         embeds: [
@@ -198,7 +209,7 @@ createCommand({
                         `🏓 **Ping do Bot:** ${botPing}ms\n**Ping da API:** ${apiPing}ms`
                     );
                 }
-            
+
                 return;
             }
         }

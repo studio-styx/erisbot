@@ -51,7 +51,7 @@ export async function cassinoEconomyCommands(interaction: ChatInputCommandIntera
                 let description = "";
                 const trackLength = 15;
                 
-                for (const [key, h] of Object.entries(horses)) {
+                for (const [, h] of Object.entries(horses)) {
                     const progress = "―".repeat(trackLength);
                     const position = Math.min(h.position, trackLength - 1);
                     const track = progress.split("");
