@@ -4,6 +4,7 @@ import { brBuilder, createContainer, createRow, createSection, createSeparator }
 import i18next from "i18next";
 import { menus } from "#menus";
 import { getCommandId } from "#utils";
+import { existsSync, readFileSync } from "fs";
 
 createCommand({
     name: "bot",
@@ -108,6 +109,35 @@ createCommand({
                 const cpuUsage = os.loadavg()[0];
                 const cpuUsagePercent = Math.round(cpuUsage * 100);
 
+                function getOSInfo(): string {
+                    const platform = os.platform();
+                    const arch = os.arch();
+
+                    if (platform === "win32") {
+                        return `Windows ${arch}`;
+                    }
+
+                    if (platform === "darwin") {
+                        return `macOS ${arch}`;
+                    }
+
+                    if (platform === "linux") {
+                        const osReleasePath = "/etc/os-release";
+                        if (existsSync(osReleasePath)) {
+                            const content = readFileSync(osReleasePath, "utf8");
+                            const nameMatch = content.match(/^NAME="?(.*)"?$/m);
+                            const versionMatch = content.match(/^VERSION="?(.*)"?$/m);
+                            const distro = nameMatch?.[1] ?? "Linux";
+                            const version = versionMatch?.[1] ?? "";
+                            return `${distro} ${version} ${arch}`;
+                        }
+
+                        return `Linux ${arch}`;
+                    }
+
+                    return `Desconhecido (${platform} ${arch})`;
+                }
+
                 const container = createContainer({
                     accentColor: "#a13d67",
                     components: [
@@ -127,7 +157,8 @@ createCommand({
                             `> **Versão do Bun:** ${process.versions.bun || "1.2.x"}`,
                             `> **Versão do Discord.js:** ${djsVersion || "14.x.x"}`,
                             `> **Versão do Constatic:** 1.2.6`,
-                            `> **Minha versão:** 0.3.5-beta2`
+                            `> **Minha versão:** 0.3.5-beta2`,
+                            `> **Sistema operacional:** ${getOSInfo()}`
                         ),
                         createSeparator(),
                         brBuilder(
