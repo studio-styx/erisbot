@@ -123,7 +123,11 @@ export async function investmentsEconomyCommands(interaction: ChatInputCommandIn
                     price: "asc"
                 },
                 include: {
-                    history: true
+                    history: {
+                        orderBy: {
+                            date: "desc"
+                        },
+                    }
                 }
             });
 

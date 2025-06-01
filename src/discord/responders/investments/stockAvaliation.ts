@@ -41,7 +41,11 @@ createResponder({
                 id: Number(stockId),
             },
             include: {
-                history: true,
+                history: {
+                    orderBy: {
+                        date: "desc",
+                    },
+                },
             }
         })
 

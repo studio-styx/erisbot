@@ -46,7 +46,7 @@ export function userStocksMenu<R>(allStocks: Stocks[], page: number = 0): R {
                     `> **Preço de venda (tudo):** Ꞩ ${stock.stock.price.toNumber() * stock.amount}`
                 ),
                 button: new ButtonBuilder({
-                    customId: `investment/manage/${stock.stockId}`,
+                    customId: `investment/manage/${stock.stockId}/info`,
                     label: "Gerenciar ação",
                     style: ButtonStyle.Primary
                 })
