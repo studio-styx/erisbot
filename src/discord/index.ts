@@ -18,5 +18,21 @@ export const { createCommand, createEvent, createResponder } = setupCreators({
                 interaction.reply(res.danger(errorMessage));
             }
         }
+    },
+    responders: {
+        onNotFound(interaction) {
+            interaction.reply(res.danger(`${icon.error} | Responder not found!`, { flags: ["Ephemeral"] }));
+        },
+        onError(error, interaction) {
+            console.error(error);
+
+            const errorMessage = `**${icon.error} | An error occurred while executing the responder: \`${error instanceof Error? error.message : "Unknown error"}\`**`;
+
+            if (interaction.deferred) {
+                interaction.editReply(res.danger(errorMessage));
+            } else if (!interaction.replied) {
+                interaction.reply(res.danger(errorMessage));
+            }
+        },
     }
 });

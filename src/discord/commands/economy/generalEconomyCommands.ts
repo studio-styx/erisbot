@@ -189,18 +189,8 @@ export async function generalEconomyCommands(interaction: ChatInputCommandIntera
                 return;
             }
 
-            const bankFilePath = path.join(__dirname, "../../../jsons/bank.json");
-            const { bankMoney }: { bankMoney: number } = JSON.parse(await readFile(bankFilePath, "utf-8"));
-
             const dailyValue = Math.floor(Math.random() * 51);
 
-            if (dailyValue > bankMoney) {
-                interaction.editReply(res.danger(t("bankEmpty", { emoji: icon.denied })));
-                await registerLog(t("logBankEmpty"), "error", 3, id);
-                return;
-            }
-
-            // Define novo cooldown
             const willEnd = new Date(now.getTime() + 24 * 60 * 60 * 1000);
             if (cooldownData?.id) {
                 await prisma.cooldown.update({
@@ -213,7 +203,6 @@ export async function generalEconomyCommands(interaction: ChatInputCommandIntera
                 });
             }
 
-            // Cria usuário se não existir e atualiza dinheiro
             const newUser = await prisma.user.upsert({
                 where: { id },
                 create: { id },

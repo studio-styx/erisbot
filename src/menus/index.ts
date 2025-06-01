@@ -1,4 +1,5 @@
 import { commandsMenu } from "./commandsMenu.js";
+import { stockInfoMenu } from "./investment/stockInfo.js";
 import { stocksMenu } from "./investment/stocks.js";
 import { userStocksMenu } from "./investment/userStocks.js";
 import { avaibleJobsMenu } from "./jobs/avaibleJobs.js";
@@ -14,6 +15,7 @@ export const menus = {
     },
     investment: {
         userStocks: userStocksMenu,
-        stocks: stocksMenu
+        stocks: stocksMenu,
+        stockInfoMenu: stockInfoMenu
     }
 }

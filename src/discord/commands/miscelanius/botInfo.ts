@@ -1,6 +1,6 @@
 import { createCommand } from "#base";
-import { ApplicationCommandOptionType, ApplicationCommandType, ButtonBuilder, ButtonStyle, EmbedBuilder } from "discord.js";
-import { brBuilder, createContainer, createRow, createSection, createSeparator } from "@magicyan/discord";
+import { ApplicationCommandOptionType, ApplicationCommandType, EmbedBuilder, version } from "discord.js";
+import { brBuilder, createContainer, createSeparator } from "@magicyan/discord";
 import i18next from "i18next";
 import { menus } from "#menus";
 import { getCommandId } from "#utils";
@@ -88,7 +88,7 @@ createCommand({
         switch (interaction.options.getSubcommand()) {
             case "info": {
                 const os = await import("os");
-                const djsVersion = require("discord.js").version || "14.x.x";
+                const djsVersion = version
 
                 const formatBytes = (bytes: number) => {
                     const gb = bytes / (1024 ** 3);
@@ -138,6 +138,33 @@ createCommand({
                     return `Desconhecido (${platform} ${arch})`;
                 }
 
+                const runtime = {
+                    name: process.versions.bun ? "bun": "node",
+                    version: process.versions.bun ?? process.versions.node,
+                }
+
+                const processMemory = process.memoryUsage();
+                const erisRamUse = processMemory.rss;
+
+                let containerRamLimit = os.totalmem();
+
+                try {
+                    const limitStr = readFileSync("/sys/fs/cgroup/memory.max", "utf8").trim();
+                    if (limitStr !== "max") {
+                        containerRamLimit = parseInt(limitStr);
+                    }
+                } catch {
+                    try {
+                        const legacyLimitStr = readFileSync("/sys/fs/cgroup/memory/memory.limit_in_bytes", "utf8").trim();
+                        containerRamLimit = parseInt(legacyLimitStr);
+                    } catch {
+                        // Ignora erro e mantém fallback
+                    }
+                }
+
+                const erisRamUsePercent = Math.round((erisRamUse / containerRamLimit) * 100);
+
+
                 const container = createContainer({
                     accentColor: "#a13d67",
                     components: [
@@ -145,26 +172,28 @@ createCommand({
                         createSeparator(),
                         brBuilder(
                             `### Curiosidades`,
-                            `- Fui feita com TypeScript e [bun](https://bun.sh/) (runtime concorrente do node), mas era pra eu ter sido feita originalmente com Kotlin e JDA`,
                             `- Minha desenvolvedora é o **Studio Styx**, comandado por **BirdTool**, saiba mais usando o comando \`/bot creators\``,
                             `- Sou um bot de código aberto e meu código fonte está disponível no [GitHub](https://github.com/studio-styx/erisbot)`,
-                            `- Uso o banco de dados PostgreSQL hospedado pela [Supabase](https://supabase.com/)`,
-                            `- Sou hospedada pelo **Styx host** uma hospedagem própria do Studio Styx!`
+                            `- Uso o banco de dados PostgreSQL hospedado pela [Neon](https://neon.com/)`,
+                            `- Sabia que era pra eu ter originalmente sido feita em Kotlin? é possivel ver meu código antigo nos primeiros commits do meu github`,
+                            `- Sou hospedada pela [Discloud!](https://beta.discloud.com/)`
                         ),
                         createSeparator(),
                         brBuilder(
                             `### 🧠 Informações teóricas`,
-                            `> **Versão do Bun:** ${process.versions.bun || "1.2.x"}`,
+                            `> **Versão do ${runtime.name}:** ${runtime.version}`,
                             `> **Versão do Discord.js:** ${djsVersion || "14.x.x"}`,
                             `> **Versão do Constatic:** 1.2.6`,
-                            `> **Minha versão:** 0.3.5-beta2`,
+                            `> **Minha versão:** 0.3.6`,
                             `> **Sistema operacional:** ${getOSInfo()}`
                         ),
                         createSeparator(),
                         brBuilder(
                             `### ⚙️ Informações de uso`,
-                            `> **Uso de memória:** ${formatBytes(ramUse)} — ${ramUsePercent}%`,
-                            `> **Memória total:** ${formatBytes(maxRam)}`,
+                            `> **Uso de memória do sistema:** ${formatBytes(ramUse)} — ${ramUsePercent}%`,
+                            `> **Memória total do sistema:** ${formatBytes(maxRam)}`,
+                            `> **Uso de memória da Eris:** ${formatBytes(erisRamUse)} — ${erisRamUsePercent}%`,
+                            `> **Limite de memória do container:** ${formatBytes(containerRamLimit)}`,
                             `> **Uso de CPU:** ${cpuUsagePercent}%`,
                             `> **Modelo de CPU:** ${cpuModel}`,
                             `> **Velocidade da CPU:** ${cpuSpeed} MHz`,

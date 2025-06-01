@@ -9,12 +9,13 @@
     "dev:dev": "bun --env-file .env.dev ./src/index.ts",
     "watch": "bun --hot ./src/index.ts",
     "watch:dev": "bun --watch --env-file .env.dev ./src/index.ts",
-    "start": "bun --env-file .env ./src/index.ts",
+    "start": "node --env-file .env .",
     "start:dev": "bun --env-file .env.dev ."
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
     "@magicyan/discord": "1.4.6",
+    "@napi-rs/canvas": "^0.1.70",
     "@prisma/client": "^6.8.2",
     "chalk": "5.4.1",
     "discord.js": "14.19.3",

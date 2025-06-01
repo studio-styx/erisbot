@@ -43,6 +43,6 @@
 	},
 	
 	// Include and Exclude Options
-	"include": ["src"],
+	"include": ["src", "run.js"],
 	"exclude": ["node_modules"]
 }

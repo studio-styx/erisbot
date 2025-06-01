@@ -543,6 +543,40 @@ createCommand({
                         "en-US": "see all stocks",
                         "es-ES": "vea todas las acciones"
                     }
+                },
+                {
+                    name: "ia-avaliation",
+                    description: "see the IA's avaliation of the stocks",
+                    type: ApplicationCommandOptionType.Subcommand,
+                    nameLocalizations: {
+                        "pt-BR": "avaliação-da-ia",
+                        "en-US": "ia-avaliation",
+                        "es-ES": "avaliación-de-la-ia"
+                    },
+                    descriptionLocalizations: {
+                        "pt-BR": "veja a avaliação da IA das ações",
+                        "en-US": "see the IA's avaliation of the stocks",
+                        "es-ES": "vea la avaliación de la IA de las acciones"
+                    },
+                    options: [
+                        {
+                            name: "amount",
+                            description: "Quantity you want to buy for AI to evaluate, do not worry you will not buy",
+                            type: ApplicationCommandOptionType.Number,
+                            required: true,
+                            minValue: 1,
+                            nameLocalizations: {
+                                "pt-BR": "quantia",
+                                "en-US": "amount",
+                                "es-ES": "cantidad"
+                            },
+                            descriptionLocalizations: {
+                                "pt-BR": "quantia que você quer comprar para a IA avaliar, não se preocupe você não vai comprar",
+                                "en-US": "Quantity you want to buy for AI to evaluate, do not worry you will not buy",
+                                "es-ES": "cantidad que desea comprar para que la IA evalúe, no se preocupe, no lo comprará"
+                            }
+                        }
+                    ]
                 }
             ]
         }

@@ -64,6 +64,7 @@ model Stock {
   name        String
   price       Decimal        @db.Decimal(12, 2)
   description String?
+  iaAvaliation String?
   history     StockHistory[]
   holders     StockHolding[]
 }

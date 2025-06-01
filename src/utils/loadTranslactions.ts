@@ -2,7 +2,9 @@ import i18next, { TFunction } from "i18next";
 import fs from "fs/promises";
 import path from "path";
 
-const localesPath = path.resolve("src/locales");
+const basePath = process.versions.node ? "build" : "src"
+
+const localesPath = path.resolve(`${basePath}/locales`);
 
 export async function loadTranslations(): Promise<TFunction<"translation", undefined>> {
   if (!i18next.isInitialized) {
