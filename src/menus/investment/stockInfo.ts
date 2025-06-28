@@ -2,7 +2,6 @@ import { createGraphic } from '#functions'
 import { Prisma } from '#prisma'
 import { settings } from '#settings'
 import { brBuilder, createContainer, createRow, createSeparator } from '@magicyan/discord'
-import { createCanvas } from '@napi-rs/canvas'
 import { AttachmentBuilder, ButtonBuilder, ButtonStyle, InteractionReplyOptions } from 'discord.js'
 
 interface History {

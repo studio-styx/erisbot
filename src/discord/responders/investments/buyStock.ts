@@ -79,7 +79,7 @@ createResponder({
                 },
             })
 
-            interaction.editReply(res.success(`${icon.success} | You bought **${amount}** stocks of \´${stock.name}\``));
+            interaction.editReply(res.success(`${icon.success} | You bought **${amount}** stocks of \`${stock.name}\``));
         }
         return;
     },

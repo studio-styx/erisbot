@@ -90,3 +90,9 @@ model StockHolding {
 
   @@unique([userId, stockId])
 }
+
+model GuildSettings {
+  id      String  @id
+  chatBotChannels String[] @default([])
+  chatBotEnabled  Boolean @default(false)
+}

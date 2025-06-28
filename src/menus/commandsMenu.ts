@@ -31,6 +31,14 @@ export function commandsMenu<R>(commandId: string, page: "economy" | "bot" | "us
                 `</economy cassino horse-racing:${commandId}> - bet in horse racing`,
             ),
             inline: true
+        }, {
+            name: "",
+            value: brBuilder(
+                `</economy investment buy:${commandId}> - buy a stock`,
+                `</economy investment own-stocks:${commandId}> - see your own stocks`,
+                `</economy investment ia-avaliation:${commandId}> - see the ia avaliation about the stocks`,
+            ),
+            inline: true
         })
     } else if (page === "bot") {
         embed.addFields({

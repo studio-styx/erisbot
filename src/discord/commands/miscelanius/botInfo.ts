@@ -184,7 +184,7 @@ createCommand({
                             `> **Versão do ${runtime.name}:** ${runtime.version}`,
                             `> **Versão do Discord.js:** ${djsVersion || "14.x.x"}`,
                             `> **Versão do Constatic:** 1.2.6`,
-                            `> **Minha versão:** 0.3.6`,
+                            `> **Minha versão:** 0.4.0-Beta1`,
                             `> **Sistema operacional:** ${getOSInfo()}`
                         ),
                         createSeparator(),

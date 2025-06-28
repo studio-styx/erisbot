@@ -4,6 +4,7 @@ import { stocksMenu } from "./investment/stocks.js";
 import { userStocksMenu } from "./investment/userStocks.js";
 import { avaibleJobsMenu } from "./jobs/avaibleJobs.js";
 import { interviewMenu } from "./jobs/interview.js";
+import { dashboardMenu } from "./settings/dashboard.js";
 import { userLogsMenu } from "./userLogs.js";
 
 export const menus = {
@@ -17,5 +18,8 @@ export const menus = {
         userStocks: userStocksMenu,
         stocks: stocksMenu,
         stockInfoMenu: stockInfoMenu
+    },
+    settings: {
+        dashboard: dashboardMenu
     }
 }

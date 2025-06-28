@@ -228,7 +228,7 @@ export async function cassinoEconomyCommands(interaction: ChatInputCommandIntera
             const slots = ["🍒", "🍊", "🍋", "🍉", "🍇", "🍓", "🍎", "🍐"];
             const jackpotChance = 0.15;
             const isForcedJackpot = Math.random() < jackpotChance;
-            let slot1, slot2, slot3;
+            let slot1: string, slot2: string, slot3: string;
         
             if (isForcedJackpot) {
                 const winningSymbol = slots[Math.floor(Math.random() * slots.length)];
