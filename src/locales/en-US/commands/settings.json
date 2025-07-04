@@ -1,0 +1,36 @@
+{
+    "dashboard": {
+        "serverSettings": "## {{icon}} - Server settings",
+        "channelsToChatBot": {
+            "title": "{{icon}} - **Channels set for chatbot:**",
+            "noChannel": "No channel defined",
+            "selectChannels": "Select channels",
+            "enabled": "{{icon}} - **ChatBot:** Enabled",
+            "disabled": "{{icon}} - **ChatBot:** Disabled",
+            "buttonEnabled": "Enable",
+            "buttonDisabled": "Disable",
+            "noChannelWarning": "Set some channel to enable the chatbot"
+        },
+        "disabledCommandsChannels": {
+            "title": "{{icon}} - **Channels set to disable commands**",
+            "noChannel": "No channel defined",
+            "selectChannels": "Select channels",
+            "enabled": "{{icon}} - **Disabled channels:** Enabled",
+            "disabled": "{{icon}} - **Disabled channels:** Disabled",
+            "buttonEnabled": "Disable",
+            "buttonDisabled": "Enable",
+            "noChannelWarning": "Set some channel to enable this feature"
+        },
+        "exclusiveCommandsChannels": {
+            "title": "{{icon}} - **Channels set to allow commands**",
+            "noChannel": "No channel defined",
+            "selectChannels": "Select channels",
+            "enabled": "{{icon}} - **Exclusive channels:** Enabled",
+            "disabled": "{{icon}} - **Exclusive channels:** Disabled",
+            "buttonEnabled": "Disable",
+            "buttonDisabled": "Enable",
+            "noChannelWarning": "Set some channel to enable this feature"
+        },
+        "note": "-# Note: The command is not blocked if the user is an administrator."
+    }
+}

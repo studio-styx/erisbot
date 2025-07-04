@@ -1,0 +1,36 @@
+{
+    "dashboard": {
+        "serverSettings": "## {{icon}} - Configuración del servidor",
+        "channelsToChatBot": {
+            "title": "{{icon}} - **Canales definidos para el chatbot:**",
+            "noChannel": "Ningún canal definido",
+            "selectChannels": "Seleccionar canales",
+            "enabled": "{{icon}} - **ChatBot:** Habilitado",
+            "disabled": "{{icon}} - **ChatBot:** Deshabilitado",
+            "buttonEnabled": "Habilitar",
+            "buttonDisabled": "Deshabilitar",
+            "noChannelWarning": "Establece algún canal para habilitar el chatbot"
+        },
+        "disabledCommandsChannels": {
+            "title": "{{icon}} - **Canales definidos para deshabilitar comandos**",
+            "noChannel": "Ningún canal definido",
+            "selectChannels": "Seleccionar canales",
+            "enabled": "{{icon}} - **Canales deshabilitados:** Habilitado",
+            "disabled": "{{icon}} - **Canales deshabilitados:** Deshabilitado",
+            "buttonEnabled": "Deshabilitar",
+            "buttonDisabled": "Habilitar",
+            "noChannelWarning": "Establece algún canal para habilitar esta función"
+        },
+        "exclusiveCommandsChannels": {
+            "title": "{{icon}} - **Canales definidos para permitir comandos**",
+            "noChannel": "Ningún canal definido",
+            "selectChannels": "Seleccionar canales",
+            "enabled": "{{icon}} - **Canales exclusivos:** Habilitado",
+            "disabled": "{{icon}} - **Canales exclusivos:** Deshabilitado",
+            "buttonEnabled": "Deshabilitar",
+            "buttonDisabled": "Habilitar",
+            "noChannelWarning": "Establece algún canal para habilitar esta función"
+        },
+        "note": "-# Nota: El comando no se bloquea si el usuario es un administrador."
+    }
+}

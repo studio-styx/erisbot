@@ -164,6 +164,8 @@ createCommand({
 
                 const erisRamUsePercent = Math.round((erisRamUse / containerRamLimit) * 100);
 
+                const rootDir = process.cwd();
+                const packageJson = await import(`${rootDir}/package.json`)
 
                 const container = createContainer({
                     accentColor: "#a13d67",
@@ -184,7 +186,7 @@ createCommand({
                             `> **Versão do ${runtime.name}:** ${runtime.version}`,
                             `> **Versão do Discord.js:** ${djsVersion || "14.x.x"}`,
                             `> **Versão do Constatic:** 1.2.6`,
-                            `> **Minha versão:** 0.4.0-Beta1`,
+                            `> **Minha versão:** ${packageJson.version}`,
                             `> **Sistema operacional:** ${getOSInfo()}`
                         ),
                         createSeparator(),

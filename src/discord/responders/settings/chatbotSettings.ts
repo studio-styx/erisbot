@@ -20,12 +20,20 @@ createResponder({
                     serverSettings = await prisma.guildSettings.findUnique({ where: { id: interaction.guildId } }) || {
                         chatBotChannels: [],
                         chatBotEnabled: false,
+                        channelsCommandDisabled: [],
+                        channelsCommandEnabled: [],
+                        channelsCommandDisabledIsHabilited: false,
+                        channelsCommandEnabledIsHabilited: false,
                     }
                 }
 
                 const newSS = setServerSettings(interaction.guildId, {
                     chatBotChannels: channels,
                     chatBotEnabled: serverSettings?.chatBotEnabled || false,
+                    channelsCommandDisabled: serverSettings?.channelsCommandDisabled || [],
+                    channelsCommandEnabled: serverSettings?.channelsCommandEnabled || [],
+                    channelsCommandDisabledIsHabilited: serverSettings?.channelsCommandDisabledIsHabilited || false,
+                    channelsCommandEnabledIsHabilited: serverSettings?.channelsCommandEnabledIsHabilited || false,
                 });
 
                 await prisma.guildSettings.upsert({
@@ -45,6 +53,10 @@ createResponder({
                     serverSettings = await prisma.guildSettings.findUnique({ where: { id: interaction.guildId } }) || {
                         chatBotChannels: [],
                         chatBotEnabled: false,
+                        channelsCommandDisabled: [],
+                        channelsCommandEnabled: [],
+                        channelsCommandDisabledIsHabilited: false,
+                        channelsCommandEnabledIsHabilited: false,
                     }
                 }
 
@@ -52,6 +64,10 @@ createResponder({
                     const newSS = setServerSettings(interaction.guildId, {
                         chatBotChannels: serverSettings.chatBotChannels,
                         chatBotEnabled: false,
+                        channelsCommandDisabled: serverSettings.channelsCommandDisabled,
+                        channelsCommandEnabled: serverSettings.channelsCommandEnabled,
+                        channelsCommandDisabledIsHabilited: serverSettings.channelsCommandDisabledIsHabilited,
+                        channelsCommandEnabledIsHabilited: serverSettings.channelsCommandEnabledIsHabilited,
                     });
 
                     await prisma.guildSettings.update({
@@ -65,6 +81,10 @@ createResponder({
                     const newSS = setServerSettings(interaction.guildId, {
                         chatBotChannels: serverSettings.chatBotChannels,
                         chatBotEnabled: true,
+                        channelsCommandDisabled: serverSettings.channelsCommandDisabled,
+                        channelsCommandEnabled: serverSettings.channelsCommandEnabled,
+                        channelsCommandDisabledIsHabilited: serverSettings.channelsCommandDisabledIsHabilited,
+                        channelsCommandEnabledIsHabilited: serverSettings.channelsCommandEnabledIsHabilited,
                     });
 
                     await prisma.guildSettings.upsert({

@@ -4,6 +4,7 @@ import { menus } from "#menus";
 import { PrismaClient } from "#prisma/client";
 import { res } from "#utils";
 import { ApplicationCommandType } from "discord.js";
+import i18next from "i18next";
 
 const prisma = new PrismaClient();
 
@@ -29,11 +30,19 @@ createCommand({
             return;
         }
 
+        const locale = interaction.locale
+
+        await i18next.changeLanguage(interaction.locale);
+
         let serverSettings = getServerSettings(interaction.guildId);
         if (!serverSettings) {
             serverSettings = await prisma.guildSettings.findUnique({ where: { id: interaction.guildId } }) || {
                 chatBotChannels: [],
                 chatBotEnabled: false,
+                channelsCommandDisabled: [],
+                channelsCommandEnabled: [],
+                channelsCommandDisabledIsHabilited: false,
+                channelsCommandEnabledIsHabilited: false,
             }
             setServerSettings(interaction.guildId, serverSettings);
         }

@@ -1,7 +1,6 @@
 import { createCommand } from "#base";
 import { PrismaClient } from "#prisma/client";
 import { icon, res } from "#utils";
-import { brBuilder } from "@magicyan/discord";
 import { ApplicationCommandOptionType, ApplicationCommandType, time } from "discord.js";
 
 const prisma = new PrismaClient();

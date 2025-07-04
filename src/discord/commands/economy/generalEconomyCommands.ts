@@ -7,9 +7,7 @@ import { settings } from "#settings";
 import { icon, res, resv2 } from "#utils";
 import { brBuilder, createContainer, createEmbed, createRow, createSeparator, createTextDisplay } from "@magicyan/discord";
 import { ButtonBuilder, ButtonStyle, ChatInputCommandInteraction, time, userMention } from "discord.js";
-import { readFile } from "fs/promises";
 import i18next from "i18next";
-import path from "path";
 
 const prisma = new PrismaClient()
 

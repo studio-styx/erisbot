@@ -221,21 +221,6 @@ createCommand({
                     }
                 },
                 {
-                    name: "shop",
-                    description: "check the shop",
-                    type: ApplicationCommandOptionType.Subcommand,
-                    nameLocalizations: {
-                        "pt-BR": "loja",
-                        "en-US": "shop",
-                        "es-ES": "tienda",
-                    },
-                    descriptionLocalizations: {
-                        "pt-BR": "ver a loja",
-                        "en-US": "check the shop",
-                        "es-ES": "ver la tienda",
-                    }
-                },
-                {
                     name: "jobs",
                     description: "search for a job",
                     type: ApplicationCommandOptionType.Subcommand,

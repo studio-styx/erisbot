@@ -5,6 +5,10 @@ const cache = new NodeCache({ stdTTL: 3600 }); // 1 hora de TTL
 export interface ServerSettings {
     chatBotChannels: string[];
     chatBotEnabled: boolean;
+    channelsCommandDisabled: string[];
+    channelsCommandEnabled: string[];
+    channelsCommandDisabledIsHabilited: boolean;
+    channelsCommandEnabledIsHabilited: boolean;
 }
 
 export function getServerSettings(guildId: string): ServerSettings | undefined {

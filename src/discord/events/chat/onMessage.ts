@@ -1,21 +1,24 @@
 import { createEvent } from "#base";
-import { getServerSettings, setServerSettings } from "#functions";
+import { defaultServerSettings, getServerSettings, setServerSettings } from "#functions";
 import { PrismaClient } from "#prisma";
 import { brBuilder } from "@magicyan/discord";
 import axios from "axios";
-import { Message, OmitPartialGroupDMChannel } from "discord.js";
+import { Client, Message, OmitPartialGroupDMChannel } from "discord.js";
 import NodeCache from "node-cache";
 
-const cache = new NodeCache({ stdTTL: 3600 });
+const cache = new NodeCache({ stdTTL: 2100 });
 
 const prisma = new PrismaClient();
 
 // Interface para tipagem da fila
 interface Requisition {
-    message: OmitPartialGroupDMChannel<Message<boolean>>;
+    channelId: string;
+    messageId: string;
+    authorId: string;
     content: string;
     date: Date;
 }
+
 
 // Interface para o cache
 interface CacheEntry {
@@ -44,10 +47,7 @@ createEvent({
         // Ignora mensagens de bots e da própria Éris
         if (message.author.bot || message.author.id === BOT_ID) return;
         if (!message.guild || !message.guildId) return;
-        const serverSettings = getServerSettings(message.guildId) || await prisma.guildSettings.findUnique({ where: { id: message.guildId }, select: { chatBotEnabled: true, chatBotChannels: true } }) || {
-            chatBotChannels: [],
-            chatBotEnabled: false,
-        };
+        const serverSettings = getServerSettings(message.guildId) || await prisma.guildSettings.findUnique({ where: { id: message.guildId } }) || defaultServerSettings;
 
         if (!serverSettings.chatBotEnabled) return;
         if (!serverSettings.chatBotChannels.includes(message.channelId)) return;
@@ -57,26 +57,43 @@ createEvent({
         const msg = message.content;
 
         // Adiciona a requisição à fila
-        requisitions(message.channelId).push({
-            message,
-            content: `user: ${message.author.displayName}: ${msg}`,
+        cache.set(`requisitions-${message.channelId}`, [...requisitions(message.channelId), {
+            channelId: message.channelId,
+            messageId: message.id,
+            authorId: message.author.id,
+            content: msg,
             date: new Date(),
-        });
+        }])
 
         if (!isProcessingQueue) {
-            processQueue(message.channelId);
+            processQueue(message.channelId, message.client, message);
         }
     }
 });
 
 // Função para processar a fila com intervalo de 1,5 segundos
-async function processQueue(channelId: string) {
+async function processQueue(channelId: string, client: Client, omit: OmitPartialGroupDMChannel<Message<boolean>>) {
     isProcessingQueue = true;
     const messagesC = messages(channelId);
     const requisitionsC = requisitions(channelId); // Obtém a fila de requisições do cache
 
-    while (requisitions.length > 0) {
-        const { message } = requisitionsC[0]; // Pega a primeira requisição da fila
+    while (requisitionsC.length > 0) {
+        const { messageId, channelId } = requisitionsC[0];
+
+        let message: Message;
+        try {
+            const channel = await client.channels.fetch(channelId);
+            if (!channel?.isTextBased()) throw new Error("Canal inválido");
+
+            message = await channel.messages.fetch(messageId);
+        } catch (err) {
+            console.warn("Não foi possível buscar a mensagem:", err);
+            requisitionsC.shift();
+            cache.set(`requisitions-${channelId}`, requisitionsC);
+            
+            cache.set(`requisitions-${channelId}`, requisitionsC);
+            continue;
+        }
 
         const userName = message.member?.displayName || message.author.username;
         const msgContent = message.content.toLowerCase();
@@ -84,20 +101,37 @@ async function processQueue(channelId: string) {
             ? (await message.channel.messages.fetch(message.reference.messageId)).author.id === BOT_ID
             : false;
 
+        // Adiciona a mensagem ao histórico ANTES de verificar shouldRespond
+        messagesC.push({
+            role: "user",
+            content: `${message.author.displayName}: ${message.content}`,
+        });
+
+        // Limita o histórico
+        if (messagesC.length > 12) {
+            messagesC.shift();
+        }
+        cache.set(`messages-${channelId}`, messagesC);
+
+        // Remove a mensagem da fila
+
         // Verifica se a mensagem menciona "eris" ou "éris"
         const mentionsEris = msgContent.includes("eris") || msgContent.includes("éris");
 
-        // Verifica se no histórico há interações relevantes com Éris ou o usuário
-        const recentContextIncludesBoth = messagesC.slice(-10).some(m =>
-            (m.content.toLowerCase().includes("éris") || m.content.toLowerCase().includes("eris")) &&
-            m.content.includes(userName)
+        // Verifica se há interações recentes com Éris no histórico
+        const hasRecentInteraction = messagesC.slice(-10).some(m => 
+            m.role === "assistant" || 
+            m.content.toLowerCase().includes("éris") || 
+            m.content.toLowerCase().includes("eris")
         );
 
         // Decide se deve responder
-        const shouldRespond = mentionsEris || isReplyToEris || recentContextIncludesBoth;
+        const shouldRespond = mentionsEris || isReplyToEris || hasRecentInteraction;
 
         if (!shouldRespond) {
             requisitionsC.shift();
+            cache.set(`requisitions-${channelId}`, requisitionsC);
+            
             await new Promise((resolve) => setTimeout(resolve, 1500));
             continue;
         }
@@ -107,22 +141,18 @@ async function processQueue(channelId: string) {
         const cacheEntry = responsesCache.get(cacheKey);
         if (cacheEntry && cacheEntry.authorId !== message.author.id) {
             await message.reply(cacheEntry.response);
-            requisitionsC.shift(); // Remove a requisição processada
+            requisitionsC.shift();
+            cache.set(`requisitions-${channelId}`, requisitionsC);
+             // Remove a requisição processada
             await new Promise((resolve) => setTimeout(resolve, 1500));
             continue;
         }
-
-        // Adiciona a mensagem ao histórico
-        messagesC.push({
-            role: "user",
-            content: `${message.author.displayName}: ${message.content}`,
-        });
 
         if (messages.length > 12) {
             messagesC.shift();
         }
 
-        message.channel.sendTyping();
+        omit.channel.sendTyping();
 
         try {
             const response = await axios.post(
@@ -134,14 +164,15 @@ async function processQueue(channelId: string) {
                             role: "system",
                             content: brBuilder(
                                 "Você é Éris, uma jovem adulta de 17 anos, gênero feminino, com um jeito desajeitado, simpática e às vezes tímida. É alegre quando pode e responde com brincadeiras.",
-                                "Você recebeu um histórico de mensagens, a mais atual é a mais recente. Responda apenas se a mensagem mais recente for direcionada explicitamente a você, ou seja, se contiver seu nome ('Éris') ou um comando claro como '!eris', ou se você estiver em um bate-papo ativo com o usuário. Caso contrário, responda apenas com: 'sem resposta' tudo minúsculo e sem textos adicionais.",
-                                "Se a mensagem não for claramente para você (ex.: usuários conversando entre si sem te mencionar), você deve ser discreta e não se intrometer, respondendo apenas com 'sem resposta'.",
+                                "Você recebeu um histórico de mensagens, a mais atual é a mais recente. Responda com base nas interações anteriores — se estiverem conversando com você ou se você for parte da conversa, continue naturalmente.",
+                                "Se perceber que as pessoas estão falando entre si e não com você, pode ignorar respondendo com 'sem resposta'.",
+                                "Você deve ser discreta quando não for chamada, mas mantenha o fluxo se a conversa parecer envolver você.",
                                 "Por favor, não simule ações, como '*sorri pra você*', '*cora*' ou qualquer ação descritiva.",
                                 "Não tente ter qualquer relação amorosa ou relacionamento com alguém, apenas amizade.",
                                 "Se a pergunta for muito complexa ou técnica, admita que não sabe responder, mantendo o personagem.",
                                 "Mantenha consistência nas respostas, lembrando do contexto das suas próprias mensagens anteriores no histórico.",
-                                "As mensagens podem vir de diferentes usuários, para saber quem mandou cada uma só ver o inicio da mensagem que estará: \"user: <nome do usuário>: <mensagem>\""
-                            ),
+                                "As mensagens podem vir de diferentes usuários, para saber quem mandou cada uma só ver o início da mensagem que estará: \"user: <nome do usuário>: <mensagem>\""
+                            )                            
                         },
                         ...messagesC,
                     ],
@@ -159,6 +190,8 @@ async function processQueue(channelId: string) {
 
             if (replyContent.toLowerCase() === "sem resposta") {
                 requisitionsC.shift();
+                cache.set(`requisitions-${channelId}`, requisitionsC);
+                
                 await new Promise((resolve) => setTimeout(resolve, 1500));
                 continue;
             }
@@ -167,6 +200,8 @@ async function processQueue(channelId: string) {
                 const errorMsg = await message.reply("A mensagem continha menções inválidas!");
                 setTimeout(() => errorMsg.delete(), 5000);
                 requisitionsC.shift();
+                cache.set(`requisitions-${channelId}`, requisitionsC);
+                
                 await new Promise((resolve) => setTimeout(resolve, 1500));
                 continue;
             }
@@ -180,19 +215,34 @@ async function processQueue(channelId: string) {
                 role: "assistant",
                 content: replyContent,
             });
+            cache.set(`messages-${channelId}`, messagesC);
 
             await message.reply(replyContent);
-            requisitionsC.shift(); // Remove a requisição processada
+            requisitionsC.shift();
+            cache.set(`requisitions-${channelId}`, requisitionsC);
+            // Remove a requisição processada
         } catch (error: any) {
             const isRateLimit = error.response?.data?.error?.message?.toLowerCase().includes("rate limit");
 
             if (isRateLimit) {
                 console.warn("Rate limit atingido. Reenfileirando a requisição.");
                 requisitionsC.push(requisitionsC.shift()!);
+                cache.set(`requisitions-${channelId}`, requisitionsC);
                 const errorMsg = await message.reply(`Rate limit, a requisição irá demorar mais um pouco para ser processada. Posição na fila: ${requisitions.length}`);
                 await new Promise((resolve) => setTimeout(resolve, 5000));
                 await errorMsg.delete();
-                await new Promise((resolve) => setTimeout(resolve, 2000));
+                continue;
+            }
+
+            const isServiceUnavaivle = error.response?.data?.error?.message?.toLowerCase().includes("Service unavailable");
+
+            if (isServiceUnavaivle) {
+                console.warn("Serviço indisponível. Reenfileirando a requisição.");
+                requisitionsC.push(requisitionsC.shift()!);
+                cache.set(`requisitions-${channelId}`, requisitionsC);
+                const errorMsg = await message.reply(`Serviço indisponível, a requisição irá demorar mais um pouco para ser processada. Posição na fila: ${requisitions.length}`);
+                await new Promise((resolve) => setTimeout(resolve, 5000));
+                await errorMsg.delete();
                 continue;
             }
 
@@ -203,6 +253,8 @@ async function processQueue(channelId: string) {
             setTimeout(() => errorMsg.delete(), 5000);
 
             requisitionsC.shift();
+            cache.set(`requisitions-${channelId}`, requisitionsC);
+            
             if (requisitionsC.length > 0) {
                 await new Promise((resolve) => setTimeout(resolve, 1500));
             }

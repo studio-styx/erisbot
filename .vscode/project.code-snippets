@@ -14,6 +14,17 @@
 		],
 		"description": "Create a new Slash Command"
 	},
+	"Slash Command Function": {
+		"prefix": ["new.command.function", "create.command.function"],
+		"scope":"typescript",
+		"body": [
+			"import { ChatInputCommandInteraction } from \"discord.js\";",
+			"",
+			"export async function ${TM_FILENAME_BASE}Command(interaction: ChatInputCommandInteraction<\"cached\">) {",
+			"    $1",
+			"}"
+		]
+	},
 	"Slash Command with options": {
 		"prefix": ["new.command.options", "create.command.options"],
 		"scope":"typescript",
