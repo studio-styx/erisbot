@@ -286,50 +286,24 @@ export async function generalEconomyCommands(interaction: ChatInputCommandIntera
                 return;
             }
 
-            const newAuthor = await prisma.user.update({
-                where: { id: authorId },
-                data: {
-                    money: { decrement: new Prisma.Decimal(value) }
-                }
+            const embed = createEmbed({
+                title: `Transferência`,
+                description: brBuilder(
+                    `${icon.alarm} | ${userMention(authorId)} quer enviar **${value}** styx para ${userMention(targetId)}, ambos precisam apertar no botão abaixo para que a transferência seja concluida`,
+                ),
+                color: settings.colors.success
             });
-            const newTarget = await prisma.user.update({
-                where: { id: targetId },
-                data: {
-                    money: { increment: new Prisma.Decimal(value) }
-                }
-            });
+            const row = createRow(
+                new ButtonBuilder({
+                    customId: `transfer/${authorId}/0/${targetId}/0/${value}`,
+                    emoji: icon.paid,
+                    label: "Confirmar ( 0/2 )",
+                    style: ButtonStyle.Success
+                })
+            )
 
-            const transfer = await registerLog(t("logSent", { targetId: userMention(targetId) }), "info", 3, authorId, "transaction");
-            await registerLog(t("logReceived", { authorId: userMention(authorId) }), "info", 3, targetId, "transaction");
-
-            const container = createContainer({
-                accentColor: settings.colors.success,
-                components: [
-                    t("transferMessage", {
-                        emoji: icon.success,
-                        author: userMention(authorId),
-                        value,
-                        target: userMention(targetId),
-                        transactionId: transfer?.id || t("notRegistered")
-                    }),
-                    createSeparator(),
-                    t("authorBalance", {
-                        author: userMention(authorId),
-                        money: newAuthor.money,
-                        bank: newAuthor.bank
-                    }),
-                    createSeparator(),
-                    t("targetBalance", {
-                        target: userMention(targetId),
-                        money: newTarget.money,
-                        bank: newTarget.bank
-                    })
-                ]
-            });
-
-            interaction.editReply({ flags: ["IsComponentsV2"], components: [container] });
+            interaction.editReply({ embeds: [embed], components: [row] });
             cooldowns.set(interaction.user.id, new Date(Date.now() + 60 * 1000), { time: 60 * 1000 });
-
             return;
         }
         case "leaderboard": {

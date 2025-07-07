@@ -6,9 +6,9 @@ import { channelMention } from "discord.js";
 
 export const { createCommand, createEvent, createResponder } = setupCreators({
     commands: {
-        // guilds: [ "1172930138770526248", "1373806908149858334"],
+        // guilds: [ "1172930138770526248", "1373806908149858334" ],
         onNotFound: (interaction) => {
-            interaction.reply(res.danger(`${icon.error} | Command not found!`, { flags: ["Ephemeral"] }));
+            interaction.reply(res.danger(`${icon.error} | Command not found!`));
         },
         onError(error, interaction) {
             console.error(error);

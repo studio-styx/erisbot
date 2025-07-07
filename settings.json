@@ -19,5 +19,13 @@
     "brilliance": "#f07d5f",
     "nitro": "#ff6bfa",
     "bravery": "#9c84ef"
+  },
+  "bot": {
+    "version": "0.5.0-alpha",
+    "ownerId": "1171963692984844401",
+    "support": {
+      "supportGuild": "1172930138770526248",
+      "supportChannel": "1391175542447014068"
+    }
   }
 }

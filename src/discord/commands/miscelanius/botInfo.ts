@@ -5,6 +5,7 @@ import i18next from "i18next";
 import { menus } from "#menus";
 import { getCommandId } from "#utils";
 import { existsSync, readFileSync } from "fs";
+import { settings } from "#settings";
 
 createCommand({
     name: "bot",
@@ -164,9 +165,6 @@ createCommand({
 
                 const erisRamUsePercent = Math.round((erisRamUse / containerRamLimit) * 100);
 
-                const rootDir = process.cwd();
-                const packageJson = await import(`${rootDir}/package.json`)
-
                 const container = createContainer({
                     accentColor: "#a13d67",
                     components: [
@@ -186,7 +184,7 @@ createCommand({
                             `> **Versão do ${runtime.name}:** ${runtime.version}`,
                             `> **Versão do Discord.js:** ${djsVersion || "14.x.x"}`,
                             `> **Versão do Constatic:** 1.2.6`,
-                            `> **Minha versão:** ${packageJson.version}`,
+                            `> **Minha versão:** ${settings.bot.version}`,
                             `> **Sistema operacional:** ${getOSInfo()}`
                         ),
                         createSeparator(),
