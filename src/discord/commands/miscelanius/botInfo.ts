@@ -244,7 +244,7 @@ createCommand({
             case "commands": {
                 const commandId = await getCommandId(interaction, "bot")
 
-                interaction.reply(menus.commands(commandId, "bot"))
+                interaction.reply(await menus.commands(commandId, "bot", interaction))
                 return;
             }
             case "ping": {

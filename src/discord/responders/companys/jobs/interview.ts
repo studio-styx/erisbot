@@ -1,4 +1,4 @@
-import { createResponder, ResponderType } from "#base";
+import { createResponder, ResponderType, Store } from "#base";
 import { registerLog } from "#functions";
 import { generateGeminiContent } from "#logic";
 import { menus } from "#menus";
@@ -6,8 +6,11 @@ import { PrismaClient } from "#prisma/client";
 import { icon, resv2 } from "#utils";
 import { getInterviewQuestions, setInterviewQuestions } from "#functions";
 import i18next from "i18next";
+import { time } from "discord.js";
 
 const prisma = new PrismaClient();
+
+const cooldown = new Store<Date>()
 
 createResponder({
     customId: "companys/interview/:companyId",
@@ -17,6 +20,12 @@ createResponder({
         await i18next.changeLanguage(interaction.locale);
         const t = (key: string, options?: any): string => i18next.t(`responders/companys:interview.${key}`, { ...options, lng: interaction.locale }) as string;
         
+        const userCooldown = cooldown.get(interaction.user.id);
+        if (userCooldown) {
+            interaction.reply(resv2.danger(`${icon.denied} | você está em cooldown! volte novamente em: ${time(userCooldown, "R")}`));
+            return;
+        }
+
         const company = await prisma.company.findUnique({
             where: {
                 id: Number(companyId),
@@ -92,6 +101,7 @@ createResponder({
             );
 
             try {
+                cooldown.set(interaction.user.id, new Date(Date.now() + 1000 * 10)), { time: 1000 * 10 };
                 const result = await generateGeminiContent(prompt);
                 
                 if (!result.success || !result.text) {
@@ -122,6 +132,8 @@ createResponder({
         }
 
         interaction.editReply(menus.jobs.interview(0, interaction.user.id, companyId));
+
+        cooldown.set(interaction.user.id, new Date(Date.now() + 1000 * 60 * 20)), { time: 1000 * 60 * 20 };
         return;
     },
 });

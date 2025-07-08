@@ -1,8 +1,10 @@
-import { setupCreators } from "#base";
+import { Store, setupCreators } from "#base";
 import { prisma } from "#database";
 import { defaultServerSettings, getServerSettings } from "#functions";
 import { res, icon } from "#utils";
-import { channelMention } from "discord.js";
+import { channelMention, time } from "discord.js";
+
+const cooldown = new Store<Date>();
 
 export const { createCommand, createEvent, createResponder } = setupCreators({
     commands: {
@@ -22,6 +24,11 @@ export const { createCommand, createEvent, createResponder } = setupCreators({
             }
         },
         async middleware(interaction, block) {
+            if (cooldown.has(interaction.user.id)) {
+                interaction.reply(res.danger(`${icon.error} | Acalme-se! você está sendo muito rápido, por favor aguarde ${time(cooldown.get(interaction.user.id)!, "R")} para usar comandos novamente!`));
+                block()
+                return;
+            }
             if (!interaction.guildId) return;
             const serverSettings = getServerSettings(interaction.guildId)
                 || await prisma.guildSettings.findUnique({ where: { id: interaction.guildId } })
@@ -38,6 +45,7 @@ export const { createCommand, createEvent, createResponder } = setupCreators({
                 block()
                 return;
             }
+            cooldown.set(interaction.user.id, new Date(Date.now() + 1000 * 3), { time: 1000 * 3 });
         },
     },
     responders: {
@@ -55,5 +63,13 @@ export const { createCommand, createEvent, createResponder } = setupCreators({
                 interaction.reply(res.danger(errorMessage));
             }
         },
+        async middleware(interaction, block) {
+            if (cooldown.has(interaction.user.id)) {
+                interaction.reply(res.danger(`${icon.error} | Acalme-se! você está sendo muito rápido, por favor aguarde ${time(cooldown.get(interaction.user.id)!, "R")} para usar comandos novamente!`));
+                block()
+                return;
+            }
+            cooldown.set(interaction.user.id, new Date(Date.now() + 1000 * 2.5), { time: 1000 * 2.5 });
+        }
     }
 });

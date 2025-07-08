@@ -10,7 +10,7 @@ createResponder({
 
         const commandid = await getCommandId(interaction, choice);
 
-        interaction.update(menus.commands(commandid, choice as "economy" | "bot" | "adventure"));
+        interaction.update(await menus.commands(commandid, choice as "economy" | "bot" | "user" | "moderation", interaction));
         return;
     },
 });
