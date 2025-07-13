@@ -2,10 +2,10 @@ import { createResponder, ResponderType } from "#base";
 import { AttachmentBuilder, ButtonBuilder, ButtonStyle, TextInputStyle } from "discord.js";
 import { PrismaClient } from "#prisma";
 import { brBuilder, createContainer, createModalFields, createRow, createSeparator } from "@magicyan/discord";
-import { res, icon, resv2 } from "#utils";
+import { res, icon, resv2 } from "functions/utils/index.js";
 import { createGraphic, registerLog } from "#functions";
 import { settings } from "#settings";
-import { generateGeminiContent } from "#logic";
+import { generateGeminiContent } from "functions/logic/index.js";
 const prisma = new PrismaClient();
 
 createResponder({

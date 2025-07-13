@@ -1,6 +1,6 @@
 import { createResponder, ResponderType } from "#base";
 import { menus } from "#menus";
-import { getCommandId } from "#utils";
+import { getCommandId } from "functions/utils/index.js";
 
 createResponder({
     customId: "menu/help/commands",

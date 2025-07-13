@@ -2,7 +2,7 @@ import { createCommand } from "#base";
 import { getServerSettings, setServerSettings } from "#functions";
 import { menus } from "#menus";
 import { PrismaClient } from "#prisma/client";
-import { res } from "#utils";
+import { res } from "functions/utils/index.js";
 import { ApplicationCommandType } from "discord.js";
 import i18next from "i18next";
 

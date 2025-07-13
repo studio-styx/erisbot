@@ -1,7 +1,7 @@
 import { createCommand } from "#base";
-import { stocksEventuals } from "#logic";
+import { stocksEventuals } from "functions/logic/index.js";
 import { Prisma, PrismaClient } from "#prisma/client";
-import { res } from "#utils";
+import { res } from "functions/utils/index.js";
 import { ApplicationCommandOptionType, ApplicationCommandType } from "discord.js";
 
 const prisma = new PrismaClient();

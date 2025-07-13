@@ -1,24 +1,18 @@
-import { registerLog } from "#functions";
+import { BlackjackIA, Humor, icon, registerLog, res, setBlackjackGame } from "#functions";
 import { Prisma, PrismaClient } from "#prisma/client";
 import { settings } from "#settings";
-import { icon, res } from "#utils";
-import { createEmbed } from "@magicyan/discord";
-import { ChatInputCommandInteraction } from "discord.js";
-import i18next from "i18next";
+import { createEmbed, createRow } from "@magicyan/discord";
+import { ButtonBuilder, ButtonStyle, ChatInputCommandInteraction } from "discord.js";
 
 const prisma = new PrismaClient();
 
 export async function cassinoEconomyCommands(interaction: ChatInputCommandInteraction<"cached">) {
     const { options, user: author } = interaction;
 
-    await i18next.changeLanguage(interaction.locale);
-
     switch(options.getSubcommand()) {
         case "horse-racing": {
             let amount = options.getNumber("amount", true);
             const horse = options.getString("horse", true) as "purple" | "blue" | "green" | "yellow" | "orange" | "red" | "pink" | "brown";
-        
-            const t = (key: string, options?: any) => i18next.t(`commands/cassino:horse_racing.${key}`, { ...options, lng: interaction.locale });
         
             await interaction.deferReply();
         
@@ -30,20 +24,20 @@ export async function cassinoEconomyCommands(interaction: ChatInputCommandIntera
         
             if (amount > user.money.toNumber()) amount = user.money.toNumber();
             if (amount < 50) {
-                interaction.editReply(res.danger(t('min_bet_error', { icon: icon.denied }) as string));
+                interaction.editReply(res.danger(`${icon.Eris_cry} | Você não pode apostar menos de 50 stx!`));
                 return;
             }
         
             // Configuração dos cavalos
             const horses = {
-                purple: { name: t('horses.purple'), emoji: "🐎", colorEmoji: "🟣", position: 0 },
-                blue: { name: t('horses.blue'), emoji: "🐎", colorEmoji: "🔵", position: 0 },
-                green: { name: t('horses.green'), emoji: "🐎", colorEmoji: "🟢", position: 0 },
-                yellow: { name: t('horses.yellow'), emoji: "🐎", colorEmoji: "🟡", position: 0 },
-                orange: { name: t('horses.orange'), emoji: "🐎", colorEmoji: "🟠", position: 0 },
-                red: { name: t('horses.red'), emoji: "🐎", colorEmoji: "🔴", position: 0 },
-                pink: { name: t('horses.pink'), emoji: "🐎", colorEmoji: "🌸", position: 0 },
-                brown: { name: t('horses.brown'), emoji: "🐎", colorEmoji: "🟤", position: 0 }
+                purple: { name: "Roxo", emoji: "🐎", colorEmoji: "🟣", position: 0 },
+                blue: { name: "Azul", emoji: "🐎", colorEmoji: "🔵", position: 0 },
+                green: { name: "Verde", emoji: "🐎", colorEmoji: "🟢", position: 0 },
+                yellow: { name: "Amarelo", emoji: "🐎", colorEmoji: "🟡", position: 0 },
+                orange: { name: "Laranja", emoji: "🐎", colorEmoji: "🟠", position: 0 },
+                red: { name: "Vermelho", emoji: "🐎", colorEmoji: "🔴", position: 0 },
+                pink: { name: "Rosa", emoji: "🐎", colorEmoji: "🌸", position: 0 },
+                brown: { name: "Marrom", emoji: "🐎", colorEmoji: "🟤", position: 0 }
             };
         
             // Função para criar a pista de corrida
@@ -66,24 +60,20 @@ export async function cassinoEconomyCommands(interaction: ChatInputCommandIntera
             // Função para criar o embed da corrida
             const createRaceEmbed = (winner?: string) => {
                 const embedData: any = {
-                    title: winner ? t('embed.finished_title') : t('embed.race_title'),
+                    title: winner ? "🏁 Corrida Finalizada!" : "🏇 Corrida de Cavalos",
                     description: createRaceTrack(),
                     color: winner ? (winner === horse ? "#2ecc71" : "#e74c3c") : "#3498db"
                 };
         
                 if (winner) {
                     embedData.fields = [
-                        { name: t('embed.winner'), value: `${horses[winner as keyof typeof horses].emoji} ${horses[winner as keyof typeof horses].name}`, inline: true },
-                        { name: t('embed.your_bet'), value: `${horses[horse].emoji} ${horses[horse].name}`, inline: true },
+                        { name: "Vencedor", value: `${horses[winner as keyof typeof horses].emoji} ${horses[winner as keyof typeof horses].name}`, inline: true },
+                        { name: "Sua aposta", value: `${horses[horse].emoji} ${horses[horse].name}`, inline: true },
                         { 
-                            name: t('embed.result'), 
+                            name: "Resultado", 
                             value: winner === horse 
-                                ? t('embed.win_message', { 
-                                    icon: icon.success, 
-                                    winAmount: (amount * 0.5).toFixed(2), 
-                                    totalAmount: (amount * 1.3).toFixed(2) 
-                                })
-                                : t('embed.lose_message', { icon: icon.denied, amount }), 
+                                ? `${icon.success} | Você apostou **${amount}** e ganhou ${amount * 1.5} stx!`
+                                : `${icon.denied} | Você apostou **${amount}** e infelizmente perdeu ${icon.Eris_cry_left}`, 
                             inline: false 
                         }
                     ];
@@ -128,7 +118,7 @@ export async function cassinoEconomyCommands(interaction: ChatInputCommandIntera
                     await interaction.editReply({ embeds: [createRaceEmbed(winner)] });
                     if (userWon) {
                         await registerLog(
-                            t('log.win', { horse, amount: (amount * 1.5).toFixed(2) }) as string,
+                            `Apostou no cavalo ${horse} e ganhou ${amount * 1.5} stx`,
                             "info",
                             6,
                             author.id,
@@ -136,7 +126,7 @@ export async function cassinoEconomyCommands(interaction: ChatInputCommandIntera
                         )
                     } else {
                         await registerLog(
-                            t('log.lose', { horse, amount }) as string,
+                            `Apostou no cavalo ${horse} e perdeu ${amount} stx`,
                             "info",
                             6,
                             author.id,
@@ -160,10 +150,8 @@ export async function cassinoEconomyCommands(interaction: ChatInputCommandIntera
         
             const user = await prisma.user.findUnique({ where: { id: author.id } });
         
-            const t = (key: string, options?: any): string => i18next.t(`commands/cassino:coinflip.${key}`, { ...options, lng: interaction.locale }) as string;
-        
             if (!user || user.money.toNumber() < 15) {
-                interaction.reply(res.danger(t('insufficient_funds', { icon: icon.denied })));
+                interaction.reply(res.danger(`${icon.denied} | Você não tem dinheiro suficiente para apostar.`));
                 return;
             }
         
@@ -173,17 +161,13 @@ export async function cassinoEconomyCommands(interaction: ChatInputCommandIntera
             coinflipResult = Math.random() < 0.5 ? 'heads' : 'tails';
         
             if (coinflipResult === side) {
-                interaction.reply(res.success(t('win', {
-                    icon: icon.success,
-                    result: coinflipResult,
-                    amount: amount * 0.2
-                })));
+                interaction.reply(res.success(`${icon.Eris_enchanted} | A moeda caiu em ${side}, você ganhou **${amount}** STX!`));
                 await prisma.user.update({
                     where: { id: author.id },
                     data: { money: { increment: amount * 0.2 } }
                 });
                 await registerLog(
-                    t('log.win', { side, amount: amount * 0.2 }),
+                    `Apostou na moeda do lado ${side} e ganhou ${amount} stx`,
                     "info",
                     6,
                     interaction.user.id,
@@ -191,17 +175,13 @@ export async function cassinoEconomyCommands(interaction: ChatInputCommandIntera
                 );
                 return;
             } else {
-                interaction.reply(res.danger(t('lose', {
-                    icon: icon.denied,
-                    result: coinflipResult,
-                    amount
-                })));
+                interaction.reply(res.danger(`${icon.Eris_shy} | A moeda caiu em ${coinflipResult}, você perdeu **${amount}** STX!`));
                 await prisma.user.update({
                     where: { id: author.id },
                     data: { money: { decrement: amount } }
                 });
                 await registerLog(
-                    t('log.lose', { side, amount }),
+                    `Apostou na moeda do lado ${side} e perdeu ${amount} stx`,
                     "info",
                     6,
                     interaction.user.id,
@@ -216,10 +196,9 @@ export async function cassinoEconomyCommands(interaction: ChatInputCommandIntera
             await interaction.deferReply({ flags });
         
             const user = await prisma.user.findUnique({ where: { id: author.id } });
-            const t = (key: string, options?: any): string => i18next.t(`commands/cassino:slots.${key}`, { ...options, lng: interaction.locale }) as string;
         
             if (!user || user.money.toNumber() < 25) {
-                interaction.editReply(res.danger(t('insufficient_funds', { icon: icon.denied })));
+                interaction.editReply(res.danger(`${icon.denied} | Você não tem dinheiro suficiente para apostar.`));
                 return;
             }
             
@@ -243,8 +222,8 @@ export async function cassinoEconomyCommands(interaction: ChatInputCommandIntera
         
             // Embed inicial
             const embed = createEmbed({
-                title: t('embed.title') as string,
-                description: t('embed.spinning', { slot1, slot2: "-" }),
+                title: "🎰 Caça-Níqueis",
+                description: `${slot1} | ${slot2} | - \n\nGirando...`,
                 color: settings.colors.primary
             });
         
@@ -252,17 +231,15 @@ export async function cassinoEconomyCommands(interaction: ChatInputCommandIntera
         
             // Animação em 3 etapas
             setTimeout(async () => {
-                embed.setDescription(t('embed.spinning', { slot1, slot2 }));
+                embed.setDescription(`${slot1} | ${slot2} | - \n\nGirando...`);
                 await interaction.editReply({ embeds: [embed] });
         
                 setTimeout(async () => {
                     const winAmount = amount * 0.6;
         
-                    embed.setDescription(t(isWin ? 'embed.win' : 'embed.lose', {
-                        slot1, slot2, slot3,
-                        icon: isWin ? icon.success : icon.denied,
-                        amount: isWin ? winAmount : amount
-                    }));
+                    embed.setDescription(isWin ? `${slot1} | ${slot2} | ${slot3}\n\n${icon.success} **JACKPOT!** Você ganhou **${winAmount}** STX!`
+                        : `${slot1} | ${slot2} | ${slot3}\n\nVocê perdeu **${amount}** STX.`
+                    );
                     embed.setColor(isWin ? "#2ecc71" : "#e74c3c");
         
                     await prisma.user.update({
@@ -271,7 +248,7 @@ export async function cassinoEconomyCommands(interaction: ChatInputCommandIntera
                     });
         
                     await registerLog(
-                        t(isWin ? 'log.win' : 'log.lose', { amount: isWin ? winAmount : amount }),
+                        isWin ? `Ganhou ${winAmount} stx no cassino` : `Perdeu ${amount} stx no cassino`,
                         "info",
                         6,
                         author.id,
@@ -283,6 +260,58 @@ export async function cassinoEconomyCommands(interaction: ChatInputCommandIntera
             }, 2000);
         
             return;
+        }
+        case "blackjack": {
+            await interaction.deferReply();
+
+            let amount = options.getNumber("amount", true);
+            const user = await prisma.user.findUnique({ where: { id: author.id } });
+            if (!user) {
+                interaction.editReply(res.danger(`${icon.denied} | Você não tem dinheiro suficiente para apostar.`));
+                return;
+            }
+            if (user.money.toNumber() < amount) amount = user.money.toNumber();
+            if (user.money.toNumber() < 50) {
+                interaction.editReply(res.danger(`${icon.denied} | Você não tem dinheiro suficiente para apostar.`));
+                return;
+            }
+
+            const emotions: Humor[] = ["angry", "happy", "sad", "neutral", "scared", "surprised", "confused"];
+
+            const game = new BlackjackIA(emotions[Math.floor(Math.random() * emotions.length)], 0.3)
+            game.startGame();
+            
+            const embed = createEmbed({
+                title: "🃏 Blackjack",
+                description: `Você irá jogar contra éris!`,
+                fields: [
+                    { name: "Humor da Éris", value: game.getErisHumor() },
+                    { name: "Cartas da Éris", value: game.getErisCards().map(__ => "?").join(", ") },
+                    { name: "Sua mão", value: game.calculateHandValue(game.getUserCards()).toString() },
+                    { name: "Cartas restantes no deck", value: game.getRemainingCards().length.toString() },
+                    { name: "Valor apostado", value: amount.toString() }
+                ],
+                color: settings.colors.fuchsia
+            });
+
+            const components = [
+                createRow(
+                    new ButtonBuilder({
+                        customId: `blackjack/${author.id}/getCard/${amount}`,
+                        label: "Pegar uma carta", 
+                        style: ButtonStyle.Success
+                    }),
+                    new ButtonBuilder({
+                        customId: `blackjack/${author.id}/pass/${amount}`,
+                        label: "Passar",
+                        style: ButtonStyle.Danger
+                    })
+                )
+            ];
+            
+            setBlackjackGame(author.id, game);
+
+            await interaction.editReply({ embeds: [embed], components: components });
         }
     }
 }

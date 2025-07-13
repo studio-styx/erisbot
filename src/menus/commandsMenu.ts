@@ -1,5 +1,5 @@
 import { settings } from "#settings";
-import { getCommandId, icon } from "#utils";
+import { getCommandId, icon } from "functions/utils/index.js";
 import { brBuilder, createRow } from "@magicyan/discord";
 import { EmbedBuilder, StringSelectMenuBuilder, type InteractionReplyOptions, Interaction } from "discord.js";
 
@@ -22,6 +22,7 @@ export async function commandsMenu<R>(commandId: string, page: "economy" | "bot"
                     `</economy general withdraw:${commandId}> - withdraw money from your bank`,
                     `</economy general transfer:${commandId}> - transfer money to another user`,
                     `</economy general leaderboard:${commandId}> - check the leaderboard`,
+                    `</economy general jobs:${commandId}> - get a job`,
                 ),
                 inline: true
             }, {

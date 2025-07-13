@@ -1,6 +1,6 @@
 {
   "name": "erisbot",
-  "version": "0.4.3",
+  "version": "0.5.0",
   "type": "module",
   "main": "build/index.js",
   "scripts": {

@@ -3,7 +3,7 @@ import { ApplicationCommandOptionType, ApplicationCommandType, EmbedBuilder, ver
 import { brBuilder, createContainer, createSeparator } from "@magicyan/discord";
 import i18next from "i18next";
 import { menus } from "#menus";
-import { getCommandId } from "#utils";
+import { getCommandId } from "functions/utils/index.js";
 import { existsSync, readFileSync } from "fs";
 import { settings } from "#settings";
 

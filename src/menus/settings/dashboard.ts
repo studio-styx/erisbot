@@ -1,5 +1,5 @@
 import { ServerSettings } from "#functions";
-import { icon } from "#utils";
+import { icon } from "functions/utils/index.js";
 import { brBuilder, createContainer, createRow, createSection, createSeparator } from "@magicyan/discord";
 import { ButtonBuilder, ButtonStyle, channelMention, ChannelSelectMenuBuilder, ChannelType, SelectMenuDefaultValueType, type InteractionReplyOptions } from "discord.js";
 

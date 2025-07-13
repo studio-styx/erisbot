@@ -1,26 +1,25 @@
 import { Store } from "#base";
-import { registerLog, setCache } from "#functions";
-import { generateGeminiContent } from "#logic";
+import { getCache, registerLog, setCache } from "#functions";
+import { generateGeminiContent } from "functions/logic/index.js";
 import { menus } from "#menus";
 import { Prisma, PrismaClient } from "#prisma/client";
 import { settings } from "#settings";
-import { icon, res, resv2 } from "#utils";
+import { getCommandId, icon, res, resv2 } from "functions/utils/index.js";
 import { brBuilder, createContainer, createEmbed, createRow, createSeparator, createTextDisplay } from "@magicyan/discord";
 import { ButtonBuilder, ButtonStyle, ChatInputCommandInteraction, time, userMention } from "discord.js";
-import i18next from "i18next";
 
 const prisma = new PrismaClient()
 
 const cooldowns = new Store<Date>();
+const trys = new Store<{ attempts: number; cooldown: Date }>();
 
 export async function generalEconomyCommands(interaction: ChatInputCommandInteraction<"cached">) {
     const { options } = interaction
     const subCommand = options.getSubcommand()
 
-    await i18next.changeLanguage(interaction.locale);
-
     switch (subCommand) {
         case "balance": {
+            await interaction.deferReply();
             const id = options.getUser("user")?.id || interaction.user.id;
             const userData = await prisma.user.findUnique({
                 where: {
@@ -32,37 +31,50 @@ export async function generalEconomyCommands(interaction: ChatInputCommandIntera
                 }
             });
 
-            const money = userData?.money ?? 0;
-            const bank = userData?.bank ?? 0;
+            const money = userData?.money.toNumber() ?? 50;
+            const bank = userData?.bank.toNumber() ?? 0;
 
-            const t = (key: string, options?: any) => i18next.t(`commands/economy:general.balance.${key}`, options) as string;
+            const messages: string[] = []
+
+            if (money + bank > 800) {
+                messages.push(
+                    `${icon.Eris_enchanted} | ${userMention(id)} tem **${money}** styx em sua carteira e **${bank}** styx em sua conta bancária, eu acho que ele poderia dividir`,
+                    `${icon.Eris_enchanted} | ${userMention(id)} tem impressionantes: **${money}** styx em sua carteira e **${bank}** styx em sua conta bancária!`,
+                    `${icon.Eris_enchanted} | ${userMention(id)} tem um saldo impressionante: **${money}** styx em sua carteira e **${bank}** styx em sua conta bancária!`,
+                    `${icon.Eris_enchanted} | ${userMention(id)} tem **${money}** styx em sua carteira e **${bank}** styx em sua conta bancária, que inveja!`,
+                    `${icon.Eris_enchanted} | ${userMention(id)} tem **${money}** styx em sua carteira e **${bank}** styx em sua conta bancária, eu queria ser que nem ele algum dia...`,
+                )
+            } else if (money + bank > 200 && money + bank < 800) {
+                messages.push(
+                    `${icon.money_bag} | ${userMention(id)} tem **${money}** styx em sua carteira e **${bank}** styx em sua conta bancária.`,
+                    `${icon.money_bag} | ${userMention(id)} tem **${money}** styx em sua carteira e **${bank}** styx em sua conta bancária, eu gostaria de ter isso...`,
+                    `${icon.money_bag} | ${userMention(id)} tem **${money}** styx em sua carteira e **${bank}** styx em sua conta bancária, poderia ser mais ${icon.Eris_Angry_left}`,
+                    `${icon.money_bag} | ${userMention(id)} tem **${money}** styx em sua carteira e **${bank}** styx em sua conta bancária, ele deve estar feliz com tudo isso de dinheiro`,
+                )
+            } else {
+                messages.push(
+                    `${icon.money} | ${userMention(id)} tem **${money}** styx em sua carteira e **${bank}** styx em sua conta bancária.`,
+                    `${icon.money} | ${userMention(id)} tem **${money}** styx em sua carteira e **${bank}** styx em sua conta bancária, muito pouco...`,
+                    `${icon.money} | ${userMention(id)} tem **${money}** styx em sua carteira e **${bank}** styx em sua conta bancária, eu não sei o que fazer só com isso...`,
+                    `${icon.money} | ${userMention(id)} tem apenas **${money}** styx em sua carteira e **${bank}** styx em sua conta bancária, eu acho que a gente deveria dividir com ele...`,
+                    `${icon.money} | ${userMention(id)} tem apenas **${money}** styx em sua carteira e **${bank}** styx em sua conta bancária, como alguem consegue sobreviver só com isso ${icon.Eris_cry_left}`
+                )
+            }
+            if (money > 500) {
+                messages.push(
+                    `${icon.Eris_enchanted} | ${userMention(id)} tem **${money}** styx em sua conta e **${bank}** styx em sua conta bancária, como que ele tem coragem pra andar com tudo isso no bolso? ${icon.Eris_thinking_left}`,
+                    `${icon.Eris_enchanted} | ${userMention(id)} tem **${money}** styx em sua conta e **${bank}** styx em sua conta bancária, ele tem muita coragem pra andar com tudo isso no bolso!`,
+                )
+            }
 
             const embed = createEmbed({
-                description: t("description", { mention: userMention(id) }),
-                fields: [
-                    {
-                        name: t("field1Title", { emoji: icon.money }),
-                        value: t("field1", { money }),
-                        inline: true
-                    },
-                    {
-                        name: t("field2Title", { emoji: icon.bank }),
-                        value: t("field2", { bank }),
-                        inline: true
-                    }
-                ],
-                color: settings.colors.success
-            });
+                description: "### " + messages[Math.floor(Math.random() * messages.length)],
+                color: settings.colors.fuchsia,
+                timestamp: new Date().toISOString(),
+                thumbnail: options.getUser("user")?.avatarURL() || interaction.user.avatarURL(),
+            })
 
-            interaction.reply({ embeds: [embed] });
-            await registerLog(
-                id != interaction.user.id
-                    ? t("logMessage1", { id })
-                    : t("logMessage2"),
-                "info",
-                0,
-                id
-            );
+            interaction.editReply({ embeds: [embed] });
             return;
         }
         case "withdraw":
@@ -82,8 +94,6 @@ export async function generalEconomyCommands(interaction: ChatInputCommandIntera
                     select: { money: true, bank: true }
                 });
             }
-
-            const t = (key: string, options?: any) => i18next.t(`commands/economy:general.${subCommand}.${key}`, options) as string;
             try {
                 const action = subCommand === "deposit" ? "deposit" : "withdraw";
 
@@ -93,7 +103,7 @@ export async function generalEconomyCommands(interaction: ChatInputCommandIntera
                     }
 
                     if (value <= 0) {
-                        interaction.editReply(res.danger(t("noFunds")));
+                        interaction.editReply(res.danger(`${icon.Eris_cry} | Parece que você não tem dinheiro suficiente para realizar essa transação.`));
                         return;
                     }
 
@@ -110,7 +120,7 @@ export async function generalEconomyCommands(interaction: ChatInputCommandIntera
                     }
 
                     if (value <= 0) {
-                        interaction.editReply(res.danger(t("noBankFunds")));
+                        interaction.editReply(res.danger(`${icon.Eris_cry} | Parece que você não tem dinheiro suficiente para realizar essa transação.`));
                         return;
                     }
 
@@ -123,36 +133,15 @@ export async function generalEconomyCommands(interaction: ChatInputCommandIntera
                     });
                 }
 
-                const updatedUser = await prisma.user.findUnique({
+                await prisma.user.findUnique({
                     where: { id },
                     select: { money: true, bank: true },
                 });
 
-                await interaction.editReply(
-                    res.success(t("success", { emoji: icon.success, value }), {
-                        embeds: [
-                            createEmbed({
-                                description: t("embed.description", { mention: userMention(id) }),
-                                fields: [
-                                    {
-                                        name: t("embed.field1", { emoji: icon.money }),
-                                        value: t("embed.fieldValue", { value: updatedUser?.money.toNumber() || 0 }),
-                                        inline: true
-                                    },
-                                    {
-                                        name: t("embed.field2", { emoji: icon.bank }),
-                                        value: t("embed.fieldValue", { value: updatedUser?.bank.toNumber() || 0 }),
-                                        inline: true
-                                    }
-                                ],
-                                color: "#ffffff"
-                            })
-                        ]
-                    }
-                    ));
+                await interaction.editReply(res.pink(`${icon.Eris_ok} | ${action === "deposit" ? "Depósito realizado com sucesso!" : "Saque realizado com sucesso!"}`))
 
                 await registerLog(
-                    t("logMessage", { value }),
+                    `${icon.success} | ${userMention(id)} ${action === "deposit" ? "Depositou" : "Sacou"} **${value}** ${action === "deposit" ? "na conta bancária" : "da conta bancária"}`,
                     "info",
                     1,
                     id,
@@ -161,13 +150,74 @@ export async function generalEconomyCommands(interaction: ChatInputCommandIntera
             } catch (error) {
                 console.error(error);
                 await interaction.editReply(
-                    res.danger(t("error", { error: error instanceof Error ? error.message : "Unknown error" }))
+                    res.danger(`${icon.Eris_cry} | Ocorreu um erro ao realizar a transação. Por favor, tente novamente mais tarde.`)
                 );
             }
             return;
         }
         case "daily": {
             const id = interaction.user.id;
+
+            const userTrys = trys.get(`${id}:daily`);
+            if (userTrys) {
+                if (userTrys.attempts === 1) {
+                    const messages = [
+                        `${icon.Eris_thinking} | Ei! eu acho que já te disse pra voltar ${time(userTrys.cooldown, "R")} não foi?`,
+                        `${icon.Eris_thinking} | Eu acho que já te disse pra voltar ${time(userTrys.cooldown, "R")} não foi?`,
+                        `${icon.denied} | Por favor volte novamente no horário que eu te disse anteriomente!`,
+                        `${icon.denied} | Eu já te disse pra voltar ${time(userTrys.cooldown, "R")}`,
+                        `${icon.Eris_thinking} | Calma lá! Você precisa esperar até ${time(userTrys.cooldown, "R")}`,
+                        `${icon.denied} | Paciência, jovem! Seu próximo daily só ${time(userTrys.cooldown, "R")}`,
+                        `${icon.Eris_thinking} | Hmm, parece que alguém está ansioso! Volte ${time(userTrys.cooldown, "R")}`,
+                        `${icon.denied} | O daily não cresce em árvore! Espere até ${time(userTrys.cooldown, "R")}`
+                    ]
+                    interaction.reply(res.danger(messages[Math.floor(Math.random() * messages.length)], { flags: [] }));
+                } else if (userTrys.attempts === 2) {
+                    const messages = [
+                        `${icon.Eris_Angry} | Ei! de novo? eu acho que já te disse pra voltar ${time(userTrys.cooldown, "R")} não foi?`,
+                        `${icon.Eris_Angry} | Eu já te disse pra voltar ${time(userTrys.cooldown, "R")}`,
+                        `${icon.Eris_Angry} | Essa já é a segunda vez que eu disse pra voltar ${time(userTrys.cooldown, "R")}`,
+                        `${icon.Eris_Angry} | Essa já é a segunda vez! por favor volte ${time(userTrys.cooldown, "R")}`,
+                        `${icon.Eris_Angry} | Você tá me zoando? Segunda vez que aviso! Volte ${time(userTrys.cooldown, "R")}`,
+                        `${icon.Eris_Angry} | Tá achando que se insistir eu vou ceder? Volte ${time(userTrys.cooldown, "R")}`,
+                        `${icon.Eris_Angry} | Já cansei de repetir! Segunda vez que falo pra voltar ${time(userTrys.cooldown, "R")}`,
+                        `${icon.Eris_Angry} | Aff, de novo isso? Volte ${time(userTrys.cooldown, "R")} como eu já disse!`
+                    ]
+                    interaction.reply(res.danger(messages[Math.floor(Math.random() * messages.length)], { flags: [] }));
+                } else if (userTrys.attempts === 3) {
+                    const messages = [
+                        `${icon.Eris_Angry} | Ei! você está me testando? já te disse pra voltar${time(userTrys.cooldown, "R")} três vezes!`,
+                        `${icon.Eris_Angry} | Eu já te disse pra voltar${time(userTrys.cooldown, "R")} três vezes!`,
+                        `${icon.Eris_Angry} | Essa já é a terceira vez que eu disse pra voltar${time(userTrys.cooldown, "R")}`,
+                        `${icon.Eris_Angry} | Já chega né? você não vai conseguir outro daily tão rápido assim, volte${time(userTrys.cooldown, "R")}`,
+                        `${icon.Eris_Angry} | Pela terceira vez: VOLTE ${time(userTrys.cooldown, "R")}!`,
+                        `${icon.Eris_Angry} | Tá achando que eu sou o Siri? Pare de me perguntar a mesma coisa!`,
+                        `${icon.Eris_Angry} | Já virou falta de educação! Terceira vez que aviso!`,
+                        `${icon.Eris_Angry} | Eu devo ter dito umas 300 vezes pra voltar ${time(userTrys.cooldown, "R")}`
+                    ]
+                    interaction.reply(res.danger(messages[Math.floor(Math.random() * messages.length)], { flags: [] }));
+                } else if (userTrys.attempts === 4) {
+                    const messages = [
+                        `${icon.Eris_Angry} | Eu não vou repetir mais isso, por favor volte${time(userTrys.cooldown, "R")}`,
+                        `${icon.Eris_Angry} | Eu não vou repetir de novo.`,
+                        `${icon.Eris_Angry} | O objetivo era me irritar? ótimo! conseguiu, agora não volte mais novamente.`,
+                        `${icon.Eris_Angry} | Mas que coisa! pare com isso! não irei repetir isso!`,
+                        `${icon.Eris_Angry} | Você está me testando? não vou repetir isso!`,
+                        `${icon.Eris_Angry} | Já chega, não quero mais falar com você!`,
+                        `${icon.Eris_Angry} | Chega! Meu limite de paciência acabou!`,
+                        `${icon.Eris_Angry} | Pronto, cansei! Vou ignorar você até ${time(userTrys.cooldown, "R")}`,
+                        `${icon.Eris_Angry} | Isso já virou assédio! Pare imediatamente!`,
+                        `${icon.Eris_Angry} | Eu poderia te mutar por spam, sabia? Último aviso!`
+                    ]
+                    interaction.reply(res.danger(messages[Math.floor(Math.random() * messages.length)], { flags: [] }));
+                } else {
+                    trys.set(`${id}:daily`, { attempts: userTrys.attempts + 1, cooldown: userTrys.cooldown }, { time: 1000 * 60 * 2 });
+                    return;
+                }
+                trys.set(`${id}:daily`, { attempts: userTrys.attempts + 1, cooldown: userTrys.cooldown }, { time: 1000 * 60 * 2 });
+                return;
+            }
+
             await interaction.deferReply();
 
             const now = new Date();
@@ -177,13 +227,9 @@ export async function generalEconomyCommands(interaction: ChatInputCommandIntera
                 select: { willEndIn: true, id: true }
             });
 
-            const t = (key: string, options?: any) => i18next.t(`commands/economy:general.daily.${key}`, options) as string;
-
             if (cooldownData?.willEndIn && cooldownData.willEndIn > now) {
-                interaction.editReply(res.danger(t("cooldown", {
-                    emoji: icon.denied,
-                    time: time(cooldownData.willEndIn, "R")
-                })));
+                interaction.editReply(res.danger(`${icon.denied} | Você já pegou seu prêmio diário hoje. Tente novamente ${time(cooldownData.willEndIn, "R")}`));
+                trys.set(`${id}:daily`, { attempts: 1, cooldown: cooldownData.willEndIn }, { time: 1000 * 60 * 2 });
                 return;
             }
 
@@ -209,33 +255,10 @@ export async function generalEconomyCommands(interaction: ChatInputCommandIntera
                 }
             });
 
-            interaction.editReply(res.success(t("success", {
-                emoji: icon.success,
-                value: dailyValue
-            }), {
-                embeds: [
-                    createEmbed({
-                        description: t("embed.description", { mention: userMention(id) }),
-                        fields: [
-                            {
-                                name: t("embed.field1", { emoji: icon.money }),
-                                value: t("embed.fieldValue", { value: newUser.money }),
-                                inline: true
-                            },
-                            {
-                                name: t("embed.field2", { emoji: icon.bank }),
-                                value: t("embed.fieldValue", { value: newUser.bank }),
-                                inline: true
-                            }
-                        ],
-                        color: "#ffffff"
-                    })
-                ],
-                flags: []
-            }));
+            interaction.editReply(res.fuchsia(`${icon.Eris_enchanted} | Parabéns! você pegou seu prêmio diário de **${dailyValue}** styx! agora você possui: **${newUser.money}** styx em sua carteira! ${icon.Eris_ok_left}`));
 
             await registerLog(
-                t("logMessage", { value: dailyValue }),
+                `Recebeu o prêmio diário de **${dailyValue}** styx!`,
                 "info",
                 4,
                 id
@@ -244,21 +267,25 @@ export async function generalEconomyCommands(interaction: ChatInputCommandIntera
         }
         case "transfer": {
             const inCooldown = cooldowns.get(interaction.user.id);
-            const t = (key: string, options?: any) => i18next.t(`commands/economy:general.transfer.${key}`, options) as string;
 
             if (inCooldown && inCooldown > new Date()) {
-                interaction.reply(res.danger(t("cooldown", {
-                    emoji: icon.denied,
-                    time: time(inCooldown, "R")
-                })));
+                interaction.reply(res.pink(`**${icon.denied_pink} | Eu sei que distribuir dinheiro é legal, mas por favor aguarde um pouco, volte ${time(inCooldown)}**`));
                 return;
             }
 
             const user = options.getUser("user", true);
             let value = options.getNumber("amount", true);
 
+            if (user.id === interaction.user.id) {
+                interaction.reply(res.pink(`**${icon.denied_pink} | Ei! por quê você está tentando dar dinheiro pra você mesmo? se for pra dá dinheiro dá pra mim!**`));
+                return;
+            }
+            if (user.id === interaction.client.user?.id) {
+                interaction.reply(res.pink(`**${icon.denied_pink} | Eu queria tanto poder receber esse dinheiro! mas minhas regras não permitem isso! ${icon.Eris_cry_left}**`));
+                return;
+            }
             if (user.bot) {
-                interaction.reply(res.danger(t("botTransfer", { emoji: icon.denied })));
+                interaction.reply(res.pink(`**${icon.denied_pink} | Ei! por quê você está tentando dar dinheiro pra um bot? se for pra dá dinheiro dá pra mim!**`));
                 return;
             }
 
@@ -268,12 +295,9 @@ export async function generalEconomyCommands(interaction: ChatInputCommandIntera
             await interaction.deferReply();
 
             const author = await prisma.user.findUnique({ where: { id: authorId } })
-                || await prisma.user.create({ data: { id: authorId } });
-            const target = await prisma.user.findUnique({ where: { id: targetId } })
-                || await prisma.user.create({ data: { id: targetId } });
 
-            if (authorId === targetId) {
-                interaction.editReply(res.danger(t("selfTransfer", { emoji: icon.denied })));
+            if (!author) {
+                interaction.editReply(res.danger(`${icon.denied} | Ei! por quê você não tenta usar outros comandos? sua primeira vez aqui e já quer dar dinheiro pros outros! ${icon.Eris_Angry_left}`));
                 return;
             }
 
@@ -282,7 +306,7 @@ export async function generalEconomyCommands(interaction: ChatInputCommandIntera
             }
 
             if (value < 15) {
-                interaction.editReply(res.danger(t("minAmount", { emoji: icon.denied })));
+                interaction.editReply(res.danger(`${icon.denied} | Parece que você não tem dinheiro suficiente para realizar essa transação. ${icon.Eris_cry_left}`));
                 return;
             }
 
@@ -373,10 +397,19 @@ export async function generalEconomyCommands(interaction: ChatInputCommandIntera
             return;
         }
         case "work": {
+            if (cooldowns.has(`${interaction.user.id}:work`)) {
+                interaction.reply(res.danger(`${icon.denied} | A ia está gerando uma responda pra você. tente novamente mais tarde`));
+                return;
+            }
+
+            const situation: string | null | undefined = getCache(`${interaction.user.id}-situation`);
+
+            if (situation) {
+                interaction.reply(res.danger(`${icon.denied} | Você está participando de um desafio, aguarde ele expirar ou termine ele pra poder usar esse comando novamente.`))
+                return;
+            }
             await interaction.deferReply();
-        
-            const t = (key: string, options?: any) => i18next.t(`commands/economy:general.work.${key}`, { ...options, lng: interaction.locale }) as string;
-        
+
             try {
                 const user = await prisma.user.findUnique({
                     where: {
@@ -387,39 +420,33 @@ export async function generalEconomyCommands(interaction: ChatInputCommandIntera
                         cooldowns: true
                     }
                 })
-        
-                if (!user || !user.companyId) {
-                    interaction.editReply(res.danger(t('no_job', { icon: icon.denied })))
+
+                if (!user || !user.companyId || !user.company) {
+                    const commandId = await getCommandId(interaction, "economy")
+                    interaction.editReply(res.danger(`${icon.Eris_shy} | Você não tem um emprego! use o comando **</economy general jobs:${commandId}>** para encontrar um emprego!`))
                     return;
                 }
-        
+
                 const now = new Date();
-        
+
                 const cooldown = user.cooldowns.find(cooldown => cooldown.name === "work");
-        
+
                 if (cooldown && cooldown.willEndIn > now) {
-                    interaction.editReply(res.danger(t('cooldown', { 
-                        icon: icon.denied,
-                        time: time(cooldown.willEndIn, "R")
-                    })))
+                    interaction.editReply(res.danger(`${icon.denied} | Você já trabalhou hoje. Tente novamente ${time(cooldown.willEndIn, "R")}`));
                     return;
                 }
-        
-                if (!user.company) {
-                    interaction.editReply(res.danger(t('no_company', { icon: icon.denied })));
-                    return;
-                }
-        
+
                 const { company } = user
-        
+
                 const percentage = 30 + (user.company.difficulty - 1) * 5;
-        
+
                 if (Math.random() * 100 < percentage) {
-                    await interaction.editReply(resv2.warning(t('waiting', { icon: icon.waiting_white })));
-        
+                    cooldowns.set(`${interaction.user.id}:work`, new Date(Date.now() + 1000 * 60 * 4), { time: 1000 * 60 * 4 });
+                    await interaction.editReply(resv2.warning(`${icon.waiting_white} | Um novo desafio apareceu! por favor aguarde um instante.`));
+
                     const companyExpectations = (company?.expectations as string[] | { level: number, skill: string }[]);
                     let companyExpectationsFormatted: string;
-        
+
                     if (Array.isArray(companyExpectations)) {
                         if (typeof companyExpectations[0] === "string") {
                             companyExpectationsFormatted = companyExpectations.join(", ").replace(/, ([^,]*)$/, " e $1");
@@ -427,92 +454,79 @@ export async function generalEconomyCommands(interaction: ChatInputCommandIntera
                             companyExpectationsFormatted = companyExpectations
                                 .map((expectation) =>
                                     typeof expectation === "object" && "skill" in expectation
-                                        ? t('expectation_format', {
-                                            skill: expectation.skill,
-                                            level: expectation.level
-                                        })
-                                        : t('invalid_expectation')
+                                        ? `Habilidade: ${expectation.skill}, Nível: ${expectation.level}`
+                                        : `Não foi possivel formatar essa expectativa`
                                 )
                                 .join(", ");
                         }
                     } else {
-                        companyExpectationsFormatted = t('invalid_company_expectations');
+                        companyExpectationsFormatted = `A empresa não tem expectativas definidas.`;
                     }
-        
-                    const prompt = t('gemini_prompt', {
-                        displayName: interaction.user.displayName,
-                        companyName: company.name,
-                        companyDescription: company.description || t('no_description'),
-                        difficulty: company.difficulty,
-                        expectations: companyExpectationsFormatted
-                    });
-        
+
+                    const prompt = `O usuário ${interaction.user.displayName} está trabalhando em sua empresa. Crie um desafio realista com base nas seguintes informações:\n\nNome da empresa: ${company.name}\nDescrição: ${company.description}\nDificuldade: ${company.difficulty} (1 = muito fácil, 10 = muito difícil)\nExpectativas nos funcionários: ${companyExpectationsFormatted}}\n\nGere uma simulação de situação que poderia ocorrer no dia a dia de trabalho, de acordo com o nível de dificuldade. A situação deve exigir que o usuário diga como reagiria. Não é uma pergunta de entrevista.\n\nRetorne apenas a pergunta, sem explicações, sem aspas e sem comentários adicionais.\nExemplo de formato (não reproduza o exemplo abaixo):\nUm cliente ficou bravo com o atendimento por [motivo] e espera que você resolva.`;
+
                     const result = await generateGeminiContent(prompt);
-        
+
                     if (!result.success || !result.text) {
-                        interaction.editReply(resv2.danger(t('gemini_error', { 
-                            icon: icon.error,
-                            wage: company.wage 
-                        })));
                         await prisma.user.update({
                             where: { id: interaction.user.id },
                             data: { money: { increment: company.wage } }
                         });
-        
+                        interaction.editReply(resv2.danger(`${icon.Eris_cry} | Ocorreu um erro ao gerar o desafio, por isso você recebeu o salário normal de: ${company.wage}`));
                         console.error(result.error);
-        
+
                         await registerLog(
-                            t('log.gemini_error'),
+                            `Ocorreu um erro ao fazer uma requisição ao gemini.`,
                             "error",
                             999,
                             interaction.user.id,
                             "work"
                         );
                         await registerLog(
-                            t('log.worked_normal', { wage: company.wage }),
+                            `Trabalhou e recebeu seu salário de: **${company.wage}**`,
                             "info",
                             5,
                             interaction.user.id,
                             "work"
                         );
-        
+
                         return;
                     }
-        
+
                     const response = result.text;
-        
+
                     const container = createContainer({
                         accentColor: settings.colors.warning,
                         components: [
                             brBuilder(
-                                t('challenge.title'),
-                                t('challenge.description'),
-                                t('challenge.note')
+                                `## Um novo desafio surgiu! ${icon.Eris_enchanted_left}`,
+                                "Responda a pergunta abaixo, como você reagiria a essa situação?",
+                                "-# ╰ obs: se você responder corretamente pode até ganhar um aumento hoje!"
                             ),
                             createSeparator(),
                             createTextDisplay(response, 1),
                             createRow(
                                 new ButtonBuilder({
                                     customId: `company/work/${interaction.user.id}`,
-                                    label: t('challenge.button'),
+                                    label: "Responder",
                                     style: ButtonStyle.Primary
                                 })
                             )
                         ]
                     });
-        
+
                     setCache(`${interaction.user.id}-situation`, response);
-        
+
                     interaction.editReply({ flags: ["IsComponentsV2"], components: [container] });
                 } else {
                     const newUser = await prisma.user.update({
                         where: { id: interaction.user.id },
-                        data: { 
-                            money: { increment: company.wage }, 
-                            xp: { increment: Math.floor(Math.random() * (25 - 10 + 1)) + 10 } 
+                        data: {
+                            money: { increment: company.wage },
+                            xp: { increment: Math.floor(Math.random() * (25 - 10 + 1)) + 10 }
                         }
                     });
-        
+
                     interaction.editReply({
                         flags: ["IsComponentsV2"],
                         components: [
@@ -520,34 +534,24 @@ export async function generalEconomyCommands(interaction: ChatInputCommandIntera
                                 accentColor: settings.colors.success,
                                 components: [
                                     brBuilder(
-                                        t('success.title', { 
-                                            icon: icon.success,
-                                            wage: company.wage 
-                                        }),
-                                        t('success.balance', { user: userMention(interaction.user.id) }),
-                                        t('success.money', { 
-                                            icon: icon.money,
-                                            money: newUser.money 
-                                        }),
-                                        t('success.bank', { 
-                                            icon: icon.bank,
-                                            bank: newUser.bank 
-                                        })
+                                        `## Você trabalhou e recebeu seu salário de: **${company.wage}** ${icon.Eris_ok_left}`,
+                                        `> Você agora possui: **${newUser.money}** styx em sua carteira!`,
+                                        `> E possui: **${newUser.xp}** xp!`,
                                     )
                                 ]
                             })
                         ]
                     });
-        
+
                     await registerLog(
-                        t('log.worked_normal', { wage: company.wage }),
+                        `Trabalhou e recebeu seu salário de: **${company.wage}**`,
                         "info",
                         5,
                         interaction.user.id,
                         "work"
                     );
                 }
-        
+
                 await prisma.cooldown.upsert({
                     where: {
                         userId_name: {
@@ -567,19 +571,29 @@ export async function generalEconomyCommands(interaction: ChatInputCommandIntera
                 return;
             } catch (error) {
                 console.error(error);
-                interaction.editReply(res.danger(t('unexpected_error', { icon: icon.error })))
+                interaction.editReply(res.danger(`${icon.Eris_cry} | Ocorreu um erro ao usar esse comando.`));
                 return;
             }
         }
         case "dismiss": {
             await interaction.deferReply({ flags });
 
+            const user = await prisma.user.findUnique({
+                where: { id: interaction.user.id },
+                select: { companyId: true }
+            });
+
+            if (!user || !user.companyId) {
+                await interaction.editReply(res.danger(`${icon.denied} | você não tem um emprego pra se demitir!`));
+                return;
+            }
+
             await prisma.user.update({
                 where: { id: interaction.user.id },
-                data: {
-                    companyId: { set: null }
-                }
+                data: { companyId: { set: null } }
             });
+
+            await interaction.editReply(res.danger(`${icon.success} | você saiu do seu emprego!`));
 
             interaction.editReply(res.danger(`${icon.success} | você saiu do seu emprego!`));
             return;

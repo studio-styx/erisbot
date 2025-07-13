@@ -1,6 +1,6 @@
 import { Prisma } from "#prisma/client";
 import { settings } from "#settings";
-import { res, icon } from "#utils";
+import { res, icon } from "functions/utils/index.js";
 import { brBuilder, createContainer, createRow, createSection, createSeparator } from "@magicyan/discord";
 import { ButtonBuilder, ButtonStyle, type InteractionReplyOptions } from "discord.js";
 

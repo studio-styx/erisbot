@@ -1,5 +1,5 @@
 import { createEvent } from "#base";
-import { getCommandId, res } from "#utils";
+import { getCommandId, res } from "functions/utils/index.js";
 import { Interaction } from "discord.js";
 
 createEvent({

@@ -1,9 +1,9 @@
 import { createResponder, ResponderType, Store } from "#base";
 import { registerLog } from "#functions";
-import { generateGeminiContent } from "#logic";
+import { generateGeminiContent } from "functions/logic/index.js";
 import { menus } from "#menus";
 import { PrismaClient } from "#prisma/client";
-import { icon, resv2 } from "#utils";
+import { icon, resv2 } from "functions/utils/index.js";
 import { getInterviewQuestions, setInterviewQuestions } from "#functions";
 import i18next from "i18next";
 import { time } from "discord.js";

@@ -1,6 +1,6 @@
 import { bootstrap } from "#base"
-import { startEvents } from "#logic";
-import { loadTranslations } from "#utils";
+import { startEvents } from "functions/logic/index.js";
+import { loadTranslations } from "functions/utils/index.js";
 
 await bootstrap({ meta: import.meta });
 

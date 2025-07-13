@@ -1,7 +1,7 @@
 import { Store, setupCreators } from "#base";
 import { prisma } from "#database";
 import { defaultServerSettings, getServerSettings } from "#functions";
-import { res, icon } from "#utils";
+import { res, icon } from "functions/utils/index.js";
 import { channelMention, time } from "discord.js";
 
 const cooldown = new Store<Date>();

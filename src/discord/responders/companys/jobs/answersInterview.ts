@@ -1,9 +1,9 @@
 import { createResponder, ResponderType } from "#base";
 import { clearInterviewQuestions, getInterviewQuestions, registerLog, updateInterviewAnswer } from "#functions";
-import { generateGeminiContent } from "#logic";
+import { generateGeminiContent } from "functions/logic/index.js";
 import { menus } from "#menus";
 import { PrismaClient } from "#prisma/client";
-import { icon, res, resv2 } from "#utils";
+import { icon, res, resv2 } from "functions/utils/index.js";
 import { createModalFields } from "@magicyan/discord";
 import { TextInputStyle } from "discord.js";
 import i18next from "i18next";

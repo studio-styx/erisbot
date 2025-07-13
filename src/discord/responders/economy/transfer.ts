@@ -1,10 +1,12 @@
-import { createResponder, ResponderType } from "#base";
+import { createResponder, ResponderType, Store } from "#base";
 import { prisma } from "#database";
 import { Prisma } from "#prisma";
 import { settings } from "#settings";
-import { icon, res } from "#utils";
+import { icon, res } from "functions/utils/index.js";
 import { createEmbed, createRow } from "@magicyan/discord";
 import { ButtonBuilder, ButtonStyle, userMention } from "discord.js";
+
+const trys = new Store<number>()
 
 createResponder({
     customId: "transfer/:authorId/:authorAccepted/:targetId/:targetAccepted/:value",
@@ -13,7 +15,43 @@ createResponder({
         const { user } = interaction;
 
         if (user.id !== authorId && user.id !== targetId) {
-            interaction.reply(res.danger(`${icon.denied} | Você não pode usar este botão!`));
+            const tries = trys.get(user.id);
+            if (tries) {
+                const messages: string[] = []
+                if (tries === 1) {
+                    messages.push(
+                        `${icon.denied} | Eu já te disse que essa transação não é sua!`,
+                        `${icon.denied} | Ei por quê você ainda tá tentando roubar dinheiro dos outros? isso não é legal! ${icon.Eris_Angry_left}`,
+                        `${icon.denied} | Ei! tem usuários querendo paz aqui!`
+                    )
+                } else if (tries === 2) {
+                    messages.push(
+                        `${icon.Eris_Angry} | Ei volte pra onde veio seu ladrãozinho!`,
+                        `${icon.Eris_Angry} | Essa já é sua terceira tentativa tentando roubar dinheiro dos outros, já te disse que isso não é possivel!`,
+                        `${icon.Eris_Angry} | Você não conseguirá furar essa transação!`
+                    )
+                } else if (tries === 3) {
+                    messages.push(
+                        `${icon.Eris_Angry} | Eu não irei repetir! volte pra onde veio!`,
+                        `${icon.Eris_Angry} | Eu vou começar a te ignorar!`,
+                        `${icon.Eris_Angry} | Pode ficar ai tentando roubar, você não terá mais respostas.`,
+                    )
+                } else {
+                    trys.set(user.id, tries + 1, { time: 1000 * 2 });
+                    return;
+                }
+
+                interaction.reply(res.danger(`${icon.denied} | ${messages[Math.floor(Math.random() * messages.length)]}`));
+                trys.set(user.id, tries + 1, { time: 1000 * 2 });   
+                return;
+            }
+            const messages: string[] = [
+                "Você não pode usar este botão!",
+                "Você está tentando pegar dinheiro dos outros? não tente mais isso!",
+                `Essa transação não é para você! ${icon.Eris_Angry_left}`,
+            ]
+            interaction.reply(res.danger(`${icon.denied} | ${messages[Math.floor(Math.random() * messages.length)]}`));
+            trys.set(user.id, 1, { time: 1000 * 2 });
             return;
         }
         

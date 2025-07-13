@@ -430,6 +430,40 @@ createCommand({
                             }
                         }
                     ]
+                },
+                {
+                    name: "blackjack",
+                    description: "play blackjack",
+                    type: ApplicationCommandOptionType.Subcommand,
+                    nameLocalizations: {
+                        "pt-BR": "blackjack",
+                        "en-US": "blackjack",
+                        "es-ES": "blackjack",
+                    },
+                    descriptionLocalizations: {
+                        "pt-BR": "jogar blackjack",
+                        "en-US": "play blackjack",
+                        "es-ES": "jugar blackjack",
+                    },
+                    options: [
+                        {
+                            name: "amount",
+                            description: "amount to bet",
+                            type: ApplicationCommandOptionType.Number,
+                            required: true,
+                            minValue: 50,
+                            nameLocalizations: {
+                                "pt-BR": "quantia",
+                                "en-US": "amount",
+                                "es-ES": "cantidad"
+                            },
+                            descriptionLocalizations: {
+                                "pt-BR": "quantia a apostar",
+                                "en-US": "amount to bet",
+                                "es-ES": "cantidad a apostar"
+                            }
+                        }
+                    ]
                 }
             ]
         },

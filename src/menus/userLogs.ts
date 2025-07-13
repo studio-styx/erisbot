@@ -1,5 +1,5 @@
 import { settings } from "#settings";
-import { icon, res } from "#utils";
+import { icon, res } from "functions/utils/index.js";
 import { createEmbed, createRow } from "@magicyan/discord";
 import { ButtonBuilder, ButtonStyle, time, type InteractionReplyOptions } from "discord.js";
 

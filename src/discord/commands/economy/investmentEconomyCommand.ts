@@ -1,9 +1,9 @@
-import { generateGeminiContent } from "#logic";
+import { generateGeminiContent } from "functions/logic/index.js";
 import { menus } from "#menus";
 import { PrismaClient } from "#prisma/client";
-import { icon, res } from "#utils";
+import { getCommandId, icon, res } from "functions/utils/index.js";
 import { brBuilder } from "@magicyan/discord";
-import { ChatInputCommandInteraction, time } from "discord.js";
+import { ChatInputCommandInteraction } from "discord.js";
 
 const prisma = new PrismaClient();
 
@@ -22,7 +22,7 @@ export async function investmentsEconomyCommands(interaction: ChatInputCommandIn
                 where: { id: stockId }
             })
 
-            if (!stock) return interaction.editReply(res.danger(`${icon.error} | Stock not found`));
+            if (!stock) return interaction.editReply(res.danger(`${icon.Eris_cry} | Eu procurei por toda parte mas não encontrei essa ação.`));
 
             const user = await prisma.user.upsert({
                 where: { id: author.id },
@@ -32,7 +32,7 @@ export async function investmentsEconomyCommands(interaction: ChatInputCommandIn
 
             const valueToPay = stock.price.toNumber() * amount;
 
-            if (user.money.toNumber() < valueToPay) return interaction.editReply(res.danger(`${icon.denied} | you don't have enough money`));
+            if (user.money.toNumber() < valueToPay) return interaction.editReply(res.danger(`${icon.Eris_cry} | você não tem dinheiro suficiente para comprar essa ação.`));
 
             await prisma.user.update({
                 where: { id: author.id },
@@ -58,7 +58,7 @@ export async function investmentsEconomyCommands(interaction: ChatInputCommandIn
                 }
             })
 
-            return interaction.editReply(res.success(`${icon.success} | you bought **${amount}** stock ${stock.name} stocks for **${valueToPay}** coins`));
+            return interaction.editReply(res.success(`${icon.success} | você comprou **${amount}** ações de ${stock.name} por: **${valueToPay}** stx!`));
         }
         case "own-stocks": {
             await interaction.deferReply({ flags });
@@ -72,7 +72,9 @@ export async function investmentsEconomyCommands(interaction: ChatInputCommandIn
                 }
             })
 
-            if (!user) return interaction.editReply(res.danger(`${icon.denied} | Você não tem ações compradas! use \`/economy investment buy\` para comprar uma ação.`));
+            const commandId = await getCommandId(interaction, "economy");
+
+            if (!user) return interaction.editReply(res.danger(`${icon.denied} | Você não tem ações compradas! use </economy investment buy:${commandId}> para comprar uma ação.`));
 
             interaction.editReply(menus.investment.userStocks(user.stocks))
             return;
