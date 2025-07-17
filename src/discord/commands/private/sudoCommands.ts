@@ -1,10 +1,6 @@
 import { createCommand } from "#base";
-import { stocksEventuals } from "functions/logic/index.js";
-import { Prisma, PrismaClient } from "#prisma/client";
-import { res } from "functions/utils/index.js";
+import { stocksEventuals, res } from "#functions";
 import { ApplicationCommandOptionType, ApplicationCommandType } from "discord.js";
-
-const prisma = new PrismaClient();
 
 createCommand({
     name: "sudo",

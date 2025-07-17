@@ -1,7 +1,7 @@
 import { prisma } from "#database";
+import { defaultServerSettings } from "#functions";
 import chalk from "chalk";
 import { Client } from "discord.js";
-import { defaultServerSettings } from "functions/defaultServerSettings.js";
 import NodeCache from "node-cache";
 
 const cache = new NodeCache(); // 1 hora de TTL

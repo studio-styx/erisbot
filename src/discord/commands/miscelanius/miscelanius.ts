@@ -1,6 +1,6 @@
 import { createCommand } from "#base";
 import { PrismaClient } from "#prisma/client";
-import { icon, res } from "functions/utils/index.js";
+import { icon, res } from "#functions";
 import { ApplicationCommandOptionType, ApplicationCommandType, time } from "discord.js";
 
 const prisma = new PrismaClient();

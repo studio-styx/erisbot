@@ -1,11 +1,10 @@
 import { createCommand } from "#base";
 import { ApplicationCommandOptionType, ApplicationCommandType, EmbedBuilder, version } from "discord.js";
 import { brBuilder, createContainer, createSeparator } from "@magicyan/discord";
-import i18next from "i18next";
-import { menus } from "#menus";
-import { getCommandId } from "functions/utils/index.js";
 import { existsSync, readFileSync } from "fs";
 import { settings } from "#settings";
+import { menus } from "#menus";
+import { getCommandId } from "#functions";
 
 createCommand({
     name: "bot",
@@ -84,7 +83,6 @@ createCommand({
         "es-ES": "Comandos del bot",
     },
     async run(interaction) {
-        await i18next.changeLanguage(interaction.locale);
         const { user } = interaction
         switch (interaction.options.getSubcommand()) {
             case "info": {
@@ -210,15 +208,13 @@ createCommand({
             }
 
             case "creators": {
-                const t = (key: string) => i18next.t(`commands/botInfo:creators.${key}`);
-
                 try {
                     const embed = new EmbedBuilder({
-                        description: t("title"),
+                        description: "**Criadores**\nVeja a seguir os participantes do Studio Styx",
                         fields: [
-                            { name: "", value: t("birdtool"), inline: true },
-                            { name: "", value: t("santos"), inline: true },
-                            { name: "", value: t("lay"), inline: false }
+                            { name: "", value: "**BirdTool**\n-# ╰ Desenvolvedor", inline: true },
+                            { name: "", value: "**Santos**\n-# ╰ Designer", inline: true },
+                            { name: "", value: "**Lay**\n-# ╰ Designer e tradutora", inline: false }
                         ],
                         color: 0x791b1b
                     });
@@ -227,16 +223,11 @@ createCommand({
                         flags: ["Ephemeral"],
                         embeds: [embed]
                     });
-                } catch {
-                    // fallback em texto plano
+                } catch (error: unknown) {
+                    console.log(error);
                     await interaction.reply({
                         flags: ["Ephemeral"],
-                        content: [
-                            `**${t("title")}**`,
-                            t("birdtool"),
-                            t("santos"),
-                            t("lay")
-                        ].join("\n")
+                        content: `Ocorreu um erro ao tentar enviar a mensagem: ${error instanceof Error ? error.message : String(error)}`
                     });
                 }
                 return;

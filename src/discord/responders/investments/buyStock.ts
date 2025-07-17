@@ -2,7 +2,7 @@ import { createResponder, ResponderType } from "#base";
 import { createModalFields } from "@magicyan/discord";
 import { TextInputStyle } from "discord.js";
 import { PrismaClient } from "#prisma"
-import { icon, res } from "functions/utils/index.js";
+import { res, icon } from "#functions";
 
 const prisma = new PrismaClient();
 

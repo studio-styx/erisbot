@@ -29,3 +29,7 @@
 *.zip
 *.exe
 *.development.json
+
+# Development
+
+/build/functions/logic/elementalBattle.ts

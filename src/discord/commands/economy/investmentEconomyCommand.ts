@@ -1,7 +1,6 @@
-import { generateGeminiContent } from "functions/logic/index.js";
+import { res, icon, getCommandId, generateGeminiContent } from "#functions";
 import { menus } from "#menus";
 import { PrismaClient } from "#prisma/client";
-import { getCommandId, icon, res } from "functions/utils/index.js";
 import { brBuilder } from "@magicyan/discord";
 import { ChatInputCommandInteraction } from "discord.js";
 

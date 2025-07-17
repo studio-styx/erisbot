@@ -1,8 +1,6 @@
 import { createResponder, ResponderType } from "#base";
-import { clearCache, getCache, registerLog } from "#functions";
-import { generateGeminiContent } from "functions/logic/index.js";
+import { clearCache, generateGeminiContent, getCache, icon, registerLog, res, resv2 } from "#functions";
 import { PrismaClient } from "#prisma/client";
-import { icon, resv2, res } from "functions/utils/index.js";
 import { createModalFields } from "@magicyan/discord";
 import { TextInputStyle } from "discord.js";
 

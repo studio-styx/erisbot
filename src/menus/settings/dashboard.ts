@@ -1,7 +1,7 @@
-import { ServerSettings } from "#functions";
-import { icon } from "functions/utils/index.js";
+import { icon, ServerSettings } from "#functions";
 import { brBuilder, createContainer, createRow, createSection, createSeparator } from "@magicyan/discord";
 import { ButtonBuilder, ButtonStyle, channelMention, ChannelSelectMenuBuilder, ChannelType, SelectMenuDefaultValueType, type InteractionReplyOptions } from "discord.js";
+import { settings } from "#settings";
 
 export function dashboardMenu<R>(serverSettings: ServerSettings): R {
 
@@ -93,7 +93,7 @@ export function dashboardMenu<R>(serverSettings: ServerSettings): R {
     ];
 
     const container = createContainer({
-        accentColor: "#4f2499",
+        accentColor: settings.colors.fuchsia,
         components,
     });
 

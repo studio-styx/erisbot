@@ -1,6 +1,6 @@
 import { Store, createCommand } from "#base";
 import { settings } from "#settings";
-import { icon, res } from "functions/utils/index.js";
+import { icon, res } from "#functions";
 import { brBuilder, createEmbed } from "@magicyan/discord";
 import { ApplicationCommandOptionType, ApplicationCommandType, ChannelType, time } from "discord.js";
 

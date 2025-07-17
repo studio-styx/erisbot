@@ -1,10 +1,8 @@
 import { Store } from "#base";
-import { getCache, registerLog, setCache } from "#functions";
-import { generateGeminiContent } from "functions/logic/index.js";
+import { getCache, registerLog, setCache, getCommandId, icon, res, resv2, generateGeminiContent } from "#functions";
 import { menus } from "#menus";
 import { Prisma, PrismaClient } from "#prisma/client";
 import { settings } from "#settings";
-import { getCommandId, icon, res, resv2 } from "functions/utils/index.js";
 import { brBuilder, createContainer, createEmbed, createRow, createSeparator, createTextDisplay } from "@magicyan/discord";
 import { ButtonBuilder, ButtonStyle, ChatInputCommandInteraction, time, userMention } from "discord.js";
 

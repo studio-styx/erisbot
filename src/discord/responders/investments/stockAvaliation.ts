@@ -1,7 +1,6 @@
 import { createResponder, ResponderType } from "#base";
-import { generateGeminiContent } from "functions/logic/index.js";
+import { res, icon, generateGeminiContent } from "#functions";
 import { PrismaClient } from "#prisma/client";
-import { icon, res } from "functions/utils/index.js";
 import { brBuilder } from "@magicyan/discord";
 import { time } from "discord.js";
 

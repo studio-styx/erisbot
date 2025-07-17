@@ -1,5 +1,5 @@
+import { getCommandId, icon } from "#functions";
 import { settings } from "#settings";
-import { getCommandId, icon } from "functions/utils/index.js";
 import { brBuilder, createRow } from "@magicyan/discord";
 import { EmbedBuilder, StringSelectMenuBuilder, type InteractionReplyOptions, Interaction } from "discord.js";
 
@@ -31,6 +31,7 @@ export async function commandsMenu<R>(commandId: string, page: "economy" | "bot"
                     `</economy cassino slots:${commandId}> - play slots`,
                     `</economy cassino coinflip:${commandId}> - play coinflip`,
                     `</economy cassino horse-racing:${commandId}> - bet in horse racing`,
+                    `</economy cassino blackjack:${commandId}> - bet in horse racing`,
                 ),
                 inline: true
             }, {

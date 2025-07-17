@@ -22,8 +22,6 @@
     "chalk": "5.4.1",
     "discord.js": "14.19.3",
     "fast-glob": "3.3.3",
-    "i18next": "^25.1.2",
-    "i18next-fs-backend": "^2.6.0",
     "node-cache": "^5.1.2",
     "prisma": "^6.7.0",
     "rou3": "0.5.1",

@@ -1,4 +1,4 @@
-import { icon } from "functions/utils/emojis.js";
+import { icon } from "#functions";
 import NodeCache from "node-cache";
 
 export type Humor = "angry" | "happy" | "sad" | "neutral" | "scared" | "surprised" | "confused";

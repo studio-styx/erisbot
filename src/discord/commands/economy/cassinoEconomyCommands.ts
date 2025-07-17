@@ -1,10 +1,9 @@
+import { prisma } from "#database";
 import { BlackjackIA, Humor, icon, registerLog, res, setBlackjackGame } from "#functions";
-import { Prisma, PrismaClient } from "#prisma/client";
+import { Prisma } from "#prisma/client";
 import { settings } from "#settings";
 import { createEmbed, createRow } from "@magicyan/discord";
 import { ButtonBuilder, ButtonStyle, ChatInputCommandInteraction } from "discord.js";
-
-const prisma = new PrismaClient();
 
 export async function cassinoEconomyCommands(interaction: ChatInputCommandInteraction<"cached">) {
     const { options, user: author } = interaction;
@@ -24,7 +23,7 @@ export async function cassinoEconomyCommands(interaction: ChatInputCommandIntera
         
             if (amount > user.money.toNumber()) amount = user.money.toNumber();
             if (amount < 50) {
-                interaction.editReply(res.danger(`${icon.Eris_cry} | Você não pode apostar menos de 50 stx!`));
+                interaction.editReply(res.danger(`${icon.Eris_cry} | Você precisa ter no mínimo 50 STX para apostar.`));
                 return;
             }
         

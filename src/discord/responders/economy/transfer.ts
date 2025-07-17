@@ -1,8 +1,8 @@
 import { createResponder, ResponderType, Store } from "#base";
 import { prisma } from "#database";
+import { icon, res } from "#functions";
 import { Prisma } from "#prisma";
 import { settings } from "#settings";
-import { icon, res } from "functions/utils/index.js";
 import { createEmbed, createRow } from "@magicyan/discord";
 import { ButtonBuilder, ButtonStyle, userMention } from "discord.js";
 
