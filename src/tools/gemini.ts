@@ -11,6 +11,7 @@ const safetySettings: SafetySetting[] = [
     { category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT, threshold }
 ];
 
+
 export const gemini = {
     text: genAI.getGenerativeModel({ model: "gemini-2.0-flash", safetySettings }),
     getText(response: EnhancedGenerateContentResponse){

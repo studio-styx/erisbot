@@ -23,7 +23,7 @@
     "pink": "#FF00A1"
   },
   "bot": {
-    "version": "0.5.0",
+    "version": "0.5.2",
     "ownerId": "1171963692984844401",
     "support": {
       "supportGuild": "1172930138770526248",

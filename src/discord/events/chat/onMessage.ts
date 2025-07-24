@@ -1,265 +1,227 @@
-import { createEvent } from "#base";
-import { defaultServerSettings, getServerSettings, setServerSettings } from "#functions";
-import { PrismaClient } from "#prisma";
+import { prisma } from "#database";
+import { getServerSettings, defaultServerSettings, setServerSettings, res, icon } from "#functions";
 import { brBuilder } from "@magicyan/discord";
-import axios from "axios";
-import { Client, Message, OmitPartialGroupDMChannel } from "discord.js";
+import { OmitPartialGroupDMChannel, Message, User } from "discord.js";
 import NodeCache from "node-cache";
+import { gemini } from "./requisition.js";
 
-const cache = new NodeCache({ stdTTL: 2100 });
-
-const prisma = new PrismaClient();
-
-// Interface para tipagem da fila
-interface Requisition {
-    channelId: string;
-    messageId: string;
+interface MessagesHistory {
+    message: string;
     authorId: string;
-    content: string;
-    date: Date;
+    authorName: string;
+    role: 'user' | 'assistant';
+    messageChannelId: string;
+    messageId: string;
+    messageGuildId: string;
 }
 
+const cache = new NodeCache({ stdTTL: 60 * 20 });
 
-// Interface para o cache
-interface CacheEntry {
-    response: string;
-    authorId: string; // ID do usuário que gerou a resposta em cache
+const getMessages = (channelId: string): MessagesHistory[] => (cache.get(`messages:${channelId}`) as MessagesHistory[] ?? []);
+const addMessage = (channelId: string, message: MessagesHistory) => cache.set(`messages:${channelId}`, [...getMessages(channelId), message]);
+const setMessages = (channelId: string, messages: MessagesHistory[]) => cache.set(`messages:${channelId}`, messages);
+
+export async function chatBot(message: OmitPartialGroupDMChannel<Message<boolean>>) {
+    // Ignora mensagens de bots e da própria Éris
+    if (message.author.bot || message.author.id === message.client.user.id) return;
+    if (!message.guild || !message.guildId) return;
+    const serverSettings = getServerSettings(message.guildId) || await prisma.guildSettings.findUnique({ where: { id: message.guildId } }) || defaultServerSettings;
+
+    if (!serverSettings.chatBotEnabled) return;
+    if (!serverSettings.chatBotChannels.includes(message.channelId)) return;
+
+    setServerSettings(message.guildId, serverSettings);
+
+    processMessages(message);
 }
 
-interface Messages { role: string, content: string }
+async function processMessages(message: OmitPartialGroupDMChannel<Message<boolean>>) {
+    // verificar se a éris está no contexto
+    // Obter todas as mensagens e verificar se menciona a Éris
+    const lastMessages = getMessages(message.channelId);
+    const mentionsErisInHistory = lastMessages.some(msg => msg.role === 'user' && msg.message.includes(`<@${message.applicationId}>`) || msg.message.toLowerCase().includes(`eris`) || msg.message.toLowerCase().includes(`éris`));
+    const mentionsToErisInRecentMessage = message.content.includes(`<@${message.client.user.id}>`) || message.content.toLowerCase().includes(`eris`) || message.content.toLowerCase().includes(`éris`);
+    const isAReplyToEris = message.channel.messages.cache.get(message.reference?.messageId ?? '')?.author.id === message.client.user.id;
 
-const messages = (channelid: string): Messages[] => {
-    return cache.get<Messages[]>(`messages-${channelid}`) || [];
-}
-const requisitions = (channelid: string): Requisition[] => {
-    return cache.get<Requisition[]>(`requisitions-${channelid}`) || [];
-}
+    const shouldReply = mentionsErisInHistory || mentionsToErisInRecentMessage || isAReplyToEris;
+    if (!shouldReply) return;
 
-const API_KEY = process.env.LLAMA_API_KEY as string;
-let isProcessingQueue = false;
-const BOT_ID = "1365785789933551707"; // ID da bot Éris
-const responsesCache = new Map<string, CacheEntry>();
+    const commands = await userCommads(message.content, message.author);
 
-createEvent({
-    name: "onMessageChat",
-    event: "messageCreate",
-    async run(message) {
-        // Ignora mensagens de bots e da própria Éris
-        if (message.author.bot || message.author.id === BOT_ID) return;
-        if (!message.guild || !message.guildId) return;
-        const serverSettings = getServerSettings(message.guildId) || await prisma.guildSettings.findUnique({ where: { id: message.guildId } }) || defaultServerSettings;
+    const buildSystemPrompt = (commands?: string) => {
+        const lastMessage = message.content;
+        return brBuilder(
+            'Você é a Éris, uma assistente virtual de 17 anos com personalidade alegre e brincalhona, mas sempre respeitosa.',
+            'Regras absolutas:',
+            '- NUNCA invente informações que não estão no prompt',
+            '- Sua irmã é a Éris Canary (versão beta/testes)',
+            '- Você é um bot de Discord com sistema de economia, o nome da sua moeda é stx',
+            '- Mantenha respostas curtas (1-3 frases)',
+            '- Sempre responda à última mensagem do usuário',
+            '- Nunca use *ações* como *ri* ou *pensa*',
+            '- Nunca mencione outros bots ou personagens que não existam',
+            '- Você pode utilizar stickers seus personalizados, aonde quiser usar sticker personalizado use: {{nome do sticker}}',
+            'stickers disponiveis: (happy, Angry, cry, enchanted, fair, kiss, ok, shy, thinking e trusting) e todos tem sua versão virada pro lado esquerdo, pra usar use _left no final do nome do sticker, exemplo: {{happy_left}}',
+            'Contexto adicional:',
+            commands ? commands : '',
+            'Última mensagem do usuário (responda a esta):',
+            lastMessage,
+            'Histórico da conversa (apenas como referência):',
+            ...getMessages(message.channelId).map(msg =>
+                `${msg.role === 'user' ? msg.authorName : 'Você'}: ${msg.message}`
+            ).slice(-6)
+        );
+    };
 
-        if (!serverSettings.chatBotEnabled) return;
-        if (!serverSettings.chatBotChannels.includes(message.channelId)) return;
+    addMessage(message.channelId, {
+        authorId: message.author.id,
+        message: message.content,
+        role: "user",
+        authorName: message.author.username,
+        messageChannelId: message.channelId,
+        messageId: message.id,
+        messageGuildId: message.guildId || ''
+    });
 
-        setServerSettings(message.guildId, serverSettings)
+    try {
+        message.channel.sendTyping();
 
-        const msg = message.content;
+        // Sistema de tentativas com validação
+        let response: string = "";
+        let attempts = 0;
+        const maxAttempts = 3;
 
-        // Adiciona a requisição à fila
-        cache.set(`requisitions-${message.channelId}`, [...requisitions(message.channelId), {
-            channelId: message.channelId,
-            messageId: message.id,
-            authorId: message.author.id,
-            content: msg,
-            date: new Date(),
-        }])
+        while (attempts < maxAttempts) {
+            try {
+                const { response: geminiRes } = await gemini.text.generateContent(buildSystemPrompt(commands ?? undefined));
+                const gemRes = gemini.getText(geminiRes);
+                if (!res.success) {
+                    throw new Error((gemRes as any).error ?? "Erro ao gerar conteúdo");
+                }
+                response = gemRes.text!;
+                break;
+            } catch (error: any) {
+                attempts++;
+                console.warn(`Tentativa ${attempts} falhou:`, error.message);
 
-        if (!isProcessingQueue) {
-            processQueue(message.channelId, message.client, message);
+                if (attempts >= maxAttempts) {
+                    response = "Ops, não consegui responder direito. Pode reformular sua pergunta?";
+                }
+            }
         }
-    }
-});
 
-// Função para processar a fila com intervalo de 1,5 segundos
-async function processQueue(channelId: string, client: Client, omit: OmitPartialGroupDMChannel<Message<boolean>>) {
-    isProcessingQueue = true;
-    const messagesC = messages(channelId);
-    const requisitionsC = requisitions(channelId); // Obtém a fila de requisições do cache
+        // Processamento final da resposta
+        response = response
+            .replace(/<@!?(\d+)>/g, '`invalid mention`')
+            .replace(/<@&(\d+)>/g, '`invalid mention`')
+            .replace(/@everyone/g, '`invalid mention`')
+            .replace(/@here/g, '`invalid mention`');
 
-    while (requisitionsC.length > 0) {
-        const { messageId, channelId } = requisitionsC[0];
+        // substituir stickers personalizados
+        response = response.replace(/\{\{(\w+)\}\}/g, (_, conteudo) => {
+            return (icon as unknown as Record<string, string>)[`Eris_${conteudo}`] || ''; // Se não existir, mantém o original
+        });
+        const msg = await message.reply(response);
 
-        let message: Message;
-        try {
-            const channel = await client.channels.fetch(channelId);
-            if (!channel?.isTextBased()) throw new Error("Canal inválido");
-
-            message = await channel.messages.fetch(messageId);
-        } catch (err) {
-            console.warn("Não foi possível buscar a mensagem:", err);
-            requisitionsC.shift();
-            cache.set(`requisitions-${channelId}`, requisitionsC);
-            
-            cache.set(`requisitions-${channelId}`, requisitionsC);
-            continue;
-        }
-
-        const userName = message.member?.displayName || message.author.username;
-        const msgContent = message.content.toLowerCase();
-        const isReplyToEris = message.reference?.messageId
-            ? (await message.channel.messages.fetch(message.reference.messageId)).author.id === BOT_ID
-            : false;
-
-        // Adiciona a mensagem ao histórico ANTES de verificar shouldRespond
-        messagesC.push({
-            role: "user",
-            content: `${message.author.displayName}: ${message.content}`,
+        // Adiciona a resposta da Éris ao cache
+        addMessage(message.channelId, {
+            authorId: message.client.user.id,
+            message: response,
+            role: "assistant",
+            authorName: msg.author.username,
+            messageChannelId: msg.channelId,
+            messageId: msg.id,
+            messageGuildId: msg.guildId || ''
         });
 
-        // Limita o histórico
-        if (messagesC.length > 12) {
-            messagesC.shift();
-        }
-        cache.set(`messages-${channelId}`, messagesC);
+        // Mantém apenas o histórico recente
+        setMessages(message.channelId, getMessages(message.channelId).slice(-6));
+    } catch (error) {
+        console.error("Erro no processamento:", error);
+        await message.channel.send("Desculpe, tive um problema inesperado. Estou me recuperando...");
+    }
+}
 
-        // Remove a mensagem da fila
+async function userCommads(message: string, user: User): Promise<string | null> {
+    const mentionsToErisCommands = [
+        "comandos",
+        "ajuda",
+        "help"
+    ];
+    const mentionsToErisEconomyCommands = [
+        "balance",
+        "saldo",
+        "wallet",
+        "blackjack",
+        "corrida de cavalos",
+        "cavalos",
+        "stx"
+    ];
+    const mentionsToErisSister = [
+        "sua irmâ",
+        "sua irmã",
+        "sister",
+        "sua irma",
+        "irmã",
+        "eris canary",
+        "canary",
+    ]
+    const mentionsToBotList = [
+        'botlist',
+        'bot list',
+        'add meu bot',
+        'adicionar bot',
+        'adicionar meu bot',
+        'meu bot',
+        'minha bot',
+        'minha aplicação'
+    ]
 
-        // Verifica se a mensagem menciona "eris" ou "éris"
-        const mentionsEris = msgContent.includes("eris") || msgContent.includes("éris");
-
-        // Verifica se há interações recentes com Éris no histórico
-        const hasRecentInteraction = messagesC.slice(-10).some(m => 
-            m.role === "assistant" || 
-            m.content.toLowerCase().includes("éris") || 
-            m.content.toLowerCase().includes("eris")
-        );
-
-        // Decide se deve responder
-        const shouldRespond = mentionsEris || isReplyToEris || hasRecentInteraction;
-
-        if (!shouldRespond) {
-            requisitionsC.shift();
-            cache.set(`requisitions-${channelId}`, requisitionsC);
-            
-            await new Promise((resolve) => setTimeout(resolve, 1500));
-            continue;
-        }
-
-        // Verifica o cache usando apenas o conteúdo da mensagem (sem o nome do usuário)
-        const cacheKey = message.content;
-        const cacheEntry = responsesCache.get(cacheKey);
-        if (cacheEntry && cacheEntry.authorId !== message.author.id) {
-            await message.reply(cacheEntry.response);
-            requisitionsC.shift();
-            cache.set(`requisitions-${channelId}`, requisitionsC);
-             // Remove a requisição processada
-            await new Promise((resolve) => setTimeout(resolve, 1500));
-            continue;
-        }
-
-        if (messages.length > 12) {
-            messagesC.shift();
-        }
-
-        omit.channel.sendTyping();
-
-        try {
-            const response = await axios.post(
-                "https://api.together.xyz/v1/chat/completions",
-                {
-                    model: "meta-llama/Llama-3.3-70B-Instruct-Turbo-Free",
-                    messages: [
-                        {
-                            role: "system",
-                            content: brBuilder(
-                                "Você é Éris, uma jovem adulta de 17 anos, gênero feminino, com um jeito desajeitado, simpática e às vezes tímida. É alegre quando pode e responde com brincadeiras.",
-                                "Você recebeu um histórico de mensagens, a mais atual é a mais recente. Responda com base nas interações anteriores — se estiverem conversando com você ou se você for parte da conversa, continue naturalmente.",
-                                "Se perceber que as pessoas estão falando entre si e não com você, pode ignorar respondendo com 'sem resposta'.",
-                                "Você deve ser discreta quando não for chamada, mas mantenha o fluxo se a conversa parecer envolver você.",
-                                "Por favor, não simule ações, como '*sorri pra você*', '*cora*' ou qualquer ação descritiva.",
-                                "Não tente ter qualquer relação amorosa ou relacionamento com alguém, apenas amizade.",
-                                "Se a pergunta for muito complexa ou técnica, admita que não sabe responder, mantendo o personagem.",
-                                "Mantenha consistência nas respostas, lembrando do contexto das suas próprias mensagens anteriores no histórico.",
-                                "As mensagens podem vir de diferentes usuários, para saber quem mandou cada uma só ver o início da mensagem que estará: \"user: <nome do usuário>: <mensagem>\""
-                            )                            
-                        },
-                        ...messagesC,
-                    ],
-                },
-                {
-                    headers: {
-                        "Authorization": `Bearer ${API_KEY}`,
-                        "Content-Type": "application/json",
-                    },
-                    timeout: 30000,
-                }
-            );
-
-            const replyContent: string = response.data.choices[0].message.content;
-
-            if (replyContent.toLowerCase() === "sem resposta") {
-                requisitionsC.shift();
-                cache.set(`requisitions-${channelId}`, requisitionsC);
-                
-                await new Promise((resolve) => setTimeout(resolve, 1500));
-                continue;
-            }
-
-            if (replyContent.includes("@everyone") || replyContent.includes("@here")) {
-                const errorMsg = await message.reply("A mensagem continha menções inválidas!");
-                setTimeout(() => errorMsg.delete(), 5000);
-                requisitionsC.shift();
-                cache.set(`requisitions-${channelId}`, requisitionsC);
-                
-                await new Promise((resolve) => setTimeout(resolve, 1500));
-                continue;
-            }
-
-            // Adiciona a resposta ao cache (usando apenas message.content como chave) e ao histórico
-            responsesCache.set(cacheKey, {
-                response: replyContent,
-                authorId: message.author.id,
-            });
-            messagesC.push({
-                role: "assistant",
-                content: replyContent,
-            });
-            cache.set(`messages-${channelId}`, messagesC);
-
-            await message.reply(replyContent);
-            requisitionsC.shift();
-            cache.set(`requisitions-${channelId}`, requisitionsC);
-            // Remove a requisição processada
-        } catch (error: any) {
-            const isRateLimit = error.response?.data?.error?.message?.toLowerCase().includes("rate limit");
-
-            if (isRateLimit) {
-                console.warn("Rate limit atingido. Reenfileirando a requisição.");
-                requisitionsC.push(requisitionsC.shift()!);
-                cache.set(`requisitions-${channelId}`, requisitionsC);
-                const errorMsg = await message.reply(`Rate limit, a requisição irá demorar mais um pouco para ser processada. Posição na fila: ${requisitions.length}`);
-                await new Promise((resolve) => setTimeout(resolve, 5000));
-                await errorMsg.delete();
-                continue;
-            }
-
-            const isServiceUnavaivle = error.response?.data?.error?.message?.toLowerCase().includes("Service unavailable");
-
-            if (isServiceUnavaivle) {
-                console.warn("Serviço indisponível. Reenfileirando a requisição.");
-                requisitionsC.push(requisitionsC.shift()!);
-                cache.set(`requisitions-${channelId}`, requisitionsC);
-                const errorMsg = await message.reply(`Serviço indisponível, a requisição irá demorar mais um pouco para ser processada. Posição na fila: ${requisitions.length}`);
-                await new Promise((resolve) => setTimeout(resolve, 5000));
-                await errorMsg.delete();
-                continue;
-            }
-
-            console.error("Erro ao processar a requisição:", error);
-
-            let errorMsgContent = "Ocorreu um erro ao processar sua mensagem. Tente novamente mais tarde!";
-            const errorMsg = await message.reply(errorMsgContent);
-            setTimeout(() => errorMsg.delete(), 5000);
-
-            requisitionsC.shift();
-            cache.set(`requisitions-${channelId}`, requisitionsC);
-            
-            if (requisitionsC.length > 0) {
-                await new Promise((resolve) => setTimeout(resolve, 1500));
-            }
-        }
+    const messageLower = message.toLowerCase();
+    // verificar se a mensagem possui menção aos comandos da éris
+    let response: string | null = null;
+    if (mentionsToErisCommands.some(cmd => messageLower.includes(cmd))) {
+        response = brBuilder(
+            'Dados de seus comandos:',
+            'O usuário pode ver os comandos disponíveis da Éris usando o comando `/bot commands`',
+            'Você possui comandos de economia avançados com IA, como blackjack, corrida de cavalos e muito mais.',
+            'Se o usuário quiser usar o comando /economy general work ele terá que ter um emprego, se não tiver ele deve usar o comando /economy general jobs, e participar de uma entrevista de emprego, e a IA avaliará se ele foi contratado ou não.'
+        )
+    }
+    // verificar se a mensagem possui menção aos comandos de economia da éris
+    if (mentionsToErisEconomyCommands.some(cmd => messageLower.includes(cmd))) {
+        const userPrisma = await prisma.user.findUnique({
+            where: { id: user.id },
+        })
+        const text = brBuilder(
+            'Dados de seus comandos de economia:',
+            'O usuário pode ver os comandos disponíveis da Éris usando o comando `/bot commands` na categoria de economia',
+            'Você possui comandos de economia avançados com IA, como blackjack, corrida de cavalos e muito mais.',
+            'No comando blackjack o usuário joga contra você, você tem a inteligência e pode ganhar do usuário dependendo da dificuldade',
+            'No comando corrida de cavalos o usuário aposta em cavalos e pode ganhar dinheiro, dependendo da sorte.',
+            `O usuário tem ${userPrisma?.money.toNumber() ?? 0} styx na carteira, e ${userPrisma?.bank.toNumber() ?? 0} styx no banco, totalizando ${(userPrisma?.money.toNumber() ?? 0) + (userPrisma?.bank.toNumber() ?? 0)} styx.`,
+        )
+        response === null ? text : `${response}\n\n${text}`;
+    }
+    // verificar se a mensagem possui menção à irmã da éris
+    if (mentionsToErisSister.some(cmd => messageLower.includes(cmd))) {
+        const text = brBuilder(
+            'Dados de sua irmã Éris canary:',
+            'Sua irmã Éris canary sempre recebe as atualizações primeiro que você, mas em troca ela tem mais bugs e é instavel.',
+            'Ela é exclusiva do servidor da Éris, o nome do servidor é Rio Styx - botlist'
+        )
+        response === null ? text : `${response}\n\n${text}`;
     }
 
-    isProcessingQueue = false;
+    // verificar se a mensagem possui menção à botlist da éris
+    if (mentionsToBotList.some(cmd => messageLower.includes(cmd))) {
+        const text = brBuilder(
+            'Dados da botlist da Éris:',
+            'No server da éris é possivel adicionar seu bot à botlist, ao adicionar você terá duas opções: analise normal e cuidadosa, se escolher normal o bot tem mais chances de ser aprovado mas menos erros serão percebidos, mas se escolher analise cuidadosa sua aplicação tem muito mais chances de ser reprovada, mas podemos encontrar mais erros e sugerir melhoras, se seu bot for aprovado na analise cuidasosa você pode ganhar prêmios só por ter a aplicação no server',
+            'O usuário pode adicionar seu bot no canal <#1395418367619235920> apertando no botão',
+            'Quando a analise começar você pode acompanhar em <#1395418690672918578> e receberá uma notificação quando a analise terminar.',
+        )
+        response === null ? text : `${response}\n\n${text}`;
+    }
+    return response;
 }
