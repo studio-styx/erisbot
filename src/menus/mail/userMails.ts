@@ -6,16 +6,16 @@ import { ButtonBuilder, ButtonStyle, StringSelectMenuBuilder, time, userMention,
 
 export function userMailsMenu<R>(mails: Mails[], user: User, page = 0): R {
     if (mails.length === 0) {
-        return (resv2.danger(`${icon.error} | Você não tem mails!`, {
+        return (resv2.danger(`${icon.error} | Você não tem cartas!`, {
             components: [createRow(
                 new ButtonBuilder({
-                    customId: `mail/menu/unIgnoreTag`,
+                    customId: `mail/menu/unIgnoreTag/${user.id}`,
                     label: "Desfazer ignorar tags",
                     style: ButtonStyle.Secondary,
                     disabled: user.mailsTagsIgnored.length === 0
                 }),
                 new ButtonBuilder({
-                    customId: `mail/action/enableDmNotification/${user.id}`,
+                    customId: `mail/action/enableDmNotification/${user.id}/0`,
                     label: user.dmNotification ? "Desativar dm" : "Ativar dm",
                     style: user.dmNotification ? ButtonStyle.Danger : ButtonStyle.Success
                 })
@@ -32,16 +32,16 @@ export function userMailsMenu<R>(mails: Mails[], user: User, page = 0): R {
             emoji: "📬"
         })).slice(0, 25)
     const components = [
-        `# ${icon.mail} Lista de mails`,
+        `# ${icon.mail} Lista de cartas`,
         createSeparator(),
         brBuilder(
-            mail ? mail.content : `Na página ${page + 1} não há um mail`,
+            mail ? mail.content : `Na página ${page + 1} não há uma carta`,
             `-# ${page + 1}/${mails.length}`
         ),
         createSeparator(),
         brBuilder(
             `-# De: ${userMention(mail.userId)}`,
-            `-# Enviado em: ${time(mail.createdAt, "d")}`
+            `-# Enviado em: ${time(mail.createdAt, "D")}`
         ),
         createSeparator(),
         createRow(
@@ -53,18 +53,19 @@ export function userMailsMenu<R>(mails: Mails[], user: User, page = 0): R {
             }),
             new ButtonBuilder({
                 customId: `mail/actionPage/delete/${mail.id}/${page}/${user.id}`,
-                label: "Excluir email",
+                label: "Excluir carta",
                 style: ButtonStyle.Danger
             })
         ),
-        "Atenção, se ignorar as tags você não receberá mais emails com essas tags.",
+        "Atenção, se ignorar as tags você não receberá mais cartas com essas tags.",
         createRow(
             new StringSelectMenuBuilder({
                 customId: `mail/actionPage/ignore/${mail.id}/${page}/${user.id}`,
-                placeholder: "Ignorar tags",
-                options: mailTags.length === 0 ? [{ label: "todas as tags desse mail foram ignoradas", value: "alIgnoratedMailTags" }] : mailTags,
+                placeholder: mailTags.length === 0 ? "todas as tags dessa carta foram ignoradas" : "Ignorar tags",
+                options: mailTags.length === 0 ? [{ label: "todas as tags dessa carta foram ignoradas", value: "alIgnoratedMailTags" }] : mailTags,
                 minValues: 0,
-                maxValues: mailTags.length === 0 ? 1 : mailTags.length
+                maxValues: mailTags.length === 0 ? 1 : mailTags.length,
+                disabled: mailTags.length === 0
             })
         ),
     ];
@@ -84,8 +85,8 @@ export function userMailsMenu<R>(mails: Mails[], user: User, page = 0): R {
                 disabled: page + 1 >= mails.length
             }),
             new ButtonBuilder({
-                customId: `mail/action/deletall/${user.id}`,
-                label: mails.find(m => !m.asRead) ? "Você tem emails não lidos" : "Apagar todos os emails",
+                customId: `mail/action/deleteall/${user.id}/0`,
+                label: mails.find(m => !m.asRead) ? "Você tem cartas não lidas" : "Apagar todas as cartas",
                 style: ButtonStyle.Danger,
                 disabled: mails.find(m => !m.asRead) ? true : false
             }),
@@ -96,7 +97,7 @@ export function userMailsMenu<R>(mails: Mails[], user: User, page = 0): R {
                 disabled: user.mailsTagsIgnored.length === 0
             }),
             new ButtonBuilder({
-                customId: `mail/action/enableDmNotification/${user.id}`,
+                customId: `mail/action/enableDmNotification/${user.id}/${page}`,
                 label: user.dmNotification ? "Desativar dm" : "Ativar dm",
                 style: user.dmNotification ? ButtonStyle.Danger : ButtonStyle.Success
             })

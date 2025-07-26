@@ -4,141 +4,75 @@ import { icon, res } from "#functions";
 import { menus } from "#menus";
 
 createResponder({
-    customId: "mail/actionPage/:action/:mailId/:page/:userId",
+    customId: "mail/action/:action/:userId/:page",
     types: [ResponderType.Button, ResponderType.StringSelect], cache: "cached",
-    async run(interaction, { action, userId, mailId, page }) {
+    async run(interaction, { action, userId, page }) {
         if (interaction.user.id !== userId) {
-            interaction.reply(res.danger(`${icon.denied} | Não foi você que executou esse comando!`));
-            return;
-        }
-
-        const id = parseInt(mailId);
-
-        if (isNaN(id)) {
-            interaction.reply(res.danger(`${icon.error} | O id do mail não é um id válido!`))
+            interaction.reply(res.danger(`${icon.denied} | Não foi você que executou esse comando!`))
             return;
         }
 
         await interaction.deferUpdate()
+        const user = await prisma.user.upsert({
+            where: { id: userId },
+            update: {},
+            create: { id: userId },
+            include: { mails: { orderBy: { createdAt: "desc" } } }
+        })
 
         switch (action) {
-            case "read": {
+            case "deleteall": {
                 if (!interaction.isButton()) return;
-                const mail = await prisma.mails.findUnique({
-                    where: { id }
+                if (user.mails.find(m => !m.asRead)) {
+                    interaction.followUp(res.danger(`${icon.denied} | você tem cartas não lidas!`));
+                    return;
+                };
+
+                await prisma.mails.deleteMany({
+                    where: { userId }
                 });
 
-                if (!mail) {
-                    const user = await prisma.user.upsert({
-                        where: { id: userId },
-                        update: {},
-                        create: { id: userId },
-                        include: { mails: { orderBy: { createdAt: "desc" } } }
-                    });
-
-                    await interaction.editReply(menus.mails(user.mails, user))
-                    await interaction.followUp(res.danger(`${icon.error} | Não foi possivel achar esse mail`))
-                    return;
-                }
-
-                if (mail.asRead) {
-                    await interaction.followUp(res.danger(`${icon.error} | Esse email já foi definido como lido`))
-                }
-
-                const [_, user] = await prisma.$transaction([
-                    prisma.mails.update({
-                        where: { id },
-                        data: {
-                            asRead: true
-                        }
-                    }),
-                    prisma.user.upsert({
-                        where: { id: userId },
-                        update: {},
-                        create: { id: userId },
-                        include: { mails: { orderBy: { createdAt: "desc" } } }
-                    })
-                ])
-
-                await interaction.editReply(menus.mails(user.mails, user, Number(page)))
-                await interaction.followUp(res.success(`${icon.success} | Você marcou como lido o mail id: \`${mail.id}\``))
+                await interaction.editReply(menus.mails.userMails([], user))
+                await interaction.followUp(res.success(`${icon.success} | Todas as cartas foram apagadas com sucesso!`));
                 return;
             }
-            case "delete": {
+            case "enableDmNotification": {
                 if (!interaction.isButton()) return;
-                const mail = await prisma.mails.findUnique({
-                    where: { id }
-                });
-
-                if (!mail) {
-                    const user = await prisma.user.upsert({
+                if (user.dmNotification) {
+                    const newUser = await prisma.user.update({
                         where: { id: userId },
-                        update: {},
-                        create: { id: userId },
-                        include: { mails: { orderBy: { createdAt: "desc" } } }
+                        data: { dmNotification: false }
                     });
 
-                    await interaction.editReply(menus.mails(user.mails, user))
-                    await interaction.followUp(res.danger(`${icon.error} | Não foi possivel achar esse mail`))
+                    await interaction.followUp(res.success(`${icon.success} | Você desabilitou notificações de cartas na dm com sucesso!`));
+                    await interaction.editReply(menus.mails.userMails(user.mails, newUser, Number(page)))
+                    return;
+                } else {
+                    const newUser = await prisma.user.update({
+                        where: { id: userId },
+                        data: { dmNotification: true }
+                    });
+
+                    await interaction.followUp(res.success(`${icon.success} | Você habilitou notificações de cartas na dm com sucesso!`));
+                    await interaction.editReply(menus.mails.userMails(user.mails, newUser, Number(page)))
                     return;
                 }
-
-                const [_, user] = await prisma.$transaction([
-                    prisma.mails.delete({
-                        where: { id }
-                    }),
-                    prisma.user.upsert({
-                        where: { id: userId },
-                        update: {},
-                        create: { id: userId },
-                        include: { mails: { orderBy: { createdAt: "desc" } } }
-                    })
-                ])
-
-                const mailsLength = user?.mails.length
-
-                let nextPage = 0
-                const pageNum = Number(page)
-
-                if (mailsLength > pageNum) nextPage = pageNum + 1
-                else if (mailsLength === 0) nextPage = 0
-                else if (mailsLength === pageNum) nextPage = pageNum - 1
-
-                await interaction.editReply(menus.mails(user.mails, user, nextPage))
-                await interaction.followUp(res.success(`${icon.success} | Mail id: \`${id}\` deletado com sucesso!`))
-                return;
             }
-            case "ignore": {
+            case "unIgnoretag1":
+            case "unIgnoretag2": {
                 if (!interaction.isStringSelectMenu()) return;
-                const tags = interaction.values
+                const tags = interaction.values;
 
-                if (tags.length === 1 && tags[0] === "alIgnoratedMailTags") {
-                    interaction.followUp(res.danger(`${icon.error} | Você já ignorou todas as tags desse mail`))
-                    return;
-                }
-
-                const user = await prisma.user.upsert({
+                const newUser = await prisma.user.update({
                     where: { id: userId },
-                    update: {},
-                    create: { id: userId },
-                    include: { mails: { orderBy: { createdAt: "desc" } } }
-                });
+                    data: {
+                        mailsTagsIgnored: user.mailsTagsIgnored.filter(t => !tags.includes(t))
+                    }
+                })
 
-                const currentIgnored = new Set(user.mailsTagsIgnored ?? []);
-
-                tags.forEach(tag => currentIgnored.delete(tag));
-
-                tags.forEach(tag => currentIgnored.add(tag));
-
-                const newUser = await prisma.user.upsert({
-                    where: { id: userId },
-                    update: {},
-                    create: { id: userId },
-                    include: { mails: { orderBy: { createdAt: "desc" } } }
-                });
-                
-                await interaction.editReply(menus.mails(newUser.mails, newUser, Number(page)));
-                await interaction.followUp(res.success(`${icon.success} | Tags ignoradas com sucesso: ${Array.from(currentIgnored).map(t => `\`${t}\``).join(", ")}`))
+                await interaction.editReply(menus.mails.ignoreTags(newUser));
+                await interaction.followUp(res.success(`${icon.success} | ${tags.length === 1 ? "A tag selecionada foi excluida" : "As tags selecionadas foram excluidas"}: **${tags.map(t => `\`${t}\``).join(", ")}**`));
+                return;
             }
         }
     },

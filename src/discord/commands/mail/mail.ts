@@ -39,7 +39,7 @@ createCommand({
             }
         });
 
-        await interaction.editReply(menus.mails(mails, user, 0));
+        await interaction.editReply(menus.mails.userMails(mails, user, 0));
         return;
     }
 });

@@ -18,9 +18,9 @@ createResponder({
             where: { id: userId },
             update: {},
             create: { id: userId },
-            include: { mails: true }
+            include: { mails: { orderBy: { createdAt: "desc" } } }
         })
-        interaction.editReply(menus.mails(user.mails, user, Number(page)))
+        interaction.editReply(menus.mails.userMails(user.mails, user, Number(page)))
         return;
     },
 });
