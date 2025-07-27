@@ -1,5 +1,6 @@
 import { settings } from "#settings";
-import { createContainer, createEmbed, EmbedPlusData } from "@magicyan/discord";
+import { ComponentData, createContainer, createEmbed, EmbedPlusData, isAttachment, withProperties } from "@magicyan/discord";
+import { MessageFlags } from "discord.js";
 
 type settingsColors = typeof settings.colors;
 type ResFunction = <O>(text: string, options?: O & EmbedPlusData) => Exclude<O, EmbedPlusData>;
@@ -23,28 +24,41 @@ export const res: Res = Object.create({}, Object.entries(settings.colors)
     }), {})
 );
 
-type Resv2Function = <O>(text: string, options?: O) => Exclude<O, O>;
+type UnusedProps = "content" | "embeds" | "components" | "ephemeral" | "fetchReply";
 
-type Resv2 = Record<keyof settingsColors, Resv2Function>;
+type ResV2Function = <R>(...components: ComponentData[]) => R & {
+    with<R>(options: Partial<Omit<R, UnusedProps>>): R;
+};
 
+type ResV2 = Record<keyof typeof settings.colors, ResFunction>;
 
-export const resv2: Resv2 = Object.create({}, Object.entries(settings.colors)
-    .reduce((obj, [name, color]) => Object.assign(obj, {
-        [name]: {
-            enumerable: true, writable: false,
-            value(description: string, options?: object){
-                const data = Object.assign({ color, description }, options);
-                const container = createContainer({
-                    accentColor: data.color,
-                    components: [data.description]
-                })
-
-                if (options && "components" in options && Array.isArray(options.components)){
-                    options.components.unshift(container);
+export const resv2: Res = Object.entries(settings.colors)
+    .reduce((acc, [key, color]) => ({
+        ...acc, [key]: function(...components: ComponentData[]){
+            const container = createContainer({
+                accentColor: color,
+                components,
+            });
+            const files = components.filter(isAttachment);
+            const defaults = {
+                files,
+                flags: [MessageFlags.IsComponentsV2, MessageFlags.Ephemeral],
+                components: [container],
+                content: null,
+                embeds: []
+            };
+            const withFunc = (options: object) => {
+                if ("flags" in options && Array.isArray(options.flags)){
+                    options.flags = Array.from(new Set([
+                        MessageFlags.IsComponentsV2, 
+                        ...options.flags
+                    ]));
                 }
-                const defaults = { withResponse: true, flags: ["Ephemeral", "IsComponentsV2"], components: [container] };
-                return Object.assign(defaults, options);
+                if ("files" in options && Array.isArray(options.files)){
+                    options.files = [...files, ...options.files];
+                };
+                return { ...defaults, ...options };
             }
+            return withProperties(defaults, { with: withFunc });
         }
-    }), {})
-);
+    }), {} as Res)

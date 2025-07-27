@@ -1,7 +1,10 @@
 import { createCommand } from "#base";
 import { prisma } from "#database";
-import { stocksEventuals, res } from "#functions";
-import { ApplicationCommandOptionType, ApplicationCommandType } from "discord.js";
+import { stocksEventuals, res, icon } from "#functions";
+import { Mails } from "#prisma/client";
+import { settings } from "#settings";
+import { brBuilder, createContainer, createSeparator } from "@magicyan/discord";
+import { ApplicationCommandOptionType, ApplicationCommandType, time } from "discord.js";
 
 createCommand({
     name: "sudo",
@@ -37,40 +40,20 @@ createCommand({
             type: ApplicationCommandOptionType.Subcommand,
             options: [
                 {
-                    name: "allusers",
-                    description: "send to all users",
-                    type: ApplicationCommandOptionType.Boolean,
-                    required: false
+                    name: "users",
+                    description: "id(s), or all",
+                    type: ApplicationCommandOptionType.String,
+                    required: true
                 },
                 {
-                    name: "userdb",
-                    description: "user in database to send",
+                    name: "content",
+                    description: "contents for the mail",
                     type: ApplicationCommandOptionType.String,
-                    required: false,
-                    autocomplete: true
+                    required: true
                 }
             ]
         }
     ],
-    async autocomplete(interaction) {
-        if (interaction.user.id !== "1171963692984844401") return interaction.respond([{ name: "you cannot send mails!", value: "noPermissionsToSendMail" }]);
-
-        const focused = interaction.options.getFocused()
-        const usersPrisma = await prisma.user.findMany()
-        const getUserName = async (id: string) => await interaction.client.users.fetch(id)
-
-        const filteredOptions = await Promise.all(
-            usersPrisma
-                .filter(user => user.id.includes(focused))
-                .map(async user => ({
-                    name: (await getUserName(user.id)).username,
-                    value: user.id
-                }))
-        );
-
-        interaction.respond(filteredOptions);
-        return;
-    },
     async run(interaction) {
         if (interaction.user.id !== "1171963692984844401") {
             interaction.reply(res.danger("You are not allowed to use this command!"));
@@ -99,7 +82,111 @@ createCommand({
             }
             case "send-mail": {
                 await interaction.deferReply({ flags });
-                const user = interaction.options.getString("userdb");
+                const users = interaction.options.getString("users", true);
+                const content = interaction.options.getString("content", true);
+
+                const sendMailDm = async (mail: Mails) => {
+                    const components: any[] = [
+                        brBuilder(
+                            `# ${icon.mail} | Carta recebida de: ${interaction.user.username}`,
+                            `-# ╰ ID da carta: ${mail.id}`,
+                            `-# ╰ Data de recebimento: ${time(mail.createdAt, "D")}`
+                        ),
+                        createSeparator(),
+                        "### Conteúdo:",
+                        mail.content,
+                    ]
+                    return createContainer({
+                        accentColor: settings.colors.fuchsia,
+                        components,
+                    })
+                }
+
+                if (users === "all") {
+                    const allUsers = await prisma.user.findMany();
+
+                    try {
+                        await prisma.$transaction(async (tx) => {
+                            let usersCount = 0
+                            for (const user of allUsers) {
+                                const mail = await tx.mails.create({
+                                    data: {
+                                        content,
+                                        userId: user.id,
+                                        whoSendId: interaction.user.id
+                                    }
+                                })
+                                usersCount++;
+                                if (!user.mailsTagsIgnored) continue;
+                                try {
+                                    const discordUser = await interaction.client.users.fetch(user.id);
+                                    if (discordUser) {
+                                        const container = await sendMailDm(mail);
+                                        await discordUser.send({ flags: ["IsComponentsV2"], components: [container] })
+                                    }
+                                } catch (error) {
+                                    continue;
+                                }
+                            }
+
+                            interaction.editReply(res.success(`Sent ${usersCount} mails`));
+                        })
+                    } catch (error) {
+                        console.error(error);
+                        interaction.editReply(res.danger("Something went wrong"));
+                    }
+                    return;
+                } else {
+                    const usersSeparated: string[] = users.split(",");
+                    
+                    if (usersSeparated.length === 0) {
+                        interaction.editReply(res.danger("No users found"));
+                        return;
+                    }
+                    try {
+                        await prisma.$transaction(async (tx) => {
+                            const successUsers: string[] = [];
+                            const failedUsers: { id: string; reason: string }[] = [];
+                            for (const id of usersSeparated) {
+                                const discordUser = await interaction.client.users.fetch(id).catch(() => null);
+
+                                if (!discordUser) {
+                                    failedUsers.push({ id, reason: "User not found" });
+                                    continue;
+                                }
+
+                                const user = await tx.user.upsert({
+                                    where: { id },
+                                    create: { id },
+                                    update: {}
+                                });
+
+                                const mail = await tx.mails.create({
+                                    data: {
+                                        content,
+                                        userId: id,
+                                        whoSendId: interaction.user.id
+                                    }
+                                });
+
+                                successUsers.push(discordUser.displayName);
+                                if (!user.mailsTagsIgnored) continue;
+                                try {
+                                    const container = await sendMailDm(mail);
+                                    await discordUser.send({ flags: ["IsComponentsV2"], components: [container] })
+                                } catch (error) {
+                                    continue;
+                                }
+                            }
+
+                            interaction.editReply(res.success(`Sent ${successUsers.length} mails to **${successUsers.length === 0 ? "\`no one\`" : successUsers.join(", ")}** ${failedUsers.length === 0 ? "" : `But failed in: **${failedUsers.map(u => `${u.id} - \`${u.reason}\`**`).join(", ")}`}`))
+                        })
+                    } catch (error) {
+                        console.error(error);
+                        interaction.editReply(res.danger("Something went wrong"));
+                    }
+                    return;
+                }
             }
         }
     },
