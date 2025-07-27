@@ -1,4 +1,4 @@
-import { powerStats, PowerStats, Power, getPower } from "#functions";
+import { powerStats, PowerStats, Power } from "#functions";
 
 interface BattleHistory {
     turn: "Eris" | "Player";

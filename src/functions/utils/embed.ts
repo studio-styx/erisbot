@@ -30,9 +30,9 @@ type ResV2Function = <R>(...components: ComponentData[]) => R & {
     with<R>(options: Partial<Omit<R, UnusedProps>>): R;
 };
 
-type ResV2 = Record<keyof typeof settings.colors, ResFunction>;
+type ResV2 = Record<keyof typeof settings.colors, ResV2Function>;
 
-export const resv2: Res = Object.entries(settings.colors)
+export const resv2: ResV2 = Object.entries(settings.colors)
     .reduce((acc, [key, color]) => ({
         ...acc, [key]: function(...components: ComponentData[]){
             const container = createContainer({
@@ -61,4 +61,4 @@ export const resv2: Res = Object.entries(settings.colors)
             }
             return withProperties(defaults, { with: withFunc });
         }
-    }), {} as Res)
+    }), {} as ResV2)

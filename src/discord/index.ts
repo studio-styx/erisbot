@@ -7,7 +7,7 @@ const cooldown = new Store<Date>();
 
 export const { createCommand, createEvent, createResponder } = setupCreators({
     commands: {
-        // guilds: [ "1172930138770526248", "1373806908149858334" ],
+        // guilds: [ "1395383469210865694" ],
         onNotFound: (interaction) => {
             interaction.reply(res.danger(`${icon.error} | Command not found!`));
         },

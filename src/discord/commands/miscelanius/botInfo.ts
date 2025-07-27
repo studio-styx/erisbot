@@ -1,10 +1,6 @@
 import { createCommand } from "#base";
-import { ApplicationCommandOptionType, ApplicationCommandType, EmbedBuilder, version } from "discord.js";
-import { brBuilder, createContainer, createSeparator } from "@magicyan/discord";
-import { existsSync, readFileSync } from "fs";
-import { settings } from "#settings";
+import { ApplicationCommandOptionType, ApplicationCommandType, EmbedBuilder } from "discord.js";
 import { menus } from "#menus";
-import { getCommandId } from "#functions";
 
 createCommand({
     name: "bot",
@@ -117,9 +113,8 @@ createCommand({
                 return;
             }
             case "commands": {
-                const commandId = await getCommandId(interaction, "bot")
-
-                interaction.reply(await menus.commands(commandId, "bot", interaction))
+                await interaction.deferReply({ flags })
+                interaction.editReply(await menus.commands("bot", interaction))
                 return;
             }
             case "ping": {

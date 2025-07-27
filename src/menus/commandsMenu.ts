@@ -3,7 +3,7 @@ import { settings } from "#settings";
 import { brBuilder, createRow } from "@magicyan/discord";
 import { EmbedBuilder, StringSelectMenuBuilder, type InteractionReplyOptions, Interaction } from "discord.js";
 
-export async function commandsMenu<R>(commandId: string, page: "economy" | "bot" | "user" | "moderation", interaction: Interaction): Promise<R> {
+export async function commandsMenu<R>(page: "economy" | "bot" | "user" | "moderation", interaction: Interaction): Promise<R> {
     const embed = new EmbedBuilder({
         title: "Commands",
         color: parseInt(settings.colors.fuchsia.replace("#", ""), 16),
@@ -12,34 +12,47 @@ export async function commandsMenu<R>(commandId: string, page: "economy" | "bot"
 
     switch (page) {
         case "economy": {
+            const [daily, work, bank, leaderboard, jobs, cassino, investment] = await Promise.all([
+                await getCommandId(interaction, "daily"),
+                await getCommandId(interaction, "work"),
+                await getCommandId(interaction, "bank"),
+                await getCommandId(interaction, "leaderboard"),
+                await getCommandId(interaction, "jobs"),
+                await getCommandId(interaction, "cassino"),
+                await getCommandId(interaction, "investment")
+            ])
+
+
             embed.addFields({
                 name: "",
                 value: brBuilder(
-                    `</economy general work:${commandId}> - work to earn money`,
-                    `</economy general daily:${commandId}> - claim your daily reward`,
-                    `</economy general balance:${commandId}> - check your balance`,
-                    `</economy general deposit:${commandId}> - deposit money into your bank`,
-                    `</economy general withdraw:${commandId}> - withdraw money from your bank`,
-                    `</economy general transfer:${commandId}> - transfer money to another user`,
-                    `</economy general leaderboard:${commandId}> - check the leaderboard`,
-                    `</economy general jobs:${commandId}> - get a job`,
+                    `**</work:${work}>** - Trabalhar para ganhar dinheiro`,
+                    `**</daily:${daily}>** - Ganhar sua recompensa diária`,
+                    `**</bank balance:${bank}>** - Verificar seu saldo`,
+                    `**</bank deposit:${bank}>** - Depositar seu dinheiro no banco`,
+                    `**</bank withdraw:${bank}>** - Retirar seu dinheiro do banco`,
+                    `**</bank transfer:${bank}>** - Transferir seu dinheiro para outro usuário`,
+                    `**</leaderboard:${leaderboard}>** - Verificar o ranking de usuários mais ricos`,
+                    `**</jobs search:${jobs}>** - Procurar por um emprego`,
+                    `**</jobs dismiss:${jobs}>** - Sair de seu emprego`,
                 ),
                 inline: true
             }, {
                 name: "",
                 value: brBuilder(
-                    `</economy cassino slots:${commandId}> - play slots`,
-                    `</economy cassino coinflip:${commandId}> - play coinflip`,
-                    `</economy cassino horse-racing:${commandId}> - bet in horse racing`,
-                    `</economy cassino blackjack:${commandId}> - bet in horse racing`,
+                    `**</cassino slots:${cassino}>** - Apostar em caça niqueis`,
+                    `**</cassino coinflip:${cassino}>** - Apostar em cara ou coroa`,
+                    `**</cassino horse-racing:${cassino}>** - Apostar em corrida de cavalos`,
+                    `**</cassino blackjack:${cassino}>** - Apostar no blackjack`,
                 ),
                 inline: true
             }, {
                 name: "",
                 value: brBuilder(
-                    `</economy investment buy:${commandId}> - buy a stock`,
-                    `</economy investment own-stocks:${commandId}> - see your own stocks`,
-                    `</economy investment ia-avaliation:${commandId}> - see the ia avaliation about the stocks`,
+                    `**</investment buy:${investment}>** - Comprar uma ação`,
+                    `**</investment own-stocks:${investment}>** - Verificar suas ações`,
+                    `**</investment stocks:${investment}>** - Ver todas as ações`,
+                    `**</investment ia-avaliation:${investment}>** - Pedir avaliação da ia`,
                 ),
                 inline: true
             })
@@ -47,27 +60,31 @@ export async function commandsMenu<R>(commandId: string, page: "economy" | "bot"
         }
         case "bot": {
             const supportCommandId = await getCommandId(interaction, "suporte")
+            const bot = await getCommandId(interaction, "bot")
+
             embed.addFields({
                 name: "",
                 value: brBuilder(
-                    `</bot info:${commandId}> - check bot info`,
-                    `</bot ping:${commandId}> - check bot ping`,
-                    `</bot creators:${commandId}> - check bot creators`,
-                    `</bot commands:${commandId}> - check bot commands`,
-                    `</suporte reportar bug:${supportCommandId}> - report a bug`,
-                    `</suporte reportar usuario:${supportCommandId}> - report a user`,
-                    `</suporte sugestao:${supportCommandId}> - suggest a feature`,
+                    `**</bot info:${bot}>** - Ver as minhas informações`,
+                    `**</bot ping:${bot}>** - Ver meu ping`,
+                    `**</bot creators:${bot}>** - Ver meus criadores`,
+                    `**</bot commands:${bot}>** - Ver meus comandos`,
+                    `**</suporte reportar bug:${supportCommandId}>** - Reportar um bug`,
+                    `**</suporte reportar usuario:${supportCommandId}>** - Reportar um usuário`,
+                    `**</suporte sugestao:${supportCommandId}>** - Fazer uma sugestão`,
                 ),
                 inline: true
             })
             break;
         }
         case "user": {
+            const user = await getCommandId(interaction, "user")
+
             embed.addFields({
                 name: "",
                 value: brBuilder(
-                    `</user logs:${commandId}> - check your logs`,
-                    `</user avatar:${commandId}> - check your avatar`,
+                    `**</user logs:${user}>** - Ver seus registros`,
+                    `**</user avatar:${user}>** - Ver seu avatar`,
                 )
             })
             break;
@@ -77,7 +94,7 @@ export async function commandsMenu<R>(commandId: string, page: "economy" | "bot"
             embed.addFields({
                 name: "",
                 value: brBuilder(
-                    `</dashboard:${dashboardCommandId}> - dashboard`,
+                    `**</dashboard:${dashboardCommandId}>** - dashboard`,
                 )
             })
             break;
@@ -90,10 +107,10 @@ export async function commandsMenu<R>(commandId: string, page: "economy" | "bot"
                 customId: "menu/help/commands",
                 placeholder: "Select a category",
                 options: [
-                    { label: "Economy", value: "economy", emoji: icon.money_bag, default: commandId === "economy" },
-                    { label: "Bot", value: "bot", emoji: icon.bot, default: commandId === "bot" },
-                    { label: "User", value: "user", emoji: icon.investment_graph, default: commandId === "user" },
-                    { label: "Moderation", value: "moderation", emoji: icon.lock, default: commandId === "moderation" }
+                    { label: "Economy", value: "economy", emoji: icon.money_bag, default: page === "economy" },
+                    { label: "Bot", value: "bot", emoji: icon.bot, default: page === "bot" },
+                    { label: "User", value: "user", emoji: icon.investment_graph, default: page === "user" },
+                    { label: "Moderation", value: "moderation", emoji: icon.lock, default: page === "moderation" }
                 ]
             })
         )
