@@ -13,13 +13,13 @@ export async function commandsMenu<R>(page: "economy" | "bot" | "user" | "modera
     switch (page) {
         case "economy": {
             const [daily, work, bank, leaderboard, jobs, cassino, investment] = await Promise.all([
-                await getCommandId(interaction, "daily"),
-                await getCommandId(interaction, "work"),
-                await getCommandId(interaction, "bank"),
-                await getCommandId(interaction, "leaderboard"),
-                await getCommandId(interaction, "jobs"),
-                await getCommandId(interaction, "cassino"),
-                await getCommandId(interaction, "investment")
+                getCommandId(interaction, "daily"),
+                getCommandId(interaction, "work"),
+                getCommandId(interaction, "bank"),
+                getCommandId(interaction, "leaderboard"),
+                getCommandId(interaction, "jobs"),
+                getCommandId(interaction, "cassino"),
+                getCommandId(interaction, "investment")
             ])
 
 
@@ -59,8 +59,11 @@ export async function commandsMenu<R>(page: "economy" | "bot" | "user" | "modera
             break;
         }
         case "bot": {
-            const supportCommandId = await getCommandId(interaction, "suporte")
-            const bot = await getCommandId(interaction, "bot")
+            const [supportCommandId, bot] = await Promise.all([
+                getCommandId(interaction, "suporte"),
+                getCommandId(interaction, "bot")
+            ])
+
 
             embed.addFields({
                 name: "",

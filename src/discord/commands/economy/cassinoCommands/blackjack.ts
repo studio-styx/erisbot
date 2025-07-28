@@ -1,11 +1,23 @@
 import { prisma } from "#database";
-import { res, icon, Humor, BlackjackIA, setBlackjackGame } from "#functions";
-import { settings } from "#settings";
-import { createEmbed, createRow } from "@magicyan/discord";
+import { res, icon, getBlackjackGame, resv2 } from "#functions";
+import { menus } from "#menus";
+import { createRow } from "@magicyan/discord";
 import { ButtonBuilder, ButtonStyle, ChatInputCommandInteraction } from "discord.js";
 
 export async function blackjackCommand(interaction: ChatInputCommandInteraction<"cached">) {
     const { options, user: author } = interaction;
+
+    const game = getBlackjackGame(author.id);
+    if (game) {
+        interaction.reply(resv2.danger(`${icon.denied} | Você já está jogando uma partida, você deseja deletar ela?`, createRow(
+            new ButtonBuilder({
+                customId: "blackjack/delete/delete",
+                label: "Sim",
+                style: ButtonStyle.Danger
+            })
+        )))
+        return;
+    }
 
     await interaction.deferReply();
 
@@ -21,40 +33,5 @@ export async function blackjackCommand(interaction: ChatInputCommandInteraction<
         return;
     }
 
-    const emotions: Humor[] = ["angry", "happy", "sad", "neutral", "scared", "surprised", "confused"];
-
-    const game = new BlackjackIA(emotions[Math.floor(Math.random() * emotions.length)], 0.3)
-    game.startGame();
-
-    const embed = createEmbed({
-        title: "🃏 Blackjack",
-        description: `Você irá jogar contra éris!`,
-        fields: [
-            { name: "Humor da Éris", value: game.getErisHumor() },
-            { name: "Cartas da Éris", value: game.getErisCards().map(__ => "?").join(", ") },
-            { name: "Sua mão", value: game.calculateHandValue(game.getUserCards()).toString() },
-            { name: "Cartas restantes no deck", value: game.getRemainingCards().length.toString() },
-            { name: "Valor apostado", value: amount.toString() }
-        ],
-        color: settings.colors.fuchsia
-    });
-
-    const components = [
-        createRow(
-            new ButtonBuilder({
-                customId: `blackjack/${author.id}/getCard/${amount}`,
-                label: "Pegar uma carta",
-                style: ButtonStyle.Success
-            }),
-            new ButtonBuilder({
-                customId: `blackjack/${author.id}/pass/${amount}`,
-                label: "Passar",
-                style: ButtonStyle.Danger
-            })
-        )
-    ];
-
-    setBlackjackGame(author.id, game);
-
-    await interaction.editReply({ embeds: [embed], components: components });
+    await interaction.editReply(menus.cassino.blackjack(author.id, amount))
 }

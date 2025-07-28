@@ -36,7 +36,7 @@ export async function economyWithdrawCommand(interaction: ChatInputCommandIntera
         },
     });
 
-    interaction.editReply(res.pink(`${icon.Eris_ok} | Saque de: **\`${value}**\` stx realizado com sucesso! agora você possui: **\`${user.money}**\` em sua carteira!`))
+    interaction.editReply(res.pink(`${icon.Eris_ok} | Saque de: **\`${value}\`** stx realizado com sucesso! agora você possui: **\`${user.money}\`** em sua carteira!`))
     
     await registerLog(
         `${icon.success} | ${userMention(id)} sacou: ${value} da conta bancária`,

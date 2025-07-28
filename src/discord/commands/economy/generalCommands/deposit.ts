@@ -36,7 +36,7 @@ export async function economyDepositCommand(interaction: ChatInputCommandInterac
         },
     });
 
-    interaction.editReply(res.pink(`${icon.Eris_ok} | Depósito de: **\`${value}**\` stx realizado com sucesso! agora você possui: **\`${user.bank}**\` em sua conta bancária`))
+    interaction.editReply(res.pink(`${icon.Eris_ok} | Depósito de: **\`${value}\`** stx realizado com sucesso! agora você possui: **\`${user.bank}\`** em sua conta bancária`))
     
     await registerLog(
         `${icon.success} | ${userMention(id)} depositou: ${value} na conta bancária`,

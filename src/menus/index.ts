@@ -1,4 +1,5 @@
 import { botInfoMenu } from "./botInfo.js";
+import { blackjackMenu } from "./cassino/blackjack.js";
 import { commandsMenu } from "./commandsMenu.js";
 import { stockInfoMenu } from "./investment/stockInfo.js";
 import { stocksMenu } from "./investment/stocks.js";
@@ -29,5 +30,8 @@ export const menus = {
         userMails: userMailsMenu,
         ignoreTags: ignoreTagMenu
     },
-    botinfo: botInfoMenu
+    botinfo: botInfoMenu,
+    cassino: {
+        blackjack: blackjackMenu,
+    }
 }

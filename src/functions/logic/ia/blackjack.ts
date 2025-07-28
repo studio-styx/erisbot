@@ -14,14 +14,22 @@ export class BlackjackIA {
     private erisCards: Cards[];
     private userCards: Cards[];
     private remainingCards: Cards[];
-    private passCount: number = 0;
+    public turnCount: number = 0;
+    public passCount: number = 0;
+    private erisNextCard: Cards | null = null;
+    private playerNextCard: Cards | null = null;
+    public amountAposted: number
 
-    constructor(humor: Humor, difficulty: number) {
-        this.humor = humor;
+    // 0 é o dealer, 1 é a éris fácil, 2 a média, 3 a díficil e 4 a pesadelo
+    constructor(humor: Humor | 'Random', difficulty: 0 | 1 | 2 | 3 | 4, amount: number) {
+        this.humor = humor === 'Random'
+            ? (["angry", "happy", "sad", "neutral", "scared", "surprised", "confused"][Math.floor(Math.random() * 7)] as Humor)
+            : humor;
         this.difficulty = difficulty;
         this.erisCards = [];
         this.userCards = [];
         this.remainingCards = [];
+        this.amountAposted = amount
     }
 
     public getErisHumor(): Humor {
@@ -91,10 +99,31 @@ export class BlackjackIA {
     }
 
     // sortear cartas
-    private drawCard(): Cards {
-        const index = Math.floor(Math.random() * this.remainingCards.length);
-        const card = this.remainingCards.splice(index, 1)[0];
+    private drawCard(player: 'eris' | 'user'): Cards {
+        if (this.remainingCards.length === 0) {
+            this.setDefaultDeck()
+            this.shuffleDeck();
+        }
+
+        const nextCardIndex = Math.floor(Math.random() * this.remainingCards.length);
+        const card = this.remainingCards.splice(nextCardIndex, 1)[0];
+
+        // Atualiza próxima carta apenas para níveis 3 e 4
+        if (player === 'eris' && this.difficulty >= 3 && this.remainingCards.length > 0) {
+            const futureCardIndex = Math.floor(Math.random() * this.remainingCards.length);
+            this.erisNextCard = this.remainingCards[futureCardIndex];
+        } else if (player === 'eris') {
+            this.erisNextCard = null; // Limpa para níveis 0-2
+        }
+
         return card;
+    }
+
+    private shuffleDeck(): void {
+        for (let i = this.remainingCards.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [this.remainingCards[i], this.remainingCards[j]] = [this.remainingCards[j], this.remainingCards[i]];
+        }
     }
 
     // começar o jogo
@@ -102,100 +131,115 @@ export class BlackjackIA {
         this.setDefaultDeck();
 
         do {
-            this.userCards = [this.drawCard()];
+            this.userCards = [this.drawCard('user')];
+            if (this.difficulty === 0) this.userCards.push(this.drawCard('user'))
         } while (this.calculateHandValue(this.userCards) === 21);
 
         do {
-            this.erisCards = [this.drawCard()];
+            this.erisCards = [this.drawCard('eris')];
+            if (this.difficulty === 0) this.erisCards.push(this.drawCard('eris'))
         } while (this.calculateHandValue(this.erisCards) === 21);
     }
 
 
     // jogada do usuário
-    public userTurn(): Cards | boolean {
-        const card = this.drawCard()
+    public userTurn(): Cards | null {
+        const card = this.drawCard('user')
         this.userCards.push(card);
         if (this.calculateHandValue(this.userCards) > 21) {
-            return false;
+            return null;
         }
         return card;
         // se retornar boolean o usuário perdeu, se não ele continua
     }
 
     // jogada da Éris
-    public erisTurn(): Cards | boolean {
-        const card = this.drawCard()
+    public erisTurn(): Cards | null {
+        const card = this.drawCard('eris')
         this.erisCards.push(card);
         if (this.calculateHandValue(this.erisCards) > 21) {
-            return false;
+            return null;
         }
         return card;
         // se retornar boolean a Éris perdeu, se não ela continua
     }
 
-    public userStops(): boolean {
+    public userStops(): 'eris' | 'user' | 'draw' {
         const erisHand = this.calculateHandValue(this.erisCards);
         const userHand = this.calculateHandValue(this.userCards);
 
-        return userHand > erisHand;
-        // se retornar true o usuário ganhou, se não ele perdeu
+        return userHand === erisHand
+            ? 'draw'
+            : userHand > erisHand
+                ? 'user'
+                : 'eris';
     }
 
-    public decideErisAction(): boolean {
+    public decideErisAction(playerVisibleCardValue: number): boolean {
         const erisHand = this.calculateHandValue(this.erisCards);
-        const userCards = this.userCards.length;
 
-        let chance = 0;
-
-        // 🟡 Heurísticas básicas
-        if (userCards > 3) chance += 0.1;
-        if (userCards > 5) chance += 0.15;
-        if (erisHand < 12) chance += 0.4; // Mais agressivo em mãos muito baixas
-        if (erisHand >= 12 && erisHand <= 16) chance += 0.2; // Incentivo para mãos médias
-        if (erisHand > 17) chance -= 0.2;
-        if (erisHand > 19) chance -= 0.3;
-
-        // 🔵 Dificuldade influencia risco
-        chance += this.difficulty * 0.3; // Aumenta o impacto da dificuldade
-
-        // 🔴 Humor afeta comportamento
-        chance += this.getHumorModifier();
-
-        // 🟣 Probabilidade de estourar
-        const bustChance = this.calculateBustProbability();
-        chance -= bustChance * 0.3; // Reduz o peso do bustChance
-
-        // 🔒 Limita entre 0 e 1
-        chance = Math.max(0, Math.min(1, chance));
-
-        console.log(`[Éris IA] Mão: ${erisHand} | Cartas jogador: ${userCards} | Humor: ${this.humor} | Dif: ${this.difficulty} | BustChance: ${(bustChance * 100).toFixed(1)}% | Chance final: ${(chance * 100).toFixed(1)}%`);
-
-        const shouldDraw = Math.random() < chance;
-        if (!shouldDraw) {
-            this.passCount = (this.passCount || 0) + 1;
-            if (this.passCount >= 2) {
-                return false; // Força parada após 2 passagens consecutivas
-            }
-        } else {
-            this.passCount = 0;
+        // Nível 0: Dealer padrão
+        if (this.difficulty === 0) {
+            const hasSoft17 = this.erisCards.some(card => card.name === 'A') && erisHand === 17;
+            return erisHand <= 17 && !hasSoft17; // Para em soft 17
         }
-        return shouldDraw;
+
+        let chance = 0.7; // Base inicial para pedir carta
+
+        // Níveis 1 e 2: Estratégia com aleatoriedade
+        if (this.difficulty <= 2) {
+            if (erisHand > 17) chance -= 0.4;
+            if (erisHand > 19) chance -= 0.3;
+            if (playerVisibleCardValue >= 10) chance += 0.2; // Jogador tem carta alta
+            if (playerVisibleCardValue <= 6) chance -= 0.2;  // Jogador tem carta baixa
+            if (this.difficulty === 2) {
+                // Análise leve do baralho restante
+                const highCardRatio = this.calculateHighCardRatio();
+                chance += highCardRatio > 0.5 ? 0.1 : -0.1; // Mais agressivo se há mais cartas altas
+            }
+            chance += this.getHumorModifier(); // Limitado a ±0.2
+            chance = Math.min(Math.max(chance, 0), 1);
+            return Math.random() < chance;
+        }
+        // Nível 3: Difícil
+        else if (this.difficulty === 3) {
+            if (this.erisNextCard && Math.random() < 0.6) {
+                const erisHandValueNextCard = this.calculateHandValue([...this.erisCards, this.erisNextCard]);
+                if (erisHandValueNextCard <= 21) return true;
+                if (erisHandValueNextCard > 21 && erisHand >= 16) return false; // Evita estourar
+            }
+            // Estratégia baseada na carta do jogador
+            if (erisHand > 17) chance -= 0.4;
+            if (erisHand > 19) chance -= 0.3;
+            if (playerVisibleCardValue >= 10 && this.userCards.length > 2) chance -= 0.2; // Jogador pode estourar
+            if (playerVisibleCardValue <= 6) chance -= 0.3; // Jogador tem mão fraca
+            const highCardRatio = this.calculateHighCardRatio();
+            chance += highCardRatio > 0.5 ? 0.2 : -0.2;
+            chance += this.getHumorModifier();
+            chance = Math.min(Math.max(chance, 0), 1);
+            return Math.random() < chance;
+        }
+        // Nível 4: Pesadelo
+        else {
+            if (this.erisNextCard) {
+                const erisHandValueNextCard = this.calculateHandValue([...this.erisCards, this.erisNextCard]);
+                const highCardRatio = this.calculateHighCardRatio();
+                // Decisão otimizada
+                if (erisHandValueNextCard <= 21 && erisHand < 19) return true; // Pede carta se seguro e mão não é forte
+                if (erisHand >= 19) return false; // Para em mãos fortes
+                if (playerVisibleCardValue >= 10 && this.userCards.length > 3) return false; // Jogador provavelmente estourará
+                if (highCardRatio > 0.6 && erisHand >= 16) return false; // Evita risco com muitas cartas altas
+                return Math.random() < 0.95; // 5% de chance de "errar"
+            }
+            return erisHand <= 17; // Fallback
+        }
     }
 
-    private calculateBustProbability(): number {
-        let bustCards = 0;
-        const totalCards = this.remainingCards.length;
-        if (totalCards === 0) return 1;
-
-        for (const card of this.remainingCards) {
-            const newHand = [...this.erisCards, card];
-            if (this.calculateHandValue(newHand) > 21) {
-                bustCards++;
-            }
-        }
-        return bustCards / totalCards;
+    private calculateHighCardRatio(): number {
+        const highCards = this.remainingCards.filter(card =>
+            ['10', 'J', 'Q', 'K', 'A'].includes(card.name)).length;
+        return highCards / (this.remainingCards.length || 1);
     }
-
     private getHumorModifier(): number {
         switch (this.humor) {
             case "angry": return 0.3;
@@ -359,7 +403,7 @@ export const getBlackjackGame = (id: string): BlackjackIA | undefined => {
 
 // Salva ou atualiza o jogo de um usuário
 export const setBlackjackGame = (id: string, game: BlackjackIA) => {
-    const games = getBlackjackGames();
+    const games = (cache.get("blackjackGames") as Record<string, BlackjackIA>) || {};
     games[id] = game;
     cache.set("blackjackGames", games);
 };
