@@ -29,7 +29,7 @@ export async function economyLeaderboardCommand(interaction: ChatInputCommandInt
         fields: [
             {
                 name: "",
-                value: topUsers.map((user, index) => `${index + 1}. ${findUser(user.id)?.displayName} - **${user.money.add(user.bank).toNumber()}** stx`).join("\n"),
+                value: topUsers.map((user, index) => `${index + 1}. ${findUser(user.id)?.displayName || "desconhecido"} - **${user.money.add(user.bank).toNumber()}** stx`).join("\n"),
                 inline: true
             }
         ],
@@ -42,7 +42,7 @@ export async function economyLeaderboardCommand(interaction: ChatInputCommandInt
         embed.addFields([
             {
                 name: "",
-                value: nextUsers.map((user, index) => `${index + 11}. ${userMention(user.id)} - **${user.money.add(user.bank).toNumber()}** stx`).join("\n"),
+                value: nextUsers.map((user, index) => `${index + 11}. ${findUser(user.id)?.displayName || "desconhecido"} - **${user.money.add(user.bank).toNumber()}** stx`).join("\n"),
                 inline: true
             }
         ]);

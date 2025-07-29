@@ -20,7 +20,7 @@ export async function coinflipCommand(interaction: ChatInputCommandInteraction<"
     coinflipResult = Math.random() < 0.5 ? 'heads' : 'tails';
 
     if (coinflipResult === side) {
-        interaction.reply(res.success(`${icon.Eris_enchanted} | A moeda caiu em ${side}, você ganhou **${amount}** STX!`));
+        interaction.reply(res.success(`${icon.Eris_enchanted} | A moeda caiu em ${side === "heads" ? "cara" : "coroa"}, você ganhou **${amount}** STX!`));
         await prisma.user.update({
             where: { id: author.id },
             data: { money: { increment: amount * 0.2 } }

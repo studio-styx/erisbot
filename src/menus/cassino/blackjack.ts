@@ -8,7 +8,8 @@ const userGames = new Store<number>()
 
 export function blackjackMenu<R>(userId: string, amount: number, game?: BlackjackIA, erisAction?: 'hit' | 'pass' | 'stand' | 'thinking', options?: {
     disableButtons?: boolean,
-    wins?: "eris" | "user" | "draw"
+    wins?: "eris" | "user" | "draw",
+    comentary?: string
 }): R {
     if (!game) {
         const aGameExist = getBlackjackGame(userId);
@@ -117,7 +118,8 @@ export function blackjackMenu<R>(userId: string, amount: number, game?: Blackjac
                                                             : humor === "scared" ? "Calma"
                                                                 : humor === "surprised" ? "Surpresa"
                                                                     : humor === "confused" ? "Confusa"
-                                                                        : "?"}`
+                                                                        : "?"}`,
+                options?.comentary || null
             ),
             createSeparator(),
             options.wins === "eris" ? 
@@ -151,7 +153,7 @@ export function blackjackMenu<R>(userId: string, amount: number, game?: Blackjac
         createSeparator(),
         brBuilder(
             `### ( ${icon.card_joker} ╺╸ Cartas ${game.getErisDifficulty() === 0 ? "do Dealer" : "da Éris"}`,
-            game.getErisCards().map(_ => "\`?\`").join(", ")
+            game.getErisCards().map((c, index) => index === 0 ? `**\`${c.name}\`**` : "**\`?\`**").join(", ")
         ),
         createSeparator(),
         brBuilder(
@@ -175,7 +177,8 @@ export function blackjackMenu<R>(userId: string, amount: number, game?: Blackjac
                                                         : humor === "scared" ? "Assustada"
                                                             : humor === "surprised" ? "Surpresa"
                                                                 : humor === "confused" ? "Confusa"
-                                                                    : "?"}`
+                                                                    : "?"}`,
+            options?.comentary || null
         ),
         erisAction && createSeparator(),
         erisAction && `Ação da éris: ${erisAction === "hit" ? "Pegou uma carta"

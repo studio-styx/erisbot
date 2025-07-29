@@ -34,8 +34,8 @@ export async function EconomyWorkCommand(interaction: ChatInputCommandInteractio
         })
 
         if (!user || !user.companyId || !user.company) {
-            const commandId = await getCommandId(interaction, "economy")
-            interaction.editReply(res.danger(`${icon.Eris_shy} | Você não tem um emprego! use o comando **</economy general jobs:${commandId}>** para encontrar um emprego!`))
+            const commandId = await getCommandId(interaction, "jobs")
+            interaction.editReply(res.danger(`${icon.Eris_shy} | Você não tem um emprego! use o comando **</jobs search:${commandId}>** para encontrar um emprego!`))
             return;
         }
 

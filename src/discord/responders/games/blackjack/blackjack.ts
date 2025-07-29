@@ -39,8 +39,8 @@ createResponder({
                     })
 
                     removeBlackjackGame(userId);
-
-                    interaction.editReply(menus.cassino.blackjack(userId, game.amountAposted, game, "thinking", { wins: "user" }))
+                    const comentary = game.erisComentary("user");
+                    interaction.editReply(menus.cassino.blackjack(userId, game.amountAposted, game, "thinking", { wins: "user", comentary }))
                     return;
                 }
                 // eris ainda não perdeu
@@ -48,8 +48,9 @@ createResponder({
                 game.turnCount++;
                 game.passCount = 0;
                 setBlackjackGame(userId, game)
-                await interaction.editReply(menus.cassino.blackjack(userId, game.amountAposted, game, "hit"))
-                if (game.getErisDifficulty() !== 0) await interaction.followUp({ content: comentary, flags })
+                await interaction.editReply(menus.cassino.blackjack(userId, game.amountAposted, game, "hit", {
+                    comentary: game.getErisDifficulty() !== 0 ? comentary : undefined
+                }))
                 return;
             }
             // eris passou
@@ -57,8 +58,9 @@ createResponder({
             game.turnCount++;
             game.passCount++;
             setBlackjackGame(userId, game)
-            await interaction.editReply(menus.cassino.blackjack(userId, game.amountAposted, game, "pass"))
-            if (game.getErisDifficulty() !== 0) await interaction.followUp({ content: comentary, flags })
+            await interaction.editReply(menus.cassino.blackjack(userId, game.amountAposted, game, "pass", {
+                comentary: game.getErisDifficulty() !== 0 ? comentary : undefined
+            }))
             return;
         }
 
@@ -79,7 +81,8 @@ createResponder({
 
                     removeBlackjackGame(userId);
 
-                    interaction.editReply(menus.cassino.blackjack(userId, game.amountAposted, game, "thinking", { wins: "eris" }))
+                    const comentary = game.erisComentary("eris");
+                    interaction.editReply(menus.cassino.blackjack(userId, game.amountAposted, game, "thinking", { wins: "eris", comentary }))
                     return;
                 }
 
@@ -96,6 +99,7 @@ createResponder({
                 if (game.passCount >= 3) {
                     const userWon = game.userStops();
 
+                    let comentary: string;
                     if (userWon === "user") {
                         await prisma.user.update({
                             where: { id: userId },
@@ -105,6 +109,8 @@ createResponder({
                                 }
                             }
                         })
+
+                        comentary = game.erisComentary("user");
                     } else if (userWon === "eris") {
                         await prisma.user.update({
                             where: { id: userId },
@@ -114,9 +120,13 @@ createResponder({
                                 }
                             }
                         })
+
+                        comentary = game.erisComentary("eris");
+                    } else {
+                        comentary = game.erisComentary("push");
                     } // empate não faz nada com o saldo do usuário
 
-                    interaction.editReply(menus.cassino.blackjack(userId, game.amountAposted, game, "thinking", { wins: userWon }))
+                    interaction.editReply(menus.cassino.blackjack(userId, game.amountAposted, game, "thinking", { wins: userWon, comentary }))
                     removeBlackjackGame(userId)
                     return;
                 }
@@ -132,6 +142,7 @@ createResponder({
             case "stand": {
                 const userWon = game.userStops();
 
+                let comentary: string;
                 if (userWon === "user") {
                     await prisma.user.update({
                         where: { id: userId },
@@ -140,7 +151,9 @@ createResponder({
                                 increment: game.amountAposted * multiplier
                             }
                         }
-                    })
+                    });
+
+                    comentary = game.erisComentary("user");
                 } else if (userWon === "eris") {
                     await prisma.user.update({
                         where: { id: userId },
@@ -150,9 +163,14 @@ createResponder({
                             }
                         }
                     })
+
+                    comentary = game.erisComentary("eris");
+                } else {
+                    comentary = game.erisComentary("push");
                 } // empate não faz nada com o saldo do usuário
 
-                interaction.editReply(menus.cassino.blackjack(userId, game.amountAposted, game, "thinking", { wins: userWon }))
+
+                interaction.editReply(menus.cassino.blackjack(userId, game.amountAposted, game, "thinking", { wins: userWon, comentary }))
                 removeBlackjackGame(userId)
                 return;
             }

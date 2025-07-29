@@ -38,7 +38,7 @@ export async function slotsCommand(interaction: ChatInputCommandInteraction<"cac
     // Embed inicial
     const embed = createEmbed({
         title: "🎰 Caça-Níqueis",
-        description: `${slot1} | ${slot2} | - \n\nGirando...`,
+        description: `${slot1} | - | - \n\nGirando...`,
         color: settings.colors.primary
     });
 

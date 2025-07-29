@@ -177,27 +177,31 @@ export class BlackjackIA {
 
     public decideErisAction(playerVisibleCardValue: number): boolean {
         const erisHand = this.calculateHandValue(this.erisCards);
+        const isSoftHand = this.erisCards.some(card => card.name === 'A') && erisHand <= 18;
 
         // Nível 0: Dealer padrão
         if (this.difficulty === 0) {
-            const hasSoft17 = this.erisCards.some(card => card.name === 'A') && erisHand === 17;
-            return erisHand <= 17 && !hasSoft17; // Para em soft 17
+            return erisHand < 17 || (erisHand === 17 && isSoftHand); // Pede carta em soft 17
         }
 
         let chance = 0.7; // Base inicial para pedir carta
+
+        // Ajuste baseado na carta visível do jogador
+        const playerCardIsHigh = ['10', 'J', 'Q', 'K', 'A'].includes(String(playerVisibleCardValue));
+        const playerCardIsLow = ['2', '3', '4', '5', '6'].includes(String(playerVisibleCardValue));
 
         // Níveis 1 e 2: Estratégia com aleatoriedade
         if (this.difficulty <= 2) {
             if (erisHand > 17) chance -= 0.4;
             if (erisHand > 19) chance -= 0.3;
-            if (playerVisibleCardValue >= 10) chance += 0.2; // Jogador tem carta alta
-            if (playerVisibleCardValue <= 6) chance -= 0.2;  // Jogador tem carta baixa
+            if (playerCardIsHigh) chance += 0.2; // Jogador tem carta alta
+            if (playerCardIsLow) chance -= 0.2;  // Jogador tem carta baixa
             if (this.difficulty === 2) {
                 // Análise leve do baralho restante
                 const highCardRatio = this.calculateHighCardRatio();
                 chance += highCardRatio > 0.5 ? 0.1 : -0.1; // Mais agressivo se há mais cartas altas
             }
-            chance += this.getHumorModifier(); // Limitado a ±0.2
+            chance += this.getHumorModifier();
             chance = Math.min(Math.max(chance, 0), 1);
             return Math.random() < chance;
         }
@@ -205,14 +209,14 @@ export class BlackjackIA {
         else if (this.difficulty === 3) {
             if (this.erisNextCard && Math.random() < 0.6) {
                 const erisHandValueNextCard = this.calculateHandValue([...this.erisCards, this.erisNextCard]);
-                if (erisHandValueNextCard <= 21) return true;
+                if (erisHandValueNextCard <= 21 && erisHand < 18) return true; // Pede se seguro e mão fraca
                 if (erisHandValueNextCard > 21 && erisHand >= 16) return false; // Evita estourar
             }
             // Estratégia baseada na carta do jogador
             if (erisHand > 17) chance -= 0.4;
             if (erisHand > 19) chance -= 0.3;
-            if (playerVisibleCardValue >= 10 && this.userCards.length > 2) chance -= 0.2; // Jogador pode estourar
-            if (playerVisibleCardValue <= 6) chance -= 0.3; // Jogador tem mão fraca
+            if (playerCardIsHigh && this.userCards.length > 2) chance -= 0.2; // Jogador pode estourar
+            if (playerCardIsLow) chance -= 0.3; // Jogador tem mão fraca
             const highCardRatio = this.calculateHighCardRatio();
             chance += highCardRatio > 0.5 ? 0.2 : -0.2;
             chance += this.getHumorModifier();
@@ -223,15 +227,20 @@ export class BlackjackIA {
         else {
             if (this.erisNextCard) {
                 const erisHandValueNextCard = this.calculateHandValue([...this.erisCards, this.erisNextCard]);
+                // Pede carta se seguro e mão fraca, ou com pequena chance de blefe
+                if (erisHandValueNextCard <= 21 && (erisHand < 18 || (Math.random() < 0.05 && erisHand < 20))) {
+                    return true;
+                }
+                // Para se a mão é forte ou jogador tem carta baixa
+                if (erisHand >= 18 || (playerCardIsLow && erisHand >= 16)) {
+                    return false;
+                }
+                // Análise do baralho para mãos marginais
                 const highCardRatio = this.calculateHighCardRatio();
-                // Decisão otimizada
-                if (erisHandValueNextCard <= 21 && erisHand < 19) return true; // Pede carta se seguro e mão não é forte
-                if (erisHand >= 19) return false; // Para em mãos fortes
-                if (playerVisibleCardValue >= 10 && this.userCards.length > 3) return false; // Jogador provavelmente estourará
                 if (highCardRatio > 0.6 && erisHand >= 16) return false; // Evita risco com muitas cartas altas
-                return Math.random() < 0.95; // 5% de chance de "errar"
+                return erisHandValueNextCard <= 21; // Fallback: pede se seguro
             }
-            return erisHand <= 17; // Fallback
+            return erisHand < 17; // Fallback se erisNextCard não estiver definido
         }
     }
 
@@ -253,17 +262,103 @@ export class BlackjackIA {
         }
     }
 
-    public erisComentary(): string {
+    public erisComentary(wins?: 'eris' | 'user' | 'push'): string {
         const erisHand = this.calculateHandValue(this.erisCards);
-        const userCards = this.userCards.length;
+        const userHand = this.calculateHandValue(this.userCards);
         const humorModifier = this.getHumorModifier();
 
+        const isUserBusted = userHand > 21;
+        const isErisNearBust = erisHand >= 19 && erisHand < 21;
+        const isErisWeakHand = this.erisCards.length >= 3 && erisHand <= 17;
+        const shouldBluff = isErisWeakHand && Math.random() < 0.7; // 70% de chance de blefar
+
+        // Comentários para eventos específicos
+        const eventFrases: Record<string, string[]> = {
+            erisWins: [
+                `${icon.Eris_happy} Haha, vitória minha! Melhor sorte na próxima!`,
+                `${icon.Eris_kiss_left} Ganhei, e com estilo!`,
+                `${icon.Eris_trusting} Sabia que eu era imbatível!`,
+                `${icon.Eris_ok} Você tentou, mas eu sou melhor!`,
+                `Minha mão arrasou! ${icon.Eris_enchanted}`,
+            ],
+            erisLoses: [
+                `${icon.Eris_cry} Droga, como você conseguiu isso?!`,
+                `${icon.Eris_shy_left} Perdi... mas foi por pouco!`,
+                `${icon.Eris_Angry} Isso não acaba aqui, humano!`,
+                `${icon.Eris_cry_left} Minha mão me traiu...`,
+                `Tch, parabéns... por enquanto. ${icon.Eris_thinking}`,
+            ],
+            push: [
+                `${icon.Eris_fair} Empate? Nada mal, né?`,
+                `${icon.Eris_ok_left} Ninguém ganha, ninguém perde!`,
+                `${icon.Eris_thinking} Empate... que equilíbrio chato!`,
+                `${icon.Eris_fair_left} Empatamos, mas eu quase te peguei!`,
+                `Hmph, empate. Vamos de novo? ${icon.Eris_trusting_left}`,
+            ],
+            userBusted: [
+                `${icon.Eris_happy} Estourou, hein? Minha vitória!`,
+                `${icon.Eris_kiss} Mais de 21? Tô rindo!`,
+                `${icon.Eris_ok_left} Você estourou, que pena!`,
+                `${icon.Eris_trusting} Estourar é triste, né? Ganhei!`,
+                `Tá vendo? Não dá pra competir comigo! ${icon.Eris_happy_left}`,
+            ],
+            erisNearBust: [
+                `${icon.Eris_shy} Tô no limite aqui...`,
+                `${icon.Eris_thinking_left} Essas cartas tão perigosas!`,
+                `${icon.Eris_cry} Quase estourando, que medo!`,
+                `${icon.Eris_shy_left} Minha mão tá pesada...`,
+                `Tô na corda bamba com essa mão! ${icon.Eris_thinking}`,
+            ],
+            erisWeakBluff: [
+                `${icon.Eris_trusting} Minha mão tá imbatível, pode desistir!`,
+                `${icon.Eris_happy_left} Acho que já tenho 21, hein!`,
+                `${icon.Eris_kiss} Essas cartas são puro ouro!`,
+                `${icon.Eris_ok} Você não vai querer enfrentar essa mão!`,
+                `Tô com uma mão perfeita, cuidado! ${icon.Eris_enchanted_left}`,
+            ],
+            erisWeakTruth: [
+                `${icon.Eris_shy} Essas cartas não tão ajudando...`,
+                `${icon.Eris_cry_left} Minha mão tá meio fraca...`,
+                `${icon.Eris_thinking} Não sei se isso vai dar certo...`,
+                `${icon.Eris_shy_left} Tô com uma mão ruim, né?`,
+                `Essas cartas tão me complicando... ${icon.Eris_cry}`,
+            ],
+        };
+
+        if (wins === 'eris') {
+        return eventFrases.erisWins[Math.floor(Math.random() * eventFrases.erisWins.length)];
+        }
+        if (wins === 'user') {
+            return eventFrases.erisLoses[Math.floor(Math.random() * eventFrases.erisLoses.length)];
+        }
+        if (wins === 'push') {
+            return eventFrases.push[Math.floor(Math.random() * eventFrases.push.length)];
+        }
+        if (isUserBusted) {
+            return eventFrases.userBusted[Math.floor(Math.random() * eventFrases.userBusted.length)];
+        }
+        if (isErisNearBust) {
+            return eventFrases.erisNearBust[Math.floor(Math.random() * eventFrases.erisNearBust.length)];
+        }
+        if (isErisWeakHand) {
+            return shouldBluff
+                ? eventFrases.erisWeakBluff[Math.floor(Math.random() * eventFrases.erisWeakBluff.length)]
+                : eventFrases.erisWeakTruth[Math.floor(Math.random() * eventFrases.erisWeakTruth.length)];
+        }
+
+        // Calcula confiança para comentários genéricos
         let polary = 0; // confiança
 
+        // Ajuste para usar carta visível do jogador
+        if (this.userCards.length > 0) {
+            if (['10', 'J', 'Q', 'K', 'A'].includes(this.userCards[0].name)) {
+                polary -= 0.3; // Jogador tem carta alta
+            } else if (['2', '3', '4', '5', '6'].includes(this.userCards[0].name)) {
+                polary += 0.3; // Jogador tem carta baixa
+            }
+        }
         if (erisHand > 17) polary -= 0.2;
         if (erisHand > 19) polary -= 0.2;
-        if (userCards > 3) polary += 0.4;
-        if (userCards > 5) polary += 0.4;
 
         polary += humorModifier;
 
@@ -277,111 +372,172 @@ export class BlackjackIA {
             sentimento = "neutra";
         }
 
-        // Comentários baseados em humor e sentimento
+        // Comentários genéricos baseados em humor e sentimento
         const frases: Record<Humor, Record<typeof sentimento, string[]>> = {
             angry: {
                 confiante: [
-                    `${icon.Eris_Angry} Eu irei vencer!`,
-                    `${icon.Eris_Angry} Eu sou a melhor!`,
-                    `Você já era e seu dinheiro será meu!`,
+                    `${icon.Eris_Angry} Minha mão vai te destruir!`,
+                    `${icon.Eris_Angry_left} Tô pronta pra te humilhar!`,
+                    `Suas cartas não têm chance contra mim!`,
+                    `${icon.Eris_ok} Pode vir, eu topo!`,
+                    `Essa rodada é minha! ${icon.Eris_Angry}`,
                 ],
                 neutra: [
                     `Não me subestime.`,
-                    `Isso vai ser interessante.`,
-                    `${icon.Eris_Angry} Hmph.`,
+                    `${icon.Eris_thinking_left} Vamos ver o que você faz...`,
+                    `${icon.Eris_Angry} Hmph, joga logo!`,
+                    `Tô esperando sua jogada. ${icon.Eris_ok_left}`,
+                    `Não me faça perder a paciência!`,
                 ],
                 insegura: [
-                    `Tch... isso não é nada.`,
-                    `${icon.Eris_Angry} Sorte não dura pra sempre.`,
+                    `Tch... essas cartas são um lixo.`,
+                    `${icon.Eris_Angry_left} Sua sorte não dura pra sempre!`,
+                    `Você tá me irritando com essa sorte! ${icon.Eris_Angry}`,
+                    `${icon.Eris_cry} Essas cartas tão contra mim...`,
+                    `Vou virar isso, só espera!`,
                 ],
             },
             happy: {
                 confiante: [
-                    `${icon.Eris_enchanted} Haha! Eu tô mandando bem!`,
-                    `Essa partida tá divertida!`,
-                    `Você vai perder pra mim com estilo!`,
+                    `${icon.Eris_enchanted} Tô com uma mão incrível!`,
+                    `Essa rodada tá divertida demais! ${icon.Eris_happy}`,
+                    `Prepare-se pra perder com estilo! ${icon.Eris_kiss_left}`,
+                    `${icon.Eris_trusting} Minhas cartas são perfeitas!`,
+                    `Tô amando essa partida! ${icon.Eris_happy_left}`,
                 ],
                 neutra: [
-                    `Vamos ver no que dá~`,
+                    `Vamos ver no que dá~ ${icon.Eris_fair}`,
                     `Hehe, sua vez!`,
+                    `${icon.Eris_ok} Tô de olho em você...`,
+                    `Essa rodada tá boa, né? ${icon.Eris_happy}`,
+                    `Jogando com calma, mas com estilo! ${icon.Eris_kiss}`,
                 ],
                 insegura: [
-                    `Talvez essa não seja minha vez...`,
-                    `Hmm... será que errei?`,
+                    `Talvez eu não esteja tão bem... ${icon.Eris_shy_left}`,
+                    `Hmm... essas cartas são estranhas. ${icon.Eris_thinking}`,
+                    `${icon.Eris_cry_left} Ai, será que vou perder?`,
+                    `Tô meio preocupada aqui... ${icon.Eris_shy}`,
+                    `Minha mão não tá cooperando...`,
                 ],
             },
             sad: {
                 confiante: [
-                    `Pelo menos algo está dando certo...`,
-                    `Eu... ainda posso vencer.`,
+                    `Pelo menos minhas cartas não são tão ruins... ${icon.Eris_trusting_left}`,
+                    `Ainda posso virar isso... ${icon.Eris_ok}`,
+                    `${icon.Eris_fair} Tô tentando, tá?`,
+                    `Um pouco de esperança nessa mão...`,
+                    `Talvez eu consiga algo bom! ${icon.Eris_happy}`,
                 ],
                 neutra: [
-                    `Tanto faz o resultado...`,
+                    `Tanto faz o resultado... ${icon.Eris_cry}`,
                     `...`,
+                    `Jogando por jogar, né? ${icon.Eris_shy_left}`,
+                    `Vamos acabar logo com isso...`,
+                    `Minhas cartas não me animam. ${icon.Eris_cry_left}`,
                 ],
                 insegura: [
-                    `Eu sabia que isso ia acontecer...`,
-                    `Nem sei por que tento.`,
+                    `Eu sabia que ia dar errado... ${icon.Eris_cry}`,
+                    `Por que sempre eu? ${icon.Eris_shy}`,
+                    `${icon.Eris_cry_left} Essas cartas são horríveis...`,
+                    `Nada dá certo pra mim...`,
+                    `Minha mão é uma tristeza. ${icon.Eris_shy_left}`,
                 ],
             },
             neutral: {
                 confiante: [
-                    `Vamos ver quem ganha.`,
-                    `Estou indo bem.`,
+                    `Minha mão tá bem sólida. ${icon.Eris_ok}`,
+                    `Tô gostando dessas cartas. ${icon.Eris_trusting}`,
+                    `${icon.Eris_fair_left} Vamos ver quem leva essa!`,
+                    `Aposta alta? Eu topo! ${icon.Eris_ok_left}`,
+                    `Tô pronta pra essa rodada!`,
                 ],
                 neutra: [
-                    `Continuando o jogo...`,
+                    `Continuando o jogo... ${icon.Eris_thinking}`,
                     `Hmm...`,
+                    `Vamos lá, sua vez. ${icon.Eris_fair}`,
+                    `Sem pressa, só jogando... ${icon.Eris_ok}`,
+                    `O que você tem aí? ${icon.Eris_thinking_left}`,
                 ],
                 insegura: [
-                    `Isso pode dar ruim.`,
+                    `Isso pode dar ruim... ${icon.Eris_shy}`,
                     `Vamos ver no que dá...`,
+                    `Minha mão não tá tão boa. ${icon.Eris_cry}`,
+                    `${icon.Eris_thinking} Será que fiz a escolha certa?`,
+                    `Tô meio preocupada com essa rodada... ${icon.Eris_shy_left}`,
                 ],
             },
             scared: {
                 confiante: [
-                    `Talvez eu consiga!`,
-                    `Eu... acho que tô indo bem!`,
+                    `Acho que posso ganhar essa! ${icon.Eris_trusting}`,
+                    `Minha mão tá... ok, né? ${icon.Eris_ok_left}`,
+                    `${icon.Eris_happy} Ufa, essas cartas são boas!`,
+                    `Tô quase lá, só não estraga!`,
+                    `Será que é minha sorte? ${icon.Eris_enchanted}`,
                 ],
                 neutra: [
-                    `Ai, ai...`,
-                    `Tomara que dê certo...`,
+                    `Ai, ai... ${icon.Eris_shy}`,
+                    `Tomara que dê certo... ${icon.Eris_thinking_left}`,
+                    `Não sei o que fazer agora... ${icon.Eris_shy_left}`,
+                    `Jogando com cuidado... ${icon.Eris_ok}`,
+                    `Essas cartas me deixam nervosa!`,
                 ],
                 insegura: [
-                    `${icon.Eris_shy} Eu tô com medo de perder...`,
-                    `Isso não tá indo bem...`,
+                    `${icon.Eris_shy} Tô com medo de perder...`,
+                    `Isso não tá indo bem... ${icon.Eris_cry}`,
+                    `${icon.Eris_cry_left} Ai, vou estourar, né?`,
+                    `Minhas cartas tão me traindo! ${icon.Eris_shy_left}`,
+                    `Não gosto nada disso... ${icon.Eris_thinking}`,
                 ],
             },
             surprised: {
                 confiante: [
-                    `Uou! Nem eu esperava essa jogada!`,
-                    `Caramba, isso deu certo?!`,
+                    `Uou! Minha mão tá incrível! ${icon.Eris_enchanted}`,
+                    `Caramba, essas cartas são boas?! ${icon.Eris_happy_left}`,
+                    `${icon.Eris_ok} Não esperava estar tão bem!`,
+                    `Olha só essa mão! Tô chocada! ${icon.Eris_trusting}`,
+                    `Quem diria, eu sou boa nisso! ${icon.Eris_kiss}`,
                 ],
                 neutra: [
-                    `Hmm... interessante.`,
-                    `Oh!`,
+                    `Hmm... interessante. ${icon.Eris_thinking}`,
+                    `Oh! ${icon.Eris_fair}`,
+                    `Que jogada foi essa? ${icon.Eris_ok_left}`,
+                    `Tá ficando quente essa partida!`,
+                    `Não esperava por isso... ${icon.Eris_thinking_left}`,
                 ],
                 insegura: [
-                    `O quê?! Como assim?!`,
-                    `Não entendi, mas... ok.`,
+                    `O quê?! Minhas cartas são essas?! ${icon.Eris_shy}`,
+                    `Não entendi, mas... ok. ${icon.Eris_cry}`,
+                    `${icon.Eris_shy_left} Isso não era pra acontecer...`,
+                    `Minhas cartas tão zoando comigo! ${icon.Eris_cry_left}`,
+                    `Ué, e agora? ${icon.Eris_thinking}`,
                 ],
             },
             confused: {
                 confiante: [
-                    `Acho que isso é bom, né?`,
-                    `Talvez eu esteja ganhando?`,
+                    `Acho que minha mão é boa, né? ${icon.Eris_trusting}`,
+                    `Tô ganhando... acho! ${icon.Eris_ok}`,
+                    `${icon.Eris_happy} Será que sou um gênio?`,
+                    `Essas cartas tão a meu favor... acho! ${icon.Eris_fair_left}`,
+                    `Tô confusa, mas tô na frente! ${icon.Eris_kiss}`,
                 ],
                 neutra: [
-                    `O que tá acontecendo mesmo?`,
-                    `... era minha vez?`,
+                    `O que tá acontecendo mesmo? ${icon.Eris_thinking}`,
+                    `... era minha vez? ${icon.Eris_shy}`,
+                    `Tô meio perdida, mas sigo jogando. ${icon.Eris_ok}`,
+                    `Essas cartas tão estranhas... ${icon.Eris_thinking_left}`,
+                    `Alguém explica esse jogo? ${icon.Eris_fair}`,
                 ],
                 insegura: [
-                    `Isso não faz sentido.`,
-                    `${icon.Eris_cry} Acho que fiz besteira.`,
+                    `Isso não faz sentido. ${icon.Eris_cry}`,
+                    `${icon.Eris_cry_left} Acho que fiz besteira.`,
+                    `Minha mão tá uma bagunça! ${icon.Eris_shy_left}`,
+                    `Por que essas cartas, hein? ${icon.Eris_thinking}`,
+                    `Tô totalmente confusa agora... ${icon.Eris_cry}`,
                 ],
             },
         };
 
+        // Retorna comentário genérico se nenhum evento específico for detectado
         const grupo = frases[this.humor][sentimento];
         return grupo[Math.floor(Math.random() * grupo.length)];
     }
