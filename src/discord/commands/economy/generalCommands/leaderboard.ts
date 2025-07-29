@@ -1,7 +1,7 @@
 import { prisma } from "#database";
 import { settings } from "#settings";
 import { createEmbed } from "@magicyan/discord";
-import { ChatInputCommandInteraction, userMention } from "discord.js";
+import { ChatInputCommandInteraction } from "discord.js";
 
 export async function economyLeaderboardCommand(interaction: ChatInputCommandInteraction<"cached">) {
     await interaction.deferReply()
