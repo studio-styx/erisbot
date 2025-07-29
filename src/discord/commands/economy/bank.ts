@@ -82,7 +82,8 @@ createCommand({
                         "pt-BR": "valor a depositar",
                         "en-US": "value to deposit",
                         "es-ES": "valor para depositar",
-                    }
+                    },
+                    required: true
                 }
             ]
         },
@@ -115,7 +116,8 @@ createCommand({
                         "pt-BR": "valor a sacar",
                         "en-US": "value to withdraw",
                         "es-ES": "valor para retirar",
-                    }
+                    },
+                    required: true
                 }
             ]
         },
