@@ -17,7 +17,6 @@ export class BlackjackIA {
     public turnCount: number = 0;
     public passCount: number = 0;
     private erisNextCard: Cards | null = null;
-    private playerNextCard: Cards | null = null;
     public amountAposted: number
 
     // 0 é o dealer, 1 é a éris fácil, 2 a média, 3 a díficil e 4 a pesadelo

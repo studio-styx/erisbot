@@ -89,7 +89,7 @@ export async function horseRacingCommand(interaction: ChatInputCommandInteractio
     };
 
     // Enviar embed inicial
-    let raceMessage = await interaction.editReply({ embeds: [createRaceEmbed()] });
+    await interaction.editReply({ embeds: [createRaceEmbed()] });
 
     // Função para mover os cavalos
     const moveHorses = async () => {
