@@ -54,7 +54,7 @@ createResponder({
         const nextPage = pageNum + 1;
 
         if (nextPage >= questions.length) {
-            await interaction.update(resv2.warning(`${icon.waiting_white} | A IA está processando a pergunta.`, { components: [] }));
+            await interaction.update(resv2.warning(`${icon.waiting_white} | A IA está processando a pergunta.`));
 
             const allAnswersAndResponses = getInterviewQuestions(userid, companyId)
                 ?.map(({ question, answer }) => `**Pergunta:** ${question}\n**Resposta:** ${answer || "Sem resposta"}`)
@@ -127,7 +127,7 @@ createResponder({
                 const geminiResponse: GeminiResponse = JSON.parse(text);
                 
                 if (!geminiResponse.contracted) {
-                    interaction.editReply(resv2.danger(`${icon.error} | O candidato foi reprovado. Motivo: ${geminiResponse.reason}`, { components: [] }));
+                    interaction.editReply(resv2.danger(`${icon.error} | O candidato foi reprovado. Motivo: ${geminiResponse.reason}`));
                     await registerLog(
                         `Tentou uma entrevista com a empresa ${company.name} e foi reprovado. Motivo: ${geminiResponse.reason}`,
                         "warn",
@@ -138,7 +138,7 @@ createResponder({
                     return;
                 }
 
-                interaction.editReply(resv2.success(`${icon.success} | O candidato foi aprovado! Motivo: ${geminiResponse.reason}`, { components: [] }));
+                interaction.editReply(resv2.success(`${icon.success} | O candidato foi aprovado! Motivo: ${geminiResponse.reason}`));
                 
                 await prisma.user.update({
                     where: { id: userid },
@@ -154,7 +154,7 @@ createResponder({
                 );
             } catch (error) {
                 console.error(error);
-                interaction.editReply(resv2.danger(`${icon.error} | Ocorreu um erro ao processar a entrevista. Por favor, tente novamente mais tarde.`, { components: [] }));
+                interaction.editReply(resv2.danger(`${icon.error} | Ocorreu um erro ao processar a entrevista. Por favor, tente novamente mais tarde.`));
                 return;
             }
 
@@ -162,7 +162,7 @@ createResponder({
             return;
         }
 
-        await interaction.update(resv2.warning(`${icon.waiting_white} | A IA está processando a pergunta.`, { components: [] }));
+        await interaction.update(resv2.warning(`${icon.waiting_white} | A IA está processando a pergunta.`));
 
         await registerLog(
             `Respondeu a pergunta ${page} da entrevista na empresa`,

@@ -10,7 +10,7 @@
 
 # Folders
 /.vscode
-/src
+/dist
 /deprecated
 /discloud
 /node_modules

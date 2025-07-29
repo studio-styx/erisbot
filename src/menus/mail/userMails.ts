@@ -6,8 +6,7 @@ import { ButtonBuilder, ButtonStyle, StringSelectMenuBuilder, time, userMention,
 
 export function userMailsMenu<R>(mails: Mails[], user: User, page = 0): R {
     if (mails.length === 0) {
-        return (resv2.danger(`${icon.error} | Você não tem cartas!`, {
-            components: [createRow(
+        return (resv2.danger(`${icon.error} | Você não tem cartas!`, createRow(
                 new ButtonBuilder({
                     customId: `mail/menu/unIgnoreTag/${user.id}`,
                     label: "Desfazer ignorar tags",
@@ -19,8 +18,8 @@ export function userMailsMenu<R>(mails: Mails[], user: User, page = 0): R {
                     label: user.dmNotification ? "Desativar dm" : "Ativar dm",
                     style: user.dmNotification ? ButtonStyle.Danger : ButtonStyle.Success
                 })
-            )]
-        }) satisfies InteractionReplyOptions) as R;
+            )
+        ) satisfies InteractionReplyOptions) as R;
     }
 
     const mail = mails[page];

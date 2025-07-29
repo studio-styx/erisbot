@@ -2,7 +2,7 @@
   "name": "erisbot",
   "version": "1.0.0",
   "type": "module",
-  "main": "build/index.js",
+  "main": "dist/index.js",
   "scripts": {
     "check": "tsc --noEmit && echo ✔ Ok",
     "build": "tsc",
@@ -36,31 +36,31 @@
   },
   "imports": {
     "#database": [
-      "./build/database/index.js"
+      "./dist/database/index.js"
     ],
     "#base": [
-      "./build/discord/base/index.js"
+      "./dist/discord/base/index.js"
     ],
     "#functions": [
-      "./build/functions/index.js"
+      "./dist/functions/index.js"
     ],
     "#menus": [
-      "./build/menus/index.js"
+      "./dist/menus/index.js"
     ],
     "#settings": [
-      "./build/settings/index.js"
+      "./dist/settings/index.js"
     ],
     "#tools": [
-      "./build/tools/index.js"
+      "./dist/tools/index.js"
     ],
     "#server": [
-      "./build/server/index.js"
+      "./dist/server/index.js"
     ],
     "#lib": [
-      "./build/lib/index.js"
+      "./dist/lib/index.js"
     ],
     "#utils": [
-      "./build/utils/index.js"
+      "./dist/utils/index.js"
     ],
     "#prisma/client": [
       "./prisma/prisma/client.js"
@@ -69,7 +69,7 @@
       "./prisma/prisma/client.js"
     ],
     "#logic": [
-      "./build/logic/index.js"
+      "./dist/logic/index.js"
     ]
   },
   "baseVersion": "1.2.6"
