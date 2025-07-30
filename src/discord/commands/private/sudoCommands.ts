@@ -1,7 +1,7 @@
 import { createCommand } from "#base";
 import { prisma } from "#database";
 import { stocksEventuals, res, icon } from "#functions";
-import { Mails } from "#prisma/client";
+import { Mails } from "#prisma";
 import { settings } from "#settings";
 import { brBuilder, createContainer, createSeparator } from "@magicyan/discord";
 import { ApplicationCommandOptionType, ApplicationCommandType, time } from "discord.js";

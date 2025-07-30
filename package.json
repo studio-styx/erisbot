@@ -1,78 +1,64 @@
 {
-  "name": "erisbot",
-  "version": "1.0.0",
+  "name": "eris-canary",
+  "version": "1.0.1",
   "type": "module",
-  "main": "dist/index.js",
+  "main": "src/index.ts",
   "scripts": {
     "check": "tsc --noEmit && echo ✔ Ok",
     "build": "tsc",
-    "dev": "bun ./src/index.ts",
+    "dev": "bun --env-file .env ./src/index.ts",
     "dev:dev": "bun --env-file .env.dev ./src/index.ts",
-    "dev:node": "tsx --env-file .env ./src/index.ts",
-    "watch": "bun --hot ./src/index.ts",
+    "watch": "bun --watch --env-file .env ./src/index.ts",
     "watch:dev": "bun --watch --env-file .env.dev ./src/index.ts",
-    "start": "node --env-file .env .",
+    "start": "bun --env-file .env .",
     "start:dev": "bun --env-file .env.dev ."
   },
   "dependencies": {
-    "@google/genai": "^1.11.0",
     "@google/generative-ai": "^0.24.1",
-    "@magicyan/discord": "^1.5.1",
+    "@magicyan/discord": "1.4.11",
     "@napi-rs/canvas": "^0.1.74",
-    "@prisma/client": "^6.12.0",
+    "@prisma/client": "^6.13.0",
+    "@reliverse/reglob": "1.0.0",
     "axios": "^1.11.0",
-    "chalk": "^5.4.1",
-    "discord.js": "^14.21.0",
-    "fast-glob": "^3.3.3",
-    "node-cache": "^5.1.2",
-    "prisma": "^6.12.0",
-    "rou3": "^0.7.3",
+    "chalk": "5.4.1",
+    "discord.js": "14.21.0",
+    "prisma": "^6.13.0",
+    "rou3": "0.5.1",
     "systeminformation": "^5.27.7",
-    "zod": "^4.0.10"
+    "zod": "4.0.2"
   },
   "devDependencies": {
-    "@esbuild/linux-x64": "^0.25.8",
-    "@types/node": "^24.1.0",
-    "tsx": "^4.20.3",
-    "typescript": "^5.8.3"
+    "typescript": "5.7.2",
+    "@types/bun": "^1.2.10"
   },
   "imports": {
     "#database": [
-      "./dist/database/index.js"
+      "./build/database/index.js"
     ],
     "#base": [
-      "./dist/discord/base/index.js"
+      "./build/discord/base/index.js"
     ],
     "#functions": [
-      "./dist/functions/index.js"
+      "./build/functions/index.js"
     ],
     "#menus": [
-      "./dist/menus/index.js"
+      "./build/menus/index.js"
     ],
     "#settings": [
-      "./dist/settings/index.js"
+      "./build/settings/index.js"
     ],
     "#tools": [
-      "./dist/tools/index.js"
+      "./build/tools/index.js"
     ],
     "#server": [
-      "./dist/server/index.js"
+      "./build/server/index.js"
     ],
     "#lib": [
-      "./dist/lib/index.js"
-    ],
-    "#utils": [
-      "./dist/utils/index.js"
-    ],
-    "#prisma/client": [
-      "./prisma/prisma/client.js"
+      "./build/lib/index.js"
     ],
     "#prisma": [
       "./prisma/prisma/client.js"
-    ],
-    "#logic": [
-      "./dist/logic/index.js"
     ]
   },
-  "baseVersion": "1.2.6"
+  "baseVersion": "1.3.7"
 }

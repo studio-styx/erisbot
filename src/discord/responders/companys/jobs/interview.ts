@@ -1,7 +1,7 @@
 import { createResponder, ResponderType, Store } from "#base";
 import { generateGeminiContent, getCommandId, getInterviewQuestions, icon, registerLog, resv2, setInterviewQuestions } from "#functions";
 import { menus } from "#menus";
-import { PrismaClient } from "#prisma/client";
+import { PrismaClient } from "#prisma";
 import { time } from "discord.js";
 
 const prisma = new PrismaClient();

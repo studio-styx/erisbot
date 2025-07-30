@@ -18,12 +18,10 @@
     "balance": "#45ddc0",
     "brilliance": "#f07d5f",
     "nitro": "#ff6bfa",
-    "bravery": "#9c84ef",
-
-    "pink": "#FF00A1"
+    "bravery": "#9c84ef"
   },
   "bot": {
-    "version": "1.0.0",
+    "version": "1.0.1",
     "ownerId": "1171963692984844401",
     "support": {
       "supportGuild": "1172930138770526248",

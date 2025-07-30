@@ -1,6 +1,6 @@
 import { createCommand } from "#base";
 import { menus } from "#menus";
-import { PrismaClient } from "#prisma/client";
+import { PrismaClient } from "#prisma";
 import { createEmbed } from "@magicyan/discord";
 import { ApplicationCommandType, ApplicationCommandOptionType } from "discord.js";
 

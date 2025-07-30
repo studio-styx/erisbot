@@ -122,7 +122,7 @@ export async function botInfoMenu<R>(page: 'main' | 'hardware' | 'software' | 'c
                     `> **Versão do ${runtime.name}:** ${runtime.version}`,
                     `> **Versão do Discord.js:** ${djsVersion || "14.x.x"}`,
                     `> **Versão do Magycian Discord:** ${magycianVersion}`,
-                    `> **Versão do Constatic:** 1.2.6`,
+                    `> **Versão do Constatic:** 1.3.4`,
                     `> **Minha versão:** ${settings.bot.version}`,
                     `> **Sistema operacional:** ${getOSInfo()}`
                 ),
@@ -165,19 +165,19 @@ export async function botInfoMenu<R>(page: 'main' | 'hardware' | 'software' | 'c
         createSeparator(),
         createRow(
             new ButtonBuilder({
-                customId: `djadjaiodadadc/menu/hardware/${user.id}`,
+                customId: `botinfo/menu/hardware/${user.id}`,
                 label: "Hardware",
                 style: page === "hardware" ? ButtonStyle.Secondary : ButtonStyle.Primary,
                 disabled: page === "hardware"
             }),
             new ButtonBuilder({
-                customId: `fasdarftgsdad/menu/software/${user.id}`,
+                customId: `botinfo/menu/software/${user.id}`,
                 label: "Software",
                 style: page === "software" ? ButtonStyle.Secondary : ButtonStyle.Primary,
                 disabled: page === "software"
             }),
             new ButtonBuilder({
-                customId: `gdfgsdfasda/menu/curiosities/${user.id}`,
+                customId: `botinfo/menu/curiosities/${user.id}`,
                 label: "Curiosidades",
                 style: page === "curiosities" ? ButtonStyle.Secondary : ButtonStyle.Primary,
                 disabled: page === "curiosities"

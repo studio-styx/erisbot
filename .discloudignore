@@ -1,5 +1,5 @@
 # Essential structure
-# - /build
+# - /src
 # - /.env
 # - /.discloudignore
 # - /discloud.config
@@ -10,7 +10,6 @@
 
 # Folders
 /.vscode
-/dist
 /deprecated
 /discloud
 /node_modules
@@ -29,7 +28,3 @@
 *.zip
 *.exe
 *.development.json
-
-# Development
-
-/build/functions/logic/elementalBattle.ts

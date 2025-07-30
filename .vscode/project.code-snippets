@@ -14,17 +14,6 @@
 		],
 		"description": "Create a new Slash Command"
 	},
-	"Slash Command Function": {
-		"prefix": ["new.command.function", "create.command.function"],
-		"scope":"typescript",
-		"body": [
-			"import { ChatInputCommandInteraction } from \"discord.js\";",
-			"",
-			"export async function ${TM_FILENAME_BASE}Command(interaction: ChatInputCommandInteraction<\"cached\">) {",
-			"    $1",
-			"}"
-		]
-	},
 	"Slash Command with options": {
 		"prefix": ["new.command.options", "create.command.options"],
 		"scope":"typescript",
@@ -203,7 +192,7 @@
             "import { ButtonBuilder, ButtonStyle, type InteractionReplyOptions } from \"discord.js\";",
             "",
             "export function ${TM_FILENAME_BASE}Menu<R>(): R {",
-            "    const components = [",
+            "    const container = createContainer(settings.colors.azoxo,",
             "        brBuilder(",
             "            \"## ${TM_FILENAME_BASE} menu\"",
             "        ),",
@@ -214,12 +203,7 @@
             "                style: ButtonStyle.Success",
             "            })",
             "        )",
-            "    ];",
-            "",
-            "    const container = createContainer({",
-            "        accentColor: settings.colors.danger,",
-            "        components,",
-            "    });",
+            "    );",
             "",
             "    return ({",
             "        flags: [\"Ephemeral\", \"IsComponentsV2\"],", 

@@ -1,7 +1,7 @@
 import { createResponder, ResponderType } from "#base";
 import { res, icon } from "#functions";
 import { menus } from "#menus";
-import { PrismaClient } from "#prisma/client";
+import { PrismaClient } from "#prisma";
 
 const prisma = new PrismaClient();
 

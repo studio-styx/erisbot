@@ -44,12 +44,11 @@ export const { createCommand, createEvent, createResponder } = setupCreators({
                 block()
                 return;
             }
-            cooldown.set(interaction.user.id, new Date(Date.now() + 1000 * 3), { time: 1000 * 3 });
+            cooldown.set(interaction.user.id, new Date(Date.now() + 1000 * 2), { time: 1000 * 2 });
         },
     },
     responders: {
         onNotFound(interaction) {
-            console.log("Responder not found!")
             interaction.reply(res.danger(`${icon.error} | Responder not found!`, { flags: ["Ephemeral"] }));
         },
         onError(error, interaction) {
@@ -64,18 +63,12 @@ export const { createCommand, createEvent, createResponder } = setupCreators({
             }
         },
         async middleware(interaction, block) {
-            console.log("Interação recebida:", {
-                customId: interaction.customId,
-                userId: interaction.user.id,
-                messageId: interaction.message?.id,
-                channelId: interaction.channelId,
-            });
             if (cooldown.has(interaction.user.id)) {
                 interaction.reply(res.danger(`${icon.error} | Acalme-se! você está sendo muito rápido, por favor aguarde ${time(cooldown.get(interaction.user.id)!, "R")} para usar comandos novamente!`));
                 block()
                 return;
             }
-            cooldown.set(interaction.user.id, new Date(Date.now() + 1000 * 2.5), { time: 1000 * 2.5 });
+            cooldown.set(interaction.user.id, new Date(Date.now() + 1000 * 1.6), { time: 1000 * 1.6 });
         }
-    },
+    }
 });

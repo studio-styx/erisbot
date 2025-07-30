@@ -1,6 +1,3 @@
-import { bootstrap } from "#base"
-import { startEvents } from "#functions";
+import { bootstrap } from "#base";
 
 await bootstrap({ meta: import.meta });
-
-await startEvents();

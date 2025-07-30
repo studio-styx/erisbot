@@ -4,8 +4,6 @@
 /discloud
 /deprecated
 /node_modules
-/prisma/prisma/
-/.vscode/
 
 # Files
 /.env
@@ -23,4 +21,3 @@
 *.exe
 *.db
 *.development.json
-*.txt

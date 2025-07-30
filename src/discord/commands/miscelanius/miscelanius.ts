@@ -1,5 +1,5 @@
 import { createCommand } from "#base";
-import { PrismaClient } from "#prisma/client";
+import { PrismaClient } from "#prisma";
 import { icon, res } from "#functions";
 import { ApplicationCommandOptionType, ApplicationCommandType, time } from "discord.js";
 

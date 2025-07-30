@@ -1,7 +1,7 @@
 import { createResponder, ResponderType } from "#base";
 import { clearInterviewQuestions, generateGeminiContent, getInterviewQuestions, icon, registerLog, res, resv2, updateInterviewAnswer } from "#functions";
 import { menus } from "#menus";
-import { PrismaClient } from "#prisma/client";
+import { PrismaClient } from "#prisma";
 import { createModalFields } from "@magicyan/discord";
 import { TextInputStyle } from "discord.js";
 

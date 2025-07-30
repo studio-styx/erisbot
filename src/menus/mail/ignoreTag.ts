@@ -1,4 +1,4 @@
-import { User } from "#prisma/client";
+import { User } from "#prisma";
 import { settings } from "#settings";
 import { brBuilder, createContainer, createRow } from "@magicyan/discord";
 import { ButtonBuilder, ButtonStyle, StringSelectMenuBuilder, type InteractionReplyOptions } from "discord.js";

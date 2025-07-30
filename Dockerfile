@@ -1,11 +1,9 @@
-FROM OVEN/BUN:1.1
+FROM docker.io/oven/bun:latest
 
-WORKDIR /APP
+WORKDIR /app
 
 COPY . .
 
 RUN bun install
-
-RUN bunx prisma generate || true
 
 CMD ["bun", "run", "start"]

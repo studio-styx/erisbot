@@ -1,5 +1,5 @@
 import { icon, resv2 } from "#functions";
-import { Mails, User } from "#prisma/client";
+import { Mails, User } from "#prisma";
 import { settings } from "#settings";
 import { brBuilder, createContainer, createRow, createSeparator } from "@magicyan/discord";
 import { ButtonBuilder, ButtonStyle, StringSelectMenuBuilder, time, userMention, type InteractionReplyOptions } from "discord.js";

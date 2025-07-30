@@ -11,7 +11,7 @@ export async function economyTransferCommand(interaction: ChatInputCommandIntera
     const inCooldown = cooldown.get(interaction.user.id);
 
     if (inCooldown && inCooldown > new Date()) {
-        interaction.reply(res.pink(`**${icon.denied_pink} | Eu sei que distribuir dinheiro é legal, mas por favor aguarde um pouco, volte ${time(inCooldown)}**`));
+        interaction.reply(res.fuchsia(`**${icon.denied_pink} | Eu sei que distribuir dinheiro é legal, mas por favor aguarde um pouco, volte ${time(inCooldown)}**`));
         return;
     }
 
@@ -21,15 +21,15 @@ export async function economyTransferCommand(interaction: ChatInputCommandIntera
     let value = options.getNumber("amount", true);
 
     if (user.id === interaction.user.id) {
-        interaction.reply(res.pink(`**${icon.denied_pink} | Ei! por quê você está tentando dar dinheiro pra você mesmo? se for pra dá dinheiro dá pra mim!**`));
+        interaction.reply(res.fuchsia(`**${icon.denied_pink} | Ei! por quê você está tentando dar dinheiro pra você mesmo? se for pra dá dinheiro dá pra mim!**`));
         return;
     }
     if (user.id === interaction.client.user?.id) {
-        interaction.reply(res.pink(`**${icon.denied_pink} | Eu queria tanto poder receber esse dinheiro! mas minhas regras não permitem isso! ${icon.Eris_cry_left}**`));
+        interaction.reply(res.fuchsia(`**${icon.denied_pink} | Eu queria tanto poder receber esse dinheiro! mas minhas regras não permitem isso! ${icon.Eris_cry_left}**`));
         return;
     }
     if (user.bot) {
-        interaction.reply(res.pink(`**${icon.denied_pink} | Ei! por quê você está tentando dar dinheiro pra um bot? se for pra dá dinheiro dá pra mim!**`));
+        interaction.reply(res.fuchsia(`**${icon.denied_pink} | Ei! por quê você está tentando dar dinheiro pra um bot? se for pra dá dinheiro dá pra mim!**`));
         return;
     }
 

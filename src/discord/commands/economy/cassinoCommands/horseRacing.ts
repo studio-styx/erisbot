@@ -1,6 +1,6 @@
 import { prisma } from "#database";
 import { res, icon, registerLog } from "#functions";
-import { Prisma } from "#prisma/client";
+import { Prisma } from "#prisma";
 import { createEmbed } from "@magicyan/discord";
 import { ChatInputCommandInteraction } from "discord.js";
 

@@ -1,6 +1,6 @@
 import { createResponder, ResponderType } from "#base";
 import { clearCache, generateGeminiContent, getCache, icon, registerLog, res, resv2 } from "#functions";
-import { PrismaClient } from "#prisma/client";
+import { PrismaClient } from "#prisma";
 import { createModalFields } from "@magicyan/discord";
 import { TextInputStyle } from "discord.js";
 
