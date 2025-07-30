@@ -165,19 +165,19 @@ export async function botInfoMenu<R>(page: 'main' | 'hardware' | 'software' | 'c
         createSeparator(),
         createRow(
             new ButtonBuilder({
-                customId: `botinfo/menu/hardware/${user.id}`,
+                customId: `djadjaiodadadc/menu/hardware/${user.id}`,
                 label: "Hardware",
                 style: page === "hardware" ? ButtonStyle.Secondary : ButtonStyle.Primary,
                 disabled: page === "hardware"
             }),
             new ButtonBuilder({
-                customId: `botinfo/menu/software/${user.id}`,
+                customId: `fasdarftgsdad/menu/software/${user.id}`,
                 label: "Software",
                 style: page === "software" ? ButtonStyle.Secondary : ButtonStyle.Primary,
                 disabled: page === "software"
             }),
             new ButtonBuilder({
-                customId: `botinfo/menu/curiosities/${user.id}`,
+                customId: `gdfgsdfasda/menu/curiosities/${user.id}`,
                 label: "Curiosidades",
                 style: page === "curiosities" ? ButtonStyle.Secondary : ButtonStyle.Primary,
                 disabled: page === "curiosities"

@@ -87,16 +87,11 @@ export async function economyDailyCommand(interaction: ChatInputCommandInteracti
     const dailyValue = Math.floor(Math.random() * 51);
 
     const willEnd = new Date(now.getTime() + 24 * 60 * 60 * 1000);
-    if (cooldownData?.id) {
-        await prisma.cooldown.update({
-            where: { id: cooldownData.id },
-            data: { willEndIn: willEnd }
-        });
-    } else {
-        await prisma.cooldown.create({
-            data: { userId: id, name: "daily", willEndIn: willEnd }
-        });
-    }
+    await prisma.cooldown.upsert({
+        where: { id: cooldownData?.id },
+        update: { willEndIn: willEnd },
+        create: { name: "daily", userId: id, willEndIn: willEnd }
+    });
 
     const newUser = await prisma.user.upsert({
         where: { id },

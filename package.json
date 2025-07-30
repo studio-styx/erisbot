@@ -8,6 +8,7 @@
     "build": "tsc",
     "dev": "bun ./src/index.ts",
     "dev:dev": "bun --env-file .env.dev ./src/index.ts",
+    "dev:node": "tsx --env-file .env ./src/index.ts",
     "watch": "bun --hot ./src/index.ts",
     "watch:dev": "bun --watch --env-file .env.dev ./src/index.ts",
     "start": "node --env-file .env .",
@@ -30,6 +31,7 @@
     "zod": "^4.0.10"
   },
   "devDependencies": {
+    "@esbuild/linux-x64": "^0.25.8",
     "@types/node": "^24.1.0",
     "tsx": "^4.20.3",
     "typescript": "^5.8.3"
