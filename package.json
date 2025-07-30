@@ -10,8 +10,8 @@
     "dev:dev": "bun --env-file .env.dev ./src/index.ts",
     "watch": "bun --watch --env-file .env ./src/index.ts",
     "watch:dev": "bun --watch --env-file .env.dev ./src/index.ts",
-    "start": "bun --env-file .env .",
-    "start:dev": "bun --env-file .env.dev ."
+    "start": "node --env-file .env ./dist/index.js",
+    "start:dev": "node --env-file .env.dev ./dist/index.js"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
@@ -34,28 +34,28 @@
   },
   "imports": {
     "#database": [
-      "./build/database/index.js"
+      "./dist/database/index.js"
     ],
     "#base": [
-      "./build/discord/base/index.js"
+      "./dist/discord/base/index.js"
     ],
     "#functions": [
-      "./build/functions/index.js"
+      "./dist/functions/index.js"
     ],
     "#menus": [
-      "./build/menus/index.js"
+      "./dist/menus/index.js"
     ],
     "#settings": [
-      "./build/settings/index.js"
+      "./dist/settings/index.js"
     ],
     "#tools": [
-      "./build/tools/index.js"
+      "./dist/tools/index.js"
     ],
     "#server": [
-      "./build/server/index.js"
+      "./dist/server/index.js"
     ],
     "#lib": [
-      "./build/lib/index.js"
+      "./dist/lib/index.js"
     ],
     "#prisma": [
       "./prisma/prisma/client.js"

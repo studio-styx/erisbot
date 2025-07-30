@@ -21,7 +21,7 @@
 		"noEmitOnError": true,
 
 		// Output Options
-		"outDir": "./build",
+		"outDir": "./dist",
 		"rootDir": "./src",
 
 		// Path mapping Options
