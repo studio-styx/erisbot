@@ -9,7 +9,7 @@ export const baseStorage: BaseStorage = {
     responders: createRouter(),
     config: {
         commands: {
-            guilds: []
+            guilds: [],
         },
         responders: {},
         events: {}

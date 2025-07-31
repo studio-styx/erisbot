@@ -67,6 +67,7 @@ interface BaseStorageCommandConfig {
     middleware?(interaction: CommandInteraction, block: ()=> void): Promise<void>;
     onNotFound?(interaction: CommandInteraction): void;
     onError?(error: unknown, interaction: CommandInteraction): void;
+    after?(interaction: CommandInteraction): void;
 }
 
 interface BaseStorageRespondersConfig {

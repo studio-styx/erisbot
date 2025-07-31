@@ -70,7 +70,6 @@ export async function commandsMenu<R>(page: "economy" | "bot" | "user" | "modera
                 value: brBuilder(
                     `**</bot info:${bot}>** - Ver as minhas informações`,
                     `**</bot ping:${bot}>** - Ver meu ping`,
-                    `**</bot creators:${bot}>** - Ver meus criadores`,
                     `**</bot commands:${bot}>** - Ver meus comandos`,
                     `**</suporte reportar bug:${supportCommandId}>** - Reportar um bug`,
                     `**</suporte reportar usuario:${supportCommandId}>** - Reportar um usuário`,

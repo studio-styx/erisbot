@@ -23,21 +23,6 @@ createCommand({
             }
         },
         {
-            name: "creators",
-            description: "Get information about the Studio Styx",
-            type: ApplicationCommandOptionType.Subcommand,
-            nameLocalizations: {
-                "pt-BR": "criadores",
-                "en-US": "creators",
-                "es-ES": "creadores",
-            },
-            descriptionLocalizations: {
-                "pt-BR": "Obter informações sobre o Studio Styx",
-                "en-US": "Get information about the Studio Styx",
-                "es-ES": "Obtener información sobre el Studio Styx",
-            }
-        },
-        {
             name: "commands",
             description: "Get commands from the bot",
             type: ApplicationCommandOptionType.Subcommand,
@@ -84,32 +69,6 @@ createCommand({
             case "info": {
                 await interaction.deferReply()
                 interaction.editReply(await menus.botinfo("main", interaction.client.user, user))
-                return;
-            }
-
-            case "creators": {
-                try {
-                    const embed = new EmbedBuilder({
-                        description: "**Criadores**\nVeja a seguir os participantes do Studio Styx",
-                        fields: [
-                            { name: "", value: "**BirdTool**\n-# ╰ Desenvolvedor", inline: true },
-                            { name: "", value: "**Santos**\n-# ╰ Designer", inline: true },
-                            { name: "", value: "**Lay**\n-# ╰ Designer e tradutora", inline: false }
-                        ],
-                        color: 0x791b1b
-                    });
-
-                    await interaction.reply({
-                        flags: ["Ephemeral"],
-                        embeds: [embed]
-                    });
-                } catch (error: unknown) {
-                    console.log(error);
-                    await interaction.reply({
-                        flags: ["Ephemeral"],
-                        content: `Ocorreu um erro ao tentar enviar a mensagem: ${error instanceof Error ? error.message : String(error)}`
-                    });
-                }
                 return;
             }
             case "commands": {

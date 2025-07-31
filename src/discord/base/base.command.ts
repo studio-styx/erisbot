@@ -44,7 +44,7 @@ export type CommandData<
 export type GenericCommandData = CommandData<any, any, any>;
 
 export async function baseCommandHandler(interaction: CommandInteraction){
-	const { onNotFound, middleware, onError } = baseStorage.config.commands;
+	const { onNotFound, middleware, onError, after } = baseStorage.config.commands;
     const command = baseStorage.commands.get(interaction.commandName);
 
     if (!command) {
@@ -64,6 +64,7 @@ export async function baseCommandHandler(interaction: CommandInteraction){
         }
         throw err;
     });
+    if (after) after(interaction);
 }
 
 export async function baseAutocompleteHandler(interaction: AutocompleteInteraction){

@@ -1,7 +1,7 @@
 import { Store, setupCreators } from "#base";
 import { prisma } from "#database";
-import { defaultServerSettings, getServerSettings, icon, res } from "#functions";
-import { channelMention, time } from "discord.js";
+import { defaultServerSettings, getCommandId, getServerSettings, icon, res } from "#functions";
+import { channelMention, Interaction, time } from "discord.js";
 
 const cooldown = new Store<Date>();
 
@@ -45,6 +45,35 @@ export const { createCommand, createEvent, createResponder } = setupCreators({
                 return;
             }
             cooldown.set(interaction.user.id, new Date(Date.now() + 1000 * 2), { time: 1000 * 2 });
+        },
+        async after(interaction) {
+            const mails = await prisma.mails.findMany({
+                where: {
+                    userId: interaction.user.id,
+                    asRead: false
+                }
+            })
+
+            if (mails.length === 0) return;
+            const random = Math.random();
+            const chance = 0.3;
+            if (random < chance) {
+                const commandId = await getCommandId(interaction as Interaction, "mail")
+                if (interaction.replied || interaction.deferred) {
+                    await interaction.followUp(res.warning(`${icon.mail} | Você tem cartas não lidas! use </mail:${commandId}> para ver as cartas!`));
+                } else {
+                    await new Promise(resolve => setTimeout(resolve, 2000));
+                    if (interaction.replied || interaction.deferred) {
+                        await interaction.followUp(res.warning(`${icon.mail} | Você tem cartas não lidas! use </mail:${commandId}> para ver as cartas!`));
+                    } else {
+                        await new Promise(resolve => setTimeout(resolve, 2000));
+                        if (interaction.replied || interaction.deferred) {
+                            await interaction.followUp(res.warning(`${icon.mail} | Você tem cartas não lidas! use </mail:${commandId}> para ver as cartas!`));
+                        }
+                    }
+                }
+            }
+            return;
         },
     },
     responders: {

@@ -27,6 +27,7 @@ export function setupCreators(options: SetupCreatorsOptions = {}){
     baseStorage.config.commands.middleware = options.commands?.middleware;
     baseStorage.config.commands.onNotFound = options.commands?.onNotFound;
     baseStorage.config.commands.onError = options.commands?.onError;
+    baseStorage.config.commands.after = options.commands?.after;
     
     /** @responders  */
     baseStorage.config.responders.middleware = options.responders?.middleware;
