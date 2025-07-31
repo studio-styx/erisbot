@@ -23,6 +23,7 @@ export const { createCommand, createEvent, createResponder } = setupCreators({
             }
         },
         async middleware(interaction, block) {
+            console.log(`Comando usado no server: ${interaction.guild?.name} pelo usuário: ${interaction.user.displayName} o comando: ${interaction.commandName}, data: ${new Date().toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo" })}`)
             if (cooldown.has(interaction.user.id)) {
                 interaction.reply(res.danger(`${icon.error} | Acalme-se! você está sendo muito rápido, por favor aguarde ${time(cooldown.get(interaction.user.id)!, "R")} para usar comandos novamente!`));
                 block()

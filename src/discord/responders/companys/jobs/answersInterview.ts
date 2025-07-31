@@ -102,8 +102,6 @@ createResponder({
 
             try {
                 const result = await generateGeminiContent(prompt);
-                console.log(prompt);
-                console.log(result);
                 
                 if (!result.success || !result.text) {
                     interaction.editReply(resv2.danger(`${icon.error} | Ocorreu um erro ao processar a entrevista. Por favor, tente novamente mais tarde.`));
