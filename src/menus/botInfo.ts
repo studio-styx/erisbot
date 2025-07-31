@@ -61,7 +61,7 @@ export async function botInfoMenu<R>(page: 'main' | 'hardware' | 'software' | 'c
             const erisRamUsePercent = Math.round((erisRamUse / containerRamLimit) * 100);
 
             components.push(
-                `# Olá ${user.username}, veja minhas informações abaixo! ${icon.Eris_happy_left}`,
+                `# Olá ${user.username.replace(/([\\_*~`|>])/g, '\\$1')}, veja minhas informações abaixo! ${icon.Eris_happy_left}`,
                 brBuilder(
                     `### ⚙️ Informações de uso`,
                     `> **Uso de memória do sistema:** ${formatBytes(memory.used)} — ${memory.percent}%`,
@@ -116,7 +116,7 @@ export async function botInfoMenu<R>(page: 'main' | 'hardware' | 'software' | 'c
             }
 
             components.push(
-                `# Olá ${user.username}, veja minhas informações abaixo! ${icon.Eris_happy_left}`,
+                `# Olá ${user.username.replace(/([\\_*~`|>])/g, '\\$1')}, veja minhas informações abaixo! ${icon.Eris_happy_left}`,
                 brBuilder(
                     `### 🧠 Informações teóricas`,
                     `> **Versão do ${runtime.name}:** ${runtime.version}`,
@@ -131,7 +131,7 @@ export async function botInfoMenu<R>(page: 'main' | 'hardware' | 'software' | 'c
         }
         case "curiosities": {
             components.push(
-                `# Olá ${user.username}, veja minhas informações abaixo! ${icon.Eris_happy_left}`,
+                `# Olá ${user.username.replace(/([\\_*~`|>])/g, '\\$1')}, veja minhas informações abaixo! ${icon.Eris_happy_left}`,
                 brBuilder(
                     `### Curiosidades`,
                     `- Minha desenvolvedora é o **Studio Styx**, comandado por **BirdTool**, saiba mais usando o comando \`/bot creators\``,
@@ -150,7 +150,7 @@ export async function botInfoMenu<R>(page: 'main' | 'hardware' | 'software' | 'c
                 createSection({
                     thumbnail: erisInfo.avatarURL()!,
                     content: brBuilder(
-                        `# Olá ${user.username}, veja minhas informações abaixo! ${icon.Eris_happy_left}`,
+                        `# Olá ${user.username.replace(/([\\_*~`|>])/g, '\\$1')}, veja minhas informações abaixo! ${icon.Eris_happy_left}`,
                         "Sou uma bot de discord focada em economia e rpg, tenho vários recursos avançados, como entrevistas para emprego, investimentos e apostas!",
                         "Minha desenvolvedora é o **Studio Styx**, comandado por **BirdTool**, saiba mais usando o comando \`/bot creators\`",
                         "Selecione uma área para ver mais detalhes"
