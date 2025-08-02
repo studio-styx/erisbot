@@ -138,7 +138,7 @@ export async function botInfoMenu<R>(page: 'main' | 'hardware' | 'software' | 'c
                     `- Sou um bot de código aberto e meu código fonte está disponível no [GitHub](https://github.com/studio-styx/erisbot)`,
                     `- Uso o banco de dados PostgreSQL hospedado pela [Neon](https://neon.com/)`,
                     `- Sabia que era pra eu ter originalmente sido feita em Kotlin? é possivel ver meu código antigo nos primeiros commits do meu github`,
-                    `- Sou hospedada pela [Discloud!](https://beta.discloud.com/)`,
+                    `- Sou hospedada pela [SquareCloud!](https://squarecloud.app/)`,
                     `- Você pode utilizar minha versão **canary** no nosso servidor principal! acesse-o apertando no botão abaixo`,
                     "- O meu servidor é uma **botlist**! você que é dev pode estar adicionando sua aplicação ao nosso servidor"
                 ),
@@ -152,7 +152,7 @@ export async function botInfoMenu<R>(page: 'main' | 'hardware' | 'software' | 'c
                     content: brBuilder(
                         `# Olá ${user.username.replace(/([\\_*~`|>])/g, '\\$1')}, veja minhas informações abaixo! ${icon.Eris_happy_left}`,
                         "Sou uma bot de discord focada em economia e rpg, tenho vários recursos avançados, como entrevistas para emprego, investimentos e apostas!",
-                        "Minha desenvolvedora é o **Studio Styx**, comandado por **BirdTool**, saiba mais usando o comando \`/bot creators\`",
+                        "Minha desenvolvedora é o **Studio Styx**, comandado por **BirdTool**",
                         "Selecione uma área para ver mais detalhes"
                     )
                 }),

@@ -13,16 +13,8 @@ createCommand({
     options: [
         {
             name: "database",
-            description: "manage database",
+            description: "database function",
             type: ApplicationCommandOptionType.Subcommand,
-            options: [
-                {
-                    name: "query",
-                    description: "query to use",
-                    type: ApplicationCommandOptionType.String,
-                    required: true,
-                }
-            ],
         },
         {
             name: "test",
@@ -52,7 +44,7 @@ createCommand({
                     required: true
                 }
             ]
-        }
+        },
     ],
     async run(interaction) {
         if (interaction.user.id !== "1171963692984844401") {
@@ -63,7 +55,7 @@ createCommand({
 
         switch (subcommand) {
             case "database": {
-                interaction.reply(res.danger("Not happening"))
+                interaction.reply(res.danger("This command is not available"))
                 return;
             }
             case "test": {
@@ -138,7 +130,7 @@ createCommand({
                     return;
                 } else {
                     const usersSeparated: string[] = users.split(",");
-                    
+
                     if (usersSeparated.length === 0) {
                         interaction.editReply(res.danger("No users found"));
                         return;
