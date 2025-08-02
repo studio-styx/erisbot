@@ -87,24 +87,33 @@ export async function economyDailyCommand(interaction: ChatInputCommandInteracti
     const dailyValue = Math.floor(Math.random() * 51);
 
     const willEnd = new Date(now.getTime() + 24 * 60 * 60 * 1000);
-    await prisma.cooldown.upsert({
-        where: { 
-            userId_name: {
-                userId: id,
-                name: "daily"
-            }
-        },
-        update: { willEndIn: willEnd },
-        create: { name: "daily", userId: id, willEndIn: willEnd }
-    });
 
-    const newUser = await prisma.user.upsert({
-        where: { id },
-        create: { id },
-        update: {
-            money: { increment: new Prisma.Decimal(dailyValue) }
-        }
-    });
+    const [_a, _b, newUser] = await prisma.$transaction([
+        prisma.user.upsert({
+            where: { id },
+            create: { id },
+            update: {}
+        }),
+        prisma.cooldown.upsert({
+            where: { 
+                userId_name: {
+                    userId: id,
+                    name: "daily"
+                }
+            },
+            update: { willEndIn: willEnd },
+            create: { name: "daily", userId: id, willEndIn: willEnd }
+        }),
+        prisma.user.upsert({
+            where: { id },
+            create: { id },
+            update: {
+                money: { increment: new Prisma.Decimal(dailyValue) }
+            }
+        })
+    ])
+
+
 
     interaction.editReply(res.fuchsia(`${icon.Eris_enchanted} | Parabéns! você pegou seu prêmio diário de **${dailyValue}** styx! agora você possui: **${newUser.money}** styx em sua carteira! ${icon.Eris_ok_left}`));
 

@@ -1,13 +1,24 @@
 import { prisma } from "#database";
-import { icon } from "#functions";
+import { icon, res } from "#functions";
 import { settings } from "#settings";
 import { createEmbed } from "@magicyan/discord";
 import { ChatInputCommandInteraction, userMention } from "discord.js";
 
 export async function economyBalanceCommand(interaction: ChatInputCommandInteraction<"cached">) {
     const { options } = interaction
-    await interaction.deferReply();
     const id = options.getUser("user")?.id || interaction.user.id;
+    
+    if (id === interaction.client.user?.id) {
+        interaction.reply(res.fuchsia(`**${icon.Eris_cry} | Eu sou pobre, eu não tenho dinheiro! ${icon.Eris_shy_left}**`))
+        return;
+    }
+    if (options.getUser("user")?.bot) {
+        interaction.reply(res.danger(`${icon.denied} | Você não pode ver o saldo de um bot!`))
+        return;
+    }
+
+    await interaction.deferReply();
+
     const userData = await prisma.user.findUnique({
         where: {
             id
@@ -18,8 +29,8 @@ export async function economyBalanceCommand(interaction: ChatInputCommandInterac
         }
     });
 
-    const money = userData?.money.toNumber() ?? 50;
-    const bank = userData?.bank.toNumber() ?? 0;
+    const money = userData?.money.toNumber() ?? 0;
+    const bank = userData?.bank.toNumber() ?? 50;
 
     const messages: string[] = []
 
