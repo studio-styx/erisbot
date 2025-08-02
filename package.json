@@ -1,6 +1,6 @@
 {
   "name": "eris",
-  "version": "1.0.7",
+  "version": "1.1.0",
   "type": "module",
   "main": "src/index.ts",
   "scripts": {
@@ -10,18 +10,21 @@
     "dev:dev": "bun --env-file .env.dev ./src/index.ts",
     "watch": "bun --watch --env-file .env ./src/index.ts",
     "watch:dev": "bun --watch --env-file .env.dev ./src/index.ts",
-    "start": "node --env-file .env ./dist/index.js",
-    "start:dev": "node --env-file .env.dev ./dist/index.js"
+    "start": "bun --env-file .env .",
+    "start:dev": "bun --env-file .env.dev ."
   },
   "dependencies": {
+    "@fastify/cors": "10.0.1",
     "@google/generative-ai": "^0.24.1",
     "@magicyan/discord": "1.4.11",
-    "@napi-rs/canvas": "^0.1.74",
+    "@napi-rs/canvas": "^0.1.76",
     "@prisma/client": "^6.13.0",
     "@reliverse/reglob": "1.0.0",
     "axios": "^1.11.0",
     "chalk": "5.4.1",
     "discord.js": "14.21.0",
+    "fastify": "5.0.0",
+    "http-status-codes": "2.3.0",
     "node-cache": "^5.1.2",
     "prisma": "^6.13.0",
     "rou3": "0.5.1",
@@ -30,32 +33,33 @@
   },
   "devDependencies": {
     "typescript": "5.7.2",
+    "tsup": "^8.3.5",
     "@types/bun": "^1.2.10"
   },
   "imports": {
     "#database": [
-      "./dist/database/index.js"
+      "./build/database/index.js"
     ],
     "#base": [
-      "./dist/discord/base/index.js"
+      "./build/discord/base/index.js"
     ],
     "#functions": [
-      "./dist/functions/index.js"
+      "./build/functions/index.js"
     ],
     "#menus": [
-      "./dist/menus/index.js"
+      "./build/menus/index.js"
     ],
     "#settings": [
-      "./dist/settings/index.js"
+      "./build/settings/index.js"
     ],
     "#tools": [
-      "./dist/tools/index.js"
+      "./build/tools/index.js"
     ],
     "#server": [
-      "./dist/server/index.js"
+      "./build/server/index.js"
     ],
     "#lib": [
-      "./dist/lib/index.js"
+      "./build/lib/index.js"
     ],
     "#prisma": [
       "./prisma/prisma/client.js"

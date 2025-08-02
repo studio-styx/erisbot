@@ -130,6 +130,13 @@ exports.Prisma.UserScalarFieldEnum = {
   dmNotification: 'dmNotification'
 };
 
+exports.Prisma.ApplicationScalarFieldEnum = {
+  id: 'id',
+  money: 'money',
+  token: 'token',
+  ownerId: 'ownerId'
+};
+
 exports.Prisma.LogScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
@@ -229,6 +236,7 @@ exports.Prisma.JsonNullValueFilter = {
 
 exports.Prisma.ModelName = {
   User: 'User',
+  Application: 'Application',
   Log: 'Log',
   Cooldown: 'Cooldown',
   Company: 'Company',

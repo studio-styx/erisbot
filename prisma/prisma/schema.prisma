@@ -28,6 +28,15 @@ model User {
   sendedMails      Mails[]        @relation("SentMails")
   mailsTagsIgnored String[]       @default([])
   dmNotification   Boolean        @default(false)
+  applications     Application[]
+}
+
+model Application {
+  id      String  @id
+  money   Decimal @default(0.0) @db.Decimal(12, 2)
+  token   String  @unique
+  ownerId String
+  owner   User    @relation(fields: [ownerId], references: [id])
 }
 
 model Log {

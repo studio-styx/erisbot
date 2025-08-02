@@ -2,6 +2,7 @@ import { icon } from "#functions";
 import { settings } from "#settings";
 import { brBuilder, createContainer, createRow, createSection, createSeparator } from "@magicyan/discord";
 import { ButtonBuilder, ButtonStyle, User, version, type InteractionReplyOptions, } from "discord.js";
+import { BASE_VERSION } from "discord/base/base.version.js";
 import { existsSync, readFileSync } from "fs";
 import si from 'systeminformation'
 
@@ -122,7 +123,7 @@ export async function botInfoMenu<R>(page: 'main' | 'hardware' | 'software' | 'c
                     `> **Versão do ${runtime.name}:** ${runtime.version}`,
                     `> **Versão do Discord.js:** ${djsVersion || "14.x.x"}`,
                     `> **Versão do Magycian Discord:** ${magycianVersion}`,
-                    `> **Versão do Constatic:** 1.3.4`,
+                    `> **Versão do Constatic:** ${BASE_VERSION}`,
                     `> **Minha versão:** ${settings.bot.version}`,
                     `> **Sistema operacional:** ${getOSInfo()}`
                 ),
