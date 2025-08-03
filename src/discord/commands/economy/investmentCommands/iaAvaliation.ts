@@ -88,10 +88,11 @@ export async function iaAvaliationCommand(interaction: ChatInputCommandInteracti
         await prisma.log.create({
             data: {
                 userId: interaction.user.id,
-                type: "RequisitionToAI",
+                type: "info",
                 timestamp: new Date(),
                 message: `Pediu a IA para avaliar todas as ações disponíveis`,
                 level: 3,
+                tags: ["economy", "investment", "ia", "sub"]
             },
         });
 

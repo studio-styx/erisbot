@@ -1,6 +1,6 @@
 import { prisma } from "#database";
 import { res, icon, registerLog } from "#functions";
-import { ChatInputCommandInteraction, userMention } from "discord.js";
+import { ChatInputCommandInteraction } from "discord.js";
 
 export async function economyDepositCommand(interaction: ChatInputCommandInteraction<"cached">) {
     let value = interaction.options.getNumber("amount")!;
@@ -38,12 +38,12 @@ export async function economyDepositCommand(interaction: ChatInputCommandInterac
 
     interaction.editReply(res.fuchsia(`${icon.Eris_ok} | Depósito de: **\`${value}\`** stx realizado com sucesso! agora você possui: **\`${user.bank}\`** em sua conta bancária`))
     
-    await registerLog(
-        `${icon.success} | ${userMention(id)} depositou: ${value} na conta bancária`,
-        "info",
-        1,
-        id,
-        "deposit"
-    );
+    await registerLog({
+        level: 3,
+        message: `Depositou ${value} stx na conta bancária`,
+        tags: ["economy", "deposit"],
+        type: "info",
+        user: id
+    });
     return;
 }

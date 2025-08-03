@@ -25,13 +25,13 @@ export async function coinflipCommand(interaction: ChatInputCommandInteraction<"
             where: { id: author.id },
             data: { money: { increment: amount * 0.2 } }
         });
-        await registerLog(
-            `Apostou na moeda do lado ${side} e ganhou ${amount} stx`,
-            "info",
-            6,
-            interaction.user.id,
-            "cassino"
-        );
+        await registerLog({
+            level: 6,
+            message: `Apostou na moeda do lado ${side} e ganhou ${amount * 0.2} stx`,
+            tags: ["cassino", "transaction", "coinflip", "sum"],
+            type: "info",
+            user: author.id
+        });
         return;
     } else {
         interaction.reply(res.danger(`${icon.Eris_shy} | A moeda caiu em ${coinflipResult}, você perdeu **${amount}** STX!`));
@@ -39,13 +39,13 @@ export async function coinflipCommand(interaction: ChatInputCommandInteraction<"
             where: { id: author.id },
             data: { money: { decrement: amount } }
         });
-        await registerLog(
-            `Apostou na moeda do lado ${side} e perdeu ${amount} stx`,
-            "info",
-            6,
-            interaction.user.id,
-            "cassino"
-        );
+        await registerLog({
+            level: 6,
+            message: `Apostou na moeda do lado ${side} e perdeu ${amount} stx`,
+            type: "info",
+            tags: ["cassino", "transaction", "coinflip", "sub"],
+            user: author.id
+        });
         return;
     }
 }

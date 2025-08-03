@@ -388,13 +388,13 @@ createResponder({
                     }
 
                     interaction.editReply(res.warning(`${icon.waiting_white} | Your question has been sent to the AI, here is the answer:\n${result.text}`));
-                    await registerLog(
-                        `Pediu a opinião da IA sobre vender a ação ${stock.name}`,
-                        "info",
-                        3,
-                        interaction.user.id,
-                        "RequisitionToAI"
-                    )
+                    await registerLog({
+                        message: `Pediu a opinião da IA sobre vender a ação ${stock.name}`,
+                        level: 3,
+                        type: "debug",
+                        user: interaction.user.id,
+                        tags: ["ia", "stock"]
+                    })
                     return;
                 } catch (error) {
                     console.error(error);
@@ -509,13 +509,13 @@ createResponder({
                     }
             
                     interaction.editReply(res.success(`${icon.success} | Aqui está a resposta da IA:\n${result.text}`));
-                    await registerLog(
-                        `Pediu a opinião da IA sobre comprar a ação ${stock.name}`,
-                        "info",
-                        3,
-                        interaction.user.id,
-                        "RequisitionToAI"
-                    );
+                    await registerLog({
+                        message: `Pediu a opinião da IA sobre comprar a ação ${stock.name}`,
+                        level: 3,
+                        type: "debug",
+                        user: interaction.user.id,
+                        tags: ["ia", "stock"]
+                    });
                     return;
                 } catch (error) {
                     console.error(error);

@@ -1,6 +1,6 @@
 import { prisma } from "#database";
 import { res, icon, registerLog } from "#functions";
-import { ChatInputCommandInteraction, userMention } from "discord.js";
+import { ChatInputCommandInteraction } from "discord.js";
 
 export async function economyWithdrawCommand(interaction: ChatInputCommandInteraction<"cached">) {
     let value = interaction.options.getNumber("amount")!;
@@ -38,12 +38,12 @@ export async function economyWithdrawCommand(interaction: ChatInputCommandIntera
 
     interaction.editReply(res.fuchsia(`${icon.Eris_ok} | Saque de: **\`${value}\`** stx realizado com sucesso! agora você possui: **\`${user.money}\`** em sua carteira!`))
     
-    await registerLog(
-        `${icon.success} | ${userMention(id)} sacou: ${value} da conta bancária`,
-        "info",
-        1,
-        id,
-        "deposit"
-    );
+    await registerLog({
+        level: 3,
+        message: `Saque de ${value} stx da conta bancária`,
+        tags: ["economy", "withdraw"],
+        type: "info",
+        user: id
+    });
     return;
 }

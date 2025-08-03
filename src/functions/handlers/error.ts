@@ -19,6 +19,8 @@ export function serverErrorHandler(error: any, _req: FastifyRequest, reply: Fast
             message: error.message
         })
     }
+    
+    console.error(error);
 
     return reply.status(StatusCodes.INTERNAL_SERVER_ERROR).send();
 }

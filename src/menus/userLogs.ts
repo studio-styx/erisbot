@@ -1,17 +1,8 @@
 import { res, icon } from "#functions";
+import { Log } from "#prisma";
 import { settings } from "#settings";
 import { createEmbed, createRow } from "@magicyan/discord";
 import { ButtonBuilder, ButtonStyle, time, type InteractionReplyOptions } from "discord.js";
-
-interface Log {
-    id: number;
-    userId: string;
-    message: string;
-    timestamp: Date;
-    level: number;
-    type: string;
-    name: string;
-}
 
 export function userLogsMenu<R>(allLogs: Log[], page: number = 0, user: { name: string, avatarURL: string, id: string }): R {
     const logsPerPage = 10;

@@ -1,5 +1,5 @@
 import { prisma } from "#database";
-import { icon, res } from "#functions";
+import { icon, registerLog, res } from "#functions";
 import { settings } from "#settings";
 import { createEmbed } from "@magicyan/discord";
 import { ChatInputCommandInteraction, userMention } from "discord.js";
@@ -73,5 +73,13 @@ export async function economyBalanceCommand(interaction: ChatInputCommandInterac
     })
 
     interaction.editReply({ embeds: [embed] });
+
+    await registerLog({
+        level: 1,
+        message: id === interaction.user.id ? "Verificou o próprio saldo" : `Verificou o saldo de ${userMention(id)}`,
+        tags: ["economy", "balance"],
+        type: "info",
+        user: id
+    })
     return;
 }

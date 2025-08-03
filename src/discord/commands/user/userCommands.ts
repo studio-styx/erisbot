@@ -94,8 +94,11 @@ createCommand({
                 const userLogs = await prisma.log.findMany({
                     where: {
                         userId: interaction.user.id,
-                        type: {
-                            not: "debug"
+                        NOT: {
+                            OR: [
+                                { type: "debug" },
+                                { type: "error" }
+                            ]
                         }
                     },
                     orderBy: {

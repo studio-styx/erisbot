@@ -1,6 +1,6 @@
 import { createResponder, ResponderType, Store } from "#base";
 import { prisma } from "#database";
-import { icon, res } from "#functions";
+import { icon, registerLog, res } from "#functions";
 import { Prisma } from "#prisma";
 import { settings } from "#settings";
 import { createEmbed, createRow } from "@magicyan/discord";
@@ -111,6 +111,20 @@ createResponder({
                                 money: { increment: Number(value) },
                             },
                             select: { money: true }
+                        }),
+                        registerLog({
+                            message: `Deu **${value} stx** para: ${userMention(targetId)}`,
+                            level: 6,
+                            type: "info",
+                            user: authorId,
+                            tags: ["transfer", "transaction", "economy", "sub"]
+                        }),
+                        registerLog({
+                            message: `Recebeu **${value} stx** de: ${userMention(authorId)}`,
+                            level: 6,
+                            type: "info",
+                            user: targetId,
+                            tags: ["transfer", "transaction", "economy", "sum"]
                         })
                     ]);
                 

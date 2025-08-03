@@ -87,20 +87,22 @@ export async function EconomyWorkCommand(interaction: ChatInputCommandInteractio
                 interaction.editReply(resv2.danger(`${icon.Eris_cry} | Ocorreu um erro ao gerar o desafio, por isso você recebeu o salário normal de: ${company.wage}`));
                 console.error(result.error);
 
-                await registerLog(
-                    `Ocorreu um erro ao fazer uma requisição ao gemini.`,
-                    "error",
-                    999,
-                    interaction.user.id,
-                    "work"
-                );
-                await registerLog(
-                    `Trabalhou e recebeu seu salário de: **${company.wage}**`,
-                    "info",
-                    5,
-                    interaction.user.id,
-                    "work"
-                );
+                await Promise.all([
+                    registerLog({
+                        level: 5,
+                        message: `Trabalhou e recebeu seu salário de: **${company.wage}**`,
+                        tags: ["economy", "work"],
+                        type: "info",
+                        user: interaction.user.id
+                    }),
+                    registerLog({
+                        level: 999,
+                        message: "Ocorreu um erro ao fazer requisição a api do gemini",
+                        tags: ["economy", "work"],
+                        type: "error",
+                        user: interaction.user.id
+                    })
+                ])
 
                 return;
             }
@@ -155,13 +157,13 @@ export async function EconomyWorkCommand(interaction: ChatInputCommandInteractio
                 ]
             });
 
-            await registerLog(
-                `Trabalhou e recebeu seu salário de: **${company.wage}**`,
-                "info",
-                5,
-                interaction.user.id,
-                "work"
-            );
+            await registerLog({
+                level: 5,
+                message: `Trabalhou e recebeu seu salário de: **${company.wage}**`,
+                tags: ["economy", "work"],
+                type: "info",
+                user: interaction.user.id
+            });
         }
 
         await prisma.cooldown.upsert({

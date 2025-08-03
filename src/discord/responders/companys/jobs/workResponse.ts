@@ -113,31 +113,31 @@ createResponder({
             if (geminiResponse.bonus < 0) {
                 interaction.editReply(resv2.danger(`${icon.Eris_cry} | Sua resposta foi insatisfatória, por isso recebeu menos! valor recebido: **Ꞩ ${payValue}** \n\n **Avaliação:** ${geminiResponse.reason}`))
 
-                await registerLog(
-                    `O trabalho do usuário foi ruim, levando **${geminiResponse.bonus}%** de desconto do salário, recebendo: **Ꞩ ${payValue}}** de pagamento`,
-                    "info",
-                    5,
-                    interaction.user.id,
-                    "work"
-                )
+                await registerLog({
+                    message: `O trabalho do usuário foi ruim, levando **${geminiResponse.bonus}%** de desconto do salário, recebendo: **Ꞩ ${payValue}}** de pagamento`,
+                    level: 5,
+                    type: "warn",
+                    user: interaction.user.id,
+                    tags: ["work", "job", "sum"]
+                })
             } else if (geminiResponse.bonus > 0) {
                 interaction.editReply(resv2.success(`${icon.Eris_enchanted} | Sua resposta foi satisfatória, por isso recebeu mais! valor recebido: **Ꞩ ${payValue}** \n\n **Avaliação:** ${geminiResponse.reason}`));
-                await registerLog(
-                    `O trabalho do usuário foi bom, levando **${geminiResponse.bonus}%** de bônus do salário, recebendo: **Ꞩ ${payValue}}** de pagamento`,
-                    "info",
-                    5,
-                    interaction.user.id,
-                    "work"
-                )
+                await registerLog({
+                    message: `O trabalho do usuário foi bom, levando **${geminiResponse.bonus}%** de bônus do salário, recebendo: **Ꞩ ${payValue}}** de pagamento`,
+                    level: 5,
+                    type: "info",
+                    user: interaction.user.id,
+                    tags: ["work", "job", "sum"]
+                })
             } else {
                 interaction.editReply(resv2.primary(`${icon.Eris_enchanted} | Sua resposta foi neutra, por isso recebeu o mesmo salário! valor recebido: **Ꞩ ${payValue}** \n\n **Avaliação:** ${geminiResponse.reason}`));
-                await registerLog(
-                    `O trabalho do usuário foi nêutro, levando **${geminiResponse.bonus}%** de bônus do salário, recebendo: **Ꞩ ${payValue}}** de pagamento`,
-                    "info",
-                    5,
-                    interaction.user.id,
-                    "work"
-                )
+                await registerLog({
+                    message: `O trabalho do usuário foi neutra, recebendo: **Ꞩ ${payValue}}** de pagamento`,
+                    level: 5,
+                    type: "info",
+                    user: interaction.user.id,
+                    tags: ["work", "job", "sum"]
+                })
             }
             const xpGain = geminiResponse.bonus < 0
                 ? Math.floor(Math.random() * 11) * -1

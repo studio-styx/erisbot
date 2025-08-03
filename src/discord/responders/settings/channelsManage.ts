@@ -51,7 +51,7 @@ createResponder({
                             level: 5,
                             type: "warn",
                             userId: interaction.user.id,
-                            name: `Dashboard-setting-channelsCommandDisabled-${interaction.guildId}`,
+                            tags: ["dashboard", "channels", "disable", "channelsCommandDisabled", interaction.guildId]
                         }
                     })
                 ]);
@@ -87,7 +87,7 @@ createResponder({
                             level: 5,
                             type: "warn",
                             userId: interaction.user.id,
-                            name: `Dashboard-toggle-channelsCommandDisabled-${interaction.guildId}`,
+                            tags: ["dashboard", "channels", "disable", "channelsCommandEnabled", interaction.guildId]
                         }
                     })
                 ]);
@@ -127,7 +127,7 @@ createResponder({
                             level: 5,
                             type: "warn",
                             userId: interaction.user.id,
-                            name: `Dashboard-setting-channelsCommandEnabled-${interaction.guildId}`,
+                            tags: ["dashboard", "channels", "only", "channelsCommandEnabled", interaction.guildId]
                         }
                     })
                 ]);
@@ -163,7 +163,7 @@ createResponder({
                             level: 5,
                             type: "warn",
                             userId: interaction.user.id,
-                            name: `Dashboard-toggle-channelsCommandEnabled-${interaction.guildId}`,
+                            tags: ["dashboard", "channels", "enable", "channelsCommandDisabled", interaction.guildId]
                         }
                     })
                 ]);

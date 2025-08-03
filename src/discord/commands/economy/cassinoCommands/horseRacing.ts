@@ -113,21 +113,21 @@ export async function horseRacingCommand(interaction: ChatInputCommandInteractio
             await updateUserMoney(userWon);
             await interaction.editReply({ embeds: [createRaceEmbed(winner)] });
             if (userWon) {
-                await registerLog(
-                    `Apostou no cavalo ${horse} e ganhou ${amount * 1.5} stx`,
-                    "info",
-                    6,
-                    author.id,
-                    "cassino"
-                )
+                await registerLog({
+                    level: 6,
+                    message: `Apostou no cavalo ${horse} e ganhou ${amount * 1.5} stx`,
+                    tags: ["cassino", "transaction", "horse-racing", "sum"],
+                    type: "info",
+                    user: author.id
+                })
             } else {
-                await registerLog(
-                    `Apostou no cavalo ${horse} e perdeu ${amount} stx`,
-                    "info",
-                    6,
-                    author.id,
-                    "cassino"
-                )
+                await registerLog({
+                    level: 6,
+                    message: `Apostou no cavalo ${horse} e perdeu ${amount} stx`,
+                    tags: ["cassino", "transaction", "horse-racing", "sub"],
+                    type: "info",
+                    user: author.id
+                })
             }
             return;
         }

@@ -90,13 +90,13 @@ createResponder({
             Retorne **apenas** um array JSON **no formato exato**: [\"pergunta1\", \"pergunta2\", \"pergunta3\", \"pergunta4\", \"pergunta5\"]
             Sem explicações ou texto adicional, apenas o array JSON.`;
 
-            await registerLog(
-                `Começou uma entrevista com a empresa ${company.name}`,
-                "info",
-                1,
-                interaction.user.id,
-                "interview"
-            );
+            await registerLog({
+                message: `Começou uma entrevista com a empresa ${company.name}`,
+                level: 5,
+                type: "debug",
+                user: interaction.user.id,
+                tags: ["interview"]
+            });
 
             try {
                 cooldown.set(interaction.user.id, new Date(Date.now() + 1000 * 10)), { time: 1000 * 10 };

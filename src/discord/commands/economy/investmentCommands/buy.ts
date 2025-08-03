@@ -26,29 +26,39 @@ export async function buyStockCommand(interaction: ChatInputCommandInteraction<"
 
     if (user.money.toNumber() < valueToPay) return interaction.editReply(res.danger(`${icon.Eris_cry} | você não tem dinheiro suficiente para comprar essa ação.`));
 
-    await prisma.user.update({
-        where: { id: author.id },
-        data: {
-            money: { decrement: valueToPay },
-        }
-    })
-
-    await prisma.stockHolding.upsert({
-        where: {
-            userId_stockId: {
-                stockId,
-                userId: author.id
+    await prisma.$transaction([
+        prisma.user.update({
+            where: { id: author.id },
+            data: {
+                money: { decrement: valueToPay },
             }
-        },
-        update: {
-            amount: { increment: amount }
-        },
-        create: {
-            userId: author.id,
-            stockId,
-            amount
-        }
-    })
+        }),
+        prisma.stockHolding.upsert({
+            where: {
+                userId_stockId: {
+                    stockId,
+                    userId: author.id
+                }
+            },
+            update: {
+                amount: { increment: amount }
+            },
+            create: {
+                userId: author.id,
+                stockId,
+                amount
+            }
+        }),
+        prisma.log.create({
+            data: {
+                userId: author.id,
+                type: "info",
+                message: `Comprou ${amount} ações de ${stock.name} por: ${valueToPay} stx!`,
+                level: 7,
+                tags: ["economy", "investment", "buy", "stock", "sub"]
+            }
+        })
+    ])
 
     return interaction.editReply(res.success(`${icon.success} | você comprou **${amount}** ações de ${stock.name} por: **${valueToPay}** stx!`));
 }

@@ -4270,7 +4270,6 @@ export namespace Prisma {
     timestamp: Date | null
     level: number | null
     type: string | null
-    name: string | null
   }
 
   export type LogMaxAggregateOutputType = {
@@ -4280,7 +4279,6 @@ export namespace Prisma {
     timestamp: Date | null
     level: number | null
     type: string | null
-    name: string | null
   }
 
   export type LogCountAggregateOutputType = {
@@ -4290,7 +4288,7 @@ export namespace Prisma {
     timestamp: number
     level: number
     type: number
-    name: number
+    tags: number
     _all: number
   }
 
@@ -4312,7 +4310,6 @@ export namespace Prisma {
     timestamp?: true
     level?: true
     type?: true
-    name?: true
   }
 
   export type LogMaxAggregateInputType = {
@@ -4322,7 +4319,6 @@ export namespace Prisma {
     timestamp?: true
     level?: true
     type?: true
-    name?: true
   }
 
   export type LogCountAggregateInputType = {
@@ -4332,7 +4328,7 @@ export namespace Prisma {
     timestamp?: true
     level?: true
     type?: true
-    name?: true
+    tags?: true
     _all?: true
   }
 
@@ -4429,7 +4425,7 @@ export namespace Prisma {
     timestamp: Date
     level: number
     type: string
-    name: string
+    tags: string[]
     _count: LogCountAggregateOutputType | null
     _avg: LogAvgAggregateOutputType | null
     _sum: LogSumAggregateOutputType | null
@@ -4458,7 +4454,7 @@ export namespace Prisma {
     timestamp?: boolean
     level?: boolean
     type?: boolean
-    name?: boolean
+    tags?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["log"]>
 
@@ -4469,7 +4465,7 @@ export namespace Prisma {
     timestamp?: boolean
     level?: boolean
     type?: boolean
-    name?: boolean
+    tags?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["log"]>
 
@@ -4480,7 +4476,7 @@ export namespace Prisma {
     timestamp?: boolean
     level?: boolean
     type?: boolean
-    name?: boolean
+    tags?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["log"]>
 
@@ -4491,10 +4487,10 @@ export namespace Prisma {
     timestamp?: boolean
     level?: boolean
     type?: boolean
-    name?: boolean
+    tags?: boolean
   }
 
-  export type LogOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "message" | "timestamp" | "level" | "type" | "name", ExtArgs["result"]["log"]>
+  export type LogOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "message" | "timestamp" | "level" | "type" | "tags", ExtArgs["result"]["log"]>
   export type LogInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
   }
@@ -4517,7 +4513,7 @@ export namespace Prisma {
       timestamp: Date
       level: number
       type: string
-      name: string
+      tags: string[]
     }, ExtArgs["result"]["log"]>
     composites: {}
   }
@@ -4948,7 +4944,7 @@ export namespace Prisma {
     readonly timestamp: FieldRef<"Log", 'DateTime'>
     readonly level: FieldRef<"Log", 'Int'>
     readonly type: FieldRef<"Log", 'String'>
-    readonly name: FieldRef<"Log", 'String'>
+    readonly tags: FieldRef<"Log", 'String[]'>
   }
     
 
@@ -13099,7 +13095,7 @@ export namespace Prisma {
     timestamp: 'timestamp',
     level: 'level',
     type: 'type',
-    name: 'name'
+    tags: 'tags'
   };
 
   export type LogScalarFieldEnum = (typeof LogScalarFieldEnum)[keyof typeof LogScalarFieldEnum]
@@ -13473,7 +13469,7 @@ export namespace Prisma {
     timestamp?: DateTimeFilter<"Log"> | Date | string
     level?: IntFilter<"Log"> | number
     type?: StringFilter<"Log"> | string
-    name?: StringFilter<"Log"> | string
+    tags?: StringNullableListFilter<"Log">
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
   }
 
@@ -13484,7 +13480,7 @@ export namespace Prisma {
     timestamp?: SortOrder
     level?: SortOrder
     type?: SortOrder
-    name?: SortOrder
+    tags?: SortOrder
     user?: UserOrderByWithRelationInput
   }
 
@@ -13498,7 +13494,7 @@ export namespace Prisma {
     timestamp?: DateTimeFilter<"Log"> | Date | string
     level?: IntFilter<"Log"> | number
     type?: StringFilter<"Log"> | string
-    name?: StringFilter<"Log"> | string
+    tags?: StringNullableListFilter<"Log">
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
   }, "id">
 
@@ -13509,7 +13505,7 @@ export namespace Prisma {
     timestamp?: SortOrder
     level?: SortOrder
     type?: SortOrder
-    name?: SortOrder
+    tags?: SortOrder
     _count?: LogCountOrderByAggregateInput
     _avg?: LogAvgOrderByAggregateInput
     _max?: LogMaxOrderByAggregateInput
@@ -13527,7 +13523,7 @@ export namespace Prisma {
     timestamp?: DateTimeWithAggregatesFilter<"Log"> | Date | string
     level?: IntWithAggregatesFilter<"Log"> | number
     type?: StringWithAggregatesFilter<"Log"> | string
-    name?: StringWithAggregatesFilter<"Log"> | string
+    tags?: StringNullableListFilter<"Log">
   }
 
   export type CooldownWhereInput = {
@@ -14107,7 +14103,7 @@ export namespace Prisma {
     timestamp?: Date | string
     level?: number
     type?: string
-    name?: string
+    tags?: LogCreatetagsInput | string[]
     user: UserCreateNestedOneWithoutLogsInput
   }
 
@@ -14118,7 +14114,7 @@ export namespace Prisma {
     timestamp?: Date | string
     level?: number
     type?: string
-    name?: string
+    tags?: LogCreatetagsInput | string[]
   }
 
   export type LogUpdateInput = {
@@ -14126,7 +14122,7 @@ export namespace Prisma {
     timestamp?: DateTimeFieldUpdateOperationsInput | Date | string
     level?: IntFieldUpdateOperationsInput | number
     type?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
+    tags?: LogUpdatetagsInput | string[]
     user?: UserUpdateOneRequiredWithoutLogsNestedInput
   }
 
@@ -14137,7 +14133,7 @@ export namespace Prisma {
     timestamp?: DateTimeFieldUpdateOperationsInput | Date | string
     level?: IntFieldUpdateOperationsInput | number
     type?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
+    tags?: LogUpdatetagsInput | string[]
   }
 
   export type LogCreateManyInput = {
@@ -14147,7 +14143,7 @@ export namespace Prisma {
     timestamp?: Date | string
     level?: number
     type?: string
-    name?: string
+    tags?: LogCreatetagsInput | string[]
   }
 
   export type LogUpdateManyMutationInput = {
@@ -14155,7 +14151,7 @@ export namespace Prisma {
     timestamp?: DateTimeFieldUpdateOperationsInput | Date | string
     level?: IntFieldUpdateOperationsInput | number
     type?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
+    tags?: LogUpdatetagsInput | string[]
   }
 
   export type LogUncheckedUpdateManyInput = {
@@ -14165,7 +14161,7 @@ export namespace Prisma {
     timestamp?: DateTimeFieldUpdateOperationsInput | Date | string
     level?: IntFieldUpdateOperationsInput | number
     type?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
+    tags?: LogUpdatetagsInput | string[]
   }
 
   export type CooldownCreateInput = {
@@ -14872,7 +14868,7 @@ export namespace Prisma {
     timestamp?: SortOrder
     level?: SortOrder
     type?: SortOrder
-    name?: SortOrder
+    tags?: SortOrder
   }
 
   export type LogAvgOrderByAggregateInput = {
@@ -14887,7 +14883,6 @@ export namespace Prisma {
     timestamp?: SortOrder
     level?: SortOrder
     type?: SortOrder
-    name?: SortOrder
   }
 
   export type LogMinOrderByAggregateInput = {
@@ -14897,7 +14892,6 @@ export namespace Prisma {
     timestamp?: SortOrder
     level?: SortOrder
     type?: SortOrder
-    name?: SortOrder
   }
 
   export type LogSumOrderByAggregateInput = {
@@ -15601,6 +15595,10 @@ export namespace Prisma {
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutApplicationsInput, UserUpdateWithoutApplicationsInput>, UserUncheckedUpdateWithoutApplicationsInput>
   }
 
+  export type LogCreatetagsInput = {
+    set: string[]
+  }
+
   export type UserCreateNestedOneWithoutLogsInput = {
     create?: XOR<UserCreateWithoutLogsInput, UserUncheckedCreateWithoutLogsInput>
     connectOrCreate?: UserCreateOrConnectWithoutLogsInput
@@ -15609,6 +15607,11 @@ export namespace Prisma {
 
   export type DateTimeFieldUpdateOperationsInput = {
     set?: Date | string
+  }
+
+  export type LogUpdatetagsInput = {
+    set?: string[]
+    push?: string | string[]
   }
 
   export type UserUpdateOneRequiredWithoutLogsNestedInput = {
@@ -16124,7 +16127,7 @@ export namespace Prisma {
     timestamp?: Date | string
     level?: number
     type?: string
-    name?: string
+    tags?: LogCreatetagsInput | string[]
   }
 
   export type LogUncheckedCreateWithoutUserInput = {
@@ -16133,7 +16136,7 @@ export namespace Prisma {
     timestamp?: Date | string
     level?: number
     type?: string
-    name?: string
+    tags?: LogCreatetagsInput | string[]
   }
 
   export type LogCreateOrConnectWithoutUserInput = {
@@ -16322,7 +16325,7 @@ export namespace Prisma {
     timestamp?: DateTimeFilter<"Log"> | Date | string
     level?: IntFilter<"Log"> | number
     type?: StringFilter<"Log"> | string
-    name?: StringFilter<"Log"> | string
+    tags?: StringNullableListFilter<"Log">
   }
 
   export type CooldownUpsertWithWhereUniqueWithoutUserInput = {
@@ -17172,7 +17175,7 @@ export namespace Prisma {
     timestamp?: Date | string
     level?: number
     type?: string
-    name?: string
+    tags?: LogCreatetagsInput | string[]
   }
 
   export type CooldownCreateManyUserInput = {
@@ -17217,7 +17220,7 @@ export namespace Prisma {
     timestamp?: DateTimeFieldUpdateOperationsInput | Date | string
     level?: IntFieldUpdateOperationsInput | number
     type?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
+    tags?: LogUpdatetagsInput | string[]
   }
 
   export type LogUncheckedUpdateWithoutUserInput = {
@@ -17226,7 +17229,7 @@ export namespace Prisma {
     timestamp?: DateTimeFieldUpdateOperationsInput | Date | string
     level?: IntFieldUpdateOperationsInput | number
     type?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
+    tags?: LogUpdatetagsInput | string[]
   }
 
   export type LogUncheckedUpdateManyWithoutUserInput = {
@@ -17235,7 +17238,7 @@ export namespace Prisma {
     timestamp?: DateTimeFieldUpdateOperationsInput | Date | string
     level?: IntFieldUpdateOperationsInput | number
     type?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
+    tags?: LogUpdatetagsInput | string[]
   }
 
   export type CooldownUpdateWithoutUserInput = {

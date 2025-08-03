@@ -69,13 +69,13 @@ createResponder({
             
             if (!company) {
                 interaction.update(resv2.danger(`${icon.error} | Empresa não encontrada!`));
-                await registerLog(
-                    `Empresa com ID ${companyId} não encontrada.`,
-                    "error",
-                    6,
-                    userid,
-                    "interview"
-                );
+                await registerLog({
+                    message: `Empresa com o id: ${companyId} não encontrada`,
+                    level: 99,
+                    type: "error",
+                    user: userid,
+                    tags: ["interview"]
+                });
                 return;
             }
 
@@ -126,13 +126,13 @@ createResponder({
                 
                 if (!geminiResponse.contracted) {
                     interaction.editReply(resv2.danger(`${icon.error} | O candidato foi reprovado. Motivo: ${geminiResponse.reason}`));
-                    await registerLog(
-                        `Tentou uma entrevista com a empresa ${company.name} e foi reprovado. Motivo: ${geminiResponse.reason}`,
-                        "warn",
-                        3,
-                        userid,
-                        "interview"
-                    );
+                    await registerLog({
+                        message: `Tentou uma entrevista com a empresa ${company.name} e foi reprovado. Motivo: ${geminiResponse.reason}`,
+                        level: 10,
+                        type: "warn",
+                        user: userid,
+                        tags: ["interview"]
+                    });
                     return;
                 }
 
@@ -143,13 +143,13 @@ createResponder({
                     data: { companyId: company.id }
                 });
                 
-                await registerLog(
-                    `Tentou uma entrevista com a empresa ${company.name} e foi aprovado.`,
-                    "info",
-                    10,
-                    userid,
-                    "interview"
-                );
+                await registerLog({
+                    message: `Tentou uma entrevista com a empresa ${company.name} e foi aprovado, motivo: ${geminiResponse.reason}`,
+                    level: 5,
+                    type: "info",
+                    user: userid,
+                    tags: ["interview"]
+                });
             } catch (error) {
                 console.error(error);
                 interaction.editReply(resv2.danger(`${icon.error} | Ocorreu um erro ao processar a entrevista. Por favor, tente novamente mais tarde.`));
@@ -162,13 +162,13 @@ createResponder({
 
         await interaction.update(resv2.warning(`${icon.waiting_white} | A IA está processando a pergunta.`));
 
-        await registerLog(
-            `Respondeu a pergunta ${page} da entrevista na empresa`,
-            "debug",
-            1,
-            interaction.user.id,
-            "interview"
-        );
+        await registerLog({
+            message: `Respondeu a pergunta: ${page} da entrevista`,
+            level: 5,
+            type: "debug",
+            user: userid,
+            tags: ["interview"]
+        });
         
         setTimeout(async () => {
             await interaction.editReply(menus.jobs.interview(nextPage, userid, companyId));

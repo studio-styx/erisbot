@@ -62,13 +62,13 @@ export async function slotsCommand(interaction: ChatInputCommandInteraction<"cac
                 data: { money: { [isWin ? "increment" : "decrement"]: isWin ? winAmount : amount } }
             });
 
-            await registerLog(
-                isWin ? `Ganhou ${winAmount} stx no cassino` : `Perdeu ${amount} stx no cassino`,
-                "info",
-                6,
-                author.id,
-                "cassino"
-            );
+            await registerLog({
+                level: 6,
+                message: `Apostou no caça-níqueis e ${isWin ? `ganhou ${winAmount} stx` : `perdeu ${amount} stx`}`,
+                tags: ["cassino", "transaction", "slots", isWin ? "sum" : "sub"],
+                type: "info",
+                user: author.id
+            });
 
             await interaction.editReply({ embeds: [embed] });
         }, 2000);

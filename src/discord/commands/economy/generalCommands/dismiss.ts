@@ -1,5 +1,5 @@
 import { prisma } from "#database";
-import { res, icon } from "#functions";
+import { res, icon, registerLog } from "#functions";
 import { ChatInputCommandInteraction } from "discord.js";
 
 export async function EconomyDismissCommand(interaction: ChatInputCommandInteraction<"cached">) {
@@ -23,5 +23,13 @@ export async function EconomyDismissCommand(interaction: ChatInputCommandInterac
     await interaction.editReply(res.danger(`${icon.success} | você saiu do seu emprego!`));
 
     interaction.editReply(res.danger(`${icon.success} | você saiu do seu emprego!`));
+
+    await registerLog({
+        level: 7,
+        message: "Saiu de seu emprego",
+        tags: ["economy", "dismiss", "job"],
+        type: "info",
+        user: interaction.user.id
+    })
     return;
 }

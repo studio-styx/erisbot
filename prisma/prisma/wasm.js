@@ -144,7 +144,7 @@ exports.Prisma.LogScalarFieldEnum = {
   timestamp: 'timestamp',
   level: 'level',
   type: 'type',
-  name: 'name'
+  tags: 'tags'
 };
 
 exports.Prisma.CooldownScalarFieldEnum = {
