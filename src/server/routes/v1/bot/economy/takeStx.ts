@@ -1,7 +1,7 @@
 import { createResponder, ResponderType, Store } from "#base";
 import { prisma } from "#database";
-import { icon, registerLog, res } from "#functions";
-import { brBuilder, createRow } from "@magicyan/discord";
+import { res, registerLog, icon } from "#functions";
+import { createRow, brBuilder } from "@magicyan/discord";
 import { ButtonBuilder, ButtonStyle, Client, userMention } from "discord.js";
 import { FastifyInstance } from "fastify";
 import { StatusCodes } from "http-status-codes";
@@ -16,61 +16,8 @@ const takeMoneyCooldown = new Store<{
     amount: number;
 }>();
 
-export async function economyRoute(app: FastifyInstance, client: Client<true>) {
-    app.post("/economy/give-stx", async (req, reply) => {
-        const giveStxBodySchema = z.object({
-            guildId: z.string().min(1),
-            channelId: z.string().min(1),
-            memberId: z.string().min(1),
-            amount: z.number().min(1),
-            reason: z.string().min(1).optional()
-        })
-
-        const { guildId, channelId, memberId, amount, reason } = giveStxBodySchema.parse(req.body);
-
-        const guild = client.guilds.cache.get(guildId);
-        if (!guild) return reply.status(StatusCodes.NOT_FOUND).send({ message: "Guild not found" });
-        const channel = await guild.channels.fetch(channelId);
-        if (!channel) return reply.status(StatusCodes.NOT_FOUND).send({ message: "Channel not found" });
-        const member = await guild.members.fetch(memberId);
-        if (!member || member.user.bot) return reply.status(StatusCodes.NOT_FOUND).send({ message: "Member not found" });
-
-        const application = req.application;
-
-        if (!application) return reply.status(StatusCodes.INTERNAL_SERVER_ERROR).send({ message: "Internal server error" });
-
-        const appMoney = application.data.money.toNumber();
-
-        if (appMoney < amount) return reply.status(StatusCodes.BAD_REQUEST).send({ message: "Not enough money" });
-
-        await prisma.$transaction([
-            prisma.application.update({
-                where: { token: application.tokenHash },
-                data: { money: { decrement: amount } }
-            }),
-            prisma.user.upsert({
-                where: { id: memberId },
-                update: { money: { increment: amount } },
-                create: { id: memberId, money: amount }
-            }),
-            prisma.log.create({
-                data: {
-                    message: `Recebeu dinheiro da aplicação: ${userMention(application.data.id)} com o motivo: ${reason ?? "Nenhum motivo fornecido"}`,
-                    level: 7,
-                    type: "info",
-                    userId: memberId,
-                    tags: ["economy", "transfer", "receive", "api", "transaction"]
-                }
-            })
-        ])
-
-        if (channel.isSendable()) {
-            await channel.send(res.fuchsia(`${icon.Eris_happy} | ${userMention(application.data.id)} deu: **${amount}** stx para o usuário: **${userMention(memberId)}** com o motivo: **\`${reason ?? "Nenhum motivo fornecido"}\`**`))
-        }
-
-        return reply.status(StatusCodes.OK).send({ message: "Success" });
-    });
-    app.post("/economy/take-stx", async (req, reply) => {
+export default async function takeStx(app: FastifyInstance, client: Client<true>) {
+    app.post("/take-stx", async (req, reply) => {
         const takeStxBodySchema = z.object({
             guildId: z.string().min(1),
             channelId: z.string().min(1),
@@ -91,6 +38,10 @@ export async function economyRoute(app: FastifyInstance, client: Client<true>) {
         const application = req.application;
 
         if (!application) return reply.status(StatusCodes.INTERNAL_SERVER_ERROR).send({ message: "Internal server error" });
+
+        const botMember = await guild.members.fetch(application.data.id);
+        if (!botMember || botMember.user.bot) return reply.status(StatusCodes.NOT_FOUND).send({ message: "You are not on this server" });
+        if (!botMember.permissionsIn(channel).has("SendMessages")) return reply.status(StatusCodes.FORBIDDEN).send({ message: "You does not have permission to send messages in this channel" })
 
         if (takeMoneyCooldown.get(`${memberId}:${application.data.id}`)) return reply.status(StatusCodes.CONFLICT).send({ message: "You already have a transaction with this user in progress" })
 
@@ -120,17 +71,17 @@ export async function economyRoute(app: FastifyInstance, client: Client<true>) {
                 `A aplicação: ${userMention(application.data.id)} está requisitando **${amount}** stx de você!`,
                 "",
                 `Com o motivo: **\`${reason ?? "Nenhum motivo fornecido"}\`**`,
-                "-# Você tem 30 segundos para confirmar ou cancelar."
+                "-# Você tem 1 minuto para confirmar ou cancelar."
             ), {
                 components: [makeRow()],
                 content: userMention(memberId),
                 thumbnail: { url: member.displayAvatarURL() }
             }))
-            takeMoneyCooldown.set(`${memberId}:${application.data.id}`, { expiresAt: new Date(Date.now() + 1000 * 32), confirm: null, amount }, {
+            takeMoneyCooldown.set(`${memberId}:${application.data.id}`, { expiresAt: new Date(Date.now() + 1000 * 61), confirm: null, amount }, {
                 time: 1000 * 60 * 2
             });
 
-            function waitForConfirmation(key: string, timeout = 32_000): Promise<"confirmed" | "canceled" | "expired"> {
+            function waitForConfirmation(key: string, timeout = 62_000): Promise<"confirmed" | "canceled" | "expired"> {
                 return new Promise((resolve) => {
                     const interval = setInterval(() => {
                         const data = takeMoneyCooldown.get(key);
@@ -191,57 +142,6 @@ export async function economyRoute(app: FastifyInstance, client: Client<true>) {
             return reply.status(StatusCodes.BAD_REQUEST).send({ message: "Channel is not sendable" });
         }
     });
-    app.get("/economy/balance/:userId", async (req, reply) => {
-        const { userId } = z.object({
-            userId: z.string().min(1)
-        }).parse(req.params);
-
-        const discordUser = await client.users.fetch(userId, { cache: true }).catch(() => null);
-
-        if (!discordUser) {
-            return reply.status(StatusCodes.NOT_FOUND).send({ message: "User not found" });
-        }
-
-        const user = await prisma.user.upsert({
-            where: { id: userId },
-            update: { id: userId },
-            create: { id: userId }
-        });
-
-        return reply.status(StatusCodes.OK).send({ money: user.money.toNumber(), bank: user.bank.toNumber() });
-    });
-    app.post("/economy/transactions/:userId", async (req, reply) => {
-        const { userId } = z.object({
-            userId: z.string().min(1)
-        }).parse(req.params);
-
-        const transactionsLogsBodySchema = z.object({
-            limit: z.number().min(1).max(30).optional(),
-            timeLimit: z.date().optional()
-        });
-
-        const body = req.body ? transactionsLogsBodySchema.parse(req.body) : {};
-
-        const logs = await prisma.log.findMany({
-            where: {
-                userId,
-                type: "info",
-                timestamp: {
-                    gte: body.timeLimit ?? new Date(Date.now() - 1000 * 60 * 60 * 24 * 7)
-                },
-                tags: {
-                    has: "transaction"
-                }
-            },
-            orderBy: {
-                timestamp: "desc"
-            },
-            take: body.limit ?? 40
-        });
-
-        return reply.status(StatusCodes.OK).send({ data: logs });
-
-    })
 }
 
 createResponder({

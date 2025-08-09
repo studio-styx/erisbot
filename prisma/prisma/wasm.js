@@ -127,7 +127,8 @@ exports.Prisma.UserScalarFieldEnum = {
   xp: 'xp',
   companyId: 'companyId',
   mailsTagsIgnored: 'mailsTagsIgnored',
-  dmNotification: 'dmNotification'
+  dmNotification: 'dmNotification',
+  token: 'token'
 };
 
 exports.Prisma.ApplicationScalarFieldEnum = {
@@ -135,6 +136,13 @@ exports.Prisma.ApplicationScalarFieldEnum = {
   money: 'money',
   token: 'token',
   ownerId: 'ownerId'
+};
+
+exports.Prisma.RequisitionScalarFieldEnum = {
+  id: 'id',
+  createdAt: 'createdAt',
+  url: 'url',
+  applicationId: 'applicationId'
 };
 
 exports.Prisma.LogScalarFieldEnum = {
@@ -213,6 +221,11 @@ exports.Prisma.SortOrder = {
   desc: 'desc'
 };
 
+exports.Prisma.NullableJsonNullValueInput = {
+  DbNull: Prisma.DbNull,
+  JsonNull: Prisma.JsonNull
+};
+
 exports.Prisma.JsonNullValueInput = {
   JsonNull: Prisma.JsonNull
 };
@@ -222,21 +235,22 @@ exports.Prisma.QueryMode = {
   insensitive: 'insensitive'
 };
 
-exports.Prisma.NullsOrder = {
-  first: 'first',
-  last: 'last'
-};
-
 exports.Prisma.JsonNullValueFilter = {
   DbNull: Prisma.DbNull,
   JsonNull: Prisma.JsonNull,
   AnyNull: Prisma.AnyNull
 };
 
+exports.Prisma.NullsOrder = {
+  first: 'first',
+  last: 'last'
+};
+
 
 exports.Prisma.ModelName = {
   User: 'User',
   Application: 'Application',
+  Requisition: 'Requisition',
   Log: 'Log',
   Cooldown: 'Cooldown',
   Company: 'Company',

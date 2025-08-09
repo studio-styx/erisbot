@@ -122,98 +122,67 @@ exports.Prisma.TransactionIsolationLevel = makeStrictEnum({
 
 exports.Prisma.UserScalarFieldEnum = {
   id: 'id',
-  money: 'money',
-  bank: 'bank',
-  xp: 'xp',
-  companyId: 'companyId',
-  mailsTagsIgnored: 'mailsTagsIgnored',
-  dmNotification: 'dmNotification',
-  token: 'token'
+  blacklist: 'blacklist',
+  defaultVote: 'defaultVote',
+  isAvaliator: 'isAvaliator',
+  isSuperAvaliator: 'isSuperAvaliator',
+  createdAt: 'createdAt',
+  analisingId: 'analisingId',
+  coins: 'coins'
+};
+
+exports.Prisma.VotesScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  applicationId: 'applicationId',
+  createdAt: 'createdAt'
 };
 
 exports.Prisma.ApplicationScalarFieldEnum = {
   id: 'id',
-  money: 'money',
-  token: 'token',
-  ownerId: 'ownerId'
-};
-
-exports.Prisma.RequisitionScalarFieldEnum = {
-  id: 'id',
-  createdAt: 'createdAt',
-  url: 'url',
-  applicationId: 'applicationId'
-};
-
-exports.Prisma.LogScalarFieldEnum = {
-  id: 'id',
   userId: 'userId',
-  message: 'message',
-  timestamp: 'timestamp',
-  level: 'level',
-  type: 'type',
-  tags: 'tags'
+  name: 'name',
+  language: 'language',
+  lib: 'lib',
+  description: 'description',
+  prefix: 'prefix',
+  prefix2: 'prefix2',
+  createdAt: 'createdAt',
+  analyzeId: 'analyzeId',
+  carefulAnalysis: 'carefulAnalysis'
 };
 
 exports.Prisma.CooldownScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
   name: 'name',
-  timestamp: 'timestamp',
-  willEndIn: 'willEndIn'
+  createdAt: 'createdAt',
+  endIn: 'endIn'
 };
 
-exports.Prisma.CompanyScalarFieldEnum = {
+exports.Prisma.AnnotationScalarFieldEnum = {
   id: 'id',
-  name: 'name',
-  description: 'description',
-  difficulty: 'difficulty',
-  experience: 'experience',
-  wage: 'wage',
-  expectations: 'expectations'
-};
-
-exports.Prisma.StockScalarFieldEnum = {
-  id: 'id',
-  name: 'name',
-  price: 'price',
-  description: 'description',
-  iaAvaliation: 'iaAvaliation',
-  trend: 'trend'
-};
-
-exports.Prisma.StockHistoryScalarFieldEnum = {
-  id: 'id',
-  stockId: 'stockId',
-  price: 'price',
-  date: 'date'
-};
-
-exports.Prisma.StockHoldingScalarFieldEnum = {
-  id: 'id',
-  userId: 'userId',
-  stockId: 'stockId',
-  amount: 'amount'
-};
-
-exports.Prisma.GuildSettingsScalarFieldEnum = {
-  id: 'id',
-  chatBotChannels: 'chatBotChannels',
-  chatBotEnabled: 'chatBotEnabled',
-  channelsCommandDisabled: 'channelsCommandDisabled',
-  channelsCommandDisabledIsHabilited: 'channelsCommandDisabledIsHabilited',
-  channelsCommandEnabled: 'channelsCommandEnabled',
-  channelsCommandEnabledIsHabilited: 'channelsCommandEnabledIsHabilited'
-};
-
-exports.Prisma.MailsScalarFieldEnum = {
-  id: 'id',
-  userId: 'userId',
-  content: 'content',
-  asRead: 'asRead',
-  tags: 'tags',
-  whoSendId: 'whoSendId',
+  analyzeId: 'analyzeId',
+  type: 'type',
+  text: 'text',
   createdAt: 'createdAt'
+};
+
+exports.Prisma.VoteReminderScalarFieldEnum = {
+  userId: 'userId',
+  channelId: 'channelId',
+  guildId: 'guildId',
+  endTime: 'endTime'
+};
+
+exports.Prisma.AnalyzeScalarFieldEnum = {
+  id: 'id',
+  applicationId: 'applicationId',
+  userId: 'userId',
+  avaliation: 'avaliation',
+  approved: 'approved',
+  createdAt: 'createdAt',
+  finishedIn: 'finishedIn'
 };
 
 exports.Prisma.SortOrder = {
@@ -221,24 +190,9 @@ exports.Prisma.SortOrder = {
   desc: 'desc'
 };
 
-exports.Prisma.NullableJsonNullValueInput = {
-  DbNull: Prisma.DbNull,
-  JsonNull: Prisma.JsonNull
-};
-
-exports.Prisma.JsonNullValueInput = {
-  JsonNull: Prisma.JsonNull
-};
-
 exports.Prisma.QueryMode = {
   default: 'default',
   insensitive: 'insensitive'
-};
-
-exports.Prisma.JsonNullValueFilter = {
-  DbNull: Prisma.DbNull,
-  JsonNull: Prisma.JsonNull,
-  AnyNull: Prisma.AnyNull
 };
 
 exports.Prisma.NullsOrder = {
@@ -249,16 +203,12 @@ exports.Prisma.NullsOrder = {
 
 exports.Prisma.ModelName = {
   User: 'User',
+  Votes: 'Votes',
   Application: 'Application',
-  Requisition: 'Requisition',
-  Log: 'Log',
   Cooldown: 'Cooldown',
-  Company: 'Company',
-  Stock: 'Stock',
-  StockHistory: 'StockHistory',
-  StockHolding: 'StockHolding',
-  GuildSettings: 'GuildSettings',
-  Mails: 'Mails'
+  Annotation: 'Annotation',
+  VoteReminder: 'VoteReminder',
+  Analyze: 'Analyze'
 };
 
 /**

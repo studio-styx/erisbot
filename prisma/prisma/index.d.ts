@@ -24,6 +24,11 @@ export type User = $Result.DefaultSelection<Prisma.$UserPayload>
  */
 export type Application = $Result.DefaultSelection<Prisma.$ApplicationPayload>
 /**
+ * Model Requisition
+ * 
+ */
+export type Requisition = $Result.DefaultSelection<Prisma.$RequisitionPayload>
+/**
  * Model Log
  * 
  */
@@ -208,6 +213,16 @@ export class PrismaClient<
     * ```
     */
   get application(): Prisma.ApplicationDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.requisition`: Exposes CRUD operations for the **Requisition** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Requisitions
+    * const requisitions = await prisma.requisition.findMany()
+    * ```
+    */
+  get requisition(): Prisma.RequisitionDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.log`: Exposes CRUD operations for the **Log** model.
@@ -730,6 +745,7 @@ export namespace Prisma {
   export const ModelName: {
     User: 'User',
     Application: 'Application',
+    Requisition: 'Requisition',
     Log: 'Log',
     Cooldown: 'Cooldown',
     Company: 'Company',
@@ -756,7 +772,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "application" | "log" | "cooldown" | "company" | "stock" | "stockHistory" | "stockHolding" | "guildSettings" | "mails"
+      modelProps: "user" | "application" | "requisition" | "log" | "cooldown" | "company" | "stock" | "stockHistory" | "stockHolding" | "guildSettings" | "mails"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -905,6 +921,80 @@ export namespace Prisma {
           count: {
             args: Prisma.ApplicationCountArgs<ExtArgs>
             result: $Utils.Optional<ApplicationCountAggregateOutputType> | number
+          }
+        }
+      }
+      Requisition: {
+        payload: Prisma.$RequisitionPayload<ExtArgs>
+        fields: Prisma.RequisitionFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.RequisitionFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RequisitionPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.RequisitionFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RequisitionPayload>
+          }
+          findFirst: {
+            args: Prisma.RequisitionFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RequisitionPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.RequisitionFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RequisitionPayload>
+          }
+          findMany: {
+            args: Prisma.RequisitionFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RequisitionPayload>[]
+          }
+          create: {
+            args: Prisma.RequisitionCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RequisitionPayload>
+          }
+          createMany: {
+            args: Prisma.RequisitionCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.RequisitionCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RequisitionPayload>[]
+          }
+          delete: {
+            args: Prisma.RequisitionDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RequisitionPayload>
+          }
+          update: {
+            args: Prisma.RequisitionUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RequisitionPayload>
+          }
+          deleteMany: {
+            args: Prisma.RequisitionDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.RequisitionUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.RequisitionUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RequisitionPayload>[]
+          }
+          upsert: {
+            args: Prisma.RequisitionUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RequisitionPayload>
+          }
+          aggregate: {
+            args: Prisma.RequisitionAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateRequisition>
+          }
+          groupBy: {
+            args: Prisma.RequisitionGroupByArgs<ExtArgs>
+            result: $Utils.Optional<RequisitionGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.RequisitionCountArgs<ExtArgs>
+            result: $Utils.Optional<RequisitionCountAggregateOutputType> | number
           }
         }
       }
@@ -1594,6 +1684,7 @@ export namespace Prisma {
   export type GlobalOmitConfig = {
     user?: UserOmit
     application?: ApplicationOmit
+    requisition?: RequisitionOmit
     log?: LogOmit
     cooldown?: CooldownOmit
     company?: CompanyOmit
@@ -1773,6 +1864,37 @@ export namespace Prisma {
 
 
   /**
+   * Count Type ApplicationCountOutputType
+   */
+
+  export type ApplicationCountOutputType = {
+    requisitions: number
+  }
+
+  export type ApplicationCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    requisitions?: boolean | ApplicationCountOutputTypeCountRequisitionsArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * ApplicationCountOutputType without action
+   */
+  export type ApplicationCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ApplicationCountOutputType
+     */
+    select?: ApplicationCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * ApplicationCountOutputType without action
+   */
+  export type ApplicationCountOutputTypeCountRequisitionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: RequisitionWhereInput
+  }
+
+
+  /**
    * Count Type CompanyCountOutputType
    */
 
@@ -1899,6 +2021,7 @@ export namespace Prisma {
     companyId: number
     mailsTagsIgnored: number
     dmNotification: number
+    token: number
     _all: number
   }
 
@@ -1943,6 +2066,7 @@ export namespace Prisma {
     companyId?: true
     mailsTagsIgnored?: true
     dmNotification?: true
+    token?: true
     _all?: true
   }
 
@@ -2040,6 +2164,7 @@ export namespace Prisma {
     companyId: number | null
     mailsTagsIgnored: string[]
     dmNotification: boolean
+    token: JsonValue | null
     _count: UserCountAggregateOutputType | null
     _avg: UserAvgAggregateOutputType | null
     _sum: UserSumAggregateOutputType | null
@@ -2069,6 +2194,7 @@ export namespace Prisma {
     companyId?: boolean
     mailsTagsIgnored?: boolean
     dmNotification?: boolean
+    token?: boolean
     company?: boolean | User$companyArgs<ExtArgs>
     logs?: boolean | User$logsArgs<ExtArgs>
     cooldowns?: boolean | User$cooldownsArgs<ExtArgs>
@@ -2087,6 +2213,7 @@ export namespace Prisma {
     companyId?: boolean
     mailsTagsIgnored?: boolean
     dmNotification?: boolean
+    token?: boolean
     company?: boolean | User$companyArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -2098,6 +2225,7 @@ export namespace Prisma {
     companyId?: boolean
     mailsTagsIgnored?: boolean
     dmNotification?: boolean
+    token?: boolean
     company?: boolean | User$companyArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -2109,9 +2237,10 @@ export namespace Prisma {
     companyId?: boolean
     mailsTagsIgnored?: boolean
     dmNotification?: boolean
+    token?: boolean
   }
 
-  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "money" | "bank" | "xp" | "companyId" | "mailsTagsIgnored" | "dmNotification", ExtArgs["result"]["user"]>
+  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "money" | "bank" | "xp" | "companyId" | "mailsTagsIgnored" | "dmNotification" | "token", ExtArgs["result"]["user"]>
   export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     company?: boolean | User$companyArgs<ExtArgs>
     logs?: boolean | User$logsArgs<ExtArgs>
@@ -2148,6 +2277,7 @@ export namespace Prisma {
       companyId: number | null
       mailsTagsIgnored: string[]
       dmNotification: boolean
+      token: Prisma.JsonValue | null
     }, ExtArgs["result"]["user"]>
     composites: {}
   }
@@ -2585,6 +2715,7 @@ export namespace Prisma {
     readonly companyId: FieldRef<"User", 'Int'>
     readonly mailsTagsIgnored: FieldRef<"User", 'String[]'>
     readonly dmNotification: FieldRef<"User", 'Boolean'>
+    readonly token: FieldRef<"User", 'Json'>
   }
     
 
@@ -3353,6 +3484,8 @@ export namespace Prisma {
     token?: boolean
     ownerId?: boolean
     owner?: boolean | UserDefaultArgs<ExtArgs>
+    requisitions?: boolean | Application$requisitionsArgs<ExtArgs>
+    _count?: boolean | ApplicationCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["application"]>
 
   export type ApplicationSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -3381,6 +3514,8 @@ export namespace Prisma {
   export type ApplicationOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "money" | "token" | "ownerId", ExtArgs["result"]["application"]>
   export type ApplicationInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     owner?: boolean | UserDefaultArgs<ExtArgs>
+    requisitions?: boolean | Application$requisitionsArgs<ExtArgs>
+    _count?: boolean | ApplicationCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type ApplicationIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     owner?: boolean | UserDefaultArgs<ExtArgs>
@@ -3393,6 +3528,7 @@ export namespace Prisma {
     name: "Application"
     objects: {
       owner: Prisma.$UserPayload<ExtArgs>
+      requisitions: Prisma.$RequisitionPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -3794,6 +3930,7 @@ export namespace Prisma {
   export interface Prisma__ApplicationClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     owner<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    requisitions<T extends Application$requisitionsArgs<ExtArgs> = {}>(args?: Subset<T, Application$requisitionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RequisitionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -4223,6 +4360,30 @@ export namespace Prisma {
   }
 
   /**
+   * Application.requisitions
+   */
+  export type Application$requisitionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Requisition
+     */
+    select?: RequisitionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Requisition
+     */
+    omit?: RequisitionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RequisitionInclude<ExtArgs> | null
+    where?: RequisitionWhereInput
+    orderBy?: RequisitionOrderByWithRelationInput | RequisitionOrderByWithRelationInput[]
+    cursor?: RequisitionWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: RequisitionScalarFieldEnum | RequisitionScalarFieldEnum[]
+  }
+
+  /**
    * Application without action
    */
   export type ApplicationDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -4238,6 +4399,1085 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: ApplicationInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model Requisition
+   */
+
+  export type AggregateRequisition = {
+    _count: RequisitionCountAggregateOutputType | null
+    _avg: RequisitionAvgAggregateOutputType | null
+    _sum: RequisitionSumAggregateOutputType | null
+    _min: RequisitionMinAggregateOutputType | null
+    _max: RequisitionMaxAggregateOutputType | null
+  }
+
+  export type RequisitionAvgAggregateOutputType = {
+    id: number | null
+  }
+
+  export type RequisitionSumAggregateOutputType = {
+    id: number | null
+  }
+
+  export type RequisitionMinAggregateOutputType = {
+    id: number | null
+    createdAt: Date | null
+    url: string | null
+    applicationId: string | null
+  }
+
+  export type RequisitionMaxAggregateOutputType = {
+    id: number | null
+    createdAt: Date | null
+    url: string | null
+    applicationId: string | null
+  }
+
+  export type RequisitionCountAggregateOutputType = {
+    id: number
+    createdAt: number
+    url: number
+    applicationId: number
+    _all: number
+  }
+
+
+  export type RequisitionAvgAggregateInputType = {
+    id?: true
+  }
+
+  export type RequisitionSumAggregateInputType = {
+    id?: true
+  }
+
+  export type RequisitionMinAggregateInputType = {
+    id?: true
+    createdAt?: true
+    url?: true
+    applicationId?: true
+  }
+
+  export type RequisitionMaxAggregateInputType = {
+    id?: true
+    createdAt?: true
+    url?: true
+    applicationId?: true
+  }
+
+  export type RequisitionCountAggregateInputType = {
+    id?: true
+    createdAt?: true
+    url?: true
+    applicationId?: true
+    _all?: true
+  }
+
+  export type RequisitionAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Requisition to aggregate.
+     */
+    where?: RequisitionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Requisitions to fetch.
+     */
+    orderBy?: RequisitionOrderByWithRelationInput | RequisitionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: RequisitionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Requisitions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Requisitions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned Requisitions
+    **/
+    _count?: true | RequisitionCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: RequisitionAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: RequisitionSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: RequisitionMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: RequisitionMaxAggregateInputType
+  }
+
+  export type GetRequisitionAggregateType<T extends RequisitionAggregateArgs> = {
+        [P in keyof T & keyof AggregateRequisition]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateRequisition[P]>
+      : GetScalarType<T[P], AggregateRequisition[P]>
+  }
+
+
+
+
+  export type RequisitionGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: RequisitionWhereInput
+    orderBy?: RequisitionOrderByWithAggregationInput | RequisitionOrderByWithAggregationInput[]
+    by: RequisitionScalarFieldEnum[] | RequisitionScalarFieldEnum
+    having?: RequisitionScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: RequisitionCountAggregateInputType | true
+    _avg?: RequisitionAvgAggregateInputType
+    _sum?: RequisitionSumAggregateInputType
+    _min?: RequisitionMinAggregateInputType
+    _max?: RequisitionMaxAggregateInputType
+  }
+
+  export type RequisitionGroupByOutputType = {
+    id: number
+    createdAt: Date
+    url: string
+    applicationId: string
+    _count: RequisitionCountAggregateOutputType | null
+    _avg: RequisitionAvgAggregateOutputType | null
+    _sum: RequisitionSumAggregateOutputType | null
+    _min: RequisitionMinAggregateOutputType | null
+    _max: RequisitionMaxAggregateOutputType | null
+  }
+
+  type GetRequisitionGroupByPayload<T extends RequisitionGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<RequisitionGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof RequisitionGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], RequisitionGroupByOutputType[P]>
+            : GetScalarType<T[P], RequisitionGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type RequisitionSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    createdAt?: boolean
+    url?: boolean
+    applicationId?: boolean
+    Application?: boolean | ApplicationDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["requisition"]>
+
+  export type RequisitionSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    createdAt?: boolean
+    url?: boolean
+    applicationId?: boolean
+    Application?: boolean | ApplicationDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["requisition"]>
+
+  export type RequisitionSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    createdAt?: boolean
+    url?: boolean
+    applicationId?: boolean
+    Application?: boolean | ApplicationDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["requisition"]>
+
+  export type RequisitionSelectScalar = {
+    id?: boolean
+    createdAt?: boolean
+    url?: boolean
+    applicationId?: boolean
+  }
+
+  export type RequisitionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "createdAt" | "url" | "applicationId", ExtArgs["result"]["requisition"]>
+  export type RequisitionInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    Application?: boolean | ApplicationDefaultArgs<ExtArgs>
+  }
+  export type RequisitionIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    Application?: boolean | ApplicationDefaultArgs<ExtArgs>
+  }
+  export type RequisitionIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    Application?: boolean | ApplicationDefaultArgs<ExtArgs>
+  }
+
+  export type $RequisitionPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "Requisition"
+    objects: {
+      Application: Prisma.$ApplicationPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: number
+      createdAt: Date
+      url: string
+      applicationId: string
+    }, ExtArgs["result"]["requisition"]>
+    composites: {}
+  }
+
+  type RequisitionGetPayload<S extends boolean | null | undefined | RequisitionDefaultArgs> = $Result.GetResult<Prisma.$RequisitionPayload, S>
+
+  type RequisitionCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<RequisitionFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: RequisitionCountAggregateInputType | true
+    }
+
+  export interface RequisitionDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Requisition'], meta: { name: 'Requisition' } }
+    /**
+     * Find zero or one Requisition that matches the filter.
+     * @param {RequisitionFindUniqueArgs} args - Arguments to find a Requisition
+     * @example
+     * // Get one Requisition
+     * const requisition = await prisma.requisition.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends RequisitionFindUniqueArgs>(args: SelectSubset<T, RequisitionFindUniqueArgs<ExtArgs>>): Prisma__RequisitionClient<$Result.GetResult<Prisma.$RequisitionPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one Requisition that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {RequisitionFindUniqueOrThrowArgs} args - Arguments to find a Requisition
+     * @example
+     * // Get one Requisition
+     * const requisition = await prisma.requisition.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends RequisitionFindUniqueOrThrowArgs>(args: SelectSubset<T, RequisitionFindUniqueOrThrowArgs<ExtArgs>>): Prisma__RequisitionClient<$Result.GetResult<Prisma.$RequisitionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Requisition that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RequisitionFindFirstArgs} args - Arguments to find a Requisition
+     * @example
+     * // Get one Requisition
+     * const requisition = await prisma.requisition.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends RequisitionFindFirstArgs>(args?: SelectSubset<T, RequisitionFindFirstArgs<ExtArgs>>): Prisma__RequisitionClient<$Result.GetResult<Prisma.$RequisitionPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Requisition that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RequisitionFindFirstOrThrowArgs} args - Arguments to find a Requisition
+     * @example
+     * // Get one Requisition
+     * const requisition = await prisma.requisition.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends RequisitionFindFirstOrThrowArgs>(args?: SelectSubset<T, RequisitionFindFirstOrThrowArgs<ExtArgs>>): Prisma__RequisitionClient<$Result.GetResult<Prisma.$RequisitionPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more Requisitions that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RequisitionFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Requisitions
+     * const requisitions = await prisma.requisition.findMany()
+     * 
+     * // Get first 10 Requisitions
+     * const requisitions = await prisma.requisition.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const requisitionWithIdOnly = await prisma.requisition.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends RequisitionFindManyArgs>(args?: SelectSubset<T, RequisitionFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RequisitionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a Requisition.
+     * @param {RequisitionCreateArgs} args - Arguments to create a Requisition.
+     * @example
+     * // Create one Requisition
+     * const Requisition = await prisma.requisition.create({
+     *   data: {
+     *     // ... data to create a Requisition
+     *   }
+     * })
+     * 
+     */
+    create<T extends RequisitionCreateArgs>(args: SelectSubset<T, RequisitionCreateArgs<ExtArgs>>): Prisma__RequisitionClient<$Result.GetResult<Prisma.$RequisitionPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many Requisitions.
+     * @param {RequisitionCreateManyArgs} args - Arguments to create many Requisitions.
+     * @example
+     * // Create many Requisitions
+     * const requisition = await prisma.requisition.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends RequisitionCreateManyArgs>(args?: SelectSubset<T, RequisitionCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many Requisitions and returns the data saved in the database.
+     * @param {RequisitionCreateManyAndReturnArgs} args - Arguments to create many Requisitions.
+     * @example
+     * // Create many Requisitions
+     * const requisition = await prisma.requisition.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many Requisitions and only return the `id`
+     * const requisitionWithIdOnly = await prisma.requisition.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends RequisitionCreateManyAndReturnArgs>(args?: SelectSubset<T, RequisitionCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RequisitionPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a Requisition.
+     * @param {RequisitionDeleteArgs} args - Arguments to delete one Requisition.
+     * @example
+     * // Delete one Requisition
+     * const Requisition = await prisma.requisition.delete({
+     *   where: {
+     *     // ... filter to delete one Requisition
+     *   }
+     * })
+     * 
+     */
+    delete<T extends RequisitionDeleteArgs>(args: SelectSubset<T, RequisitionDeleteArgs<ExtArgs>>): Prisma__RequisitionClient<$Result.GetResult<Prisma.$RequisitionPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one Requisition.
+     * @param {RequisitionUpdateArgs} args - Arguments to update one Requisition.
+     * @example
+     * // Update one Requisition
+     * const requisition = await prisma.requisition.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends RequisitionUpdateArgs>(args: SelectSubset<T, RequisitionUpdateArgs<ExtArgs>>): Prisma__RequisitionClient<$Result.GetResult<Prisma.$RequisitionPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more Requisitions.
+     * @param {RequisitionDeleteManyArgs} args - Arguments to filter Requisitions to delete.
+     * @example
+     * // Delete a few Requisitions
+     * const { count } = await prisma.requisition.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends RequisitionDeleteManyArgs>(args?: SelectSubset<T, RequisitionDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Requisitions.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RequisitionUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Requisitions
+     * const requisition = await prisma.requisition.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends RequisitionUpdateManyArgs>(args: SelectSubset<T, RequisitionUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Requisitions and returns the data updated in the database.
+     * @param {RequisitionUpdateManyAndReturnArgs} args - Arguments to update many Requisitions.
+     * @example
+     * // Update many Requisitions
+     * const requisition = await prisma.requisition.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more Requisitions and only return the `id`
+     * const requisitionWithIdOnly = await prisma.requisition.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends RequisitionUpdateManyAndReturnArgs>(args: SelectSubset<T, RequisitionUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RequisitionPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one Requisition.
+     * @param {RequisitionUpsertArgs} args - Arguments to update or create a Requisition.
+     * @example
+     * // Update or create a Requisition
+     * const requisition = await prisma.requisition.upsert({
+     *   create: {
+     *     // ... data to create a Requisition
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Requisition we want to update
+     *   }
+     * })
+     */
+    upsert<T extends RequisitionUpsertArgs>(args: SelectSubset<T, RequisitionUpsertArgs<ExtArgs>>): Prisma__RequisitionClient<$Result.GetResult<Prisma.$RequisitionPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of Requisitions.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RequisitionCountArgs} args - Arguments to filter Requisitions to count.
+     * @example
+     * // Count the number of Requisitions
+     * const count = await prisma.requisition.count({
+     *   where: {
+     *     // ... the filter for the Requisitions we want to count
+     *   }
+     * })
+    **/
+    count<T extends RequisitionCountArgs>(
+      args?: Subset<T, RequisitionCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], RequisitionCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Requisition.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RequisitionAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends RequisitionAggregateArgs>(args: Subset<T, RequisitionAggregateArgs>): Prisma.PrismaPromise<GetRequisitionAggregateType<T>>
+
+    /**
+     * Group by Requisition.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RequisitionGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends RequisitionGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: RequisitionGroupByArgs['orderBy'] }
+        : { orderBy?: RequisitionGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, RequisitionGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetRequisitionGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the Requisition model
+   */
+  readonly fields: RequisitionFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for Requisition.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__RequisitionClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    Application<T extends ApplicationDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ApplicationDefaultArgs<ExtArgs>>): Prisma__ApplicationClient<$Result.GetResult<Prisma.$ApplicationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the Requisition model
+   */
+  interface RequisitionFieldRefs {
+    readonly id: FieldRef<"Requisition", 'Int'>
+    readonly createdAt: FieldRef<"Requisition", 'DateTime'>
+    readonly url: FieldRef<"Requisition", 'String'>
+    readonly applicationId: FieldRef<"Requisition", 'String'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * Requisition findUnique
+   */
+  export type RequisitionFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Requisition
+     */
+    select?: RequisitionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Requisition
+     */
+    omit?: RequisitionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RequisitionInclude<ExtArgs> | null
+    /**
+     * Filter, which Requisition to fetch.
+     */
+    where: RequisitionWhereUniqueInput
+  }
+
+  /**
+   * Requisition findUniqueOrThrow
+   */
+  export type RequisitionFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Requisition
+     */
+    select?: RequisitionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Requisition
+     */
+    omit?: RequisitionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RequisitionInclude<ExtArgs> | null
+    /**
+     * Filter, which Requisition to fetch.
+     */
+    where: RequisitionWhereUniqueInput
+  }
+
+  /**
+   * Requisition findFirst
+   */
+  export type RequisitionFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Requisition
+     */
+    select?: RequisitionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Requisition
+     */
+    omit?: RequisitionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RequisitionInclude<ExtArgs> | null
+    /**
+     * Filter, which Requisition to fetch.
+     */
+    where?: RequisitionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Requisitions to fetch.
+     */
+    orderBy?: RequisitionOrderByWithRelationInput | RequisitionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Requisitions.
+     */
+    cursor?: RequisitionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Requisitions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Requisitions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Requisitions.
+     */
+    distinct?: RequisitionScalarFieldEnum | RequisitionScalarFieldEnum[]
+  }
+
+  /**
+   * Requisition findFirstOrThrow
+   */
+  export type RequisitionFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Requisition
+     */
+    select?: RequisitionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Requisition
+     */
+    omit?: RequisitionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RequisitionInclude<ExtArgs> | null
+    /**
+     * Filter, which Requisition to fetch.
+     */
+    where?: RequisitionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Requisitions to fetch.
+     */
+    orderBy?: RequisitionOrderByWithRelationInput | RequisitionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Requisitions.
+     */
+    cursor?: RequisitionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Requisitions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Requisitions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Requisitions.
+     */
+    distinct?: RequisitionScalarFieldEnum | RequisitionScalarFieldEnum[]
+  }
+
+  /**
+   * Requisition findMany
+   */
+  export type RequisitionFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Requisition
+     */
+    select?: RequisitionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Requisition
+     */
+    omit?: RequisitionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RequisitionInclude<ExtArgs> | null
+    /**
+     * Filter, which Requisitions to fetch.
+     */
+    where?: RequisitionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Requisitions to fetch.
+     */
+    orderBy?: RequisitionOrderByWithRelationInput | RequisitionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing Requisitions.
+     */
+    cursor?: RequisitionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Requisitions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Requisitions.
+     */
+    skip?: number
+    distinct?: RequisitionScalarFieldEnum | RequisitionScalarFieldEnum[]
+  }
+
+  /**
+   * Requisition create
+   */
+  export type RequisitionCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Requisition
+     */
+    select?: RequisitionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Requisition
+     */
+    omit?: RequisitionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RequisitionInclude<ExtArgs> | null
+    /**
+     * The data needed to create a Requisition.
+     */
+    data: XOR<RequisitionCreateInput, RequisitionUncheckedCreateInput>
+  }
+
+  /**
+   * Requisition createMany
+   */
+  export type RequisitionCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many Requisitions.
+     */
+    data: RequisitionCreateManyInput | RequisitionCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * Requisition createManyAndReturn
+   */
+  export type RequisitionCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Requisition
+     */
+    select?: RequisitionSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Requisition
+     */
+    omit?: RequisitionOmit<ExtArgs> | null
+    /**
+     * The data used to create many Requisitions.
+     */
+    data: RequisitionCreateManyInput | RequisitionCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RequisitionIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * Requisition update
+   */
+  export type RequisitionUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Requisition
+     */
+    select?: RequisitionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Requisition
+     */
+    omit?: RequisitionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RequisitionInclude<ExtArgs> | null
+    /**
+     * The data needed to update a Requisition.
+     */
+    data: XOR<RequisitionUpdateInput, RequisitionUncheckedUpdateInput>
+    /**
+     * Choose, which Requisition to update.
+     */
+    where: RequisitionWhereUniqueInput
+  }
+
+  /**
+   * Requisition updateMany
+   */
+  export type RequisitionUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update Requisitions.
+     */
+    data: XOR<RequisitionUpdateManyMutationInput, RequisitionUncheckedUpdateManyInput>
+    /**
+     * Filter which Requisitions to update
+     */
+    where?: RequisitionWhereInput
+    /**
+     * Limit how many Requisitions to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * Requisition updateManyAndReturn
+   */
+  export type RequisitionUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Requisition
+     */
+    select?: RequisitionSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Requisition
+     */
+    omit?: RequisitionOmit<ExtArgs> | null
+    /**
+     * The data used to update Requisitions.
+     */
+    data: XOR<RequisitionUpdateManyMutationInput, RequisitionUncheckedUpdateManyInput>
+    /**
+     * Filter which Requisitions to update
+     */
+    where?: RequisitionWhereInput
+    /**
+     * Limit how many Requisitions to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RequisitionIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * Requisition upsert
+   */
+  export type RequisitionUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Requisition
+     */
+    select?: RequisitionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Requisition
+     */
+    omit?: RequisitionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RequisitionInclude<ExtArgs> | null
+    /**
+     * The filter to search for the Requisition to update in case it exists.
+     */
+    where: RequisitionWhereUniqueInput
+    /**
+     * In case the Requisition found by the `where` argument doesn't exist, create a new Requisition with this data.
+     */
+    create: XOR<RequisitionCreateInput, RequisitionUncheckedCreateInput>
+    /**
+     * In case the Requisition was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<RequisitionUpdateInput, RequisitionUncheckedUpdateInput>
+  }
+
+  /**
+   * Requisition delete
+   */
+  export type RequisitionDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Requisition
+     */
+    select?: RequisitionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Requisition
+     */
+    omit?: RequisitionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RequisitionInclude<ExtArgs> | null
+    /**
+     * Filter which Requisition to delete.
+     */
+    where: RequisitionWhereUniqueInput
+  }
+
+  /**
+   * Requisition deleteMany
+   */
+  export type RequisitionDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Requisitions to delete
+     */
+    where?: RequisitionWhereInput
+    /**
+     * Limit how many Requisitions to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * Requisition without action
+   */
+  export type RequisitionDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Requisition
+     */
+    select?: RequisitionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Requisition
+     */
+    omit?: RequisitionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RequisitionInclude<ExtArgs> | null
   }
 
 
@@ -13072,7 +14312,8 @@ export namespace Prisma {
     xp: 'xp',
     companyId: 'companyId',
     mailsTagsIgnored: 'mailsTagsIgnored',
-    dmNotification: 'dmNotification'
+    dmNotification: 'dmNotification',
+    token: 'token'
   };
 
   export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
@@ -13086,6 +14327,16 @@ export namespace Prisma {
   };
 
   export type ApplicationScalarFieldEnum = (typeof ApplicationScalarFieldEnum)[keyof typeof ApplicationScalarFieldEnum]
+
+
+  export const RequisitionScalarFieldEnum: {
+    id: 'id',
+    createdAt: 'createdAt',
+    url: 'url',
+    applicationId: 'applicationId'
+  };
+
+  export type RequisitionScalarFieldEnum = (typeof RequisitionScalarFieldEnum)[keyof typeof RequisitionScalarFieldEnum]
 
 
   export const LogScalarFieldEnum: {
@@ -13191,6 +14442,14 @@ export namespace Prisma {
   export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
 
 
+  export const NullableJsonNullValueInput: {
+    DbNull: typeof DbNull,
+    JsonNull: typeof JsonNull
+  };
+
+  export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
+
+
   export const JsonNullValueInput: {
     JsonNull: typeof JsonNull
   };
@@ -13206,14 +14465,6 @@ export namespace Prisma {
   export type QueryMode = (typeof QueryMode)[keyof typeof QueryMode]
 
 
-  export const NullsOrder: {
-    first: 'first',
-    last: 'last'
-  };
-
-  export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
-
-
   export const JsonNullValueFilter: {
     DbNull: typeof DbNull,
     JsonNull: typeof JsonNull,
@@ -13221,6 +14472,14 @@ export namespace Prisma {
   };
 
   export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
+
+
+  export const NullsOrder: {
+    first: 'first',
+    last: 'last'
+  };
+
+  export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
 
 
   /**
@@ -13278,20 +14537,6 @@ export namespace Prisma {
 
 
   /**
-   * Reference to a field of type 'DateTime'
-   */
-  export type DateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime'>
-    
-
-
-  /**
-   * Reference to a field of type 'DateTime[]'
-   */
-  export type ListDateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime[]'>
-    
-
-
-  /**
    * Reference to a field of type 'Json'
    */
   export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Json'>
@@ -13302,6 +14547,20 @@ export namespace Prisma {
    * Reference to a field of type 'QueryMode'
    */
   export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QueryMode'>
+    
+
+
+  /**
+   * Reference to a field of type 'DateTime'
+   */
+  export type DateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime'>
+    
+
+
+  /**
+   * Reference to a field of type 'DateTime[]'
+   */
+  export type ListDateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime[]'>
     
 
 
@@ -13333,6 +14592,7 @@ export namespace Prisma {
     companyId?: IntNullableFilter<"User"> | number | null
     mailsTagsIgnored?: StringNullableListFilter<"User">
     dmNotification?: BoolFilter<"User"> | boolean
+    token?: JsonNullableFilter<"User">
     company?: XOR<CompanyNullableScalarRelationFilter, CompanyWhereInput> | null
     logs?: LogListRelationFilter
     cooldowns?: CooldownListRelationFilter
@@ -13350,6 +14610,7 @@ export namespace Prisma {
     companyId?: SortOrderInput | SortOrder
     mailsTagsIgnored?: SortOrder
     dmNotification?: SortOrder
+    token?: SortOrderInput | SortOrder
     company?: CompanyOrderByWithRelationInput
     logs?: LogOrderByRelationAggregateInput
     cooldowns?: CooldownOrderByRelationAggregateInput
@@ -13370,6 +14631,7 @@ export namespace Prisma {
     companyId?: IntNullableFilter<"User"> | number | null
     mailsTagsIgnored?: StringNullableListFilter<"User">
     dmNotification?: BoolFilter<"User"> | boolean
+    token?: JsonNullableFilter<"User">
     company?: XOR<CompanyNullableScalarRelationFilter, CompanyWhereInput> | null
     logs?: LogListRelationFilter
     cooldowns?: CooldownListRelationFilter
@@ -13387,6 +14649,7 @@ export namespace Prisma {
     companyId?: SortOrderInput | SortOrder
     mailsTagsIgnored?: SortOrder
     dmNotification?: SortOrder
+    token?: SortOrderInput | SortOrder
     _count?: UserCountOrderByAggregateInput
     _avg?: UserAvgOrderByAggregateInput
     _max?: UserMaxOrderByAggregateInput
@@ -13405,6 +14668,7 @@ export namespace Prisma {
     companyId?: IntNullableWithAggregatesFilter<"User"> | number | null
     mailsTagsIgnored?: StringNullableListFilter<"User">
     dmNotification?: BoolWithAggregatesFilter<"User"> | boolean
+    token?: JsonNullableWithAggregatesFilter<"User">
   }
 
   export type ApplicationWhereInput = {
@@ -13416,6 +14680,7 @@ export namespace Prisma {
     token?: StringFilter<"Application"> | string
     ownerId?: StringFilter<"Application"> | string
     owner?: XOR<UserScalarRelationFilter, UserWhereInput>
+    requisitions?: RequisitionListRelationFilter
   }
 
   export type ApplicationOrderByWithRelationInput = {
@@ -13424,6 +14689,7 @@ export namespace Prisma {
     token?: SortOrder
     ownerId?: SortOrder
     owner?: UserOrderByWithRelationInput
+    requisitions?: RequisitionOrderByRelationAggregateInput
   }
 
   export type ApplicationWhereUniqueInput = Prisma.AtLeast<{
@@ -13435,6 +14701,7 @@ export namespace Prisma {
     money?: DecimalFilter<"Application"> | Decimal | DecimalJsLike | number | string
     ownerId?: StringFilter<"Application"> | string
     owner?: XOR<UserScalarRelationFilter, UserWhereInput>
+    requisitions?: RequisitionListRelationFilter
   }, "id" | "token">
 
   export type ApplicationOrderByWithAggregationInput = {
@@ -13457,6 +14724,58 @@ export namespace Prisma {
     money?: DecimalWithAggregatesFilter<"Application"> | Decimal | DecimalJsLike | number | string
     token?: StringWithAggregatesFilter<"Application"> | string
     ownerId?: StringWithAggregatesFilter<"Application"> | string
+  }
+
+  export type RequisitionWhereInput = {
+    AND?: RequisitionWhereInput | RequisitionWhereInput[]
+    OR?: RequisitionWhereInput[]
+    NOT?: RequisitionWhereInput | RequisitionWhereInput[]
+    id?: IntFilter<"Requisition"> | number
+    createdAt?: DateTimeFilter<"Requisition"> | Date | string
+    url?: StringFilter<"Requisition"> | string
+    applicationId?: StringFilter<"Requisition"> | string
+    Application?: XOR<ApplicationScalarRelationFilter, ApplicationWhereInput>
+  }
+
+  export type RequisitionOrderByWithRelationInput = {
+    id?: SortOrder
+    createdAt?: SortOrder
+    url?: SortOrder
+    applicationId?: SortOrder
+    Application?: ApplicationOrderByWithRelationInput
+  }
+
+  export type RequisitionWhereUniqueInput = Prisma.AtLeast<{
+    id?: number
+    AND?: RequisitionWhereInput | RequisitionWhereInput[]
+    OR?: RequisitionWhereInput[]
+    NOT?: RequisitionWhereInput | RequisitionWhereInput[]
+    createdAt?: DateTimeFilter<"Requisition"> | Date | string
+    url?: StringFilter<"Requisition"> | string
+    applicationId?: StringFilter<"Requisition"> | string
+    Application?: XOR<ApplicationScalarRelationFilter, ApplicationWhereInput>
+  }, "id">
+
+  export type RequisitionOrderByWithAggregationInput = {
+    id?: SortOrder
+    createdAt?: SortOrder
+    url?: SortOrder
+    applicationId?: SortOrder
+    _count?: RequisitionCountOrderByAggregateInput
+    _avg?: RequisitionAvgOrderByAggregateInput
+    _max?: RequisitionMaxOrderByAggregateInput
+    _min?: RequisitionMinOrderByAggregateInput
+    _sum?: RequisitionSumOrderByAggregateInput
+  }
+
+  export type RequisitionScalarWhereWithAggregatesInput = {
+    AND?: RequisitionScalarWhereWithAggregatesInput | RequisitionScalarWhereWithAggregatesInput[]
+    OR?: RequisitionScalarWhereWithAggregatesInput[]
+    NOT?: RequisitionScalarWhereWithAggregatesInput | RequisitionScalarWhereWithAggregatesInput[]
+    id?: IntWithAggregatesFilter<"Requisition"> | number
+    createdAt?: DateTimeWithAggregatesFilter<"Requisition"> | Date | string
+    url?: StringWithAggregatesFilter<"Requisition"> | string
+    applicationId?: StringWithAggregatesFilter<"Requisition"> | string
   }
 
   export type LogWhereInput = {
@@ -13964,6 +15283,7 @@ export namespace Prisma {
     xp?: number
     mailsTagsIgnored?: UserCreatemailsTagsIgnoredInput | string[]
     dmNotification?: boolean
+    token?: NullableJsonNullValueInput | InputJsonValue
     company?: CompanyCreateNestedOneWithoutWorkersInput
     logs?: LogCreateNestedManyWithoutUserInput
     cooldowns?: CooldownCreateNestedManyWithoutUserInput
@@ -13981,6 +15301,7 @@ export namespace Prisma {
     companyId?: number | null
     mailsTagsIgnored?: UserCreatemailsTagsIgnoredInput | string[]
     dmNotification?: boolean
+    token?: NullableJsonNullValueInput | InputJsonValue
     logs?: LogUncheckedCreateNestedManyWithoutUserInput
     cooldowns?: CooldownUncheckedCreateNestedManyWithoutUserInput
     stocks?: StockHoldingUncheckedCreateNestedManyWithoutUserInput
@@ -13996,6 +15317,7 @@ export namespace Prisma {
     xp?: IntFieldUpdateOperationsInput | number
     mailsTagsIgnored?: UserUpdatemailsTagsIgnoredInput | string[]
     dmNotification?: BoolFieldUpdateOperationsInput | boolean
+    token?: NullableJsonNullValueInput | InputJsonValue
     company?: CompanyUpdateOneWithoutWorkersNestedInput
     logs?: LogUpdateManyWithoutUserNestedInput
     cooldowns?: CooldownUpdateManyWithoutUserNestedInput
@@ -14013,6 +15335,7 @@ export namespace Prisma {
     companyId?: NullableIntFieldUpdateOperationsInput | number | null
     mailsTagsIgnored?: UserUpdatemailsTagsIgnoredInput | string[]
     dmNotification?: BoolFieldUpdateOperationsInput | boolean
+    token?: NullableJsonNullValueInput | InputJsonValue
     logs?: LogUncheckedUpdateManyWithoutUserNestedInput
     cooldowns?: CooldownUncheckedUpdateManyWithoutUserNestedInput
     stocks?: StockHoldingUncheckedUpdateManyWithoutUserNestedInput
@@ -14029,6 +15352,7 @@ export namespace Prisma {
     companyId?: number | null
     mailsTagsIgnored?: UserCreatemailsTagsIgnoredInput | string[]
     dmNotification?: boolean
+    token?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type UserUpdateManyMutationInput = {
@@ -14038,6 +15362,7 @@ export namespace Prisma {
     xp?: IntFieldUpdateOperationsInput | number
     mailsTagsIgnored?: UserUpdatemailsTagsIgnoredInput | string[]
     dmNotification?: BoolFieldUpdateOperationsInput | boolean
+    token?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type UserUncheckedUpdateManyInput = {
@@ -14048,6 +15373,7 @@ export namespace Prisma {
     companyId?: NullableIntFieldUpdateOperationsInput | number | null
     mailsTagsIgnored?: UserUpdatemailsTagsIgnoredInput | string[]
     dmNotification?: BoolFieldUpdateOperationsInput | boolean
+    token?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type ApplicationCreateInput = {
@@ -14055,6 +15381,7 @@ export namespace Prisma {
     money?: Decimal | DecimalJsLike | number | string
     token: string
     owner: UserCreateNestedOneWithoutApplicationsInput
+    requisitions?: RequisitionCreateNestedManyWithoutApplicationInput
   }
 
   export type ApplicationUncheckedCreateInput = {
@@ -14062,6 +15389,7 @@ export namespace Prisma {
     money?: Decimal | DecimalJsLike | number | string
     token: string
     ownerId: string
+    requisitions?: RequisitionUncheckedCreateNestedManyWithoutApplicationInput
   }
 
   export type ApplicationUpdateInput = {
@@ -14069,6 +15397,7 @@ export namespace Prisma {
     money?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     token?: StringFieldUpdateOperationsInput | string
     owner?: UserUpdateOneRequiredWithoutApplicationsNestedInput
+    requisitions?: RequisitionUpdateManyWithoutApplicationNestedInput
   }
 
   export type ApplicationUncheckedUpdateInput = {
@@ -14076,6 +15405,7 @@ export namespace Prisma {
     money?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     token?: StringFieldUpdateOperationsInput | string
     ownerId?: StringFieldUpdateOperationsInput | string
+    requisitions?: RequisitionUncheckedUpdateManyWithoutApplicationNestedInput
   }
 
   export type ApplicationCreateManyInput = {
@@ -14096,6 +15426,51 @@ export namespace Prisma {
     money?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     token?: StringFieldUpdateOperationsInput | string
     ownerId?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type RequisitionCreateInput = {
+    createdAt?: Date | string
+    url: string
+    Application: ApplicationCreateNestedOneWithoutRequisitionsInput
+  }
+
+  export type RequisitionUncheckedCreateInput = {
+    id?: number
+    createdAt?: Date | string
+    url: string
+    applicationId: string
+  }
+
+  export type RequisitionUpdateInput = {
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    url?: StringFieldUpdateOperationsInput | string
+    Application?: ApplicationUpdateOneRequiredWithoutRequisitionsNestedInput
+  }
+
+  export type RequisitionUncheckedUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    url?: StringFieldUpdateOperationsInput | string
+    applicationId?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type RequisitionCreateManyInput = {
+    id?: number
+    createdAt?: Date | string
+    url: string
+    applicationId: string
+  }
+
+  export type RequisitionUpdateManyMutationInput = {
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    url?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type RequisitionUncheckedUpdateManyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    url?: StringFieldUpdateOperationsInput | string
+    applicationId?: StringFieldUpdateOperationsInput | string
   }
 
   export type LogCreateInput = {
@@ -14639,6 +16014,29 @@ export namespace Prisma {
     equals?: boolean | BooleanFieldRefInput<$PrismaModel>
     not?: NestedBoolFilter<$PrismaModel> | boolean
   }
+  export type JsonNullableFilter<$PrismaModel = never> =
+    | PatchUndefined<
+        Either<Required<JsonNullableFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonNullableFilterBase<$PrismaModel>>, 'path'>>,
+        Required<JsonNullableFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<JsonNullableFilterBase<$PrismaModel>>, 'path'>>
+
+  export type JsonNullableFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string[]
+    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+  }
 
   export type CompanyNullableScalarRelationFilter = {
     is?: CompanyWhereInput | null
@@ -14708,6 +16106,7 @@ export namespace Prisma {
     companyId?: SortOrder
     mailsTagsIgnored?: SortOrder
     dmNotification?: SortOrder
+    token?: SortOrder
   }
 
   export type UserAvgOrderByAggregateInput = {
@@ -14815,10 +16214,46 @@ export namespace Prisma {
     _min?: NestedBoolFilter<$PrismaModel>
     _max?: NestedBoolFilter<$PrismaModel>
   }
+  export type JsonNullableWithAggregatesFilter<$PrismaModel = never> =
+    | PatchUndefined<
+        Either<Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, 'path'>>,
+        Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, 'path'>>
+
+  export type JsonNullableWithAggregatesFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string[]
+    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedJsonNullableFilter<$PrismaModel>
+    _max?: NestedJsonNullableFilter<$PrismaModel>
+  }
 
   export type UserScalarRelationFilter = {
     is?: UserWhereInput
     isNot?: UserWhereInput
+  }
+
+  export type RequisitionListRelationFilter = {
+    every?: RequisitionWhereInput
+    some?: RequisitionWhereInput
+    none?: RequisitionWhereInput
+  }
+
+  export type RequisitionOrderByRelationAggregateInput = {
+    _count?: SortOrder
   }
 
   export type ApplicationCountOrderByAggregateInput = {
@@ -14861,6 +16296,54 @@ export namespace Prisma {
     not?: NestedDateTimeFilter<$PrismaModel> | Date | string
   }
 
+  export type ApplicationScalarRelationFilter = {
+    is?: ApplicationWhereInput
+    isNot?: ApplicationWhereInput
+  }
+
+  export type RequisitionCountOrderByAggregateInput = {
+    id?: SortOrder
+    createdAt?: SortOrder
+    url?: SortOrder
+    applicationId?: SortOrder
+  }
+
+  export type RequisitionAvgOrderByAggregateInput = {
+    id?: SortOrder
+  }
+
+  export type RequisitionMaxOrderByAggregateInput = {
+    id?: SortOrder
+    createdAt?: SortOrder
+    url?: SortOrder
+    applicationId?: SortOrder
+  }
+
+  export type RequisitionMinOrderByAggregateInput = {
+    id?: SortOrder
+    createdAt?: SortOrder
+    url?: SortOrder
+    applicationId?: SortOrder
+  }
+
+  export type RequisitionSumOrderByAggregateInput = {
+    id?: SortOrder
+  }
+
+  export type DateTimeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeWithAggregatesFilter<$PrismaModel> | Date | string
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedDateTimeFilter<$PrismaModel>
+    _max?: NestedDateTimeFilter<$PrismaModel>
+  }
+
   export type LogCountOrderByAggregateInput = {
     id?: SortOrder
     userId?: SortOrder
@@ -14897,20 +16380,6 @@ export namespace Prisma {
   export type LogSumOrderByAggregateInput = {
     id?: SortOrder
     level?: SortOrder
-  }
-
-  export type DateTimeWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeWithAggregatesFilter<$PrismaModel> | Date | string
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedDateTimeFilter<$PrismaModel>
-    _max?: NestedDateTimeFilter<$PrismaModel>
   }
 
   export type CooldownUserIdNameCompoundUniqueInput = {
@@ -15587,12 +17056,72 @@ export namespace Prisma {
     connect?: UserWhereUniqueInput
   }
 
+  export type RequisitionCreateNestedManyWithoutApplicationInput = {
+    create?: XOR<RequisitionCreateWithoutApplicationInput, RequisitionUncheckedCreateWithoutApplicationInput> | RequisitionCreateWithoutApplicationInput[] | RequisitionUncheckedCreateWithoutApplicationInput[]
+    connectOrCreate?: RequisitionCreateOrConnectWithoutApplicationInput | RequisitionCreateOrConnectWithoutApplicationInput[]
+    createMany?: RequisitionCreateManyApplicationInputEnvelope
+    connect?: RequisitionWhereUniqueInput | RequisitionWhereUniqueInput[]
+  }
+
+  export type RequisitionUncheckedCreateNestedManyWithoutApplicationInput = {
+    create?: XOR<RequisitionCreateWithoutApplicationInput, RequisitionUncheckedCreateWithoutApplicationInput> | RequisitionCreateWithoutApplicationInput[] | RequisitionUncheckedCreateWithoutApplicationInput[]
+    connectOrCreate?: RequisitionCreateOrConnectWithoutApplicationInput | RequisitionCreateOrConnectWithoutApplicationInput[]
+    createMany?: RequisitionCreateManyApplicationInputEnvelope
+    connect?: RequisitionWhereUniqueInput | RequisitionWhereUniqueInput[]
+  }
+
   export type UserUpdateOneRequiredWithoutApplicationsNestedInput = {
     create?: XOR<UserCreateWithoutApplicationsInput, UserUncheckedCreateWithoutApplicationsInput>
     connectOrCreate?: UserCreateOrConnectWithoutApplicationsInput
     upsert?: UserUpsertWithoutApplicationsInput
     connect?: UserWhereUniqueInput
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutApplicationsInput, UserUpdateWithoutApplicationsInput>, UserUncheckedUpdateWithoutApplicationsInput>
+  }
+
+  export type RequisitionUpdateManyWithoutApplicationNestedInput = {
+    create?: XOR<RequisitionCreateWithoutApplicationInput, RequisitionUncheckedCreateWithoutApplicationInput> | RequisitionCreateWithoutApplicationInput[] | RequisitionUncheckedCreateWithoutApplicationInput[]
+    connectOrCreate?: RequisitionCreateOrConnectWithoutApplicationInput | RequisitionCreateOrConnectWithoutApplicationInput[]
+    upsert?: RequisitionUpsertWithWhereUniqueWithoutApplicationInput | RequisitionUpsertWithWhereUniqueWithoutApplicationInput[]
+    createMany?: RequisitionCreateManyApplicationInputEnvelope
+    set?: RequisitionWhereUniqueInput | RequisitionWhereUniqueInput[]
+    disconnect?: RequisitionWhereUniqueInput | RequisitionWhereUniqueInput[]
+    delete?: RequisitionWhereUniqueInput | RequisitionWhereUniqueInput[]
+    connect?: RequisitionWhereUniqueInput | RequisitionWhereUniqueInput[]
+    update?: RequisitionUpdateWithWhereUniqueWithoutApplicationInput | RequisitionUpdateWithWhereUniqueWithoutApplicationInput[]
+    updateMany?: RequisitionUpdateManyWithWhereWithoutApplicationInput | RequisitionUpdateManyWithWhereWithoutApplicationInput[]
+    deleteMany?: RequisitionScalarWhereInput | RequisitionScalarWhereInput[]
+  }
+
+  export type RequisitionUncheckedUpdateManyWithoutApplicationNestedInput = {
+    create?: XOR<RequisitionCreateWithoutApplicationInput, RequisitionUncheckedCreateWithoutApplicationInput> | RequisitionCreateWithoutApplicationInput[] | RequisitionUncheckedCreateWithoutApplicationInput[]
+    connectOrCreate?: RequisitionCreateOrConnectWithoutApplicationInput | RequisitionCreateOrConnectWithoutApplicationInput[]
+    upsert?: RequisitionUpsertWithWhereUniqueWithoutApplicationInput | RequisitionUpsertWithWhereUniqueWithoutApplicationInput[]
+    createMany?: RequisitionCreateManyApplicationInputEnvelope
+    set?: RequisitionWhereUniqueInput | RequisitionWhereUniqueInput[]
+    disconnect?: RequisitionWhereUniqueInput | RequisitionWhereUniqueInput[]
+    delete?: RequisitionWhereUniqueInput | RequisitionWhereUniqueInput[]
+    connect?: RequisitionWhereUniqueInput | RequisitionWhereUniqueInput[]
+    update?: RequisitionUpdateWithWhereUniqueWithoutApplicationInput | RequisitionUpdateWithWhereUniqueWithoutApplicationInput[]
+    updateMany?: RequisitionUpdateManyWithWhereWithoutApplicationInput | RequisitionUpdateManyWithWhereWithoutApplicationInput[]
+    deleteMany?: RequisitionScalarWhereInput | RequisitionScalarWhereInput[]
+  }
+
+  export type ApplicationCreateNestedOneWithoutRequisitionsInput = {
+    create?: XOR<ApplicationCreateWithoutRequisitionsInput, ApplicationUncheckedCreateWithoutRequisitionsInput>
+    connectOrCreate?: ApplicationCreateOrConnectWithoutRequisitionsInput
+    connect?: ApplicationWhereUniqueInput
+  }
+
+  export type DateTimeFieldUpdateOperationsInput = {
+    set?: Date | string
+  }
+
+  export type ApplicationUpdateOneRequiredWithoutRequisitionsNestedInput = {
+    create?: XOR<ApplicationCreateWithoutRequisitionsInput, ApplicationUncheckedCreateWithoutRequisitionsInput>
+    connectOrCreate?: ApplicationCreateOrConnectWithoutRequisitionsInput
+    upsert?: ApplicationUpsertWithoutRequisitionsInput
+    connect?: ApplicationWhereUniqueInput
+    update?: XOR<XOR<ApplicationUpdateToOneWithWhereWithoutRequisitionsInput, ApplicationUpdateWithoutRequisitionsInput>, ApplicationUncheckedUpdateWithoutRequisitionsInput>
   }
 
   export type LogCreatetagsInput = {
@@ -15603,10 +17132,6 @@ export namespace Prisma {
     create?: XOR<UserCreateWithoutLogsInput, UserUncheckedCreateWithoutLogsInput>
     connectOrCreate?: UserCreateOrConnectWithoutLogsInput
     connect?: UserWhereUniqueInput
-  }
-
-  export type DateTimeFieldUpdateOperationsInput = {
-    set?: Date | string
   }
 
   export type LogUpdatetagsInput = {
@@ -16018,6 +17543,29 @@ export namespace Prisma {
     _min?: NestedBoolFilter<$PrismaModel>
     _max?: NestedBoolFilter<$PrismaModel>
   }
+  export type NestedJsonNullableFilter<$PrismaModel = never> =
+    | PatchUndefined<
+        Either<Required<NestedJsonNullableFilterBase<$PrismaModel>>, Exclude<keyof Required<NestedJsonNullableFilterBase<$PrismaModel>>, 'path'>>,
+        Required<NestedJsonNullableFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<NestedJsonNullableFilterBase<$PrismaModel>>, 'path'>>
+
+  export type NestedJsonNullableFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string[]
+    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+  }
 
   export type NestedDateTimeFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
@@ -16251,12 +17799,14 @@ export namespace Prisma {
     id: string
     money?: Decimal | DecimalJsLike | number | string
     token: string
+    requisitions?: RequisitionCreateNestedManyWithoutApplicationInput
   }
 
   export type ApplicationUncheckedCreateWithoutOwnerInput = {
     id: string
     money?: Decimal | DecimalJsLike | number | string
     token: string
+    requisitions?: RequisitionUncheckedCreateNestedManyWithoutApplicationInput
   }
 
   export type ApplicationCreateOrConnectWithoutOwnerInput = {
@@ -16459,6 +18009,7 @@ export namespace Prisma {
     xp?: number
     mailsTagsIgnored?: UserCreatemailsTagsIgnoredInput | string[]
     dmNotification?: boolean
+    token?: NullableJsonNullValueInput | InputJsonValue
     company?: CompanyCreateNestedOneWithoutWorkersInput
     logs?: LogCreateNestedManyWithoutUserInput
     cooldowns?: CooldownCreateNestedManyWithoutUserInput
@@ -16475,6 +18026,7 @@ export namespace Prisma {
     companyId?: number | null
     mailsTagsIgnored?: UserCreatemailsTagsIgnoredInput | string[]
     dmNotification?: boolean
+    token?: NullableJsonNullValueInput | InputJsonValue
     logs?: LogUncheckedCreateNestedManyWithoutUserInput
     cooldowns?: CooldownUncheckedCreateNestedManyWithoutUserInput
     stocks?: StockHoldingUncheckedCreateNestedManyWithoutUserInput
@@ -16485,6 +18037,27 @@ export namespace Prisma {
   export type UserCreateOrConnectWithoutApplicationsInput = {
     where: UserWhereUniqueInput
     create: XOR<UserCreateWithoutApplicationsInput, UserUncheckedCreateWithoutApplicationsInput>
+  }
+
+  export type RequisitionCreateWithoutApplicationInput = {
+    createdAt?: Date | string
+    url: string
+  }
+
+  export type RequisitionUncheckedCreateWithoutApplicationInput = {
+    id?: number
+    createdAt?: Date | string
+    url: string
+  }
+
+  export type RequisitionCreateOrConnectWithoutApplicationInput = {
+    where: RequisitionWhereUniqueInput
+    create: XOR<RequisitionCreateWithoutApplicationInput, RequisitionUncheckedCreateWithoutApplicationInput>
+  }
+
+  export type RequisitionCreateManyApplicationInputEnvelope = {
+    data: RequisitionCreateManyApplicationInput | RequisitionCreateManyApplicationInput[]
+    skipDuplicates?: boolean
   }
 
   export type UserUpsertWithoutApplicationsInput = {
@@ -16505,6 +18078,7 @@ export namespace Prisma {
     xp?: IntFieldUpdateOperationsInput | number
     mailsTagsIgnored?: UserUpdatemailsTagsIgnoredInput | string[]
     dmNotification?: BoolFieldUpdateOperationsInput | boolean
+    token?: NullableJsonNullValueInput | InputJsonValue
     company?: CompanyUpdateOneWithoutWorkersNestedInput
     logs?: LogUpdateManyWithoutUserNestedInput
     cooldowns?: CooldownUpdateManyWithoutUserNestedInput
@@ -16521,11 +18095,82 @@ export namespace Prisma {
     companyId?: NullableIntFieldUpdateOperationsInput | number | null
     mailsTagsIgnored?: UserUpdatemailsTagsIgnoredInput | string[]
     dmNotification?: BoolFieldUpdateOperationsInput | boolean
+    token?: NullableJsonNullValueInput | InputJsonValue
     logs?: LogUncheckedUpdateManyWithoutUserNestedInput
     cooldowns?: CooldownUncheckedUpdateManyWithoutUserNestedInput
     stocks?: StockHoldingUncheckedUpdateManyWithoutUserNestedInput
     mails?: MailsUncheckedUpdateManyWithoutUserNestedInput
     sendedMails?: MailsUncheckedUpdateManyWithoutWhoSendUserNestedInput
+  }
+
+  export type RequisitionUpsertWithWhereUniqueWithoutApplicationInput = {
+    where: RequisitionWhereUniqueInput
+    update: XOR<RequisitionUpdateWithoutApplicationInput, RequisitionUncheckedUpdateWithoutApplicationInput>
+    create: XOR<RequisitionCreateWithoutApplicationInput, RequisitionUncheckedCreateWithoutApplicationInput>
+  }
+
+  export type RequisitionUpdateWithWhereUniqueWithoutApplicationInput = {
+    where: RequisitionWhereUniqueInput
+    data: XOR<RequisitionUpdateWithoutApplicationInput, RequisitionUncheckedUpdateWithoutApplicationInput>
+  }
+
+  export type RequisitionUpdateManyWithWhereWithoutApplicationInput = {
+    where: RequisitionScalarWhereInput
+    data: XOR<RequisitionUpdateManyMutationInput, RequisitionUncheckedUpdateManyWithoutApplicationInput>
+  }
+
+  export type RequisitionScalarWhereInput = {
+    AND?: RequisitionScalarWhereInput | RequisitionScalarWhereInput[]
+    OR?: RequisitionScalarWhereInput[]
+    NOT?: RequisitionScalarWhereInput | RequisitionScalarWhereInput[]
+    id?: IntFilter<"Requisition"> | number
+    createdAt?: DateTimeFilter<"Requisition"> | Date | string
+    url?: StringFilter<"Requisition"> | string
+    applicationId?: StringFilter<"Requisition"> | string
+  }
+
+  export type ApplicationCreateWithoutRequisitionsInput = {
+    id: string
+    money?: Decimal | DecimalJsLike | number | string
+    token: string
+    owner: UserCreateNestedOneWithoutApplicationsInput
+  }
+
+  export type ApplicationUncheckedCreateWithoutRequisitionsInput = {
+    id: string
+    money?: Decimal | DecimalJsLike | number | string
+    token: string
+    ownerId: string
+  }
+
+  export type ApplicationCreateOrConnectWithoutRequisitionsInput = {
+    where: ApplicationWhereUniqueInput
+    create: XOR<ApplicationCreateWithoutRequisitionsInput, ApplicationUncheckedCreateWithoutRequisitionsInput>
+  }
+
+  export type ApplicationUpsertWithoutRequisitionsInput = {
+    update: XOR<ApplicationUpdateWithoutRequisitionsInput, ApplicationUncheckedUpdateWithoutRequisitionsInput>
+    create: XOR<ApplicationCreateWithoutRequisitionsInput, ApplicationUncheckedCreateWithoutRequisitionsInput>
+    where?: ApplicationWhereInput
+  }
+
+  export type ApplicationUpdateToOneWithWhereWithoutRequisitionsInput = {
+    where?: ApplicationWhereInput
+    data: XOR<ApplicationUpdateWithoutRequisitionsInput, ApplicationUncheckedUpdateWithoutRequisitionsInput>
+  }
+
+  export type ApplicationUpdateWithoutRequisitionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    money?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    token?: StringFieldUpdateOperationsInput | string
+    owner?: UserUpdateOneRequiredWithoutApplicationsNestedInput
+  }
+
+  export type ApplicationUncheckedUpdateWithoutRequisitionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    money?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    token?: StringFieldUpdateOperationsInput | string
+    ownerId?: StringFieldUpdateOperationsInput | string
   }
 
   export type UserCreateWithoutLogsInput = {
@@ -16535,6 +18180,7 @@ export namespace Prisma {
     xp?: number
     mailsTagsIgnored?: UserCreatemailsTagsIgnoredInput | string[]
     dmNotification?: boolean
+    token?: NullableJsonNullValueInput | InputJsonValue
     company?: CompanyCreateNestedOneWithoutWorkersInput
     cooldowns?: CooldownCreateNestedManyWithoutUserInput
     stocks?: StockHoldingCreateNestedManyWithoutUserInput
@@ -16551,6 +18197,7 @@ export namespace Prisma {
     companyId?: number | null
     mailsTagsIgnored?: UserCreatemailsTagsIgnoredInput | string[]
     dmNotification?: boolean
+    token?: NullableJsonNullValueInput | InputJsonValue
     cooldowns?: CooldownUncheckedCreateNestedManyWithoutUserInput
     stocks?: StockHoldingUncheckedCreateNestedManyWithoutUserInput
     mails?: MailsUncheckedCreateNestedManyWithoutUserInput
@@ -16581,6 +18228,7 @@ export namespace Prisma {
     xp?: IntFieldUpdateOperationsInput | number
     mailsTagsIgnored?: UserUpdatemailsTagsIgnoredInput | string[]
     dmNotification?: BoolFieldUpdateOperationsInput | boolean
+    token?: NullableJsonNullValueInput | InputJsonValue
     company?: CompanyUpdateOneWithoutWorkersNestedInput
     cooldowns?: CooldownUpdateManyWithoutUserNestedInput
     stocks?: StockHoldingUpdateManyWithoutUserNestedInput
@@ -16597,6 +18245,7 @@ export namespace Prisma {
     companyId?: NullableIntFieldUpdateOperationsInput | number | null
     mailsTagsIgnored?: UserUpdatemailsTagsIgnoredInput | string[]
     dmNotification?: BoolFieldUpdateOperationsInput | boolean
+    token?: NullableJsonNullValueInput | InputJsonValue
     cooldowns?: CooldownUncheckedUpdateManyWithoutUserNestedInput
     stocks?: StockHoldingUncheckedUpdateManyWithoutUserNestedInput
     mails?: MailsUncheckedUpdateManyWithoutUserNestedInput
@@ -16611,6 +18260,7 @@ export namespace Prisma {
     xp?: number
     mailsTagsIgnored?: UserCreatemailsTagsIgnoredInput | string[]
     dmNotification?: boolean
+    token?: NullableJsonNullValueInput | InputJsonValue
     company?: CompanyCreateNestedOneWithoutWorkersInput
     logs?: LogCreateNestedManyWithoutUserInput
     stocks?: StockHoldingCreateNestedManyWithoutUserInput
@@ -16627,6 +18277,7 @@ export namespace Prisma {
     companyId?: number | null
     mailsTagsIgnored?: UserCreatemailsTagsIgnoredInput | string[]
     dmNotification?: boolean
+    token?: NullableJsonNullValueInput | InputJsonValue
     logs?: LogUncheckedCreateNestedManyWithoutUserInput
     stocks?: StockHoldingUncheckedCreateNestedManyWithoutUserInput
     mails?: MailsUncheckedCreateNestedManyWithoutUserInput
@@ -16657,6 +18308,7 @@ export namespace Prisma {
     xp?: IntFieldUpdateOperationsInput | number
     mailsTagsIgnored?: UserUpdatemailsTagsIgnoredInput | string[]
     dmNotification?: BoolFieldUpdateOperationsInput | boolean
+    token?: NullableJsonNullValueInput | InputJsonValue
     company?: CompanyUpdateOneWithoutWorkersNestedInput
     logs?: LogUpdateManyWithoutUserNestedInput
     stocks?: StockHoldingUpdateManyWithoutUserNestedInput
@@ -16673,6 +18325,7 @@ export namespace Prisma {
     companyId?: NullableIntFieldUpdateOperationsInput | number | null
     mailsTagsIgnored?: UserUpdatemailsTagsIgnoredInput | string[]
     dmNotification?: BoolFieldUpdateOperationsInput | boolean
+    token?: NullableJsonNullValueInput | InputJsonValue
     logs?: LogUncheckedUpdateManyWithoutUserNestedInput
     stocks?: StockHoldingUncheckedUpdateManyWithoutUserNestedInput
     mails?: MailsUncheckedUpdateManyWithoutUserNestedInput
@@ -16687,6 +18340,7 @@ export namespace Prisma {
     xp?: number
     mailsTagsIgnored?: UserCreatemailsTagsIgnoredInput | string[]
     dmNotification?: boolean
+    token?: NullableJsonNullValueInput | InputJsonValue
     logs?: LogCreateNestedManyWithoutUserInput
     cooldowns?: CooldownCreateNestedManyWithoutUserInput
     stocks?: StockHoldingCreateNestedManyWithoutUserInput
@@ -16702,6 +18356,7 @@ export namespace Prisma {
     xp?: number
     mailsTagsIgnored?: UserCreatemailsTagsIgnoredInput | string[]
     dmNotification?: boolean
+    token?: NullableJsonNullValueInput | InputJsonValue
     logs?: LogUncheckedCreateNestedManyWithoutUserInput
     cooldowns?: CooldownUncheckedCreateNestedManyWithoutUserInput
     stocks?: StockHoldingUncheckedCreateNestedManyWithoutUserInput
@@ -16747,6 +18402,7 @@ export namespace Prisma {
     companyId?: IntNullableFilter<"User"> | number | null
     mailsTagsIgnored?: StringNullableListFilter<"User">
     dmNotification?: BoolFilter<"User"> | boolean
+    token?: JsonNullableFilter<"User">
   }
 
   export type StockHistoryCreateWithoutStockInput = {
@@ -16894,6 +18550,7 @@ export namespace Prisma {
     xp?: number
     mailsTagsIgnored?: UserCreatemailsTagsIgnoredInput | string[]
     dmNotification?: boolean
+    token?: NullableJsonNullValueInput | InputJsonValue
     company?: CompanyCreateNestedOneWithoutWorkersInput
     logs?: LogCreateNestedManyWithoutUserInput
     cooldowns?: CooldownCreateNestedManyWithoutUserInput
@@ -16910,6 +18567,7 @@ export namespace Prisma {
     companyId?: number | null
     mailsTagsIgnored?: UserCreatemailsTagsIgnoredInput | string[]
     dmNotification?: boolean
+    token?: NullableJsonNullValueInput | InputJsonValue
     logs?: LogUncheckedCreateNestedManyWithoutUserInput
     cooldowns?: CooldownUncheckedCreateNestedManyWithoutUserInput
     mails?: MailsUncheckedCreateNestedManyWithoutUserInput
@@ -16964,6 +18622,7 @@ export namespace Prisma {
     xp?: IntFieldUpdateOperationsInput | number
     mailsTagsIgnored?: UserUpdatemailsTagsIgnoredInput | string[]
     dmNotification?: BoolFieldUpdateOperationsInput | boolean
+    token?: NullableJsonNullValueInput | InputJsonValue
     company?: CompanyUpdateOneWithoutWorkersNestedInput
     logs?: LogUpdateManyWithoutUserNestedInput
     cooldowns?: CooldownUpdateManyWithoutUserNestedInput
@@ -16980,6 +18639,7 @@ export namespace Prisma {
     companyId?: NullableIntFieldUpdateOperationsInput | number | null
     mailsTagsIgnored?: UserUpdatemailsTagsIgnoredInput | string[]
     dmNotification?: BoolFieldUpdateOperationsInput | boolean
+    token?: NullableJsonNullValueInput | InputJsonValue
     logs?: LogUncheckedUpdateManyWithoutUserNestedInput
     cooldowns?: CooldownUncheckedUpdateManyWithoutUserNestedInput
     mails?: MailsUncheckedUpdateManyWithoutUserNestedInput
@@ -17024,6 +18684,7 @@ export namespace Prisma {
     xp?: number
     mailsTagsIgnored?: UserCreatemailsTagsIgnoredInput | string[]
     dmNotification?: boolean
+    token?: NullableJsonNullValueInput | InputJsonValue
     company?: CompanyCreateNestedOneWithoutWorkersInput
     logs?: LogCreateNestedManyWithoutUserInput
     cooldowns?: CooldownCreateNestedManyWithoutUserInput
@@ -17040,6 +18701,7 @@ export namespace Prisma {
     companyId?: number | null
     mailsTagsIgnored?: UserCreatemailsTagsIgnoredInput | string[]
     dmNotification?: boolean
+    token?: NullableJsonNullValueInput | InputJsonValue
     logs?: LogUncheckedCreateNestedManyWithoutUserInput
     cooldowns?: CooldownUncheckedCreateNestedManyWithoutUserInput
     stocks?: StockHoldingUncheckedCreateNestedManyWithoutUserInput
@@ -17059,6 +18721,7 @@ export namespace Prisma {
     xp?: number
     mailsTagsIgnored?: UserCreatemailsTagsIgnoredInput | string[]
     dmNotification?: boolean
+    token?: NullableJsonNullValueInput | InputJsonValue
     company?: CompanyCreateNestedOneWithoutWorkersInput
     logs?: LogCreateNestedManyWithoutUserInput
     cooldowns?: CooldownCreateNestedManyWithoutUserInput
@@ -17075,6 +18738,7 @@ export namespace Prisma {
     companyId?: number | null
     mailsTagsIgnored?: UserCreatemailsTagsIgnoredInput | string[]
     dmNotification?: boolean
+    token?: NullableJsonNullValueInput | InputJsonValue
     logs?: LogUncheckedCreateNestedManyWithoutUserInput
     cooldowns?: CooldownUncheckedCreateNestedManyWithoutUserInput
     stocks?: StockHoldingUncheckedCreateNestedManyWithoutUserInput
@@ -17105,6 +18769,7 @@ export namespace Prisma {
     xp?: IntFieldUpdateOperationsInput | number
     mailsTagsIgnored?: UserUpdatemailsTagsIgnoredInput | string[]
     dmNotification?: BoolFieldUpdateOperationsInput | boolean
+    token?: NullableJsonNullValueInput | InputJsonValue
     company?: CompanyUpdateOneWithoutWorkersNestedInput
     logs?: LogUpdateManyWithoutUserNestedInput
     cooldowns?: CooldownUpdateManyWithoutUserNestedInput
@@ -17121,6 +18786,7 @@ export namespace Prisma {
     companyId?: NullableIntFieldUpdateOperationsInput | number | null
     mailsTagsIgnored?: UserUpdatemailsTagsIgnoredInput | string[]
     dmNotification?: BoolFieldUpdateOperationsInput | boolean
+    token?: NullableJsonNullValueInput | InputJsonValue
     logs?: LogUncheckedUpdateManyWithoutUserNestedInput
     cooldowns?: CooldownUncheckedUpdateManyWithoutUserNestedInput
     stocks?: StockHoldingUncheckedUpdateManyWithoutUserNestedInput
@@ -17146,6 +18812,7 @@ export namespace Prisma {
     xp?: IntFieldUpdateOperationsInput | number
     mailsTagsIgnored?: UserUpdatemailsTagsIgnoredInput | string[]
     dmNotification?: BoolFieldUpdateOperationsInput | boolean
+    token?: NullableJsonNullValueInput | InputJsonValue
     company?: CompanyUpdateOneWithoutWorkersNestedInput
     logs?: LogUpdateManyWithoutUserNestedInput
     cooldowns?: CooldownUpdateManyWithoutUserNestedInput
@@ -17162,6 +18829,7 @@ export namespace Prisma {
     companyId?: NullableIntFieldUpdateOperationsInput | number | null
     mailsTagsIgnored?: UserUpdatemailsTagsIgnoredInput | string[]
     dmNotification?: BoolFieldUpdateOperationsInput | boolean
+    token?: NullableJsonNullValueInput | InputJsonValue
     logs?: LogUncheckedUpdateManyWithoutUserNestedInput
     cooldowns?: CooldownUncheckedUpdateManyWithoutUserNestedInput
     stocks?: StockHoldingUncheckedUpdateManyWithoutUserNestedInput
@@ -17334,18 +19002,43 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     money?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     token?: StringFieldUpdateOperationsInput | string
+    requisitions?: RequisitionUpdateManyWithoutApplicationNestedInput
   }
 
   export type ApplicationUncheckedUpdateWithoutOwnerInput = {
     id?: StringFieldUpdateOperationsInput | string
     money?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     token?: StringFieldUpdateOperationsInput | string
+    requisitions?: RequisitionUncheckedUpdateManyWithoutApplicationNestedInput
   }
 
   export type ApplicationUncheckedUpdateManyWithoutOwnerInput = {
     id?: StringFieldUpdateOperationsInput | string
     money?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     token?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type RequisitionCreateManyApplicationInput = {
+    id?: number
+    createdAt?: Date | string
+    url: string
+  }
+
+  export type RequisitionUpdateWithoutApplicationInput = {
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    url?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type RequisitionUncheckedUpdateWithoutApplicationInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    url?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type RequisitionUncheckedUpdateManyWithoutApplicationInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    url?: StringFieldUpdateOperationsInput | string
   }
 
   export type UserCreateManyCompanyInput = {
@@ -17355,6 +19048,7 @@ export namespace Prisma {
     xp?: number
     mailsTagsIgnored?: UserCreatemailsTagsIgnoredInput | string[]
     dmNotification?: boolean
+    token?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type UserUpdateWithoutCompanyInput = {
@@ -17364,6 +19058,7 @@ export namespace Prisma {
     xp?: IntFieldUpdateOperationsInput | number
     mailsTagsIgnored?: UserUpdatemailsTagsIgnoredInput | string[]
     dmNotification?: BoolFieldUpdateOperationsInput | boolean
+    token?: NullableJsonNullValueInput | InputJsonValue
     logs?: LogUpdateManyWithoutUserNestedInput
     cooldowns?: CooldownUpdateManyWithoutUserNestedInput
     stocks?: StockHoldingUpdateManyWithoutUserNestedInput
@@ -17379,6 +19074,7 @@ export namespace Prisma {
     xp?: IntFieldUpdateOperationsInput | number
     mailsTagsIgnored?: UserUpdatemailsTagsIgnoredInput | string[]
     dmNotification?: BoolFieldUpdateOperationsInput | boolean
+    token?: NullableJsonNullValueInput | InputJsonValue
     logs?: LogUncheckedUpdateManyWithoutUserNestedInput
     cooldowns?: CooldownUncheckedUpdateManyWithoutUserNestedInput
     stocks?: StockHoldingUncheckedUpdateManyWithoutUserNestedInput
@@ -17394,6 +19090,7 @@ export namespace Prisma {
     xp?: IntFieldUpdateOperationsInput | number
     mailsTagsIgnored?: UserUpdatemailsTagsIgnoredInput | string[]
     dmNotification?: BoolFieldUpdateOperationsInput | boolean
+    token?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type StockHistoryCreateManyStockInput = {

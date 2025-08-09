@@ -4,6 +4,7 @@
 /discloud
 /deprecated
 /node_modules
+/prisma/prisma
 
 # Files
 /.env

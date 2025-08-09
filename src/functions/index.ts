@@ -8,3 +8,6 @@ export * from './logic/events/stocksVariants.js';
 export * from './logic/index.js';
 export * from './utils/index.js';
 export * from './handlers/error.js'
+export * from './api/index.js'
+export * from './api/generateToken.js'
+export * from './api/auth.js'

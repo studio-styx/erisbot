@@ -4,10 +4,15 @@ import cors from "@fastify/cors";
 import ck from "chalk";
 import fastify from "fastify";
 import crypto from "node:crypto";
-import { registerRoutes } from "./routes/index.js";
-import { serverErrorHandler } from "#functions";
+import { jwtReservedToken, serverErrorHandler } from "#functions";
 import { prisma } from "#database";
 import { StatusCodes } from "http-status-codes";
+import fastifyAutoload from "@fastify/autoload";
+import path from "node:path";
+import cookie from "@fastify/cookie";
+import jwt from "jsonwebtoken"
+
+export const reservedToken = crypto.randomBytes(16).toString("hex")
 
 createEvent({
     name: "Start Fastify Server",
@@ -17,13 +22,38 @@ createEvent({
 
         // CORS e tratamento de erros
         app.register(cors, { origin: "*" });
+        app.register(fastifyAutoload, {
+            dir: path.join(import.meta.dirname, "routes"),
+            routeParams: true,
+            options: client
+        })
         app.setErrorHandler(serverErrorHandler);
 
         // Adiciona tipagem customizada (opcional)
         app.decorateRequest("application", null);
 
+        app.register(cookie, {
+            secret: process.env.COOKIE_SECRET || reservedToken,
+            parseOptions: {}
+        });
+
         // Middleware de autenticação
         app.addHook("onRequest", async (req, res) => {
+            if (req.url.startsWith("/auth")) return;
+            if (req.url.startsWith("/public")) {
+                const token = req.cookies.auth;
+                if (!token) return res.status(StatusCodes.UNAUTHORIZED).send({ error: "Not logged in" });
+                const secret = process.env.JWT_SECRET || (typeof jwtReservedToken === "function" ? jwtReservedToken : jwtReservedToken);
+                const decoded = jwt.verify(token, secret) as jwt.JwtPayload;
+                const userId = decoded.sub;
+
+                if (!userId) {
+                    return res.status(StatusCodes.UNAUTHORIZED).send({ error: "Invalid token" });
+                }
+
+                req.userId = userId;
+                return;
+            }
             const token = req.headers.authorization;
 
             if (!token) {
@@ -42,10 +72,15 @@ createEvent({
 
             // Armazena no request para ser usado nas rotas
             req.application = { data: application, tokenHash: hash256 };
-        });
 
-        // Registra rotas com acesso ao `req.application`
-        registerRoutes(app, client);
+            // roda em paralelo
+            prisma.requisition.create({
+                data: {
+                    applicationId: application.id,
+                    url: req.url,
+                }
+            })
+        });
 
         // Inicia o servidor
         const port = env.SERVER_PORT ?? 3000;
