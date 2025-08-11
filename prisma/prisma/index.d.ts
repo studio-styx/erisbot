@@ -64,6 +64,11 @@ export type StockHolding = $Result.DefaultSelection<Prisma.$StockHoldingPayload>
  */
 export type GuildSettings = $Result.DefaultSelection<Prisma.$GuildSettingsPayload>
 /**
+ * Model GuildMember
+ * 
+ */
+export type GuildMember = $Result.DefaultSelection<Prisma.$GuildMemberPayload>
+/**
  * Model Mails
  * 
  */
@@ -293,6 +298,16 @@ export class PrismaClient<
     * ```
     */
   get guildSettings(): Prisma.GuildSettingsDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.guildMember`: Exposes CRUD operations for the **GuildMember** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more GuildMembers
+    * const guildMembers = await prisma.guildMember.findMany()
+    * ```
+    */
+  get guildMember(): Prisma.GuildMemberDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.mails`: Exposes CRUD operations for the **Mails** model.
@@ -753,6 +768,7 @@ export namespace Prisma {
     StockHistory: 'StockHistory',
     StockHolding: 'StockHolding',
     GuildSettings: 'GuildSettings',
+    GuildMember: 'GuildMember',
     Mails: 'Mails'
   };
 
@@ -772,7 +788,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "application" | "requisition" | "log" | "cooldown" | "company" | "stock" | "stockHistory" | "stockHolding" | "guildSettings" | "mails"
+      modelProps: "user" | "application" | "requisition" | "log" | "cooldown" | "company" | "stock" | "stockHistory" | "stockHolding" | "guildSettings" | "guildMember" | "mails"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1516,6 +1532,80 @@ export namespace Prisma {
           }
         }
       }
+      GuildMember: {
+        payload: Prisma.$GuildMemberPayload<ExtArgs>
+        fields: Prisma.GuildMemberFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.GuildMemberFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GuildMemberPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.GuildMemberFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GuildMemberPayload>
+          }
+          findFirst: {
+            args: Prisma.GuildMemberFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GuildMemberPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.GuildMemberFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GuildMemberPayload>
+          }
+          findMany: {
+            args: Prisma.GuildMemberFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GuildMemberPayload>[]
+          }
+          create: {
+            args: Prisma.GuildMemberCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GuildMemberPayload>
+          }
+          createMany: {
+            args: Prisma.GuildMemberCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.GuildMemberCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GuildMemberPayload>[]
+          }
+          delete: {
+            args: Prisma.GuildMemberDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GuildMemberPayload>
+          }
+          update: {
+            args: Prisma.GuildMemberUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GuildMemberPayload>
+          }
+          deleteMany: {
+            args: Prisma.GuildMemberDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.GuildMemberUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.GuildMemberUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GuildMemberPayload>[]
+          }
+          upsert: {
+            args: Prisma.GuildMemberUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GuildMemberPayload>
+          }
+          aggregate: {
+            args: Prisma.GuildMemberAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateGuildMember>
+          }
+          groupBy: {
+            args: Prisma.GuildMemberGroupByArgs<ExtArgs>
+            result: $Utils.Optional<GuildMemberGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.GuildMemberCountArgs<ExtArgs>
+            result: $Utils.Optional<GuildMemberCountAggregateOutputType> | number
+          }
+        }
+      }
       Mails: {
         payload: Prisma.$MailsPayload<ExtArgs>
         fields: Prisma.MailsFieldRefs
@@ -1692,6 +1782,7 @@ export namespace Prisma {
     stockHistory?: StockHistoryOmit
     stockHolding?: StockHoldingOmit
     guildSettings?: GuildSettingsOmit
+    guildMember?: GuildMemberOmit
     mails?: MailsOmit
   }
 
@@ -1962,6 +2053,37 @@ export namespace Prisma {
    */
   export type StockCountOutputTypeCountHoldersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: StockHoldingWhereInput
+  }
+
+
+  /**
+   * Count Type GuildSettingsCountOutputType
+   */
+
+  export type GuildSettingsCountOutputType = {
+    members: number
+  }
+
+  export type GuildSettingsCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    members?: boolean | GuildSettingsCountOutputTypeCountMembersArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * GuildSettingsCountOutputType without action
+   */
+  export type GuildSettingsCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GuildSettingsCountOutputType
+     */
+    select?: GuildSettingsCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * GuildSettingsCountOutputType without action
+   */
+  export type GuildSettingsCountOutputTypeCountMembersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: GuildMemberWhereInput
   }
 
 
@@ -12166,8 +12288,18 @@ export namespace Prisma {
 
   export type AggregateGuildSettings = {
     _count: GuildSettingsCountAggregateOutputType | null
+    _avg: GuildSettingsAvgAggregateOutputType | null
+    _sum: GuildSettingsSumAggregateOutputType | null
     _min: GuildSettingsMinAggregateOutputType | null
     _max: GuildSettingsMaxAggregateOutputType | null
+  }
+
+  export type GuildSettingsAvgAggregateOutputType = {
+    difficulty: number | null
+  }
+
+  export type GuildSettingsSumAggregateOutputType = {
+    difficulty: number | null
   }
 
   export type GuildSettingsMinAggregateOutputType = {
@@ -12175,6 +12307,8 @@ export namespace Prisma {
     chatBotEnabled: boolean | null
     channelsCommandDisabledIsHabilited: boolean | null
     channelsCommandEnabledIsHabilited: boolean | null
+    xpSystemEnabled: boolean | null
+    difficulty: number | null
   }
 
   export type GuildSettingsMaxAggregateOutputType = {
@@ -12182,6 +12316,8 @@ export namespace Prisma {
     chatBotEnabled: boolean | null
     channelsCommandDisabledIsHabilited: boolean | null
     channelsCommandEnabledIsHabilited: boolean | null
+    xpSystemEnabled: boolean | null
+    difficulty: number | null
   }
 
   export type GuildSettingsCountAggregateOutputType = {
@@ -12192,15 +12328,33 @@ export namespace Prisma {
     channelsCommandDisabledIsHabilited: number
     channelsCommandEnabled: number
     channelsCommandEnabledIsHabilited: number
+    xpSystemEnabled: number
+    difficulty: number
+    rolesXpBonus: number
+    rolesNotWinXp: number
+    channelsXpBonus: number
+    channelsNotWinXp: number
+    warnLevelUp: number
+    levelGrant: number
     _all: number
   }
 
+
+  export type GuildSettingsAvgAggregateInputType = {
+    difficulty?: true
+  }
+
+  export type GuildSettingsSumAggregateInputType = {
+    difficulty?: true
+  }
 
   export type GuildSettingsMinAggregateInputType = {
     id?: true
     chatBotEnabled?: true
     channelsCommandDisabledIsHabilited?: true
     channelsCommandEnabledIsHabilited?: true
+    xpSystemEnabled?: true
+    difficulty?: true
   }
 
   export type GuildSettingsMaxAggregateInputType = {
@@ -12208,6 +12362,8 @@ export namespace Prisma {
     chatBotEnabled?: true
     channelsCommandDisabledIsHabilited?: true
     channelsCommandEnabledIsHabilited?: true
+    xpSystemEnabled?: true
+    difficulty?: true
   }
 
   export type GuildSettingsCountAggregateInputType = {
@@ -12218,6 +12374,14 @@ export namespace Prisma {
     channelsCommandDisabledIsHabilited?: true
     channelsCommandEnabled?: true
     channelsCommandEnabledIsHabilited?: true
+    xpSystemEnabled?: true
+    difficulty?: true
+    rolesXpBonus?: true
+    rolesNotWinXp?: true
+    channelsXpBonus?: true
+    channelsNotWinXp?: true
+    warnLevelUp?: true
+    levelGrant?: true
     _all?: true
   }
 
@@ -12259,6 +12423,18 @@ export namespace Prisma {
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
+     * Select which fields to average
+    **/
+    _avg?: GuildSettingsAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: GuildSettingsSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
      * Select which fields to find the minimum value
     **/
     _min?: GuildSettingsMinAggregateInputType
@@ -12289,6 +12465,8 @@ export namespace Prisma {
     take?: number
     skip?: number
     _count?: GuildSettingsCountAggregateInputType | true
+    _avg?: GuildSettingsAvgAggregateInputType
+    _sum?: GuildSettingsSumAggregateInputType
     _min?: GuildSettingsMinAggregateInputType
     _max?: GuildSettingsMaxAggregateInputType
   }
@@ -12301,7 +12479,17 @@ export namespace Prisma {
     channelsCommandDisabledIsHabilited: boolean
     channelsCommandEnabled: string[]
     channelsCommandEnabledIsHabilited: boolean
+    xpSystemEnabled: boolean
+    difficulty: number
+    rolesXpBonus: JsonValue
+    rolesNotWinXp: string[]
+    channelsXpBonus: JsonValue
+    channelsNotWinXp: string[]
+    warnLevelUp: JsonValue
+    levelGrant: JsonValue
     _count: GuildSettingsCountAggregateOutputType | null
+    _avg: GuildSettingsAvgAggregateOutputType | null
+    _sum: GuildSettingsSumAggregateOutputType | null
     _min: GuildSettingsMinAggregateOutputType | null
     _max: GuildSettingsMaxAggregateOutputType | null
   }
@@ -12328,6 +12516,16 @@ export namespace Prisma {
     channelsCommandDisabledIsHabilited?: boolean
     channelsCommandEnabled?: boolean
     channelsCommandEnabledIsHabilited?: boolean
+    xpSystemEnabled?: boolean
+    difficulty?: boolean
+    rolesXpBonus?: boolean
+    rolesNotWinXp?: boolean
+    channelsXpBonus?: boolean
+    channelsNotWinXp?: boolean
+    warnLevelUp?: boolean
+    levelGrant?: boolean
+    members?: boolean | GuildSettings$membersArgs<ExtArgs>
+    _count?: boolean | GuildSettingsCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["guildSettings"]>
 
   export type GuildSettingsSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -12338,6 +12536,14 @@ export namespace Prisma {
     channelsCommandDisabledIsHabilited?: boolean
     channelsCommandEnabled?: boolean
     channelsCommandEnabledIsHabilited?: boolean
+    xpSystemEnabled?: boolean
+    difficulty?: boolean
+    rolesXpBonus?: boolean
+    rolesNotWinXp?: boolean
+    channelsXpBonus?: boolean
+    channelsNotWinXp?: boolean
+    warnLevelUp?: boolean
+    levelGrant?: boolean
   }, ExtArgs["result"]["guildSettings"]>
 
   export type GuildSettingsSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -12348,6 +12554,14 @@ export namespace Prisma {
     channelsCommandDisabledIsHabilited?: boolean
     channelsCommandEnabled?: boolean
     channelsCommandEnabledIsHabilited?: boolean
+    xpSystemEnabled?: boolean
+    difficulty?: boolean
+    rolesXpBonus?: boolean
+    rolesNotWinXp?: boolean
+    channelsXpBonus?: boolean
+    channelsNotWinXp?: boolean
+    warnLevelUp?: boolean
+    levelGrant?: boolean
   }, ExtArgs["result"]["guildSettings"]>
 
   export type GuildSettingsSelectScalar = {
@@ -12358,13 +12572,29 @@ export namespace Prisma {
     channelsCommandDisabledIsHabilited?: boolean
     channelsCommandEnabled?: boolean
     channelsCommandEnabledIsHabilited?: boolean
+    xpSystemEnabled?: boolean
+    difficulty?: boolean
+    rolesXpBonus?: boolean
+    rolesNotWinXp?: boolean
+    channelsXpBonus?: boolean
+    channelsNotWinXp?: boolean
+    warnLevelUp?: boolean
+    levelGrant?: boolean
   }
 
-  export type GuildSettingsOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "chatBotChannels" | "chatBotEnabled" | "channelsCommandDisabled" | "channelsCommandDisabledIsHabilited" | "channelsCommandEnabled" | "channelsCommandEnabledIsHabilited", ExtArgs["result"]["guildSettings"]>
+  export type GuildSettingsOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "chatBotChannels" | "chatBotEnabled" | "channelsCommandDisabled" | "channelsCommandDisabledIsHabilited" | "channelsCommandEnabled" | "channelsCommandEnabledIsHabilited" | "xpSystemEnabled" | "difficulty" | "rolesXpBonus" | "rolesNotWinXp" | "channelsXpBonus" | "channelsNotWinXp" | "warnLevelUp" | "levelGrant", ExtArgs["result"]["guildSettings"]>
+  export type GuildSettingsInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    members?: boolean | GuildSettings$membersArgs<ExtArgs>
+    _count?: boolean | GuildSettingsCountOutputTypeDefaultArgs<ExtArgs>
+  }
+  export type GuildSettingsIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
+  export type GuildSettingsIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
 
   export type $GuildSettingsPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "GuildSettings"
-    objects: {}
+    objects: {
+      members: Prisma.$GuildMemberPayload<ExtArgs>[]
+    }
     scalars: $Extensions.GetPayloadResult<{
       id: string
       chatBotChannels: string[]
@@ -12373,6 +12603,14 @@ export namespace Prisma {
       channelsCommandDisabledIsHabilited: boolean
       channelsCommandEnabled: string[]
       channelsCommandEnabledIsHabilited: boolean
+      xpSystemEnabled: boolean
+      difficulty: number
+      rolesXpBonus: Prisma.JsonValue
+      rolesNotWinXp: string[]
+      channelsXpBonus: Prisma.JsonValue
+      channelsNotWinXp: string[]
+      warnLevelUp: Prisma.JsonValue
+      levelGrant: Prisma.JsonValue
     }, ExtArgs["result"]["guildSettings"]>
     composites: {}
   }
@@ -12767,6 +13005,7 @@ export namespace Prisma {
    */
   export interface Prisma__GuildSettingsClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
+    members<T extends GuildSettings$membersArgs<ExtArgs> = {}>(args?: Subset<T, GuildSettings$membersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$GuildMemberPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -12803,6 +13042,14 @@ export namespace Prisma {
     readonly channelsCommandDisabledIsHabilited: FieldRef<"GuildSettings", 'Boolean'>
     readonly channelsCommandEnabled: FieldRef<"GuildSettings", 'String[]'>
     readonly channelsCommandEnabledIsHabilited: FieldRef<"GuildSettings", 'Boolean'>
+    readonly xpSystemEnabled: FieldRef<"GuildSettings", 'Boolean'>
+    readonly difficulty: FieldRef<"GuildSettings", 'Float'>
+    readonly rolesXpBonus: FieldRef<"GuildSettings", 'Json'>
+    readonly rolesNotWinXp: FieldRef<"GuildSettings", 'String[]'>
+    readonly channelsXpBonus: FieldRef<"GuildSettings", 'Json'>
+    readonly channelsNotWinXp: FieldRef<"GuildSettings", 'String[]'>
+    readonly warnLevelUp: FieldRef<"GuildSettings", 'Json'>
+    readonly levelGrant: FieldRef<"GuildSettings", 'Json'>
   }
     
 
@@ -12819,6 +13066,10 @@ export namespace Prisma {
      * Omit specific fields from the GuildSettings
      */
     omit?: GuildSettingsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GuildSettingsInclude<ExtArgs> | null
     /**
      * Filter, which GuildSettings to fetch.
      */
@@ -12838,6 +13089,10 @@ export namespace Prisma {
      */
     omit?: GuildSettingsOmit<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GuildSettingsInclude<ExtArgs> | null
+    /**
      * Filter, which GuildSettings to fetch.
      */
     where: GuildSettingsWhereUniqueInput
@@ -12855,6 +13110,10 @@ export namespace Prisma {
      * Omit specific fields from the GuildSettings
      */
     omit?: GuildSettingsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GuildSettingsInclude<ExtArgs> | null
     /**
      * Filter, which GuildSettings to fetch.
      */
@@ -12904,6 +13163,10 @@ export namespace Prisma {
      */
     omit?: GuildSettingsOmit<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GuildSettingsInclude<ExtArgs> | null
+    /**
      * Filter, which GuildSettings to fetch.
      */
     where?: GuildSettingsWhereInput
@@ -12952,6 +13215,10 @@ export namespace Prisma {
      */
     omit?: GuildSettingsOmit<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GuildSettingsInclude<ExtArgs> | null
+    /**
      * Filter, which GuildSettings to fetch.
      */
     where?: GuildSettingsWhereInput
@@ -12994,6 +13261,10 @@ export namespace Prisma {
      * Omit specific fields from the GuildSettings
      */
     omit?: GuildSettingsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GuildSettingsInclude<ExtArgs> | null
     /**
      * The data needed to create a GuildSettings.
      */
@@ -13042,6 +13313,10 @@ export namespace Prisma {
      * Omit specific fields from the GuildSettings
      */
     omit?: GuildSettingsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GuildSettingsInclude<ExtArgs> | null
     /**
      * The data needed to update a GuildSettings.
      */
@@ -13109,6 +13384,10 @@ export namespace Prisma {
      */
     omit?: GuildSettingsOmit<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GuildSettingsInclude<ExtArgs> | null
+    /**
      * The filter to search for the GuildSettings to update in case it exists.
      */
     where: GuildSettingsWhereUniqueInput
@@ -13135,6 +13414,10 @@ export namespace Prisma {
      */
     omit?: GuildSettingsOmit<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GuildSettingsInclude<ExtArgs> | null
+    /**
      * Filter which GuildSettings to delete.
      */
     where: GuildSettingsWhereUniqueInput
@@ -13155,6 +13438,30 @@ export namespace Prisma {
   }
 
   /**
+   * GuildSettings.members
+   */
+  export type GuildSettings$membersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GuildMember
+     */
+    select?: GuildMemberSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the GuildMember
+     */
+    omit?: GuildMemberOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GuildMemberInclude<ExtArgs> | null
+    where?: GuildMemberWhereInput
+    orderBy?: GuildMemberOrderByWithRelationInput | GuildMemberOrderByWithRelationInput[]
+    cursor?: GuildMemberWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: GuildMemberScalarFieldEnum | GuildMemberScalarFieldEnum[]
+  }
+
+  /**
    * GuildSettings without action
    */
   export type GuildSettingsDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -13166,6 +13473,1076 @@ export namespace Prisma {
      * Omit specific fields from the GuildSettings
      */
     omit?: GuildSettingsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GuildSettingsInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model GuildMember
+   */
+
+  export type AggregateGuildMember = {
+    _count: GuildMemberCountAggregateOutputType | null
+    _avg: GuildMemberAvgAggregateOutputType | null
+    _sum: GuildMemberSumAggregateOutputType | null
+    _min: GuildMemberMinAggregateOutputType | null
+    _max: GuildMemberMaxAggregateOutputType | null
+  }
+
+  export type GuildMemberAvgAggregateOutputType = {
+    xp: number | null
+  }
+
+  export type GuildMemberSumAggregateOutputType = {
+    xp: number | null
+  }
+
+  export type GuildMemberMinAggregateOutputType = {
+    id: string | null
+    guildId: string | null
+    xp: number | null
+  }
+
+  export type GuildMemberMaxAggregateOutputType = {
+    id: string | null
+    guildId: string | null
+    xp: number | null
+  }
+
+  export type GuildMemberCountAggregateOutputType = {
+    id: number
+    guildId: number
+    xp: number
+    _all: number
+  }
+
+
+  export type GuildMemberAvgAggregateInputType = {
+    xp?: true
+  }
+
+  export type GuildMemberSumAggregateInputType = {
+    xp?: true
+  }
+
+  export type GuildMemberMinAggregateInputType = {
+    id?: true
+    guildId?: true
+    xp?: true
+  }
+
+  export type GuildMemberMaxAggregateInputType = {
+    id?: true
+    guildId?: true
+    xp?: true
+  }
+
+  export type GuildMemberCountAggregateInputType = {
+    id?: true
+    guildId?: true
+    xp?: true
+    _all?: true
+  }
+
+  export type GuildMemberAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which GuildMember to aggregate.
+     */
+    where?: GuildMemberWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of GuildMembers to fetch.
+     */
+    orderBy?: GuildMemberOrderByWithRelationInput | GuildMemberOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: GuildMemberWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` GuildMembers from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` GuildMembers.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned GuildMembers
+    **/
+    _count?: true | GuildMemberCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: GuildMemberAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: GuildMemberSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: GuildMemberMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: GuildMemberMaxAggregateInputType
+  }
+
+  export type GetGuildMemberAggregateType<T extends GuildMemberAggregateArgs> = {
+        [P in keyof T & keyof AggregateGuildMember]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateGuildMember[P]>
+      : GetScalarType<T[P], AggregateGuildMember[P]>
+  }
+
+
+
+
+  export type GuildMemberGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: GuildMemberWhereInput
+    orderBy?: GuildMemberOrderByWithAggregationInput | GuildMemberOrderByWithAggregationInput[]
+    by: GuildMemberScalarFieldEnum[] | GuildMemberScalarFieldEnum
+    having?: GuildMemberScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: GuildMemberCountAggregateInputType | true
+    _avg?: GuildMemberAvgAggregateInputType
+    _sum?: GuildMemberSumAggregateInputType
+    _min?: GuildMemberMinAggregateInputType
+    _max?: GuildMemberMaxAggregateInputType
+  }
+
+  export type GuildMemberGroupByOutputType = {
+    id: string
+    guildId: string
+    xp: number
+    _count: GuildMemberCountAggregateOutputType | null
+    _avg: GuildMemberAvgAggregateOutputType | null
+    _sum: GuildMemberSumAggregateOutputType | null
+    _min: GuildMemberMinAggregateOutputType | null
+    _max: GuildMemberMaxAggregateOutputType | null
+  }
+
+  type GetGuildMemberGroupByPayload<T extends GuildMemberGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<GuildMemberGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof GuildMemberGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], GuildMemberGroupByOutputType[P]>
+            : GetScalarType<T[P], GuildMemberGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type GuildMemberSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    guildId?: boolean
+    xp?: boolean
+    guild?: boolean | GuildSettingsDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["guildMember"]>
+
+  export type GuildMemberSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    guildId?: boolean
+    xp?: boolean
+    guild?: boolean | GuildSettingsDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["guildMember"]>
+
+  export type GuildMemberSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    guildId?: boolean
+    xp?: boolean
+    guild?: boolean | GuildSettingsDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["guildMember"]>
+
+  export type GuildMemberSelectScalar = {
+    id?: boolean
+    guildId?: boolean
+    xp?: boolean
+  }
+
+  export type GuildMemberOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "guildId" | "xp", ExtArgs["result"]["guildMember"]>
+  export type GuildMemberInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    guild?: boolean | GuildSettingsDefaultArgs<ExtArgs>
+  }
+  export type GuildMemberIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    guild?: boolean | GuildSettingsDefaultArgs<ExtArgs>
+  }
+  export type GuildMemberIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    guild?: boolean | GuildSettingsDefaultArgs<ExtArgs>
+  }
+
+  export type $GuildMemberPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "GuildMember"
+    objects: {
+      guild: Prisma.$GuildSettingsPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      guildId: string
+      xp: number
+    }, ExtArgs["result"]["guildMember"]>
+    composites: {}
+  }
+
+  type GuildMemberGetPayload<S extends boolean | null | undefined | GuildMemberDefaultArgs> = $Result.GetResult<Prisma.$GuildMemberPayload, S>
+
+  type GuildMemberCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<GuildMemberFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: GuildMemberCountAggregateInputType | true
+    }
+
+  export interface GuildMemberDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['GuildMember'], meta: { name: 'GuildMember' } }
+    /**
+     * Find zero or one GuildMember that matches the filter.
+     * @param {GuildMemberFindUniqueArgs} args - Arguments to find a GuildMember
+     * @example
+     * // Get one GuildMember
+     * const guildMember = await prisma.guildMember.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends GuildMemberFindUniqueArgs>(args: SelectSubset<T, GuildMemberFindUniqueArgs<ExtArgs>>): Prisma__GuildMemberClient<$Result.GetResult<Prisma.$GuildMemberPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one GuildMember that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {GuildMemberFindUniqueOrThrowArgs} args - Arguments to find a GuildMember
+     * @example
+     * // Get one GuildMember
+     * const guildMember = await prisma.guildMember.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends GuildMemberFindUniqueOrThrowArgs>(args: SelectSubset<T, GuildMemberFindUniqueOrThrowArgs<ExtArgs>>): Prisma__GuildMemberClient<$Result.GetResult<Prisma.$GuildMemberPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first GuildMember that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {GuildMemberFindFirstArgs} args - Arguments to find a GuildMember
+     * @example
+     * // Get one GuildMember
+     * const guildMember = await prisma.guildMember.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends GuildMemberFindFirstArgs>(args?: SelectSubset<T, GuildMemberFindFirstArgs<ExtArgs>>): Prisma__GuildMemberClient<$Result.GetResult<Prisma.$GuildMemberPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first GuildMember that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {GuildMemberFindFirstOrThrowArgs} args - Arguments to find a GuildMember
+     * @example
+     * // Get one GuildMember
+     * const guildMember = await prisma.guildMember.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends GuildMemberFindFirstOrThrowArgs>(args?: SelectSubset<T, GuildMemberFindFirstOrThrowArgs<ExtArgs>>): Prisma__GuildMemberClient<$Result.GetResult<Prisma.$GuildMemberPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more GuildMembers that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {GuildMemberFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all GuildMembers
+     * const guildMembers = await prisma.guildMember.findMany()
+     * 
+     * // Get first 10 GuildMembers
+     * const guildMembers = await prisma.guildMember.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const guildMemberWithIdOnly = await prisma.guildMember.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends GuildMemberFindManyArgs>(args?: SelectSubset<T, GuildMemberFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$GuildMemberPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a GuildMember.
+     * @param {GuildMemberCreateArgs} args - Arguments to create a GuildMember.
+     * @example
+     * // Create one GuildMember
+     * const GuildMember = await prisma.guildMember.create({
+     *   data: {
+     *     // ... data to create a GuildMember
+     *   }
+     * })
+     * 
+     */
+    create<T extends GuildMemberCreateArgs>(args: SelectSubset<T, GuildMemberCreateArgs<ExtArgs>>): Prisma__GuildMemberClient<$Result.GetResult<Prisma.$GuildMemberPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many GuildMembers.
+     * @param {GuildMemberCreateManyArgs} args - Arguments to create many GuildMembers.
+     * @example
+     * // Create many GuildMembers
+     * const guildMember = await prisma.guildMember.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends GuildMemberCreateManyArgs>(args?: SelectSubset<T, GuildMemberCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many GuildMembers and returns the data saved in the database.
+     * @param {GuildMemberCreateManyAndReturnArgs} args - Arguments to create many GuildMembers.
+     * @example
+     * // Create many GuildMembers
+     * const guildMember = await prisma.guildMember.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many GuildMembers and only return the `id`
+     * const guildMemberWithIdOnly = await prisma.guildMember.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends GuildMemberCreateManyAndReturnArgs>(args?: SelectSubset<T, GuildMemberCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$GuildMemberPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a GuildMember.
+     * @param {GuildMemberDeleteArgs} args - Arguments to delete one GuildMember.
+     * @example
+     * // Delete one GuildMember
+     * const GuildMember = await prisma.guildMember.delete({
+     *   where: {
+     *     // ... filter to delete one GuildMember
+     *   }
+     * })
+     * 
+     */
+    delete<T extends GuildMemberDeleteArgs>(args: SelectSubset<T, GuildMemberDeleteArgs<ExtArgs>>): Prisma__GuildMemberClient<$Result.GetResult<Prisma.$GuildMemberPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one GuildMember.
+     * @param {GuildMemberUpdateArgs} args - Arguments to update one GuildMember.
+     * @example
+     * // Update one GuildMember
+     * const guildMember = await prisma.guildMember.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends GuildMemberUpdateArgs>(args: SelectSubset<T, GuildMemberUpdateArgs<ExtArgs>>): Prisma__GuildMemberClient<$Result.GetResult<Prisma.$GuildMemberPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more GuildMembers.
+     * @param {GuildMemberDeleteManyArgs} args - Arguments to filter GuildMembers to delete.
+     * @example
+     * // Delete a few GuildMembers
+     * const { count } = await prisma.guildMember.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends GuildMemberDeleteManyArgs>(args?: SelectSubset<T, GuildMemberDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more GuildMembers.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {GuildMemberUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many GuildMembers
+     * const guildMember = await prisma.guildMember.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends GuildMemberUpdateManyArgs>(args: SelectSubset<T, GuildMemberUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more GuildMembers and returns the data updated in the database.
+     * @param {GuildMemberUpdateManyAndReturnArgs} args - Arguments to update many GuildMembers.
+     * @example
+     * // Update many GuildMembers
+     * const guildMember = await prisma.guildMember.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more GuildMembers and only return the `id`
+     * const guildMemberWithIdOnly = await prisma.guildMember.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends GuildMemberUpdateManyAndReturnArgs>(args: SelectSubset<T, GuildMemberUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$GuildMemberPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one GuildMember.
+     * @param {GuildMemberUpsertArgs} args - Arguments to update or create a GuildMember.
+     * @example
+     * // Update or create a GuildMember
+     * const guildMember = await prisma.guildMember.upsert({
+     *   create: {
+     *     // ... data to create a GuildMember
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the GuildMember we want to update
+     *   }
+     * })
+     */
+    upsert<T extends GuildMemberUpsertArgs>(args: SelectSubset<T, GuildMemberUpsertArgs<ExtArgs>>): Prisma__GuildMemberClient<$Result.GetResult<Prisma.$GuildMemberPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of GuildMembers.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {GuildMemberCountArgs} args - Arguments to filter GuildMembers to count.
+     * @example
+     * // Count the number of GuildMembers
+     * const count = await prisma.guildMember.count({
+     *   where: {
+     *     // ... the filter for the GuildMembers we want to count
+     *   }
+     * })
+    **/
+    count<T extends GuildMemberCountArgs>(
+      args?: Subset<T, GuildMemberCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], GuildMemberCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a GuildMember.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {GuildMemberAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends GuildMemberAggregateArgs>(args: Subset<T, GuildMemberAggregateArgs>): Prisma.PrismaPromise<GetGuildMemberAggregateType<T>>
+
+    /**
+     * Group by GuildMember.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {GuildMemberGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends GuildMemberGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: GuildMemberGroupByArgs['orderBy'] }
+        : { orderBy?: GuildMemberGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, GuildMemberGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetGuildMemberGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the GuildMember model
+   */
+  readonly fields: GuildMemberFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for GuildMember.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__GuildMemberClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    guild<T extends GuildSettingsDefaultArgs<ExtArgs> = {}>(args?: Subset<T, GuildSettingsDefaultArgs<ExtArgs>>): Prisma__GuildSettingsClient<$Result.GetResult<Prisma.$GuildSettingsPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the GuildMember model
+   */
+  interface GuildMemberFieldRefs {
+    readonly id: FieldRef<"GuildMember", 'String'>
+    readonly guildId: FieldRef<"GuildMember", 'String'>
+    readonly xp: FieldRef<"GuildMember", 'Int'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * GuildMember findUnique
+   */
+  export type GuildMemberFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GuildMember
+     */
+    select?: GuildMemberSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the GuildMember
+     */
+    omit?: GuildMemberOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GuildMemberInclude<ExtArgs> | null
+    /**
+     * Filter, which GuildMember to fetch.
+     */
+    where: GuildMemberWhereUniqueInput
+  }
+
+  /**
+   * GuildMember findUniqueOrThrow
+   */
+  export type GuildMemberFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GuildMember
+     */
+    select?: GuildMemberSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the GuildMember
+     */
+    omit?: GuildMemberOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GuildMemberInclude<ExtArgs> | null
+    /**
+     * Filter, which GuildMember to fetch.
+     */
+    where: GuildMemberWhereUniqueInput
+  }
+
+  /**
+   * GuildMember findFirst
+   */
+  export type GuildMemberFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GuildMember
+     */
+    select?: GuildMemberSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the GuildMember
+     */
+    omit?: GuildMemberOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GuildMemberInclude<ExtArgs> | null
+    /**
+     * Filter, which GuildMember to fetch.
+     */
+    where?: GuildMemberWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of GuildMembers to fetch.
+     */
+    orderBy?: GuildMemberOrderByWithRelationInput | GuildMemberOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for GuildMembers.
+     */
+    cursor?: GuildMemberWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` GuildMembers from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` GuildMembers.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of GuildMembers.
+     */
+    distinct?: GuildMemberScalarFieldEnum | GuildMemberScalarFieldEnum[]
+  }
+
+  /**
+   * GuildMember findFirstOrThrow
+   */
+  export type GuildMemberFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GuildMember
+     */
+    select?: GuildMemberSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the GuildMember
+     */
+    omit?: GuildMemberOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GuildMemberInclude<ExtArgs> | null
+    /**
+     * Filter, which GuildMember to fetch.
+     */
+    where?: GuildMemberWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of GuildMembers to fetch.
+     */
+    orderBy?: GuildMemberOrderByWithRelationInput | GuildMemberOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for GuildMembers.
+     */
+    cursor?: GuildMemberWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` GuildMembers from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` GuildMembers.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of GuildMembers.
+     */
+    distinct?: GuildMemberScalarFieldEnum | GuildMemberScalarFieldEnum[]
+  }
+
+  /**
+   * GuildMember findMany
+   */
+  export type GuildMemberFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GuildMember
+     */
+    select?: GuildMemberSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the GuildMember
+     */
+    omit?: GuildMemberOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GuildMemberInclude<ExtArgs> | null
+    /**
+     * Filter, which GuildMembers to fetch.
+     */
+    where?: GuildMemberWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of GuildMembers to fetch.
+     */
+    orderBy?: GuildMemberOrderByWithRelationInput | GuildMemberOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing GuildMembers.
+     */
+    cursor?: GuildMemberWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` GuildMembers from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` GuildMembers.
+     */
+    skip?: number
+    distinct?: GuildMemberScalarFieldEnum | GuildMemberScalarFieldEnum[]
+  }
+
+  /**
+   * GuildMember create
+   */
+  export type GuildMemberCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GuildMember
+     */
+    select?: GuildMemberSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the GuildMember
+     */
+    omit?: GuildMemberOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GuildMemberInclude<ExtArgs> | null
+    /**
+     * The data needed to create a GuildMember.
+     */
+    data: XOR<GuildMemberCreateInput, GuildMemberUncheckedCreateInput>
+  }
+
+  /**
+   * GuildMember createMany
+   */
+  export type GuildMemberCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many GuildMembers.
+     */
+    data: GuildMemberCreateManyInput | GuildMemberCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * GuildMember createManyAndReturn
+   */
+  export type GuildMemberCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GuildMember
+     */
+    select?: GuildMemberSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the GuildMember
+     */
+    omit?: GuildMemberOmit<ExtArgs> | null
+    /**
+     * The data used to create many GuildMembers.
+     */
+    data: GuildMemberCreateManyInput | GuildMemberCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GuildMemberIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * GuildMember update
+   */
+  export type GuildMemberUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GuildMember
+     */
+    select?: GuildMemberSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the GuildMember
+     */
+    omit?: GuildMemberOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GuildMemberInclude<ExtArgs> | null
+    /**
+     * The data needed to update a GuildMember.
+     */
+    data: XOR<GuildMemberUpdateInput, GuildMemberUncheckedUpdateInput>
+    /**
+     * Choose, which GuildMember to update.
+     */
+    where: GuildMemberWhereUniqueInput
+  }
+
+  /**
+   * GuildMember updateMany
+   */
+  export type GuildMemberUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update GuildMembers.
+     */
+    data: XOR<GuildMemberUpdateManyMutationInput, GuildMemberUncheckedUpdateManyInput>
+    /**
+     * Filter which GuildMembers to update
+     */
+    where?: GuildMemberWhereInput
+    /**
+     * Limit how many GuildMembers to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * GuildMember updateManyAndReturn
+   */
+  export type GuildMemberUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GuildMember
+     */
+    select?: GuildMemberSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the GuildMember
+     */
+    omit?: GuildMemberOmit<ExtArgs> | null
+    /**
+     * The data used to update GuildMembers.
+     */
+    data: XOR<GuildMemberUpdateManyMutationInput, GuildMemberUncheckedUpdateManyInput>
+    /**
+     * Filter which GuildMembers to update
+     */
+    where?: GuildMemberWhereInput
+    /**
+     * Limit how many GuildMembers to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GuildMemberIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * GuildMember upsert
+   */
+  export type GuildMemberUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GuildMember
+     */
+    select?: GuildMemberSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the GuildMember
+     */
+    omit?: GuildMemberOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GuildMemberInclude<ExtArgs> | null
+    /**
+     * The filter to search for the GuildMember to update in case it exists.
+     */
+    where: GuildMemberWhereUniqueInput
+    /**
+     * In case the GuildMember found by the `where` argument doesn't exist, create a new GuildMember with this data.
+     */
+    create: XOR<GuildMemberCreateInput, GuildMemberUncheckedCreateInput>
+    /**
+     * In case the GuildMember was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<GuildMemberUpdateInput, GuildMemberUncheckedUpdateInput>
+  }
+
+  /**
+   * GuildMember delete
+   */
+  export type GuildMemberDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GuildMember
+     */
+    select?: GuildMemberSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the GuildMember
+     */
+    omit?: GuildMemberOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GuildMemberInclude<ExtArgs> | null
+    /**
+     * Filter which GuildMember to delete.
+     */
+    where: GuildMemberWhereUniqueInput
+  }
+
+  /**
+   * GuildMember deleteMany
+   */
+  export type GuildMemberDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which GuildMembers to delete
+     */
+    where?: GuildMemberWhereInput
+    /**
+     * Limit how many GuildMembers to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * GuildMember without action
+   */
+  export type GuildMemberDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GuildMember
+     */
+    select?: GuildMemberSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the GuildMember
+     */
+    omit?: GuildMemberOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GuildMemberInclude<ExtArgs> | null
   }
 
 
@@ -14415,10 +15792,27 @@ export namespace Prisma {
     channelsCommandDisabled: 'channelsCommandDisabled',
     channelsCommandDisabledIsHabilited: 'channelsCommandDisabledIsHabilited',
     channelsCommandEnabled: 'channelsCommandEnabled',
-    channelsCommandEnabledIsHabilited: 'channelsCommandEnabledIsHabilited'
+    channelsCommandEnabledIsHabilited: 'channelsCommandEnabledIsHabilited',
+    xpSystemEnabled: 'xpSystemEnabled',
+    difficulty: 'difficulty',
+    rolesXpBonus: 'rolesXpBonus',
+    rolesNotWinXp: 'rolesNotWinXp',
+    channelsXpBonus: 'channelsXpBonus',
+    channelsNotWinXp: 'channelsNotWinXp',
+    warnLevelUp: 'warnLevelUp',
+    levelGrant: 'levelGrant'
   };
 
   export type GuildSettingsScalarFieldEnum = (typeof GuildSettingsScalarFieldEnum)[keyof typeof GuildSettingsScalarFieldEnum]
+
+
+  export const GuildMemberScalarFieldEnum: {
+    id: 'id',
+    guildId: 'guildId',
+    xp: 'xp'
+  };
+
+  export type GuildMemberScalarFieldEnum = (typeof GuildMemberScalarFieldEnum)[keyof typeof GuildMemberScalarFieldEnum]
 
 
   export const MailsScalarFieldEnum: {
@@ -15155,6 +16549,15 @@ export namespace Prisma {
     channelsCommandDisabledIsHabilited?: BoolFilter<"GuildSettings"> | boolean
     channelsCommandEnabled?: StringNullableListFilter<"GuildSettings">
     channelsCommandEnabledIsHabilited?: BoolFilter<"GuildSettings"> | boolean
+    xpSystemEnabled?: BoolFilter<"GuildSettings"> | boolean
+    difficulty?: FloatFilter<"GuildSettings"> | number
+    rolesXpBonus?: JsonFilter<"GuildSettings">
+    rolesNotWinXp?: StringNullableListFilter<"GuildSettings">
+    channelsXpBonus?: JsonFilter<"GuildSettings">
+    channelsNotWinXp?: StringNullableListFilter<"GuildSettings">
+    warnLevelUp?: JsonFilter<"GuildSettings">
+    levelGrant?: JsonFilter<"GuildSettings">
+    members?: GuildMemberListRelationFilter
   }
 
   export type GuildSettingsOrderByWithRelationInput = {
@@ -15165,6 +16568,15 @@ export namespace Prisma {
     channelsCommandDisabledIsHabilited?: SortOrder
     channelsCommandEnabled?: SortOrder
     channelsCommandEnabledIsHabilited?: SortOrder
+    xpSystemEnabled?: SortOrder
+    difficulty?: SortOrder
+    rolesXpBonus?: SortOrder
+    rolesNotWinXp?: SortOrder
+    channelsXpBonus?: SortOrder
+    channelsNotWinXp?: SortOrder
+    warnLevelUp?: SortOrder
+    levelGrant?: SortOrder
+    members?: GuildMemberOrderByRelationAggregateInput
   }
 
   export type GuildSettingsWhereUniqueInput = Prisma.AtLeast<{
@@ -15178,6 +16590,15 @@ export namespace Prisma {
     channelsCommandDisabledIsHabilited?: BoolFilter<"GuildSettings"> | boolean
     channelsCommandEnabled?: StringNullableListFilter<"GuildSettings">
     channelsCommandEnabledIsHabilited?: BoolFilter<"GuildSettings"> | boolean
+    xpSystemEnabled?: BoolFilter<"GuildSettings"> | boolean
+    difficulty?: FloatFilter<"GuildSettings"> | number
+    rolesXpBonus?: JsonFilter<"GuildSettings">
+    rolesNotWinXp?: StringNullableListFilter<"GuildSettings">
+    channelsXpBonus?: JsonFilter<"GuildSettings">
+    channelsNotWinXp?: StringNullableListFilter<"GuildSettings">
+    warnLevelUp?: JsonFilter<"GuildSettings">
+    levelGrant?: JsonFilter<"GuildSettings">
+    members?: GuildMemberListRelationFilter
   }, "id">
 
   export type GuildSettingsOrderByWithAggregationInput = {
@@ -15188,9 +16609,19 @@ export namespace Prisma {
     channelsCommandDisabledIsHabilited?: SortOrder
     channelsCommandEnabled?: SortOrder
     channelsCommandEnabledIsHabilited?: SortOrder
+    xpSystemEnabled?: SortOrder
+    difficulty?: SortOrder
+    rolesXpBonus?: SortOrder
+    rolesNotWinXp?: SortOrder
+    channelsXpBonus?: SortOrder
+    channelsNotWinXp?: SortOrder
+    warnLevelUp?: SortOrder
+    levelGrant?: SortOrder
     _count?: GuildSettingsCountOrderByAggregateInput
+    _avg?: GuildSettingsAvgOrderByAggregateInput
     _max?: GuildSettingsMaxOrderByAggregateInput
     _min?: GuildSettingsMinOrderByAggregateInput
+    _sum?: GuildSettingsSumOrderByAggregateInput
   }
 
   export type GuildSettingsScalarWhereWithAggregatesInput = {
@@ -15204,6 +16635,62 @@ export namespace Prisma {
     channelsCommandDisabledIsHabilited?: BoolWithAggregatesFilter<"GuildSettings"> | boolean
     channelsCommandEnabled?: StringNullableListFilter<"GuildSettings">
     channelsCommandEnabledIsHabilited?: BoolWithAggregatesFilter<"GuildSettings"> | boolean
+    xpSystemEnabled?: BoolWithAggregatesFilter<"GuildSettings"> | boolean
+    difficulty?: FloatWithAggregatesFilter<"GuildSettings"> | number
+    rolesXpBonus?: JsonWithAggregatesFilter<"GuildSettings">
+    rolesNotWinXp?: StringNullableListFilter<"GuildSettings">
+    channelsXpBonus?: JsonWithAggregatesFilter<"GuildSettings">
+    channelsNotWinXp?: StringNullableListFilter<"GuildSettings">
+    warnLevelUp?: JsonWithAggregatesFilter<"GuildSettings">
+    levelGrant?: JsonWithAggregatesFilter<"GuildSettings">
+  }
+
+  export type GuildMemberWhereInput = {
+    AND?: GuildMemberWhereInput | GuildMemberWhereInput[]
+    OR?: GuildMemberWhereInput[]
+    NOT?: GuildMemberWhereInput | GuildMemberWhereInput[]
+    id?: StringFilter<"GuildMember"> | string
+    guildId?: StringFilter<"GuildMember"> | string
+    xp?: IntFilter<"GuildMember"> | number
+    guild?: XOR<GuildSettingsScalarRelationFilter, GuildSettingsWhereInput>
+  }
+
+  export type GuildMemberOrderByWithRelationInput = {
+    id?: SortOrder
+    guildId?: SortOrder
+    xp?: SortOrder
+    guild?: GuildSettingsOrderByWithRelationInput
+  }
+
+  export type GuildMemberWhereUniqueInput = Prisma.AtLeast<{
+    guildId_id?: GuildMemberGuildIdIdCompoundUniqueInput
+    AND?: GuildMemberWhereInput | GuildMemberWhereInput[]
+    OR?: GuildMemberWhereInput[]
+    NOT?: GuildMemberWhereInput | GuildMemberWhereInput[]
+    id?: StringFilter<"GuildMember"> | string
+    guildId?: StringFilter<"GuildMember"> | string
+    xp?: IntFilter<"GuildMember"> | number
+    guild?: XOR<GuildSettingsScalarRelationFilter, GuildSettingsWhereInput>
+  }, "guildId_id">
+
+  export type GuildMemberOrderByWithAggregationInput = {
+    id?: SortOrder
+    guildId?: SortOrder
+    xp?: SortOrder
+    _count?: GuildMemberCountOrderByAggregateInput
+    _avg?: GuildMemberAvgOrderByAggregateInput
+    _max?: GuildMemberMaxOrderByAggregateInput
+    _min?: GuildMemberMinOrderByAggregateInput
+    _sum?: GuildMemberSumOrderByAggregateInput
+  }
+
+  export type GuildMemberScalarWhereWithAggregatesInput = {
+    AND?: GuildMemberScalarWhereWithAggregatesInput | GuildMemberScalarWhereWithAggregatesInput[]
+    OR?: GuildMemberScalarWhereWithAggregatesInput[]
+    NOT?: GuildMemberScalarWhereWithAggregatesInput | GuildMemberScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"GuildMember"> | string
+    guildId?: StringWithAggregatesFilter<"GuildMember"> | string
+    xp?: IntWithAggregatesFilter<"GuildMember"> | number
   }
 
   export type MailsWhereInput = {
@@ -15827,6 +17314,15 @@ export namespace Prisma {
     channelsCommandDisabledIsHabilited?: boolean
     channelsCommandEnabled?: GuildSettingsCreatechannelsCommandEnabledInput | string[]
     channelsCommandEnabledIsHabilited?: boolean
+    xpSystemEnabled?: boolean
+    difficulty?: number
+    rolesXpBonus?: JsonNullValueInput | InputJsonValue
+    rolesNotWinXp?: GuildSettingsCreaterolesNotWinXpInput | string[]
+    channelsXpBonus?: JsonNullValueInput | InputJsonValue
+    channelsNotWinXp?: GuildSettingsCreatechannelsNotWinXpInput | string[]
+    warnLevelUp?: JsonNullValueInput | InputJsonValue
+    levelGrant?: JsonNullValueInput | InputJsonValue
+    members?: GuildMemberCreateNestedManyWithoutGuildInput
   }
 
   export type GuildSettingsUncheckedCreateInput = {
@@ -15837,6 +17333,15 @@ export namespace Prisma {
     channelsCommandDisabledIsHabilited?: boolean
     channelsCommandEnabled?: GuildSettingsCreatechannelsCommandEnabledInput | string[]
     channelsCommandEnabledIsHabilited?: boolean
+    xpSystemEnabled?: boolean
+    difficulty?: number
+    rolesXpBonus?: JsonNullValueInput | InputJsonValue
+    rolesNotWinXp?: GuildSettingsCreaterolesNotWinXpInput | string[]
+    channelsXpBonus?: JsonNullValueInput | InputJsonValue
+    channelsNotWinXp?: GuildSettingsCreatechannelsNotWinXpInput | string[]
+    warnLevelUp?: JsonNullValueInput | InputJsonValue
+    levelGrant?: JsonNullValueInput | InputJsonValue
+    members?: GuildMemberUncheckedCreateNestedManyWithoutGuildInput
   }
 
   export type GuildSettingsUpdateInput = {
@@ -15847,6 +17352,15 @@ export namespace Prisma {
     channelsCommandDisabledIsHabilited?: BoolFieldUpdateOperationsInput | boolean
     channelsCommandEnabled?: GuildSettingsUpdatechannelsCommandEnabledInput | string[]
     channelsCommandEnabledIsHabilited?: BoolFieldUpdateOperationsInput | boolean
+    xpSystemEnabled?: BoolFieldUpdateOperationsInput | boolean
+    difficulty?: FloatFieldUpdateOperationsInput | number
+    rolesXpBonus?: JsonNullValueInput | InputJsonValue
+    rolesNotWinXp?: GuildSettingsUpdaterolesNotWinXpInput | string[]
+    channelsXpBonus?: JsonNullValueInput | InputJsonValue
+    channelsNotWinXp?: GuildSettingsUpdatechannelsNotWinXpInput | string[]
+    warnLevelUp?: JsonNullValueInput | InputJsonValue
+    levelGrant?: JsonNullValueInput | InputJsonValue
+    members?: GuildMemberUpdateManyWithoutGuildNestedInput
   }
 
   export type GuildSettingsUncheckedUpdateInput = {
@@ -15857,6 +17371,15 @@ export namespace Prisma {
     channelsCommandDisabledIsHabilited?: BoolFieldUpdateOperationsInput | boolean
     channelsCommandEnabled?: GuildSettingsUpdatechannelsCommandEnabledInput | string[]
     channelsCommandEnabledIsHabilited?: BoolFieldUpdateOperationsInput | boolean
+    xpSystemEnabled?: BoolFieldUpdateOperationsInput | boolean
+    difficulty?: FloatFieldUpdateOperationsInput | number
+    rolesXpBonus?: JsonNullValueInput | InputJsonValue
+    rolesNotWinXp?: GuildSettingsUpdaterolesNotWinXpInput | string[]
+    channelsXpBonus?: JsonNullValueInput | InputJsonValue
+    channelsNotWinXp?: GuildSettingsUpdatechannelsNotWinXpInput | string[]
+    warnLevelUp?: JsonNullValueInput | InputJsonValue
+    levelGrant?: JsonNullValueInput | InputJsonValue
+    members?: GuildMemberUncheckedUpdateManyWithoutGuildNestedInput
   }
 
   export type GuildSettingsCreateManyInput = {
@@ -15867,6 +17390,14 @@ export namespace Prisma {
     channelsCommandDisabledIsHabilited?: boolean
     channelsCommandEnabled?: GuildSettingsCreatechannelsCommandEnabledInput | string[]
     channelsCommandEnabledIsHabilited?: boolean
+    xpSystemEnabled?: boolean
+    difficulty?: number
+    rolesXpBonus?: JsonNullValueInput | InputJsonValue
+    rolesNotWinXp?: GuildSettingsCreaterolesNotWinXpInput | string[]
+    channelsXpBonus?: JsonNullValueInput | InputJsonValue
+    channelsNotWinXp?: GuildSettingsCreatechannelsNotWinXpInput | string[]
+    warnLevelUp?: JsonNullValueInput | InputJsonValue
+    levelGrant?: JsonNullValueInput | InputJsonValue
   }
 
   export type GuildSettingsUpdateManyMutationInput = {
@@ -15877,6 +17408,14 @@ export namespace Prisma {
     channelsCommandDisabledIsHabilited?: BoolFieldUpdateOperationsInput | boolean
     channelsCommandEnabled?: GuildSettingsUpdatechannelsCommandEnabledInput | string[]
     channelsCommandEnabledIsHabilited?: BoolFieldUpdateOperationsInput | boolean
+    xpSystemEnabled?: BoolFieldUpdateOperationsInput | boolean
+    difficulty?: FloatFieldUpdateOperationsInput | number
+    rolesXpBonus?: JsonNullValueInput | InputJsonValue
+    rolesNotWinXp?: GuildSettingsUpdaterolesNotWinXpInput | string[]
+    channelsXpBonus?: JsonNullValueInput | InputJsonValue
+    channelsNotWinXp?: GuildSettingsUpdatechannelsNotWinXpInput | string[]
+    warnLevelUp?: JsonNullValueInput | InputJsonValue
+    levelGrant?: JsonNullValueInput | InputJsonValue
   }
 
   export type GuildSettingsUncheckedUpdateManyInput = {
@@ -15887,6 +17426,55 @@ export namespace Prisma {
     channelsCommandDisabledIsHabilited?: BoolFieldUpdateOperationsInput | boolean
     channelsCommandEnabled?: GuildSettingsUpdatechannelsCommandEnabledInput | string[]
     channelsCommandEnabledIsHabilited?: BoolFieldUpdateOperationsInput | boolean
+    xpSystemEnabled?: BoolFieldUpdateOperationsInput | boolean
+    difficulty?: FloatFieldUpdateOperationsInput | number
+    rolesXpBonus?: JsonNullValueInput | InputJsonValue
+    rolesNotWinXp?: GuildSettingsUpdaterolesNotWinXpInput | string[]
+    channelsXpBonus?: JsonNullValueInput | InputJsonValue
+    channelsNotWinXp?: GuildSettingsUpdatechannelsNotWinXpInput | string[]
+    warnLevelUp?: JsonNullValueInput | InputJsonValue
+    levelGrant?: JsonNullValueInput | InputJsonValue
+  }
+
+  export type GuildMemberCreateInput = {
+    id: string
+    xp?: number
+    guild: GuildSettingsCreateNestedOneWithoutMembersInput
+  }
+
+  export type GuildMemberUncheckedCreateInput = {
+    id: string
+    guildId: string
+    xp?: number
+  }
+
+  export type GuildMemberUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    xp?: IntFieldUpdateOperationsInput | number
+    guild?: GuildSettingsUpdateOneRequiredWithoutMembersNestedInput
+  }
+
+  export type GuildMemberUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    guildId?: StringFieldUpdateOperationsInput | string
+    xp?: IntFieldUpdateOperationsInput | number
+  }
+
+  export type GuildMemberCreateManyInput = {
+    id: string
+    guildId: string
+    xp?: number
+  }
+
+  export type GuildMemberUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    xp?: IntFieldUpdateOperationsInput | number
+  }
+
+  export type GuildMemberUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    guildId?: StringFieldUpdateOperationsInput | string
+    xp?: IntFieldUpdateOperationsInput | number
   }
 
   export type MailsCreateInput = {
@@ -16681,6 +18269,27 @@ export namespace Prisma {
     amount?: SortOrder
   }
 
+  export type FloatFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel>
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatFilter<$PrismaModel> | number
+  }
+
+  export type GuildMemberListRelationFilter = {
+    every?: GuildMemberWhereInput
+    some?: GuildMemberWhereInput
+    none?: GuildMemberWhereInput
+  }
+
+  export type GuildMemberOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
   export type GuildSettingsCountOrderByAggregateInput = {
     id?: SortOrder
     chatBotChannels?: SortOrder
@@ -16689,6 +18298,18 @@ export namespace Prisma {
     channelsCommandDisabledIsHabilited?: SortOrder
     channelsCommandEnabled?: SortOrder
     channelsCommandEnabledIsHabilited?: SortOrder
+    xpSystemEnabled?: SortOrder
+    difficulty?: SortOrder
+    rolesXpBonus?: SortOrder
+    rolesNotWinXp?: SortOrder
+    channelsXpBonus?: SortOrder
+    channelsNotWinXp?: SortOrder
+    warnLevelUp?: SortOrder
+    levelGrant?: SortOrder
+  }
+
+  export type GuildSettingsAvgOrderByAggregateInput = {
+    difficulty?: SortOrder
   }
 
   export type GuildSettingsMaxOrderByAggregateInput = {
@@ -16696,6 +18317,8 @@ export namespace Prisma {
     chatBotEnabled?: SortOrder
     channelsCommandDisabledIsHabilited?: SortOrder
     channelsCommandEnabledIsHabilited?: SortOrder
+    xpSystemEnabled?: SortOrder
+    difficulty?: SortOrder
   }
 
   export type GuildSettingsMinOrderByAggregateInput = {
@@ -16703,6 +18326,64 @@ export namespace Prisma {
     chatBotEnabled?: SortOrder
     channelsCommandDisabledIsHabilited?: SortOrder
     channelsCommandEnabledIsHabilited?: SortOrder
+    xpSystemEnabled?: SortOrder
+    difficulty?: SortOrder
+  }
+
+  export type GuildSettingsSumOrderByAggregateInput = {
+    difficulty?: SortOrder
+  }
+
+  export type FloatWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel>
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatWithAggregatesFilter<$PrismaModel> | number
+    _count?: NestedIntFilter<$PrismaModel>
+    _avg?: NestedFloatFilter<$PrismaModel>
+    _sum?: NestedFloatFilter<$PrismaModel>
+    _min?: NestedFloatFilter<$PrismaModel>
+    _max?: NestedFloatFilter<$PrismaModel>
+  }
+
+  export type GuildSettingsScalarRelationFilter = {
+    is?: GuildSettingsWhereInput
+    isNot?: GuildSettingsWhereInput
+  }
+
+  export type GuildMemberGuildIdIdCompoundUniqueInput = {
+    guildId: string
+    id: string
+  }
+
+  export type GuildMemberCountOrderByAggregateInput = {
+    id?: SortOrder
+    guildId?: SortOrder
+    xp?: SortOrder
+  }
+
+  export type GuildMemberAvgOrderByAggregateInput = {
+    xp?: SortOrder
+  }
+
+  export type GuildMemberMaxOrderByAggregateInput = {
+    id?: SortOrder
+    guildId?: SortOrder
+    xp?: SortOrder
+  }
+
+  export type GuildMemberMinOrderByAggregateInput = {
+    id?: SortOrder
+    guildId?: SortOrder
+    xp?: SortOrder
+  }
+
+  export type GuildMemberSumOrderByAggregateInput = {
+    xp?: SortOrder
   }
 
   export type MailsCountOrderByAggregateInput = {
@@ -17345,6 +19026,28 @@ export namespace Prisma {
     set: string[]
   }
 
+  export type GuildSettingsCreaterolesNotWinXpInput = {
+    set: string[]
+  }
+
+  export type GuildSettingsCreatechannelsNotWinXpInput = {
+    set: string[]
+  }
+
+  export type GuildMemberCreateNestedManyWithoutGuildInput = {
+    create?: XOR<GuildMemberCreateWithoutGuildInput, GuildMemberUncheckedCreateWithoutGuildInput> | GuildMemberCreateWithoutGuildInput[] | GuildMemberUncheckedCreateWithoutGuildInput[]
+    connectOrCreate?: GuildMemberCreateOrConnectWithoutGuildInput | GuildMemberCreateOrConnectWithoutGuildInput[]
+    createMany?: GuildMemberCreateManyGuildInputEnvelope
+    connect?: GuildMemberWhereUniqueInput | GuildMemberWhereUniqueInput[]
+  }
+
+  export type GuildMemberUncheckedCreateNestedManyWithoutGuildInput = {
+    create?: XOR<GuildMemberCreateWithoutGuildInput, GuildMemberUncheckedCreateWithoutGuildInput> | GuildMemberCreateWithoutGuildInput[] | GuildMemberUncheckedCreateWithoutGuildInput[]
+    connectOrCreate?: GuildMemberCreateOrConnectWithoutGuildInput | GuildMemberCreateOrConnectWithoutGuildInput[]
+    createMany?: GuildMemberCreateManyGuildInputEnvelope
+    connect?: GuildMemberWhereUniqueInput | GuildMemberWhereUniqueInput[]
+  }
+
   export type GuildSettingsUpdatechatBotChannelsInput = {
     set?: string[]
     push?: string | string[]
@@ -17358,6 +19061,66 @@ export namespace Prisma {
   export type GuildSettingsUpdatechannelsCommandEnabledInput = {
     set?: string[]
     push?: string | string[]
+  }
+
+  export type FloatFieldUpdateOperationsInput = {
+    set?: number
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
+  }
+
+  export type GuildSettingsUpdaterolesNotWinXpInput = {
+    set?: string[]
+    push?: string | string[]
+  }
+
+  export type GuildSettingsUpdatechannelsNotWinXpInput = {
+    set?: string[]
+    push?: string | string[]
+  }
+
+  export type GuildMemberUpdateManyWithoutGuildNestedInput = {
+    create?: XOR<GuildMemberCreateWithoutGuildInput, GuildMemberUncheckedCreateWithoutGuildInput> | GuildMemberCreateWithoutGuildInput[] | GuildMemberUncheckedCreateWithoutGuildInput[]
+    connectOrCreate?: GuildMemberCreateOrConnectWithoutGuildInput | GuildMemberCreateOrConnectWithoutGuildInput[]
+    upsert?: GuildMemberUpsertWithWhereUniqueWithoutGuildInput | GuildMemberUpsertWithWhereUniqueWithoutGuildInput[]
+    createMany?: GuildMemberCreateManyGuildInputEnvelope
+    set?: GuildMemberWhereUniqueInput | GuildMemberWhereUniqueInput[]
+    disconnect?: GuildMemberWhereUniqueInput | GuildMemberWhereUniqueInput[]
+    delete?: GuildMemberWhereUniqueInput | GuildMemberWhereUniqueInput[]
+    connect?: GuildMemberWhereUniqueInput | GuildMemberWhereUniqueInput[]
+    update?: GuildMemberUpdateWithWhereUniqueWithoutGuildInput | GuildMemberUpdateWithWhereUniqueWithoutGuildInput[]
+    updateMany?: GuildMemberUpdateManyWithWhereWithoutGuildInput | GuildMemberUpdateManyWithWhereWithoutGuildInput[]
+    deleteMany?: GuildMemberScalarWhereInput | GuildMemberScalarWhereInput[]
+  }
+
+  export type GuildMemberUncheckedUpdateManyWithoutGuildNestedInput = {
+    create?: XOR<GuildMemberCreateWithoutGuildInput, GuildMemberUncheckedCreateWithoutGuildInput> | GuildMemberCreateWithoutGuildInput[] | GuildMemberUncheckedCreateWithoutGuildInput[]
+    connectOrCreate?: GuildMemberCreateOrConnectWithoutGuildInput | GuildMemberCreateOrConnectWithoutGuildInput[]
+    upsert?: GuildMemberUpsertWithWhereUniqueWithoutGuildInput | GuildMemberUpsertWithWhereUniqueWithoutGuildInput[]
+    createMany?: GuildMemberCreateManyGuildInputEnvelope
+    set?: GuildMemberWhereUniqueInput | GuildMemberWhereUniqueInput[]
+    disconnect?: GuildMemberWhereUniqueInput | GuildMemberWhereUniqueInput[]
+    delete?: GuildMemberWhereUniqueInput | GuildMemberWhereUniqueInput[]
+    connect?: GuildMemberWhereUniqueInput | GuildMemberWhereUniqueInput[]
+    update?: GuildMemberUpdateWithWhereUniqueWithoutGuildInput | GuildMemberUpdateWithWhereUniqueWithoutGuildInput[]
+    updateMany?: GuildMemberUpdateManyWithWhereWithoutGuildInput | GuildMemberUpdateManyWithWhereWithoutGuildInput[]
+    deleteMany?: GuildMemberScalarWhereInput | GuildMemberScalarWhereInput[]
+  }
+
+  export type GuildSettingsCreateNestedOneWithoutMembersInput = {
+    create?: XOR<GuildSettingsCreateWithoutMembersInput, GuildSettingsUncheckedCreateWithoutMembersInput>
+    connectOrCreate?: GuildSettingsCreateOrConnectWithoutMembersInput
+    connect?: GuildSettingsWhereUniqueInput
+  }
+
+  export type GuildSettingsUpdateOneRequiredWithoutMembersNestedInput = {
+    create?: XOR<GuildSettingsCreateWithoutMembersInput, GuildSettingsUncheckedCreateWithoutMembersInput>
+    connectOrCreate?: GuildSettingsCreateOrConnectWithoutMembersInput
+    upsert?: GuildSettingsUpsertWithoutMembersInput
+    connect?: GuildSettingsWhereUniqueInput
+    update?: XOR<XOR<GuildSettingsUpdateToOneWithWhereWithoutMembersInput, GuildSettingsUpdateWithoutMembersInput>, GuildSettingsUncheckedUpdateWithoutMembersInput>
   }
 
   export type MailsCreatetagsInput = {
@@ -17644,6 +19407,22 @@ export namespace Prisma {
     gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
     gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
     not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+  }
+
+  export type NestedFloatWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel>
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatWithAggregatesFilter<$PrismaModel> | number
+    _count?: NestedIntFilter<$PrismaModel>
+    _avg?: NestedFloatFilter<$PrismaModel>
+    _sum?: NestedFloatFilter<$PrismaModel>
+    _min?: NestedFloatFilter<$PrismaModel>
+    _max?: NestedFloatFilter<$PrismaModel>
   }
 
   export type CompanyCreateWithoutWorkersInput = {
@@ -18677,6 +20456,139 @@ export namespace Prisma {
     history?: StockHistoryUncheckedUpdateManyWithoutStockNestedInput
   }
 
+  export type GuildMemberCreateWithoutGuildInput = {
+    id: string
+    xp?: number
+  }
+
+  export type GuildMemberUncheckedCreateWithoutGuildInput = {
+    id: string
+    xp?: number
+  }
+
+  export type GuildMemberCreateOrConnectWithoutGuildInput = {
+    where: GuildMemberWhereUniqueInput
+    create: XOR<GuildMemberCreateWithoutGuildInput, GuildMemberUncheckedCreateWithoutGuildInput>
+  }
+
+  export type GuildMemberCreateManyGuildInputEnvelope = {
+    data: GuildMemberCreateManyGuildInput | GuildMemberCreateManyGuildInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type GuildMemberUpsertWithWhereUniqueWithoutGuildInput = {
+    where: GuildMemberWhereUniqueInput
+    update: XOR<GuildMemberUpdateWithoutGuildInput, GuildMemberUncheckedUpdateWithoutGuildInput>
+    create: XOR<GuildMemberCreateWithoutGuildInput, GuildMemberUncheckedCreateWithoutGuildInput>
+  }
+
+  export type GuildMemberUpdateWithWhereUniqueWithoutGuildInput = {
+    where: GuildMemberWhereUniqueInput
+    data: XOR<GuildMemberUpdateWithoutGuildInput, GuildMemberUncheckedUpdateWithoutGuildInput>
+  }
+
+  export type GuildMemberUpdateManyWithWhereWithoutGuildInput = {
+    where: GuildMemberScalarWhereInput
+    data: XOR<GuildMemberUpdateManyMutationInput, GuildMemberUncheckedUpdateManyWithoutGuildInput>
+  }
+
+  export type GuildMemberScalarWhereInput = {
+    AND?: GuildMemberScalarWhereInput | GuildMemberScalarWhereInput[]
+    OR?: GuildMemberScalarWhereInput[]
+    NOT?: GuildMemberScalarWhereInput | GuildMemberScalarWhereInput[]
+    id?: StringFilter<"GuildMember"> | string
+    guildId?: StringFilter<"GuildMember"> | string
+    xp?: IntFilter<"GuildMember"> | number
+  }
+
+  export type GuildSettingsCreateWithoutMembersInput = {
+    id: string
+    chatBotChannels?: GuildSettingsCreatechatBotChannelsInput | string[]
+    chatBotEnabled?: boolean
+    channelsCommandDisabled?: GuildSettingsCreatechannelsCommandDisabledInput | string[]
+    channelsCommandDisabledIsHabilited?: boolean
+    channelsCommandEnabled?: GuildSettingsCreatechannelsCommandEnabledInput | string[]
+    channelsCommandEnabledIsHabilited?: boolean
+    xpSystemEnabled?: boolean
+    difficulty?: number
+    rolesXpBonus?: JsonNullValueInput | InputJsonValue
+    rolesNotWinXp?: GuildSettingsCreaterolesNotWinXpInput | string[]
+    channelsXpBonus?: JsonNullValueInput | InputJsonValue
+    channelsNotWinXp?: GuildSettingsCreatechannelsNotWinXpInput | string[]
+    warnLevelUp?: JsonNullValueInput | InputJsonValue
+    levelGrant?: JsonNullValueInput | InputJsonValue
+  }
+
+  export type GuildSettingsUncheckedCreateWithoutMembersInput = {
+    id: string
+    chatBotChannels?: GuildSettingsCreatechatBotChannelsInput | string[]
+    chatBotEnabled?: boolean
+    channelsCommandDisabled?: GuildSettingsCreatechannelsCommandDisabledInput | string[]
+    channelsCommandDisabledIsHabilited?: boolean
+    channelsCommandEnabled?: GuildSettingsCreatechannelsCommandEnabledInput | string[]
+    channelsCommandEnabledIsHabilited?: boolean
+    xpSystemEnabled?: boolean
+    difficulty?: number
+    rolesXpBonus?: JsonNullValueInput | InputJsonValue
+    rolesNotWinXp?: GuildSettingsCreaterolesNotWinXpInput | string[]
+    channelsXpBonus?: JsonNullValueInput | InputJsonValue
+    channelsNotWinXp?: GuildSettingsCreatechannelsNotWinXpInput | string[]
+    warnLevelUp?: JsonNullValueInput | InputJsonValue
+    levelGrant?: JsonNullValueInput | InputJsonValue
+  }
+
+  export type GuildSettingsCreateOrConnectWithoutMembersInput = {
+    where: GuildSettingsWhereUniqueInput
+    create: XOR<GuildSettingsCreateWithoutMembersInput, GuildSettingsUncheckedCreateWithoutMembersInput>
+  }
+
+  export type GuildSettingsUpsertWithoutMembersInput = {
+    update: XOR<GuildSettingsUpdateWithoutMembersInput, GuildSettingsUncheckedUpdateWithoutMembersInput>
+    create: XOR<GuildSettingsCreateWithoutMembersInput, GuildSettingsUncheckedCreateWithoutMembersInput>
+    where?: GuildSettingsWhereInput
+  }
+
+  export type GuildSettingsUpdateToOneWithWhereWithoutMembersInput = {
+    where?: GuildSettingsWhereInput
+    data: XOR<GuildSettingsUpdateWithoutMembersInput, GuildSettingsUncheckedUpdateWithoutMembersInput>
+  }
+
+  export type GuildSettingsUpdateWithoutMembersInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    chatBotChannels?: GuildSettingsUpdatechatBotChannelsInput | string[]
+    chatBotEnabled?: BoolFieldUpdateOperationsInput | boolean
+    channelsCommandDisabled?: GuildSettingsUpdatechannelsCommandDisabledInput | string[]
+    channelsCommandDisabledIsHabilited?: BoolFieldUpdateOperationsInput | boolean
+    channelsCommandEnabled?: GuildSettingsUpdatechannelsCommandEnabledInput | string[]
+    channelsCommandEnabledIsHabilited?: BoolFieldUpdateOperationsInput | boolean
+    xpSystemEnabled?: BoolFieldUpdateOperationsInput | boolean
+    difficulty?: FloatFieldUpdateOperationsInput | number
+    rolesXpBonus?: JsonNullValueInput | InputJsonValue
+    rolesNotWinXp?: GuildSettingsUpdaterolesNotWinXpInput | string[]
+    channelsXpBonus?: JsonNullValueInput | InputJsonValue
+    channelsNotWinXp?: GuildSettingsUpdatechannelsNotWinXpInput | string[]
+    warnLevelUp?: JsonNullValueInput | InputJsonValue
+    levelGrant?: JsonNullValueInput | InputJsonValue
+  }
+
+  export type GuildSettingsUncheckedUpdateWithoutMembersInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    chatBotChannels?: GuildSettingsUpdatechatBotChannelsInput | string[]
+    chatBotEnabled?: BoolFieldUpdateOperationsInput | boolean
+    channelsCommandDisabled?: GuildSettingsUpdatechannelsCommandDisabledInput | string[]
+    channelsCommandDisabledIsHabilited?: BoolFieldUpdateOperationsInput | boolean
+    channelsCommandEnabled?: GuildSettingsUpdatechannelsCommandEnabledInput | string[]
+    channelsCommandEnabledIsHabilited?: BoolFieldUpdateOperationsInput | boolean
+    xpSystemEnabled?: BoolFieldUpdateOperationsInput | boolean
+    difficulty?: FloatFieldUpdateOperationsInput | number
+    rolesXpBonus?: JsonNullValueInput | InputJsonValue
+    rolesNotWinXp?: GuildSettingsUpdaterolesNotWinXpInput | string[]
+    channelsXpBonus?: JsonNullValueInput | InputJsonValue
+    channelsNotWinXp?: GuildSettingsUpdatechannelsNotWinXpInput | string[]
+    warnLevelUp?: JsonNullValueInput | InputJsonValue
+    levelGrant?: JsonNullValueInput | InputJsonValue
+  }
+
   export type UserCreateWithoutMailsInput = {
     id: string
     money?: Decimal | DecimalJsLike | number | string
@@ -19137,6 +21049,26 @@ export namespace Prisma {
     id?: IntFieldUpdateOperationsInput | number
     userId?: StringFieldUpdateOperationsInput | string
     amount?: IntFieldUpdateOperationsInput | number
+  }
+
+  export type GuildMemberCreateManyGuildInput = {
+    id: string
+    xp?: number
+  }
+
+  export type GuildMemberUpdateWithoutGuildInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    xp?: IntFieldUpdateOperationsInput | number
+  }
+
+  export type GuildMemberUncheckedUpdateWithoutGuildInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    xp?: IntFieldUpdateOperationsInput | number
+  }
+
+  export type GuildMemberUncheckedUpdateManyWithoutGuildInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    xp?: IntFieldUpdateOperationsInput | number
   }
 
 

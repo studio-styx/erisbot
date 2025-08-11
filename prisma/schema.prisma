@@ -115,15 +115,41 @@ model StockHolding {
 }
 
 model GuildSettings {
-  id      String  @id
-  chatBotChannels String[] @default([])
-  chatBotEnabled  Boolean @default(false)
-
-  channelsCommandDisabled String[] @default([])
+  id                             String   @id
+  chatBotChannels                String[] @default([])
+  chatBotEnabled                 Boolean  @default(false)
+  
+  channelsCommandDisabled        String[] @default([])
   channelsCommandDisabledIsHabilited Boolean @default(false)
-
-  channelsCommandEnabled String[] @default([])
+  
+  channelsCommandEnabled         String[] @default([])
   channelsCommandEnabledIsHabilited Boolean @default(false)
+  
+  xpSystemEnabled                Boolean  @default(false)
+  difficulty                     Float    @default(1.0)
+  
+  rolesXpBonus                   Json     @default("[]")
+  rolesNotWinXp                  String[] @default([])
+  
+  channelsXpBonus                Json     @default("[]")
+  channelsNotWinXp               String[] @default([])
+
+  warnLevelUp                    Json     @default("{}")
+
+  levelGrant                     Json     @default("[]")
+  
+  members                        GuildMember[]
+}
+
+model GuildMember {
+  id      String
+  guildId String
+
+  guild   GuildSettings @relation(fields: [guildId], references: [id], onDelete: Cascade)
+
+  xp      Int @default(0)
+
+  @@id([guildId, id])
 }
 
 model Mails {

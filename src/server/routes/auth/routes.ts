@@ -42,7 +42,7 @@ export default async function authRoutes(app: FastifyInstance, _client: Client<t
                 secure: process.env.ENV !== "dev", // só segura em produção
                 sameSite: "lax",
                 path: "/",
-                maxAge: 60 * 60 // 1 hora
+                maxAge: 60 * 60 * 24 // 24 horas
             })
             .redirect(redirect);
 

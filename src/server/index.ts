@@ -21,12 +21,25 @@ createEvent({
         const app = fastify();
 
         // CORS e tratamento de erros
-        app.register(cors, { origin: "*" });
+        app.register(cors, {
+            origin: (origin, cb) => {
+                // origin === undefined => requisição curl/postman (não-browser) — permitir
+                if (!origin) return cb(null, true);
+                if (origin === "https://erisbot.squareweb.app" || origin === "http://localhost:5173") {
+                    // permite a origin confiável (vai setar Access-Control-Allow-Origin para o origin)
+                    return cb(null, true);
+                }
+                // caso contrário, negar aqui (permitiremos '*' apenas nas rotas públicas explicitamente)
+                return cb(null, false);
+            },
+            credentials: true
+        });
         app.register(fastifyAutoload, {
             dir: path.join(import.meta.dirname, "routes"),
             routeParams: true,
             options: client
         })
+
         app.setErrorHandler(serverErrorHandler);
 
         // Adiciona tipagem customizada (opcional)
@@ -37,10 +50,17 @@ createEvent({
             parseOptions: {}
         });
 
+        await app.register(import('@fastify/rate-limit'), {
+            max: 1000,
+            timeWindow: '1 minute',
+        });
+
+
         // Middleware de autenticação
         app.addHook("onRequest", async (req, res) => {
+            console.log("Request:", req.url, "method:", req.method)
             if (req.url.startsWith("/auth")) return;
-            if (req.url.startsWith("/public")) {
+            if (req.url.startsWith("/user") || req.url.startsWith("/guilds")) {
                 const token = req.cookies.auth;
                 if (!token) return res.status(StatusCodes.UNAUTHORIZED).send({ error: "Not logged in" });
                 const secret = process.env.JWT_SECRET || (typeof jwtReservedToken === "function" ? jwtReservedToken : jwtReservedToken);
@@ -52,6 +72,15 @@ createEvent({
                 }
 
                 req.userId = userId;
+                return;
+            }
+            if (req.url.startsWith("/web")) {
+                const secret = process.env.FRONT_SECRET;
+                const token = req.headers.token;
+
+                if (!token || typeof token !== "string") return res.status(StatusCodes.UNAUTHORIZED).send();
+
+                if (token !== secret) return res.status(StatusCodes.UNAUTHORIZED).send();
                 return;
             }
             const token = req.headers.authorization;
@@ -73,13 +102,14 @@ createEvent({
             // Armazena no request para ser usado nas rotas
             req.application = { data: application, tokenHash: hash256 };
 
-            // roda em paralelo
-            prisma.requisition.create({
+            await prisma.requisition.create({
                 data: {
                     applicationId: application.id,
                     url: req.url,
                 }
-            })
+            }).catch(e => {
+                logger.error("Erro ao salvar requisition:", e);
+            });
         });
 
         // Inicia o servidor

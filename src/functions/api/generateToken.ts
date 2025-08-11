@@ -7,6 +7,6 @@ export function generateJWT(userId: string) {
   return jwt.sign(
     { sub: userId },
     process.env.JWT_SECRET || jwtReservedToken,
-    { expiresIn: "60m" }
+    { expiresIn: "24h" }
   );
 }

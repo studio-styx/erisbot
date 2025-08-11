@@ -203,7 +203,21 @@ exports.Prisma.GuildSettingsScalarFieldEnum = {
   channelsCommandDisabled: 'channelsCommandDisabled',
   channelsCommandDisabledIsHabilited: 'channelsCommandDisabledIsHabilited',
   channelsCommandEnabled: 'channelsCommandEnabled',
-  channelsCommandEnabledIsHabilited: 'channelsCommandEnabledIsHabilited'
+  channelsCommandEnabledIsHabilited: 'channelsCommandEnabledIsHabilited',
+  xpSystemEnabled: 'xpSystemEnabled',
+  difficulty: 'difficulty',
+  rolesXpBonus: 'rolesXpBonus',
+  rolesNotWinXp: 'rolesNotWinXp',
+  channelsXpBonus: 'channelsXpBonus',
+  channelsNotWinXp: 'channelsNotWinXp',
+  warnLevelUp: 'warnLevelUp',
+  levelGrant: 'levelGrant'
+};
+
+exports.Prisma.GuildMemberScalarFieldEnum = {
+  id: 'id',
+  guildId: 'guildId',
+  xp: 'xp'
 };
 
 exports.Prisma.MailsScalarFieldEnum = {
@@ -258,6 +272,7 @@ exports.Prisma.ModelName = {
   StockHistory: 'StockHistory',
   StockHolding: 'StockHolding',
   GuildSettings: 'GuildSettings',
+  GuildMember: 'GuildMember',
   Mails: 'Mails'
 };
 

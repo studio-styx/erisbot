@@ -10,6 +10,7 @@ import { ignoreTagMenu } from "./mail/ignoreTag.js";
 import { userMailsMenu } from "./mail/userMails.js";
 import { dashboardMenu } from "./settings/dashboard.js";
 import { userLogsMenu } from "./userLogs.js";
+import { rankMenu } from "./xpSystem/rank.js";
 
 export const menus = {
     commands: commandsMenu,
@@ -33,5 +34,8 @@ export const menus = {
     botinfo: botInfoMenu,
     cassino: {
         blackjack: blackjackMenu,
+    },
+    xpSystem: {
+        rank: rankMenu
     }
 }

@@ -1,0 +1,212 @@
+[
+    {
+        "name": "bank balance",
+        "description": "Veja seu saldo ou de outra pessoa",
+        "siteAvaible": false,
+        "category": "economy"
+    },
+    {
+        "name": "bank deposit",
+        "description": "Deposite dinheiro em sua conta",
+        "siteAvaible": false,
+        "category": "economy"
+    },
+    {
+        "name": "bank withdraw",
+        "description": "Saque dinheiro de sua conta",
+        "siteAvaible": false,
+        "category": "economy"
+    },
+    {
+        "name": "bank transfer",
+        "description": "Transfira dinheiro para outra pessoa",
+        "siteAvaible": false,
+        "category": "economy"
+    },
+    {
+        "name": "bot commands",
+        "description": "Ver os meus comandos",
+        "siteAvaible": false,
+        "category": "general"
+    },
+    {
+        "name": "bot ping",
+        "description": "Veja o ping do bot",
+        "siteAvaible": false,
+        "category": "general"
+    },
+    {
+        "name": "bot info",
+        "description": "Veja minhas informações",
+        "siteAvaible": false,
+        "category": "general"
+    },
+    {
+        "name": "cassino blackjack",
+        "description": "Joque Blackjack contra o dealer ou contra a Éris",
+        "siteAvaible": false,
+        "category": "cassino"
+    },
+    {
+        "name": "cassino coinflip",
+        "description": "Aposte no cara ou coroa",
+        "siteAvaible": false,
+        "category": "cassino"
+    },
+    {
+        "name": "cassino horce-racing",
+        "description": "Aposte na corrida de cavalos",
+        "siteAvaible": false,
+        "category": "cassino"
+    },
+    {
+        "name": "cassino slots",
+        "description": "Jogue caça niquels",
+        "siteAvaible": false,
+        "category": "cassino"
+    },
+    {
+        "name": "daily",
+        "description": "Receba seu prêmio diário",
+        "siteAvaible": false,
+        "category": "economy"
+    },
+    {
+        "name": "dashboard",
+        "description": "Configure a Éris em seu server",
+        "siteAvaible": false,
+        "category": "moderation"
+    },
+    {
+        "name": "investment buy",
+        "description": "Compre uma ação",
+        "siteAvaible": false,
+        "category": "investment"
+    },
+    {
+        "name": "investment ia-avaliation",
+        "description": "Obtenha a avaliação de uma ia pra qual ação comprar",
+        "siteAvaible": false,
+        "category": "investment"
+    },
+    {
+        "name": "investment sell",
+        "description": "Vende uma ação",
+        "siteAvaible": false,
+        "category": "investment"
+    },
+    {
+        "name": "investment own-stocks",
+        "description": "Veja suas ações",
+        "siteAvaible": false,
+        "category": "investment"
+    },
+    {
+        "name": "investment stocks",
+        "description": "Veja as ações disponíveis",
+        "siteAvaible": false,
+        "category": "investment"
+    },
+    {
+        "name": "jobs dismiss",
+        "description": "Saia de seu emprego",
+        "siteAvaible": false,
+        "category": "economy"
+    },
+    {
+        "name": "jobs search",
+        "description": "Procure por empregos",
+        "siteAvaible": false,
+        "category": "economy"
+    },
+    {
+        "name": "leaderboard",
+        "description": "Veja o ranking de mais ricos",
+        "siteAvaible": false,
+        "category": "economy"
+    },
+    {
+        "name": "miscelanius cooldowns",
+        "description": "Veja seus cooldowns pendentes",
+        "siteAvaible": false,
+        "category": "general"
+    },
+    {
+        "name": "miscelanius count",
+        "description": "Veja eu contar o máximo possivel em segundos",
+        "siteAvaible": false,
+        "category": "general"
+    },
+    {
+        "name": "suporte reportar bug",
+        "description": "Reportar um bug",
+        "siteAvaible": false,
+        "category": "general"
+    },
+    {
+        "name": "suporte reportar usuario",
+        "description": "Reportar um usuário",
+        "siteAvaible": false,
+        "category": "general"
+    },
+    {
+        "name": "suporte sugestao",
+        "description": "Enviar uma sugestão",
+        "siteAvaible": false,
+        "category": "general"
+    },
+    {
+        "name": "user avatar",
+        "description": "Veja o avatar de um usuário",
+        "siteAvaible": false,
+        "category": "general"
+    },
+    {
+        "name": "user logs",
+        "description": "Veja suas logs",
+        "siteAvaible": false,
+        "category": "general"
+    },
+    {
+        "name": "work",
+        "description": "Trabalhe para ganhar dinheiro",
+        "siteAvaible": false,
+        "category": "economy"
+    },
+    {
+        "name": "xp add",
+        "description": "Adicionar xp a alguem",
+        "siteAvaible": false,
+        "category": "moderation"
+    },
+    {
+        "name": "xp remove",
+        "description": "Remover xp de alguem",
+        "siteAvaible": false,
+        "category": "moderation"
+    },
+    {
+        "name": "xp reset user",
+        "description": "Resetar o xp de algúem",
+        "siteAvaible": false,
+        "category": "moderation"
+    },
+    {
+        "name": "xp reset server",
+        "description": "Resetar o xp de alguem",
+        "siteAvaible": false,
+        "category": "moderation"
+    },
+    {
+        "name": "xp user",
+        "description": "Ver o xp de alguem",
+        "siteAvaible": false,
+        "category": "general"
+    },
+    {
+        "name": "xp rank",
+        "description": "Ver o ranking de xp",
+        "siteAvaible": false,
+        "category": "general"
+    }
+]

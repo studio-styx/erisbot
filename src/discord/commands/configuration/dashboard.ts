@@ -1,11 +1,7 @@
 import { createCommand } from "#base";
-import { getServerSettings, res, setServerSettings } from "#functions";
-import { menus } from "#menus";
-import { PrismaClient } from "#prisma";
-import { ApplicationCommandType } from "discord.js";
-
-const prisma = new PrismaClient();
-
+import { icon, res } from "#functions";
+import { createRow } from "@magicyan/discord";
+import { ApplicationCommandType, ButtonBuilder, ButtonStyle } from "discord.js";
 createCommand({
     name: "dashboard",
     description: "see the dashboard configuration",
@@ -28,20 +24,19 @@ createCommand({
             return;
         }
 
-        let serverSettings = getServerSettings(interaction.guildId);
-        if (!serverSettings) {
-            serverSettings = await prisma.guildSettings.findUnique({ where: { id: interaction.guildId } }) || {
-                chatBotChannels: [],
-                chatBotEnabled: false,
-                channelsCommandDisabled: [],
-                channelsCommandEnabled: [],
-                channelsCommandDisabledIsHabilited: false,
-                channelsCommandEnabledIsHabilited: false,
-            }
-            setServerSettings(interaction.guildId, serverSettings);
-        }
+        interaction.reply({
+            content: `ei, sabia que agora pode configurar seu server via website? clique no boão abaixo! ${icon.Eris_kiss_left}`,
+            components: [
+                createRow(
+                    new ButtonBuilder({
+                        style: ButtonStyle.Link,
+                        label: "Dashboard",
+                        url: `${process.env.FRONT_BASE_URL}/guilds/${interaction.guild.id}`
+                    })
+                )
+            ]
+        })
 
-        interaction.reply(menus.settings.dashboard(serverSettings))
         return;
     }
 });
