@@ -1,7 +1,7 @@
 import { API, generateJWT } from "#functions";
 import { Client } from "discord.js";
 import { FastifyInstance } from "fastify";
-import { setAuth } from "functions/api/auth.js";
+import { setAuth } from "#functions";
 
 interface RouteGeneric {
     Querystring: {

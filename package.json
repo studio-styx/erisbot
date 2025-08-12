@@ -1,6 +1,6 @@
 {
   "name": "eris",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "type": "module",
   "main": "src/index.ts",
   "scripts": {
@@ -10,8 +10,8 @@
     "dev:dev": "bun --env-file .env.dev ./src/index.ts",
     "watch": "bun --watch --env-file .env ./src/index.ts",
     "watch:dev": "bun --hot --env-file .env.dev ./src/index.ts",
-    "start": "bun --env-file .env .",
-    "start:dev": "bun --env-file .env.dev ."
+    "start": "node --env-file .env ./build/index.js",
+    "start:dev": "node --env-file .env.dev ."
   },
   "dependencies": {
     "@fastify/autoload": "^6.3.1",
@@ -19,7 +19,7 @@
     "@fastify/cors": "10.0.1",
     "@fastify/rate-limit": "^10.3.0",
     "@google/generative-ai": "^0.24.1",
-    "@magicyan/discord": "1.4.11",
+    "@magicyan/discord": "^1.4.11",
     "@napi-rs/canvas": "^0.1.76",
     "@prisma/client": "^6.13.0",
     "@reliverse/reglob": "1.0.0",

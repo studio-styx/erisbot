@@ -1,5 +1,5 @@
 import { prisma } from "#database";
-import { getServerSettings, defaultServerSettings, setServerSettings, res, icon } from "#functions";
+import { getServerSettings, defaultServerSettings, setServerSettings, res, icon, ServerSettings, RoleXpBonus, ChannelXpBonus, LevelGrant, WarnLevelUp } from "#functions";
 import { brBuilder } from "@magicyan/discord";
 import { OmitPartialGroupDMChannel, Message, User } from "discord.js";
 import NodeCache from "node-cache";
@@ -24,13 +24,33 @@ const setMessages = (channelId: string, messages: MessagesHistory[]) => cache.se
 export async function chatBot(message: OmitPartialGroupDMChannel<Message<boolean>>) {
     // Ignora mensagens de bots e da própria Éris
     if (message.author.bot || message.author.id === message.client.user.id) return;
-    if (!message.guild || !message.guildId) return;
-    const serverSettings = getServerSettings(message.guildId) || await prisma.guildSettings.findUnique({ where: { id: message.guildId } }) || defaultServerSettings;
+    if (!message.guild || !message.guildId) return; 
+    const serverSettings = getServerSettings(message.guildId)
+        || await prisma.guildSettings.findUnique({ where: { id: message.guildId } })
+        || defaultServerSettings;
 
-    if (!serverSettings.chatBotEnabled) return;
-    if (!serverSettings.chatBotChannels.includes(message.channelId)) return;
+    const s: ServerSettings = {
+        ...serverSettings,
+        rolesXpBonus: serverSettings.rolesXpBonus ? JSON.parse(JSON.stringify(serverSettings.rolesXpBonus)) as RoleXpBonus[] : [],
+        channelsXpBonus: serverSettings.channelsXpBonus ? JSON.parse(JSON.stringify(serverSettings.channelsXpBonus)) as ChannelXpBonus[] : [],
+        levelGrant: serverSettings.levelGrant ? JSON.parse(JSON.stringify(serverSettings.levelGrant)) as LevelGrant[] : [],
+        warnLevelUp: serverSettings.warnLevelUp ? JSON.parse(JSON.stringify(serverSettings.warnLevelUp)) as WarnLevelUp : {
+            channel: "",
+            enabled: false,
+            message: {
+                embed: {
+                    title: undefined, description: undefined, color: 0, thumbnail: undefined, footer: { text: undefined, icon_url: undefined }, image: undefined
+                },
+                content: undefined
+            },
+            onlyIfWinSomeReward: false
+        }
+    };
 
-    setServerSettings(message.guildId, serverSettings);
+    if (!s.chatBotEnabled) return;
+    if (!s.chatBotChannels.includes(message.channelId)) return;
+
+    setServerSettings(message.guildId, s);
 
     processMessages(message);
 }

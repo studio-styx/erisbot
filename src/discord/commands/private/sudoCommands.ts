@@ -55,43 +55,8 @@ createCommand({
 
         switch (subcommand) {
             case "database": {
-                await interaction.deferReply();
-                const [_log, _cooldown, companies, users, stocks, stockHoldings, stockHistories, mails, guildSettings] =
-                    await prisma.$transaction([
-                        prisma.log.deleteMany(),
-                        prisma.cooldown.deleteMany(),
-                        prisma.company.findMany(),
-                        prisma.user.findMany(),
-                        prisma.stock.findMany(),
-                        prisma.stockHolding.findMany(),
-                        prisma.stockHistory.findMany(),
-                        prisma.mails.findMany(),
-                        prisma.guildSettings.findMany(),
-                    ]);
-
-
-                const transform = (data: any[]) => data.map(({ id, ...rest }) => rest);
-
-                await prisma.$transaction([
-                    prisma.company.deleteMany(),
-                    prisma.user.deleteMany(),
-                    prisma.stock.deleteMany(),
-                    prisma.stockHolding.deleteMany(),
-                    prisma.stockHistory.deleteMany(),
-                    prisma.mails.deleteMany(),
-                    prisma.guildSettings.deleteMany(),
-                    prisma.cooldown.deleteMany(),
-
-                    prisma.company.createMany({ data: transform(companies) }),
-                    prisma.user.createMany({ data: users }),
-                    prisma.stock.createMany({ data: transform(stocks) }),
-                    prisma.stockHolding.createMany({ data: transform(stockHoldings) }),
-                    prisma.stockHistory.createMany({ data: transform(stockHistories) }),
-                    prisma.mails.createMany({ data: transform(mails) }),
-                    prisma.guildSettings.createMany({ data: guildSettings }),
-                ]);
-
-                interaction.editReply(res.success("Database reset"));
+                
+                interaction.editReply(res.success("nada ocorreu"));
                 return;
             }
             case "test": {

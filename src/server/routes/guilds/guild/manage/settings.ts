@@ -144,6 +144,15 @@ export default async function getGuildRoute(app: FastifyInstance, client: Client
 
                 if (!channel.isTextBased()) return reply.status(400).send({ error: "Warn level up: channel is not a text channel" })
             }
+            if (
+                !body.warnLevelUp.message.content &&
+                !body.warnLevelUp.message.embed?.title &&
+                !body.warnLevelUp.message.embed?.description &&
+                !body.warnLevelUp.message.embed?.footer &&
+                !body.warnLevelUp.message.embed?.image
+                ) {
+                    return reply.status(StatusCodes).send({ error: "Warn level up: message is empty" });
+                }
         }
 
         await prisma.guildSettings.upsert({

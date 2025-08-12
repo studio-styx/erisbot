@@ -2,7 +2,6 @@ import { icon } from "#functions";
 import { settings } from "#settings";
 import { brBuilder, createContainer, createRow, createSection, createSeparator } from "@magicyan/discord";
 import { ButtonBuilder, ButtonStyle, User, version, type InteractionReplyOptions, } from "discord.js";
-import { BASE_VERSION } from "discord/base/base.version.js";
 import { existsSync, readFileSync } from "fs";
 import si from 'systeminformation'
 
@@ -123,7 +122,7 @@ export async function botInfoMenu<R>(page: 'main' | 'hardware' | 'software' | 'c
                     `> **Versão do ${runtime.name}:** ${runtime.version}`,
                     `> **Versão do Discord.js:** ${djsVersion || "14.x.x"}`,
                     `> **Versão do Magycian Discord:** ${magycianVersion}`,
-                    `> **Versão do Constatic:** ${BASE_VERSION}`,
+                    `> **Versão do Constatic:** 1.3.7`,
                     `> **Minha versão:** ${settings.bot.version}`,
                     `> **Sistema operacional:** ${getOSInfo()}`
                 ),
@@ -141,7 +140,8 @@ export async function botInfoMenu<R>(page: 'main' | 'hardware' | 'software' | 'c
                     `- Sabia que era pra eu ter originalmente sido feita em Kotlin? é possivel ver meu código antigo nos primeiros commits do meu github`,
                     `- Sou hospedada pela [SquareCloud!](https://squarecloud.app/)`,
                     `- Você pode utilizar minha versão **canary** no nosso servidor principal! acesse-o apertando no botão abaixo`,
-                    "- O meu servidor é uma **botlist**! você que é dev pode estar adicionando sua aplicação ao nosso servidor"
+                    "- O meu servidor é uma **botlist**! você que é dev pode estar adicionando sua aplicação ao nosso servidor",
+                    `- Sabia que agora eu possuo um website? você pode acessar ele em: **https://erisbot.squareweb.app/**`
                 ),
             )
             break;
@@ -154,6 +154,7 @@ export async function botInfoMenu<R>(page: 'main' | 'hardware' | 'software' | 'c
                         `# Olá ${user.username.replace(/([\\_*~`|>])/g, '\\$1')}, veja minhas informações abaixo! ${icon.Eris_happy_left}`,
                         "Sou uma bot de discord focada em economia e rpg, tenho vários recursos avançados, como entrevistas para emprego, investimentos e apostas!",
                         "Minha desenvolvedora é o **Studio Styx**, comandado por **BirdTool**",
+                        "Meu site é **https://erisbot.squareweb.app/**",
                         "Selecione uma área para ver mais detalhes"
                     )
                 }),
