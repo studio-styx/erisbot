@@ -151,8 +151,8 @@ export default async function getGuildRoute(app: FastifyInstance, client: Client
                 !body.warnLevelUp.message.embed?.footer &&
                 !body.warnLevelUp.message.embed?.image
                 ) {
-                    return reply.status(StatusCodes).send({ error: "Warn level up: message is empty" });
-                }
+                    return reply.status(400).send({ error: "Warn level up: message is empty" });
+            }
         }
 
         await prisma.guildSettings.upsert({

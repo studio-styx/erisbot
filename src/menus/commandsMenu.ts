@@ -80,23 +80,35 @@ export async function commandsMenu<R>(page: "economy" | "bot" | "user" | "modera
             break;
         }
         case "user": {
-            const user = await getCommandId(interaction, "user")
+            const [user, xp] = await Promise.all([
+                getCommandId(interaction, "user"),
+                getCommandId(interaction, "xp")
+            ])
 
             embed.addFields({
                 name: "",
                 value: brBuilder(
                     `**</user logs:${user}>** - Ver seus registros`,
                     `**</user avatar:${user}>** - Ver seu avatar`,
+                    `**</xp rank:${xp}>** - Ver o rank de xp dos usuários do servidor`,
+                    `**</xp user:${xp}>** - Ver o xp de um usuário`,
                 )
             })
             break;
         }
         case "moderation": {
-            const dashboardCommandId = await getCommandId(interaction, "dashboard")
+            const [dashboardCommandId, xpCommandId] = await Promise.all([
+                getCommandId(interaction, "dashboard"),
+                getCommandId(interaction, "xp")
+            ])
             embed.addFields({
                 name: "",
                 value: brBuilder(
                     `**</dashboard:${dashboardCommandId}>** - dashboard`,
+                    `**</xp add:${xpCommandId}>** - Adicionar xp a um usuário`,
+                    `**</xp remove:${xpCommandId}>** - Remover xp de um usuário`,
+                    `**</xp reset user:${xpCommandId}>** - Resetar o xp de um usuário`,
+                    `**</xp reset server:${xpCommandId}>** - Resetar o xp do server`,
                 )
             })
             break;
