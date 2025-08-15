@@ -5,7 +5,8 @@
 /deprecated
 /node_modules
 /prisma/prisma
-/prisma/erisHelper.prisma
+/prisma/erishelper/
+/prisma/devzone/
 
 # Files
 /.env

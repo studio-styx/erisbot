@@ -146,7 +146,10 @@ exports.Prisma.ApplicationScalarFieldEnum = {
   lib: 'lib',
   description: 'description',
   prefix: 'prefix',
-  prefix2: 'prefix2',
+  website: 'website',
+  github: 'github',
+  supportServerLink: 'supportServerLink',
+  hasSlashCommands: 'hasSlashCommands',
   createdAt: 'createdAt',
   analyzeId: 'analyzeId',
   carefulAnalysis: 'carefulAnalysis'

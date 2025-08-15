@@ -30,7 +30,7 @@ export default async function meRoute(app: FastifyInstance, client: Client<true>
                 "logs",
                 "mails",
                 "sendedMails",
-                "stocks"
+                "stocks",
             ]);
 
             const includeObj: Record<string, boolean> = {};

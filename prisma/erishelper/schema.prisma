@@ -5,7 +5,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("AS_DATABASE_URL")
+  url      = env("DEV_AS_DATABASE_URL")
 }
 
 model User {
@@ -33,20 +33,23 @@ model Votes {
 }
 
 model Application {
-  id              String   @id
-  userId          String
-  user            User     @relation(fields: [userId], references: [id])
-  name            String
-  votes           Votes[]
-  language        String
-  lib             String
-  description     String?
-  prefix          String
-  prefix2         String?
-  createdAt       DateTime @default(now())
-  analyzeId       Int?     @unique
-  analyze         Analyze? @relation(fields: [analyzeId], references: [id])
-  carefulAnalysis Boolean  @default(false)
+  id                String   @id
+  userId            String
+  user              User     @relation(fields: [userId], references: [id])
+  name              String
+  votes             Votes[]
+  language          String
+  lib               String
+  description       String?
+  prefix            String?
+  website           String?
+  github            String?
+  supportServerLink String?
+  hasSlashCommands  Boolean  @default(false)
+  createdAt         DateTime @default(now())
+  analyzeId         Int?     @unique
+  analyze           Analyze? @relation(fields: [analyzeId], references: [id])
+  carefulAnalysis   Boolean  @default(false)
 }
 
 model Cooldown {

@@ -60,7 +60,7 @@ createEvent({
         app.addHook("onRequest", async (req, res) => {
             console.log("Request:", req.url, "method:", req.method)
             if (req.url.startsWith("/auth")) return;
-            if (req.url.startsWith("/user") || req.url.startsWith("/guilds")) {
+            if (req.url.startsWith("/user") || req.url.startsWith("/guilds") || req.url.startsWith("/botlist")) {
                 const token = req.cookies.auth;
                 if (!token) return res.status(StatusCodes.UNAUTHORIZED).send({ error: "Not logged in" });
                 const secret = process.env.JWT_SECRET || (typeof jwtReservedToken === "function" ? jwtReservedToken : jwtReservedToken);

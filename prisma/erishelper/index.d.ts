@@ -3893,7 +3893,10 @@ export namespace Prisma {
     lib: string | null
     description: string | null
     prefix: string | null
-    prefix2: string | null
+    website: string | null
+    github: string | null
+    supportServerLink: string | null
+    hasSlashCommands: boolean | null
     createdAt: Date | null
     analyzeId: number | null
     carefulAnalysis: boolean | null
@@ -3907,7 +3910,10 @@ export namespace Prisma {
     lib: string | null
     description: string | null
     prefix: string | null
-    prefix2: string | null
+    website: string | null
+    github: string | null
+    supportServerLink: string | null
+    hasSlashCommands: boolean | null
     createdAt: Date | null
     analyzeId: number | null
     carefulAnalysis: boolean | null
@@ -3921,7 +3927,10 @@ export namespace Prisma {
     lib: number
     description: number
     prefix: number
-    prefix2: number
+    website: number
+    github: number
+    supportServerLink: number
+    hasSlashCommands: number
     createdAt: number
     analyzeId: number
     carefulAnalysis: number
@@ -3945,7 +3954,10 @@ export namespace Prisma {
     lib?: true
     description?: true
     prefix?: true
-    prefix2?: true
+    website?: true
+    github?: true
+    supportServerLink?: true
+    hasSlashCommands?: true
     createdAt?: true
     analyzeId?: true
     carefulAnalysis?: true
@@ -3959,7 +3971,10 @@ export namespace Prisma {
     lib?: true
     description?: true
     prefix?: true
-    prefix2?: true
+    website?: true
+    github?: true
+    supportServerLink?: true
+    hasSlashCommands?: true
     createdAt?: true
     analyzeId?: true
     carefulAnalysis?: true
@@ -3973,7 +3988,10 @@ export namespace Prisma {
     lib?: true
     description?: true
     prefix?: true
-    prefix2?: true
+    website?: true
+    github?: true
+    supportServerLink?: true
+    hasSlashCommands?: true
     createdAt?: true
     analyzeId?: true
     carefulAnalysis?: true
@@ -4073,8 +4091,11 @@ export namespace Prisma {
     language: string
     lib: string
     description: string | null
-    prefix: string
-    prefix2: string | null
+    prefix: string | null
+    website: string | null
+    github: string | null
+    supportServerLink: string | null
+    hasSlashCommands: boolean
     createdAt: Date
     analyzeId: number | null
     carefulAnalysis: boolean
@@ -4107,7 +4128,10 @@ export namespace Prisma {
     lib?: boolean
     description?: boolean
     prefix?: boolean
-    prefix2?: boolean
+    website?: boolean
+    github?: boolean
+    supportServerLink?: boolean
+    hasSlashCommands?: boolean
     createdAt?: boolean
     analyzeId?: boolean
     carefulAnalysis?: boolean
@@ -4125,7 +4149,10 @@ export namespace Prisma {
     lib?: boolean
     description?: boolean
     prefix?: boolean
-    prefix2?: boolean
+    website?: boolean
+    github?: boolean
+    supportServerLink?: boolean
+    hasSlashCommands?: boolean
     createdAt?: boolean
     analyzeId?: boolean
     carefulAnalysis?: boolean
@@ -4141,7 +4168,10 @@ export namespace Prisma {
     lib?: boolean
     description?: boolean
     prefix?: boolean
-    prefix2?: boolean
+    website?: boolean
+    github?: boolean
+    supportServerLink?: boolean
+    hasSlashCommands?: boolean
     createdAt?: boolean
     analyzeId?: boolean
     carefulAnalysis?: boolean
@@ -4157,13 +4187,16 @@ export namespace Prisma {
     lib?: boolean
     description?: boolean
     prefix?: boolean
-    prefix2?: boolean
+    website?: boolean
+    github?: boolean
+    supportServerLink?: boolean
+    hasSlashCommands?: boolean
     createdAt?: boolean
     analyzeId?: boolean
     carefulAnalysis?: boolean
   }
 
-  export type ApplicationOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "name" | "language" | "lib" | "description" | "prefix" | "prefix2" | "createdAt" | "analyzeId" | "carefulAnalysis", ExtArgs["result"]["application"]>
+  export type ApplicationOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "name" | "language" | "lib" | "description" | "prefix" | "website" | "github" | "supportServerLink" | "hasSlashCommands" | "createdAt" | "analyzeId" | "carefulAnalysis", ExtArgs["result"]["application"]>
   export type ApplicationInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
     votes?: boolean | Application$votesArgs<ExtArgs>
@@ -4193,8 +4226,11 @@ export namespace Prisma {
       language: string
       lib: string
       description: string | null
-      prefix: string
-      prefix2: string | null
+      prefix: string | null
+      website: string | null
+      github: string | null
+      supportServerLink: string | null
+      hasSlashCommands: boolean
       createdAt: Date
       analyzeId: number | null
       carefulAnalysis: boolean
@@ -4631,7 +4667,10 @@ export namespace Prisma {
     readonly lib: FieldRef<"Application", 'String'>
     readonly description: FieldRef<"Application", 'String'>
     readonly prefix: FieldRef<"Application", 'String'>
-    readonly prefix2: FieldRef<"Application", 'String'>
+    readonly website: FieldRef<"Application", 'String'>
+    readonly github: FieldRef<"Application", 'String'>
+    readonly supportServerLink: FieldRef<"Application", 'String'>
+    readonly hasSlashCommands: FieldRef<"Application", 'Boolean'>
     readonly createdAt: FieldRef<"Application", 'DateTime'>
     readonly analyzeId: FieldRef<"Application", 'Int'>
     readonly carefulAnalysis: FieldRef<"Application", 'Boolean'>
@@ -9498,7 +9537,10 @@ export namespace Prisma {
     lib: 'lib',
     description: 'description',
     prefix: 'prefix',
-    prefix2: 'prefix2',
+    website: 'website',
+    github: 'github',
+    supportServerLink: 'supportServerLink',
+    hasSlashCommands: 'hasSlashCommands',
     createdAt: 'createdAt',
     analyzeId: 'analyzeId',
     carefulAnalysis: 'carefulAnalysis'
@@ -9793,8 +9835,11 @@ export namespace Prisma {
     language?: StringFilter<"Application"> | string
     lib?: StringFilter<"Application"> | string
     description?: StringNullableFilter<"Application"> | string | null
-    prefix?: StringFilter<"Application"> | string
-    prefix2?: StringNullableFilter<"Application"> | string | null
+    prefix?: StringNullableFilter<"Application"> | string | null
+    website?: StringNullableFilter<"Application"> | string | null
+    github?: StringNullableFilter<"Application"> | string | null
+    supportServerLink?: StringNullableFilter<"Application"> | string | null
+    hasSlashCommands?: BoolFilter<"Application"> | boolean
     createdAt?: DateTimeFilter<"Application"> | Date | string
     analyzeId?: IntNullableFilter<"Application"> | number | null
     carefulAnalysis?: BoolFilter<"Application"> | boolean
@@ -9810,8 +9855,11 @@ export namespace Prisma {
     language?: SortOrder
     lib?: SortOrder
     description?: SortOrderInput | SortOrder
-    prefix?: SortOrder
-    prefix2?: SortOrderInput | SortOrder
+    prefix?: SortOrderInput | SortOrder
+    website?: SortOrderInput | SortOrder
+    github?: SortOrderInput | SortOrder
+    supportServerLink?: SortOrderInput | SortOrder
+    hasSlashCommands?: SortOrder
     createdAt?: SortOrder
     analyzeId?: SortOrderInput | SortOrder
     carefulAnalysis?: SortOrder
@@ -9831,8 +9879,11 @@ export namespace Prisma {
     language?: StringFilter<"Application"> | string
     lib?: StringFilter<"Application"> | string
     description?: StringNullableFilter<"Application"> | string | null
-    prefix?: StringFilter<"Application"> | string
-    prefix2?: StringNullableFilter<"Application"> | string | null
+    prefix?: StringNullableFilter<"Application"> | string | null
+    website?: StringNullableFilter<"Application"> | string | null
+    github?: StringNullableFilter<"Application"> | string | null
+    supportServerLink?: StringNullableFilter<"Application"> | string | null
+    hasSlashCommands?: BoolFilter<"Application"> | boolean
     createdAt?: DateTimeFilter<"Application"> | Date | string
     carefulAnalysis?: BoolFilter<"Application"> | boolean
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
@@ -9847,8 +9898,11 @@ export namespace Prisma {
     language?: SortOrder
     lib?: SortOrder
     description?: SortOrderInput | SortOrder
-    prefix?: SortOrder
-    prefix2?: SortOrderInput | SortOrder
+    prefix?: SortOrderInput | SortOrder
+    website?: SortOrderInput | SortOrder
+    github?: SortOrderInput | SortOrder
+    supportServerLink?: SortOrderInput | SortOrder
+    hasSlashCommands?: SortOrder
     createdAt?: SortOrder
     analyzeId?: SortOrderInput | SortOrder
     carefulAnalysis?: SortOrder
@@ -9869,8 +9923,11 @@ export namespace Prisma {
     language?: StringWithAggregatesFilter<"Application"> | string
     lib?: StringWithAggregatesFilter<"Application"> | string
     description?: StringNullableWithAggregatesFilter<"Application"> | string | null
-    prefix?: StringWithAggregatesFilter<"Application"> | string
-    prefix2?: StringNullableWithAggregatesFilter<"Application"> | string | null
+    prefix?: StringNullableWithAggregatesFilter<"Application"> | string | null
+    website?: StringNullableWithAggregatesFilter<"Application"> | string | null
+    github?: StringNullableWithAggregatesFilter<"Application"> | string | null
+    supportServerLink?: StringNullableWithAggregatesFilter<"Application"> | string | null
+    hasSlashCommands?: BoolWithAggregatesFilter<"Application"> | boolean
     createdAt?: DateTimeWithAggregatesFilter<"Application"> | Date | string
     analyzeId?: IntNullableWithAggregatesFilter<"Application"> | number | null
     carefulAnalysis?: BoolWithAggregatesFilter<"Application"> | boolean
@@ -10255,8 +10312,11 @@ export namespace Prisma {
     language: string
     lib: string
     description?: string | null
-    prefix: string
-    prefix2?: string | null
+    prefix?: string | null
+    website?: string | null
+    github?: string | null
+    supportServerLink?: string | null
+    hasSlashCommands?: boolean
     createdAt?: Date | string
     carefulAnalysis?: boolean
     user: UserCreateNestedOneWithoutApplicationsInput
@@ -10271,8 +10331,11 @@ export namespace Prisma {
     language: string
     lib: string
     description?: string | null
-    prefix: string
-    prefix2?: string | null
+    prefix?: string | null
+    website?: string | null
+    github?: string | null
+    supportServerLink?: string | null
+    hasSlashCommands?: boolean
     createdAt?: Date | string
     analyzeId?: number | null
     carefulAnalysis?: boolean
@@ -10285,8 +10348,11 @@ export namespace Prisma {
     language?: StringFieldUpdateOperationsInput | string
     lib?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    prefix?: StringFieldUpdateOperationsInput | string
-    prefix2?: NullableStringFieldUpdateOperationsInput | string | null
+    prefix?: NullableStringFieldUpdateOperationsInput | string | null
+    website?: NullableStringFieldUpdateOperationsInput | string | null
+    github?: NullableStringFieldUpdateOperationsInput | string | null
+    supportServerLink?: NullableStringFieldUpdateOperationsInput | string | null
+    hasSlashCommands?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     carefulAnalysis?: BoolFieldUpdateOperationsInput | boolean
     user?: UserUpdateOneRequiredWithoutApplicationsNestedInput
@@ -10301,8 +10367,11 @@ export namespace Prisma {
     language?: StringFieldUpdateOperationsInput | string
     lib?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    prefix?: StringFieldUpdateOperationsInput | string
-    prefix2?: NullableStringFieldUpdateOperationsInput | string | null
+    prefix?: NullableStringFieldUpdateOperationsInput | string | null
+    website?: NullableStringFieldUpdateOperationsInput | string | null
+    github?: NullableStringFieldUpdateOperationsInput | string | null
+    supportServerLink?: NullableStringFieldUpdateOperationsInput | string | null
+    hasSlashCommands?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     analyzeId?: NullableIntFieldUpdateOperationsInput | number | null
     carefulAnalysis?: BoolFieldUpdateOperationsInput | boolean
@@ -10316,8 +10385,11 @@ export namespace Prisma {
     language: string
     lib: string
     description?: string | null
-    prefix: string
-    prefix2?: string | null
+    prefix?: string | null
+    website?: string | null
+    github?: string | null
+    supportServerLink?: string | null
+    hasSlashCommands?: boolean
     createdAt?: Date | string
     analyzeId?: number | null
     carefulAnalysis?: boolean
@@ -10329,8 +10401,11 @@ export namespace Prisma {
     language?: StringFieldUpdateOperationsInput | string
     lib?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    prefix?: StringFieldUpdateOperationsInput | string
-    prefix2?: NullableStringFieldUpdateOperationsInput | string | null
+    prefix?: NullableStringFieldUpdateOperationsInput | string | null
+    website?: NullableStringFieldUpdateOperationsInput | string | null
+    github?: NullableStringFieldUpdateOperationsInput | string | null
+    supportServerLink?: NullableStringFieldUpdateOperationsInput | string | null
+    hasSlashCommands?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     carefulAnalysis?: BoolFieldUpdateOperationsInput | boolean
   }
@@ -10342,8 +10417,11 @@ export namespace Prisma {
     language?: StringFieldUpdateOperationsInput | string
     lib?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    prefix?: StringFieldUpdateOperationsInput | string
-    prefix2?: NullableStringFieldUpdateOperationsInput | string | null
+    prefix?: NullableStringFieldUpdateOperationsInput | string | null
+    website?: NullableStringFieldUpdateOperationsInput | string | null
+    github?: NullableStringFieldUpdateOperationsInput | string | null
+    supportServerLink?: NullableStringFieldUpdateOperationsInput | string | null
+    hasSlashCommands?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     analyzeId?: NullableIntFieldUpdateOperationsInput | number | null
     carefulAnalysis?: BoolFieldUpdateOperationsInput | boolean
@@ -10874,7 +10952,10 @@ export namespace Prisma {
     lib?: SortOrder
     description?: SortOrder
     prefix?: SortOrder
-    prefix2?: SortOrder
+    website?: SortOrder
+    github?: SortOrder
+    supportServerLink?: SortOrder
+    hasSlashCommands?: SortOrder
     createdAt?: SortOrder
     analyzeId?: SortOrder
     carefulAnalysis?: SortOrder
@@ -10892,7 +10973,10 @@ export namespace Prisma {
     lib?: SortOrder
     description?: SortOrder
     prefix?: SortOrder
-    prefix2?: SortOrder
+    website?: SortOrder
+    github?: SortOrder
+    supportServerLink?: SortOrder
+    hasSlashCommands?: SortOrder
     createdAt?: SortOrder
     analyzeId?: SortOrder
     carefulAnalysis?: SortOrder
@@ -10906,7 +10990,10 @@ export namespace Prisma {
     lib?: SortOrder
     description?: SortOrder
     prefix?: SortOrder
-    prefix2?: SortOrder
+    website?: SortOrder
+    github?: SortOrder
+    supportServerLink?: SortOrder
+    hasSlashCommands?: SortOrder
     createdAt?: SortOrder
     analyzeId?: SortOrder
     carefulAnalysis?: SortOrder
@@ -11761,8 +11848,11 @@ export namespace Prisma {
     language: string
     lib: string
     description?: string | null
-    prefix: string
-    prefix2?: string | null
+    prefix?: string | null
+    website?: string | null
+    github?: string | null
+    supportServerLink?: string | null
+    hasSlashCommands?: boolean
     createdAt?: Date | string
     carefulAnalysis?: boolean
     votes?: VotesCreateNestedManyWithoutApplicationInput
@@ -11775,8 +11865,11 @@ export namespace Prisma {
     language: string
     lib: string
     description?: string | null
-    prefix: string
-    prefix2?: string | null
+    prefix?: string | null
+    website?: string | null
+    github?: string | null
+    supportServerLink?: string | null
+    hasSlashCommands?: boolean
     createdAt?: Date | string
     analyzeId?: number | null
     carefulAnalysis?: boolean
@@ -11894,8 +11987,11 @@ export namespace Prisma {
     language?: StringFilter<"Application"> | string
     lib?: StringFilter<"Application"> | string
     description?: StringNullableFilter<"Application"> | string | null
-    prefix?: StringFilter<"Application"> | string
-    prefix2?: StringNullableFilter<"Application"> | string | null
+    prefix?: StringNullableFilter<"Application"> | string | null
+    website?: StringNullableFilter<"Application"> | string | null
+    github?: StringNullableFilter<"Application"> | string | null
+    supportServerLink?: StringNullableFilter<"Application"> | string | null
+    hasSlashCommands?: BoolFilter<"Application"> | boolean
     createdAt?: DateTimeFilter<"Application"> | Date | string
     analyzeId?: IntNullableFilter<"Application"> | number | null
     carefulAnalysis?: BoolFilter<"Application"> | boolean
@@ -12022,8 +12118,11 @@ export namespace Prisma {
     language: string
     lib: string
     description?: string | null
-    prefix: string
-    prefix2?: string | null
+    prefix?: string | null
+    website?: string | null
+    github?: string | null
+    supportServerLink?: string | null
+    hasSlashCommands?: boolean
     createdAt?: Date | string
     carefulAnalysis?: boolean
     user: UserCreateNestedOneWithoutApplicationsInput
@@ -12037,8 +12136,11 @@ export namespace Prisma {
     language: string
     lib: string
     description?: string | null
-    prefix: string
-    prefix2?: string | null
+    prefix?: string | null
+    website?: string | null
+    github?: string | null
+    supportServerLink?: string | null
+    hasSlashCommands?: boolean
     createdAt?: Date | string
     analyzeId?: number | null
     carefulAnalysis?: boolean
@@ -12105,8 +12207,11 @@ export namespace Prisma {
     language?: StringFieldUpdateOperationsInput | string
     lib?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    prefix?: StringFieldUpdateOperationsInput | string
-    prefix2?: NullableStringFieldUpdateOperationsInput | string | null
+    prefix?: NullableStringFieldUpdateOperationsInput | string | null
+    website?: NullableStringFieldUpdateOperationsInput | string | null
+    github?: NullableStringFieldUpdateOperationsInput | string | null
+    supportServerLink?: NullableStringFieldUpdateOperationsInput | string | null
+    hasSlashCommands?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     carefulAnalysis?: BoolFieldUpdateOperationsInput | boolean
     user?: UserUpdateOneRequiredWithoutApplicationsNestedInput
@@ -12120,8 +12225,11 @@ export namespace Prisma {
     language?: StringFieldUpdateOperationsInput | string
     lib?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    prefix?: StringFieldUpdateOperationsInput | string
-    prefix2?: NullableStringFieldUpdateOperationsInput | string | null
+    prefix?: NullableStringFieldUpdateOperationsInput | string | null
+    website?: NullableStringFieldUpdateOperationsInput | string | null
+    github?: NullableStringFieldUpdateOperationsInput | string | null
+    supportServerLink?: NullableStringFieldUpdateOperationsInput | string | null
+    hasSlashCommands?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     analyzeId?: NullableIntFieldUpdateOperationsInput | number | null
     carefulAnalysis?: BoolFieldUpdateOperationsInput | boolean
@@ -12430,8 +12538,11 @@ export namespace Prisma {
     language: string
     lib: string
     description?: string | null
-    prefix: string
-    prefix2?: string | null
+    prefix?: string | null
+    website?: string | null
+    github?: string | null
+    supportServerLink?: string | null
+    hasSlashCommands?: boolean
     createdAt?: Date | string
     carefulAnalysis?: boolean
     user: UserCreateNestedOneWithoutApplicationsInput
@@ -12445,8 +12556,11 @@ export namespace Prisma {
     language: string
     lib: string
     description?: string | null
-    prefix: string
-    prefix2?: string | null
+    prefix?: string | null
+    website?: string | null
+    github?: string | null
+    supportServerLink?: string | null
+    hasSlashCommands?: boolean
     createdAt?: Date | string
     carefulAnalysis?: boolean
     votes?: VotesUncheckedCreateNestedManyWithoutApplicationInput
@@ -12530,8 +12644,11 @@ export namespace Prisma {
     language?: StringFieldUpdateOperationsInput | string
     lib?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    prefix?: StringFieldUpdateOperationsInput | string
-    prefix2?: NullableStringFieldUpdateOperationsInput | string | null
+    prefix?: NullableStringFieldUpdateOperationsInput | string | null
+    website?: NullableStringFieldUpdateOperationsInput | string | null
+    github?: NullableStringFieldUpdateOperationsInput | string | null
+    supportServerLink?: NullableStringFieldUpdateOperationsInput | string | null
+    hasSlashCommands?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     carefulAnalysis?: BoolFieldUpdateOperationsInput | boolean
     user?: UserUpdateOneRequiredWithoutApplicationsNestedInput
@@ -12545,8 +12662,11 @@ export namespace Prisma {
     language?: StringFieldUpdateOperationsInput | string
     lib?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    prefix?: StringFieldUpdateOperationsInput | string
-    prefix2?: NullableStringFieldUpdateOperationsInput | string | null
+    prefix?: NullableStringFieldUpdateOperationsInput | string | null
+    website?: NullableStringFieldUpdateOperationsInput | string | null
+    github?: NullableStringFieldUpdateOperationsInput | string | null
+    supportServerLink?: NullableStringFieldUpdateOperationsInput | string | null
+    hasSlashCommands?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     carefulAnalysis?: BoolFieldUpdateOperationsInput | boolean
     votes?: VotesUncheckedUpdateManyWithoutApplicationNestedInput
@@ -12624,8 +12744,11 @@ export namespace Prisma {
     language: string
     lib: string
     description?: string | null
-    prefix: string
-    prefix2?: string | null
+    prefix?: string | null
+    website?: string | null
+    github?: string | null
+    supportServerLink?: string | null
+    hasSlashCommands?: boolean
     createdAt?: Date | string
     analyzeId?: number | null
     carefulAnalysis?: boolean
@@ -12659,8 +12782,11 @@ export namespace Prisma {
     language?: StringFieldUpdateOperationsInput | string
     lib?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    prefix?: StringFieldUpdateOperationsInput | string
-    prefix2?: NullableStringFieldUpdateOperationsInput | string | null
+    prefix?: NullableStringFieldUpdateOperationsInput | string | null
+    website?: NullableStringFieldUpdateOperationsInput | string | null
+    github?: NullableStringFieldUpdateOperationsInput | string | null
+    supportServerLink?: NullableStringFieldUpdateOperationsInput | string | null
+    hasSlashCommands?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     carefulAnalysis?: BoolFieldUpdateOperationsInput | boolean
     votes?: VotesUpdateManyWithoutApplicationNestedInput
@@ -12673,8 +12799,11 @@ export namespace Prisma {
     language?: StringFieldUpdateOperationsInput | string
     lib?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    prefix?: StringFieldUpdateOperationsInput | string
-    prefix2?: NullableStringFieldUpdateOperationsInput | string | null
+    prefix?: NullableStringFieldUpdateOperationsInput | string | null
+    website?: NullableStringFieldUpdateOperationsInput | string | null
+    github?: NullableStringFieldUpdateOperationsInput | string | null
+    supportServerLink?: NullableStringFieldUpdateOperationsInput | string | null
+    hasSlashCommands?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     analyzeId?: NullableIntFieldUpdateOperationsInput | number | null
     carefulAnalysis?: BoolFieldUpdateOperationsInput | boolean
@@ -12687,8 +12816,11 @@ export namespace Prisma {
     language?: StringFieldUpdateOperationsInput | string
     lib?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    prefix?: StringFieldUpdateOperationsInput | string
-    prefix2?: NullableStringFieldUpdateOperationsInput | string | null
+    prefix?: NullableStringFieldUpdateOperationsInput | string | null
+    website?: NullableStringFieldUpdateOperationsInput | string | null
+    github?: NullableStringFieldUpdateOperationsInput | string | null
+    supportServerLink?: NullableStringFieldUpdateOperationsInput | string | null
+    hasSlashCommands?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     analyzeId?: NullableIntFieldUpdateOperationsInput | number | null
     carefulAnalysis?: BoolFieldUpdateOperationsInput | boolean

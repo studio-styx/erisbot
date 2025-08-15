@@ -1,4 +1,5 @@
 import { PrismaClient } from "#prisma";
 
 export const prisma = new PrismaClient();
-export * from "./astronautPrisma.js"
+export * from "./erisHelper.js"
+export * from "./devzone.js"

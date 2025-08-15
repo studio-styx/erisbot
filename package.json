@@ -1,6 +1,6 @@
 {
   "name": "eris",
-  "version": "1.1.1",
+  "version": "1.1.3",
   "type": "module",
   "main": "src/index.ts",
   "scripts": {
@@ -71,6 +71,9 @@
     ],
     "#asPrisma": [
       "./prisma/erishelper/client.js"
+    ],
+    "#dzonePrisma": [
+      "./prisma/devzone/client.js"
     ]
   },
   "baseVersion": "1.3.7"
