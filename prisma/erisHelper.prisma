@@ -5,7 +5,7 @@ generator client {
 
 datasource db {
     provider = "postgresql"
-    url      = env("DEV_AS_DATABASE_URL")
+    url      = env("AS_DATABASE_URL")
 }
 
 model User {
@@ -24,12 +24,18 @@ model User {
 }
 
 model Votes {
-    id          Int @id @default(autoincrement())
-    userId      String
-    user        User @relation(fields: [userId], references: [id])
+    id            Int        @id @default(autoincrement())
+    userId        String
+    user          User       @relation(fields: [userId], references: [id])
     applicationId String
-    application Application @relation(fields: [applicationId], references: [id])
-    createdAt   DateTime @default(now())
+    application   Application @relation(fields: [applicationId], references: [id])
+    createdAt     DateTime   @default(now())
+    origin        Origin     @default(SERVER)
+}
+
+enum Origin {
+    SERVER
+    WEBSITE
 }
 
 model Application {

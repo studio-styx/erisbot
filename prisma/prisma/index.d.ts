@@ -123,13 +123,6 @@ export class PrismaClient<
    */
   $disconnect(): $Utils.JsPromise<void>;
 
-  /**
-   * Add a middleware
-   * @deprecated since 4.16.0. For new code, prefer client extensions instead.
-   * @see https://pris.ly/d/extensions
-   */
-  $use(cb: Prisma.Middleware): void
-
 /**
    * Executes a prepared raw query and returns the number of affected rows.
    * @example
@@ -376,8 +369,8 @@ export namespace Prisma {
   export import Exact = $Public.Exact
 
   /**
-   * Prisma Client JS version: 6.13.0
-   * Query Engine version: 361e86d0ea4987e9f53a565309b3eed797a6bcbd
+   * Prisma Client JS version: 6.14.0
+   * Query Engine version: 717184b7b35ea05dfa71a3236b7af656013e1e49
    */
   export type PrismaVersion = {
     client: string
@@ -1841,25 +1834,6 @@ export namespace Prisma {
     | 'runCommandRaw'
     | 'findRaw'
     | 'groupBy'
-
-  /**
-   * These options are being passed into the middleware as "params"
-   */
-  export type MiddlewareParams = {
-    model?: ModelName
-    action: PrismaAction
-    args: any
-    dataPath: string[]
-    runInTransaction: boolean
-  }
-
-  /**
-   * The `T` type makes sure, that the `return proceed` is not forgotten in the middleware implementation
-   */
-  export type Middleware<T = any> = (
-    params: MiddlewareParams,
-    next: (params: MiddlewareParams) => $Utils.JsPromise<T>,
-  ) => $Utils.JsPromise<T>
 
   // tested in getLogLevel.test.ts
   export function getLogLevel(log: Array<LogLevel | LogDefinition>): LogLevel | undefined;
@@ -3577,7 +3551,7 @@ export namespace Prisma {
   export type ApplicationGroupByOutputType = {
     id: string
     money: Decimal
-    token: string
+    token: string | null
     ownerId: string
     _count: ApplicationCountAggregateOutputType | null
     _avg: ApplicationAvgAggregateOutputType | null
@@ -3655,7 +3629,7 @@ export namespace Prisma {
     scalars: $Extensions.GetPayloadResult<{
       id: string
       money: Prisma.Decimal
-      token: string
+      token: string | null
       ownerId: string
     }, ExtArgs["result"]["application"]>
     composites: {}
@@ -16071,7 +16045,7 @@ export namespace Prisma {
     NOT?: ApplicationWhereInput | ApplicationWhereInput[]
     id?: StringFilter<"Application"> | string
     money?: DecimalFilter<"Application"> | Decimal | DecimalJsLike | number | string
-    token?: StringFilter<"Application"> | string
+    token?: StringNullableFilter<"Application"> | string | null
     ownerId?: StringFilter<"Application"> | string
     owner?: XOR<UserScalarRelationFilter, UserWhereInput>
     requisitions?: RequisitionListRelationFilter
@@ -16080,7 +16054,7 @@ export namespace Prisma {
   export type ApplicationOrderByWithRelationInput = {
     id?: SortOrder
     money?: SortOrder
-    token?: SortOrder
+    token?: SortOrderInput | SortOrder
     ownerId?: SortOrder
     owner?: UserOrderByWithRelationInput
     requisitions?: RequisitionOrderByRelationAggregateInput
@@ -16101,7 +16075,7 @@ export namespace Prisma {
   export type ApplicationOrderByWithAggregationInput = {
     id?: SortOrder
     money?: SortOrder
-    token?: SortOrder
+    token?: SortOrderInput | SortOrder
     ownerId?: SortOrder
     _count?: ApplicationCountOrderByAggregateInput
     _avg?: ApplicationAvgOrderByAggregateInput
@@ -16116,7 +16090,7 @@ export namespace Prisma {
     NOT?: ApplicationScalarWhereWithAggregatesInput | ApplicationScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"Application"> | string
     money?: DecimalWithAggregatesFilter<"Application"> | Decimal | DecimalJsLike | number | string
-    token?: StringWithAggregatesFilter<"Application"> | string
+    token?: StringNullableWithAggregatesFilter<"Application"> | string | null
     ownerId?: StringWithAggregatesFilter<"Application"> | string
   }
 
@@ -16866,7 +16840,7 @@ export namespace Prisma {
   export type ApplicationCreateInput = {
     id: string
     money?: Decimal | DecimalJsLike | number | string
-    token: string
+    token?: string | null
     owner: UserCreateNestedOneWithoutApplicationsInput
     requisitions?: RequisitionCreateNestedManyWithoutApplicationInput
   }
@@ -16874,7 +16848,7 @@ export namespace Prisma {
   export type ApplicationUncheckedCreateInput = {
     id: string
     money?: Decimal | DecimalJsLike | number | string
-    token: string
+    token?: string | null
     ownerId: string
     requisitions?: RequisitionUncheckedCreateNestedManyWithoutApplicationInput
   }
@@ -16882,7 +16856,7 @@ export namespace Prisma {
   export type ApplicationUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     money?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
-    token?: StringFieldUpdateOperationsInput | string
+    token?: NullableStringFieldUpdateOperationsInput | string | null
     owner?: UserUpdateOneRequiredWithoutApplicationsNestedInput
     requisitions?: RequisitionUpdateManyWithoutApplicationNestedInput
   }
@@ -16890,7 +16864,7 @@ export namespace Prisma {
   export type ApplicationUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     money?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
-    token?: StringFieldUpdateOperationsInput | string
+    token?: NullableStringFieldUpdateOperationsInput | string | null
     ownerId?: StringFieldUpdateOperationsInput | string
     requisitions?: RequisitionUncheckedUpdateManyWithoutApplicationNestedInput
   }
@@ -16898,20 +16872,20 @@ export namespace Prisma {
   export type ApplicationCreateManyInput = {
     id: string
     money?: Decimal | DecimalJsLike | number | string
-    token: string
+    token?: string | null
     ownerId: string
   }
 
   export type ApplicationUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     money?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
-    token?: StringFieldUpdateOperationsInput | string
+    token?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type ApplicationUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     money?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
-    token?: StringFieldUpdateOperationsInput | string
+    token?: NullableStringFieldUpdateOperationsInput | string | null
     ownerId?: StringFieldUpdateOperationsInput | string
   }
 
@@ -17829,6 +17803,21 @@ export namespace Prisma {
     _max?: NestedJsonNullableFilter<$PrismaModel>
   }
 
+  export type StringNullableFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    mode?: QueryMode
+    not?: NestedStringNullableFilter<$PrismaModel> | string | null
+  }
+
   export type UserScalarRelationFilter = {
     is?: UserWhereInput
     isNot?: UserWhereInput
@@ -17871,6 +17860,24 @@ export namespace Prisma {
 
   export type ApplicationSumOrderByAggregateInput = {
     money?: SortOrder
+  }
+
+  export type StringNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    mode?: QueryMode
+    not?: NestedStringNullableWithAggregatesFilter<$PrismaModel> | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedStringNullableFilter<$PrismaModel>
+    _max?: NestedStringNullableFilter<$PrismaModel>
   }
 
   export type DateTimeFilter<$PrismaModel = never> = {
@@ -18006,21 +18013,6 @@ export namespace Prisma {
   export type CooldownSumOrderByAggregateInput = {
     id?: SortOrder
   }
-
-  export type StringNullableFilter<$PrismaModel = never> = {
-    equals?: string | StringFieldRefInput<$PrismaModel> | null
-    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    lt?: string | StringFieldRefInput<$PrismaModel>
-    lte?: string | StringFieldRefInput<$PrismaModel>
-    gt?: string | StringFieldRefInput<$PrismaModel>
-    gte?: string | StringFieldRefInput<$PrismaModel>
-    contains?: string | StringFieldRefInput<$PrismaModel>
-    startsWith?: string | StringFieldRefInput<$PrismaModel>
-    endsWith?: string | StringFieldRefInput<$PrismaModel>
-    mode?: QueryMode
-    not?: NestedStringNullableFilter<$PrismaModel> | string | null
-  }
   export type JsonFilter<$PrismaModel = never> =
     | PatchUndefined<
         Either<Required<JsonFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonFilterBase<$PrismaModel>>, 'path'>>,
@@ -18095,24 +18087,6 @@ export namespace Prisma {
     difficulty?: SortOrder
     experience?: SortOrder
     wage?: SortOrder
-  }
-
-  export type StringNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: string | StringFieldRefInput<$PrismaModel> | null
-    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    lt?: string | StringFieldRefInput<$PrismaModel>
-    lte?: string | StringFieldRefInput<$PrismaModel>
-    gt?: string | StringFieldRefInput<$PrismaModel>
-    gte?: string | StringFieldRefInput<$PrismaModel>
-    contains?: string | StringFieldRefInput<$PrismaModel>
-    startsWith?: string | StringFieldRefInput<$PrismaModel>
-    endsWith?: string | StringFieldRefInput<$PrismaModel>
-    mode?: QueryMode
-    not?: NestedStringNullableWithAggregatesFilter<$PrismaModel> | string | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedStringNullableFilter<$PrismaModel>
-    _max?: NestedStringNullableFilter<$PrismaModel>
   }
   export type JsonWithAggregatesFilter<$PrismaModel = never> =
     | PatchUndefined<
@@ -18751,6 +18725,10 @@ export namespace Prisma {
     connect?: RequisitionWhereUniqueInput | RequisitionWhereUniqueInput[]
   }
 
+  export type NullableStringFieldUpdateOperationsInput = {
+    set?: string | null
+  }
+
   export type UserUpdateOneRequiredWithoutApplicationsNestedInput = {
     create?: XOR<UserCreateWithoutApplicationsInput, UserUncheckedCreateWithoutApplicationsInput>
     connectOrCreate?: UserCreateOrConnectWithoutApplicationsInput
@@ -18854,10 +18832,6 @@ export namespace Prisma {
     connectOrCreate?: UserCreateOrConnectWithoutCompanyInput | UserCreateOrConnectWithoutCompanyInput[]
     createMany?: UserCreateManyCompanyInputEnvelope
     connect?: UserWhereUniqueInput | UserWhereUniqueInput[]
-  }
-
-  export type NullableStringFieldUpdateOperationsInput = {
-    set?: string | null
   }
 
   export type UserUpdateManyWithoutCompanyNestedInput = {
@@ -19330,31 +19304,6 @@ export namespace Prisma {
     not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
   }
 
-  export type NestedDateTimeFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeFilter<$PrismaModel> | Date | string
-  }
-
-  export type NestedDateTimeWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeWithAggregatesFilter<$PrismaModel> | Date | string
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedDateTimeFilter<$PrismaModel>
-    _max?: NestedDateTimeFilter<$PrismaModel>
-  }
-
   export type NestedStringNullableFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel> | null
     in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
@@ -19384,6 +19333,31 @@ export namespace Prisma {
     _count?: NestedIntNullableFilter<$PrismaModel>
     _min?: NestedStringNullableFilter<$PrismaModel>
     _max?: NestedStringNullableFilter<$PrismaModel>
+  }
+
+  export type NestedDateTimeFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeFilter<$PrismaModel> | Date | string
+  }
+
+  export type NestedDateTimeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeWithAggregatesFilter<$PrismaModel> | Date | string
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedDateTimeFilter<$PrismaModel>
+    _max?: NestedDateTimeFilter<$PrismaModel>
   }
   export type NestedJsonFilter<$PrismaModel = never> =
     | PatchUndefined<
@@ -19577,14 +19551,14 @@ export namespace Prisma {
   export type ApplicationCreateWithoutOwnerInput = {
     id: string
     money?: Decimal | DecimalJsLike | number | string
-    token: string
+    token?: string | null
     requisitions?: RequisitionCreateNestedManyWithoutApplicationInput
   }
 
   export type ApplicationUncheckedCreateWithoutOwnerInput = {
     id: string
     money?: Decimal | DecimalJsLike | number | string
-    token: string
+    token?: string | null
     requisitions?: RequisitionUncheckedCreateNestedManyWithoutApplicationInput
   }
 
@@ -19777,7 +19751,7 @@ export namespace Prisma {
     NOT?: ApplicationScalarWhereInput | ApplicationScalarWhereInput[]
     id?: StringFilter<"Application"> | string
     money?: DecimalFilter<"Application"> | Decimal | DecimalJsLike | number | string
-    token?: StringFilter<"Application"> | string
+    token?: StringNullableFilter<"Application"> | string | null
     ownerId?: StringFilter<"Application"> | string
   }
 
@@ -19911,14 +19885,14 @@ export namespace Prisma {
   export type ApplicationCreateWithoutRequisitionsInput = {
     id: string
     money?: Decimal | DecimalJsLike | number | string
-    token: string
+    token?: string | null
     owner: UserCreateNestedOneWithoutApplicationsInput
   }
 
   export type ApplicationUncheckedCreateWithoutRequisitionsInput = {
     id: string
     money?: Decimal | DecimalJsLike | number | string
-    token: string
+    token?: string | null
     ownerId: string
   }
 
@@ -19941,14 +19915,14 @@ export namespace Prisma {
   export type ApplicationUpdateWithoutRequisitionsInput = {
     id?: StringFieldUpdateOperationsInput | string
     money?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
-    token?: StringFieldUpdateOperationsInput | string
+    token?: NullableStringFieldUpdateOperationsInput | string | null
     owner?: UserUpdateOneRequiredWithoutApplicationsNestedInput
   }
 
   export type ApplicationUncheckedUpdateWithoutRequisitionsInput = {
     id?: StringFieldUpdateOperationsInput | string
     money?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
-    token?: StringFieldUpdateOperationsInput | string
+    token?: NullableStringFieldUpdateOperationsInput | string | null
     ownerId?: StringFieldUpdateOperationsInput | string
   }
 
@@ -20792,7 +20766,7 @@ export namespace Prisma {
   export type ApplicationCreateManyOwnerInput = {
     id: string
     money?: Decimal | DecimalJsLike | number | string
-    token: string
+    token?: string | null
   }
 
   export type LogUpdateWithoutUserInput = {
@@ -20913,21 +20887,21 @@ export namespace Prisma {
   export type ApplicationUpdateWithoutOwnerInput = {
     id?: StringFieldUpdateOperationsInput | string
     money?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
-    token?: StringFieldUpdateOperationsInput | string
+    token?: NullableStringFieldUpdateOperationsInput | string | null
     requisitions?: RequisitionUpdateManyWithoutApplicationNestedInput
   }
 
   export type ApplicationUncheckedUpdateWithoutOwnerInput = {
     id?: StringFieldUpdateOperationsInput | string
     money?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
-    token?: StringFieldUpdateOperationsInput | string
+    token?: NullableStringFieldUpdateOperationsInput | string | null
     requisitions?: RequisitionUncheckedUpdateManyWithoutApplicationNestedInput
   }
 
   export type ApplicationUncheckedUpdateManyWithoutOwnerInput = {
     id?: StringFieldUpdateOperationsInput | string
     money?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
-    token?: StringFieldUpdateOperationsInput | string
+    token?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type RequisitionCreateManyApplicationInput = {

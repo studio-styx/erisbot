@@ -135,7 +135,8 @@ exports.Prisma.VotesScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
   applicationId: 'applicationId',
-  createdAt: 'createdAt'
+  createdAt: 'createdAt',
+  origin: 'origin'
 };
 
 exports.Prisma.ApplicationScalarFieldEnum = {
@@ -202,7 +203,10 @@ exports.Prisma.NullsOrder = {
   first: 'first',
   last: 'last'
 };
-
+exports.Origin = exports.$Enums.Origin = {
+  SERVER: 'SERVER',
+  WEBSITE: 'WEBSITE'
+};
 
 exports.Prisma.ModelName = {
   User: 'User',

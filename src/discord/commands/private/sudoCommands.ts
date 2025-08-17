@@ -1,10 +1,13 @@
+
 import { createCommand } from "#base";
 import { prisma } from "#database";
+import { Analyze, Application, User } from "#dzonePrisma";
 import { stocksEventuals, res, icon } from "#functions";
 import { Mails } from "#prisma";
 import { settings } from "#settings";
 import { brBuilder, createContainer, createSeparator } from "@magicyan/discord";
 import { ApplicationCommandOptionType, ApplicationCommandType, time } from "discord.js";
+import fs from "fs/promises";
 
 createCommand({
     name: "sudo",
@@ -55,14 +58,67 @@ createCommand({
 
         switch (subcommand) {
             case "database": {
-                
-                interaction.editReply(res.success("nada ocorreu"));
+                interaction.reply("nada aconteceu")
                 return;
             }
             case "test": {
-                await interaction.deferReply();
+                async function transformData() {
+                    try {
+                        const rawData = await fs.readFile("database.json", "utf-8");
+                        const data = JSON.parse(rawData) as {
+                            analyze: Analyze[],
+                            application: Application[],
+                            user: User[]
+                        };
 
-                interaction.editReply(res.success("Tested"));
+                        // Função para remover IDs e formatar datas
+                        const formatWithoutId = <T extends Record<string, any>>(items: T[]): Omit<T, 'id'>[] => {
+                            return items.map(item => {
+                                const { id, ...rest } = item;
+
+                                // Formatar datas para ISO string
+                                const formattedItem: any = {};
+                                for (const [key, value] of Object.entries(rest)) {
+                                    if (value instanceof Date || (typeof value === 'string' && !isNaN(Date.parse(value)))) {
+                                        formattedItem[key] = new Date(value).toISOString();
+                                    } else {
+                                        formattedItem[key] = value;
+                                    }
+                                }
+
+                                return formattedItem;
+                            });
+                        };
+
+                        // Processar cada tipo de dado
+                        const transformedData = {
+                            analyze: formatWithoutId(data.analyze),
+                            application: data.application,
+                            user: data.user
+                        };
+
+                        // Salvar os dados transformados
+                        await fs.writeFile(
+                            "transformed_database.json",
+                            JSON.stringify(transformedData, null, 2)
+                        );
+
+                        console.log("Dados transformados com sucesso!");
+                        return transformedData;
+
+                    } catch (error) {
+                        console.error("Erro ao transformar dados:", error);
+                        throw error;
+                    }
+                }
+
+                await interaction.deferReply({ flags });
+                await transformData()
+                    .then(() => {
+                        interaction.editReply(res.success("Database imported successfully"));
+                    }).catch((error) => {
+                        interaction.editReply(res.danger(`Something went wrong: ${error.message?.length > 4000 ? error.message.slice(0, 4000) + "..." : error.message}`));
+                    });
                 return;
             }
             case "force-stock-variation": {

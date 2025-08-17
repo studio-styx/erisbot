@@ -50,6 +50,23 @@ export type VoteReminder = $Result.DefaultSelection<Prisma.$VoteReminderPayload>
 export type Analyze = $Result.DefaultSelection<Prisma.$AnalyzePayload>
 
 /**
+ * Enums
+ */
+export namespace $Enums {
+  export const Origin: {
+  SERVER: 'SERVER',
+  WEBSITE: 'WEBSITE'
+};
+
+export type Origin = (typeof Origin)[keyof typeof Origin]
+
+}
+
+export type Origin = $Enums.Origin
+
+export const Origin: typeof $Enums.Origin
+
+/**
  * ##  Prisma Client ʲˢ
  *
  * Type-safe database client for TypeScript & Node.js
@@ -2803,6 +2820,7 @@ export namespace Prisma {
     userId: string | null
     applicationId: string | null
     createdAt: Date | null
+    origin: $Enums.Origin | null
   }
 
   export type VotesMaxAggregateOutputType = {
@@ -2810,6 +2828,7 @@ export namespace Prisma {
     userId: string | null
     applicationId: string | null
     createdAt: Date | null
+    origin: $Enums.Origin | null
   }
 
   export type VotesCountAggregateOutputType = {
@@ -2817,6 +2836,7 @@ export namespace Prisma {
     userId: number
     applicationId: number
     createdAt: number
+    origin: number
     _all: number
   }
 
@@ -2834,6 +2854,7 @@ export namespace Prisma {
     userId?: true
     applicationId?: true
     createdAt?: true
+    origin?: true
   }
 
   export type VotesMaxAggregateInputType = {
@@ -2841,6 +2862,7 @@ export namespace Prisma {
     userId?: true
     applicationId?: true
     createdAt?: true
+    origin?: true
   }
 
   export type VotesCountAggregateInputType = {
@@ -2848,6 +2870,7 @@ export namespace Prisma {
     userId?: true
     applicationId?: true
     createdAt?: true
+    origin?: true
     _all?: true
   }
 
@@ -2942,6 +2965,7 @@ export namespace Prisma {
     userId: string
     applicationId: string
     createdAt: Date
+    origin: $Enums.Origin
     _count: VotesCountAggregateOutputType | null
     _avg: VotesAvgAggregateOutputType | null
     _sum: VotesSumAggregateOutputType | null
@@ -2968,6 +2992,7 @@ export namespace Prisma {
     userId?: boolean
     applicationId?: boolean
     createdAt?: boolean
+    origin?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
     application?: boolean | ApplicationDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["votes"]>
@@ -2977,6 +3002,7 @@ export namespace Prisma {
     userId?: boolean
     applicationId?: boolean
     createdAt?: boolean
+    origin?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
     application?: boolean | ApplicationDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["votes"]>
@@ -2986,6 +3012,7 @@ export namespace Prisma {
     userId?: boolean
     applicationId?: boolean
     createdAt?: boolean
+    origin?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
     application?: boolean | ApplicationDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["votes"]>
@@ -2995,9 +3022,10 @@ export namespace Prisma {
     userId?: boolean
     applicationId?: boolean
     createdAt?: boolean
+    origin?: boolean
   }
 
-  export type VotesOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "applicationId" | "createdAt", ExtArgs["result"]["votes"]>
+  export type VotesOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "applicationId" | "createdAt" | "origin", ExtArgs["result"]["votes"]>
   export type VotesInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
     application?: boolean | ApplicationDefaultArgs<ExtArgs>
@@ -3022,6 +3050,7 @@ export namespace Prisma {
       userId: string
       applicationId: string
       createdAt: Date
+      origin: $Enums.Origin
     }, ExtArgs["result"]["votes"]>
     composites: {}
   }
@@ -3451,6 +3480,7 @@ export namespace Prisma {
     readonly userId: FieldRef<"Votes", 'String'>
     readonly applicationId: FieldRef<"Votes", 'String'>
     readonly createdAt: FieldRef<"Votes", 'DateTime'>
+    readonly origin: FieldRef<"Votes", 'Origin'>
   }
     
 
@@ -9523,7 +9553,8 @@ export namespace Prisma {
     id: 'id',
     userId: 'userId',
     applicationId: 'applicationId',
-    createdAt: 'createdAt'
+    createdAt: 'createdAt',
+    origin: 'origin'
   };
 
   export type VotesScalarFieldEnum = (typeof VotesScalarFieldEnum)[keyof typeof VotesScalarFieldEnum]
@@ -9673,6 +9704,20 @@ export namespace Prisma {
 
 
   /**
+   * Reference to a field of type 'Origin'
+   */
+  export type EnumOriginFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Origin'>
+    
+
+
+  /**
+   * Reference to a field of type 'Origin[]'
+   */
+  export type ListEnumOriginFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Origin[]'>
+    
+
+
+  /**
    * Reference to a field of type 'Float'
    */
   export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
@@ -9778,6 +9823,7 @@ export namespace Prisma {
     userId?: StringFilter<"Votes"> | string
     applicationId?: StringFilter<"Votes"> | string
     createdAt?: DateTimeFilter<"Votes"> | Date | string
+    origin?: EnumOriginFilter<"Votes"> | $Enums.Origin
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
     application?: XOR<ApplicationScalarRelationFilter, ApplicationWhereInput>
   }
@@ -9787,6 +9833,7 @@ export namespace Prisma {
     userId?: SortOrder
     applicationId?: SortOrder
     createdAt?: SortOrder
+    origin?: SortOrder
     user?: UserOrderByWithRelationInput
     application?: ApplicationOrderByWithRelationInput
   }
@@ -9799,6 +9846,7 @@ export namespace Prisma {
     userId?: StringFilter<"Votes"> | string
     applicationId?: StringFilter<"Votes"> | string
     createdAt?: DateTimeFilter<"Votes"> | Date | string
+    origin?: EnumOriginFilter<"Votes"> | $Enums.Origin
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
     application?: XOR<ApplicationScalarRelationFilter, ApplicationWhereInput>
   }, "id">
@@ -9808,6 +9856,7 @@ export namespace Prisma {
     userId?: SortOrder
     applicationId?: SortOrder
     createdAt?: SortOrder
+    origin?: SortOrder
     _count?: VotesCountOrderByAggregateInput
     _avg?: VotesAvgOrderByAggregateInput
     _max?: VotesMaxOrderByAggregateInput
@@ -9823,6 +9872,7 @@ export namespace Prisma {
     userId?: StringWithAggregatesFilter<"Votes"> | string
     applicationId?: StringWithAggregatesFilter<"Votes"> | string
     createdAt?: DateTimeWithAggregatesFilter<"Votes"> | Date | string
+    origin?: EnumOriginWithAggregatesFilter<"Votes"> | $Enums.Origin
   }
 
   export type ApplicationWhereInput = {
@@ -10264,6 +10314,7 @@ export namespace Prisma {
 
   export type VotesCreateInput = {
     createdAt?: Date | string
+    origin?: $Enums.Origin
     user: UserCreateNestedOneWithoutVotesInput
     application: ApplicationCreateNestedOneWithoutVotesInput
   }
@@ -10273,10 +10324,12 @@ export namespace Prisma {
     userId: string
     applicationId: string
     createdAt?: Date | string
+    origin?: $Enums.Origin
   }
 
   export type VotesUpdateInput = {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    origin?: EnumOriginFieldUpdateOperationsInput | $Enums.Origin
     user?: UserUpdateOneRequiredWithoutVotesNestedInput
     application?: ApplicationUpdateOneRequiredWithoutVotesNestedInput
   }
@@ -10286,6 +10339,7 @@ export namespace Prisma {
     userId?: StringFieldUpdateOperationsInput | string
     applicationId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    origin?: EnumOriginFieldUpdateOperationsInput | $Enums.Origin
   }
 
   export type VotesCreateManyInput = {
@@ -10293,10 +10347,12 @@ export namespace Prisma {
     userId: string
     applicationId: string
     createdAt?: Date | string
+    origin?: $Enums.Origin
   }
 
   export type VotesUpdateManyMutationInput = {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    origin?: EnumOriginFieldUpdateOperationsInput | $Enums.Origin
   }
 
   export type VotesUncheckedUpdateManyInput = {
@@ -10304,6 +10360,7 @@ export namespace Prisma {
     userId?: StringFieldUpdateOperationsInput | string
     applicationId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    origin?: EnumOriginFieldUpdateOperationsInput | $Enums.Origin
   }
 
   export type ApplicationCreateInput = {
@@ -10900,6 +10957,13 @@ export namespace Prisma {
     _max?: NestedIntFilter<$PrismaModel>
   }
 
+  export type EnumOriginFilter<$PrismaModel = never> = {
+    equals?: $Enums.Origin | EnumOriginFieldRefInput<$PrismaModel>
+    in?: $Enums.Origin[] | ListEnumOriginFieldRefInput<$PrismaModel>
+    notIn?: $Enums.Origin[] | ListEnumOriginFieldRefInput<$PrismaModel>
+    not?: NestedEnumOriginFilter<$PrismaModel> | $Enums.Origin
+  }
+
   export type UserScalarRelationFilter = {
     is?: UserWhereInput
     isNot?: UserWhereInput
@@ -10915,6 +10979,7 @@ export namespace Prisma {
     userId?: SortOrder
     applicationId?: SortOrder
     createdAt?: SortOrder
+    origin?: SortOrder
   }
 
   export type VotesAvgOrderByAggregateInput = {
@@ -10926,6 +10991,7 @@ export namespace Prisma {
     userId?: SortOrder
     applicationId?: SortOrder
     createdAt?: SortOrder
+    origin?: SortOrder
   }
 
   export type VotesMinOrderByAggregateInput = {
@@ -10933,10 +10999,21 @@ export namespace Prisma {
     userId?: SortOrder
     applicationId?: SortOrder
     createdAt?: SortOrder
+    origin?: SortOrder
   }
 
   export type VotesSumOrderByAggregateInput = {
     id?: SortOrder
+  }
+
+  export type EnumOriginWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.Origin | EnumOriginFieldRefInput<$PrismaModel>
+    in?: $Enums.Origin[] | ListEnumOriginFieldRefInput<$PrismaModel>
+    notIn?: $Enums.Origin[] | ListEnumOriginFieldRefInput<$PrismaModel>
+    not?: NestedEnumOriginWithAggregatesFilter<$PrismaModel> | $Enums.Origin
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumOriginFilter<$PrismaModel>
+    _max?: NestedEnumOriginFilter<$PrismaModel>
   }
 
   export type AnalyzeNullableScalarRelationFilter = {
@@ -11414,6 +11491,10 @@ export namespace Prisma {
     connect?: ApplicationWhereUniqueInput
   }
 
+  export type EnumOriginFieldUpdateOperationsInput = {
+    set?: $Enums.Origin
+  }
+
   export type UserUpdateOneRequiredWithoutVotesNestedInput = {
     create?: XOR<UserCreateWithoutVotesInput, UserUncheckedCreateWithoutVotesInput>
     connectOrCreate?: UserCreateOrConnectWithoutVotesInput
@@ -11804,6 +11885,23 @@ export namespace Prisma {
     not?: NestedFloatFilter<$PrismaModel> | number
   }
 
+  export type NestedEnumOriginFilter<$PrismaModel = never> = {
+    equals?: $Enums.Origin | EnumOriginFieldRefInput<$PrismaModel>
+    in?: $Enums.Origin[] | ListEnumOriginFieldRefInput<$PrismaModel>
+    notIn?: $Enums.Origin[] | ListEnumOriginFieldRefInput<$PrismaModel>
+    not?: NestedEnumOriginFilter<$PrismaModel> | $Enums.Origin
+  }
+
+  export type NestedEnumOriginWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.Origin | EnumOriginFieldRefInput<$PrismaModel>
+    in?: $Enums.Origin[] | ListEnumOriginFieldRefInput<$PrismaModel>
+    notIn?: $Enums.Origin[] | ListEnumOriginFieldRefInput<$PrismaModel>
+    not?: NestedEnumOriginWithAggregatesFilter<$PrismaModel> | $Enums.Origin
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumOriginFilter<$PrismaModel>
+    _max?: NestedEnumOriginFilter<$PrismaModel>
+  }
+
   export type NestedBoolNullableFilter<$PrismaModel = never> = {
     equals?: boolean | BooleanFieldRefInput<$PrismaModel> | null
     not?: NestedBoolNullableFilter<$PrismaModel> | boolean | null
@@ -11942,6 +12040,7 @@ export namespace Prisma {
 
   export type VotesCreateWithoutUserInput = {
     createdAt?: Date | string
+    origin?: $Enums.Origin
     application: ApplicationCreateNestedOneWithoutVotesInput
   }
 
@@ -11949,6 +12048,7 @@ export namespace Prisma {
     id?: number
     applicationId: string
     createdAt?: Date | string
+    origin?: $Enums.Origin
   }
 
   export type VotesCreateOrConnectWithoutUserInput = {
@@ -12077,6 +12177,7 @@ export namespace Prisma {
     userId?: StringFilter<"Votes"> | string
     applicationId?: StringFilter<"Votes"> | string
     createdAt?: DateTimeFilter<"Votes"> | Date | string
+    origin?: EnumOriginFilter<"Votes"> | $Enums.Origin
   }
 
   export type UserCreateWithoutVotesInput = {
@@ -12270,6 +12371,7 @@ export namespace Prisma {
 
   export type VotesCreateWithoutApplicationInput = {
     createdAt?: Date | string
+    origin?: $Enums.Origin
     user: UserCreateNestedOneWithoutVotesInput
   }
 
@@ -12277,6 +12379,7 @@ export namespace Prisma {
     id?: number
     userId: string
     createdAt?: Date | string
+    origin?: $Enums.Origin
   }
 
   export type VotesCreateOrConnectWithoutApplicationInput = {
@@ -12774,6 +12877,7 @@ export namespace Prisma {
     id?: number
     applicationId: string
     createdAt?: Date | string
+    origin?: $Enums.Origin
   }
 
   export type ApplicationUpdateWithoutUserInput = {
@@ -12878,6 +12982,7 @@ export namespace Prisma {
 
   export type VotesUpdateWithoutUserInput = {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    origin?: EnumOriginFieldUpdateOperationsInput | $Enums.Origin
     application?: ApplicationUpdateOneRequiredWithoutVotesNestedInput
   }
 
@@ -12885,22 +12990,26 @@ export namespace Prisma {
     id?: IntFieldUpdateOperationsInput | number
     applicationId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    origin?: EnumOriginFieldUpdateOperationsInput | $Enums.Origin
   }
 
   export type VotesUncheckedUpdateManyWithoutUserInput = {
     id?: IntFieldUpdateOperationsInput | number
     applicationId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    origin?: EnumOriginFieldUpdateOperationsInput | $Enums.Origin
   }
 
   export type VotesCreateManyApplicationInput = {
     id?: number
     userId: string
     createdAt?: Date | string
+    origin?: $Enums.Origin
   }
 
   export type VotesUpdateWithoutApplicationInput = {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    origin?: EnumOriginFieldUpdateOperationsInput | $Enums.Origin
     user?: UserUpdateOneRequiredWithoutVotesNestedInput
   }
 
@@ -12908,12 +13017,14 @@ export namespace Prisma {
     id?: IntFieldUpdateOperationsInput | number
     userId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    origin?: EnumOriginFieldUpdateOperationsInput | $Enums.Origin
   }
 
   export type VotesUncheckedUpdateManyWithoutApplicationInput = {
     id?: IntFieldUpdateOperationsInput | number
     userId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    origin?: EnumOriginFieldUpdateOperationsInput | $Enums.Origin
   }
 
   export type AnnotationCreateManyAnalyzeInput = {

@@ -18,9 +18,10 @@ export default function getBotsRoute(app: FastifyInstance, client: Client<true>)
 
         const applications = server === "eris" ? await asPrisma.application.findMany({
             include: {
-                analyze: true
+                analyze: true,
+                votes: true
             }
-        }) : server === "all" ? await dzonePrisma.application.findMany({
+        }) : server === "devzone" ? await dzonePrisma.application.findMany({
             include: {
                 analyze: true,
                 votes: true
@@ -41,9 +42,25 @@ export default function getBotsRoute(app: FastifyInstance, client: Client<true>)
 
         if (gets.includes("discordBot")) {
             for (const app of applications) {
-                const discordApp = await client.users.fetch(app.id).catch(() => null);
+                const discordApp = await client.users.fetch(app.id, { cache: true }).catch(() => null);
                 if (!discordApp) continue;
                 app.discordBot = discordApp;
+            }
+        }
+        if (gets.includes("owners")) {
+            for (const app of applications) {
+                const owner = server === "eris" ? await asPrisma.user.findUnique({
+                    where: { id: app.userId },
+                }) : await dzonePrisma.user.findUnique({
+                    where: { id: app.userId },
+                });
+                if (!owner) continue;
+                app.owner = owner;
+                if (gets.includes("discordOwner")) {
+                    const discordOwner = await client.users.fetch(owner.id, { cache: true }).catch(() => null);
+                    if (!discordOwner) continue;
+                    app.discordOwner = discordOwner;
+                }
             }
         }
 

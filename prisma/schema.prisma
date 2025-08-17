@@ -35,7 +35,7 @@ model User {
 model Application {
   id        String          @id
   money     Decimal         @default(0.0) @db.Decimal(12, 2)
-  token     String          @unique
+  token     String?          @unique
   ownerId    String
   owner      User            @relation(fields: [ownerId], references: [id])
   requisitions Requisition[]
