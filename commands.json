@@ -208,5 +208,17 @@
         "description": "Ver o ranking de xp",
         "siteAvaible": false,
         "category": "general"
+    },
+    {
+        "name": "afk set",
+        "description": "Definir seu afk",
+        "siteAvaible": false,
+        "category": "utility"
+    },
+    {
+        "name": "afk remove",
+        "description": "Remover seu afk",
+        "siteAvaible": false,
+        "category": "utility"
     }
 ]

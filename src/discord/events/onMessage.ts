@@ -6,6 +6,7 @@ import { chatBot } from "./chat/onMessage.js";
 import { onMention } from "./onMention.js";
 import { MediaGalleryBuilder } from "discord.js";
 import { xpSystem } from "./chat/xpSystem.js";
+import { onAfkMentioned } from "./onAfkMentioned.js";
 
 createEvent({
     name: "onMessage",
@@ -59,5 +60,6 @@ createEvent({
         onMention(message);
         chatBot(message)
         xpSystem(message)
+        onAfkMentioned(message)
     }
 });

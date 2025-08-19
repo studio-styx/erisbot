@@ -128,7 +128,9 @@ exports.Prisma.UserScalarFieldEnum = {
   companyId: 'companyId',
   mailsTagsIgnored: 'mailsTagsIgnored',
   dmNotification: 'dmNotification',
-  token: 'token'
+  token: 'token',
+  afkReasson: 'afkReasson',
+  afkTime: 'afkTime'
 };
 
 exports.Prisma.ApplicationScalarFieldEnum = {

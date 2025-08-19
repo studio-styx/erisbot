@@ -2098,6 +2098,8 @@ export namespace Prisma {
     xp: number | null
     companyId: number | null
     dmNotification: boolean | null
+    afkReasson: string | null
+    afkTime: Date | null
   }
 
   export type UserMaxAggregateOutputType = {
@@ -2107,6 +2109,8 @@ export namespace Prisma {
     xp: number | null
     companyId: number | null
     dmNotification: boolean | null
+    afkReasson: string | null
+    afkTime: Date | null
   }
 
   export type UserCountAggregateOutputType = {
@@ -2118,6 +2122,8 @@ export namespace Prisma {
     mailsTagsIgnored: number
     dmNotification: number
     token: number
+    afkReasson: number
+    afkTime: number
     _all: number
   }
 
@@ -2143,6 +2149,8 @@ export namespace Prisma {
     xp?: true
     companyId?: true
     dmNotification?: true
+    afkReasson?: true
+    afkTime?: true
   }
 
   export type UserMaxAggregateInputType = {
@@ -2152,6 +2160,8 @@ export namespace Prisma {
     xp?: true
     companyId?: true
     dmNotification?: true
+    afkReasson?: true
+    afkTime?: true
   }
 
   export type UserCountAggregateInputType = {
@@ -2163,6 +2173,8 @@ export namespace Prisma {
     mailsTagsIgnored?: true
     dmNotification?: true
     token?: true
+    afkReasson?: true
+    afkTime?: true
     _all?: true
   }
 
@@ -2261,6 +2273,8 @@ export namespace Prisma {
     mailsTagsIgnored: string[]
     dmNotification: boolean
     token: JsonValue | null
+    afkReasson: string | null
+    afkTime: Date | null
     _count: UserCountAggregateOutputType | null
     _avg: UserAvgAggregateOutputType | null
     _sum: UserSumAggregateOutputType | null
@@ -2291,6 +2305,8 @@ export namespace Prisma {
     mailsTagsIgnored?: boolean
     dmNotification?: boolean
     token?: boolean
+    afkReasson?: boolean
+    afkTime?: boolean
     company?: boolean | User$companyArgs<ExtArgs>
     logs?: boolean | User$logsArgs<ExtArgs>
     cooldowns?: boolean | User$cooldownsArgs<ExtArgs>
@@ -2310,6 +2326,8 @@ export namespace Prisma {
     mailsTagsIgnored?: boolean
     dmNotification?: boolean
     token?: boolean
+    afkReasson?: boolean
+    afkTime?: boolean
     company?: boolean | User$companyArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -2322,6 +2340,8 @@ export namespace Prisma {
     mailsTagsIgnored?: boolean
     dmNotification?: boolean
     token?: boolean
+    afkReasson?: boolean
+    afkTime?: boolean
     company?: boolean | User$companyArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -2334,9 +2354,11 @@ export namespace Prisma {
     mailsTagsIgnored?: boolean
     dmNotification?: boolean
     token?: boolean
+    afkReasson?: boolean
+    afkTime?: boolean
   }
 
-  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "money" | "bank" | "xp" | "companyId" | "mailsTagsIgnored" | "dmNotification" | "token", ExtArgs["result"]["user"]>
+  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "money" | "bank" | "xp" | "companyId" | "mailsTagsIgnored" | "dmNotification" | "token" | "afkReasson" | "afkTime", ExtArgs["result"]["user"]>
   export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     company?: boolean | User$companyArgs<ExtArgs>
     logs?: boolean | User$logsArgs<ExtArgs>
@@ -2374,6 +2396,8 @@ export namespace Prisma {
       mailsTagsIgnored: string[]
       dmNotification: boolean
       token: Prisma.JsonValue | null
+      afkReasson: string | null
+      afkTime: Date | null
     }, ExtArgs["result"]["user"]>
     composites: {}
   }
@@ -2812,6 +2836,8 @@ export namespace Prisma {
     readonly mailsTagsIgnored: FieldRef<"User", 'String[]'>
     readonly dmNotification: FieldRef<"User", 'Boolean'>
     readonly token: FieldRef<"User", 'Json'>
+    readonly afkReasson: FieldRef<"User", 'String'>
+    readonly afkTime: FieldRef<"User", 'DateTime'>
   }
     
 
@@ -15664,7 +15690,9 @@ export namespace Prisma {
     companyId: 'companyId',
     mailsTagsIgnored: 'mailsTagsIgnored',
     dmNotification: 'dmNotification',
-    token: 'token'
+    token: 'token',
+    afkReasson: 'afkReasson',
+    afkTime: 'afkTime'
   };
 
   export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
@@ -15961,6 +15989,8 @@ export namespace Prisma {
     mailsTagsIgnored?: StringNullableListFilter<"User">
     dmNotification?: BoolFilter<"User"> | boolean
     token?: JsonNullableFilter<"User">
+    afkReasson?: StringNullableFilter<"User"> | string | null
+    afkTime?: DateTimeNullableFilter<"User"> | Date | string | null
     company?: XOR<CompanyNullableScalarRelationFilter, CompanyWhereInput> | null
     logs?: LogListRelationFilter
     cooldowns?: CooldownListRelationFilter
@@ -15979,6 +16009,8 @@ export namespace Prisma {
     mailsTagsIgnored?: SortOrder
     dmNotification?: SortOrder
     token?: SortOrderInput | SortOrder
+    afkReasson?: SortOrderInput | SortOrder
+    afkTime?: SortOrderInput | SortOrder
     company?: CompanyOrderByWithRelationInput
     logs?: LogOrderByRelationAggregateInput
     cooldowns?: CooldownOrderByRelationAggregateInput
@@ -16000,6 +16032,8 @@ export namespace Prisma {
     mailsTagsIgnored?: StringNullableListFilter<"User">
     dmNotification?: BoolFilter<"User"> | boolean
     token?: JsonNullableFilter<"User">
+    afkReasson?: StringNullableFilter<"User"> | string | null
+    afkTime?: DateTimeNullableFilter<"User"> | Date | string | null
     company?: XOR<CompanyNullableScalarRelationFilter, CompanyWhereInput> | null
     logs?: LogListRelationFilter
     cooldowns?: CooldownListRelationFilter
@@ -16018,6 +16052,8 @@ export namespace Prisma {
     mailsTagsIgnored?: SortOrder
     dmNotification?: SortOrder
     token?: SortOrderInput | SortOrder
+    afkReasson?: SortOrderInput | SortOrder
+    afkTime?: SortOrderInput | SortOrder
     _count?: UserCountOrderByAggregateInput
     _avg?: UserAvgOrderByAggregateInput
     _max?: UserMaxOrderByAggregateInput
@@ -16037,6 +16073,8 @@ export namespace Prisma {
     mailsTagsIgnored?: StringNullableListFilter<"User">
     dmNotification?: BoolWithAggregatesFilter<"User"> | boolean
     token?: JsonNullableWithAggregatesFilter<"User">
+    afkReasson?: StringNullableWithAggregatesFilter<"User"> | string | null
+    afkTime?: DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
   }
 
   export type ApplicationWhereInput = {
@@ -16745,6 +16783,8 @@ export namespace Prisma {
     mailsTagsIgnored?: UserCreatemailsTagsIgnoredInput | string[]
     dmNotification?: boolean
     token?: NullableJsonNullValueInput | InputJsonValue
+    afkReasson?: string | null
+    afkTime?: Date | string | null
     company?: CompanyCreateNestedOneWithoutWorkersInput
     logs?: LogCreateNestedManyWithoutUserInput
     cooldowns?: CooldownCreateNestedManyWithoutUserInput
@@ -16763,6 +16803,8 @@ export namespace Prisma {
     mailsTagsIgnored?: UserCreatemailsTagsIgnoredInput | string[]
     dmNotification?: boolean
     token?: NullableJsonNullValueInput | InputJsonValue
+    afkReasson?: string | null
+    afkTime?: Date | string | null
     logs?: LogUncheckedCreateNestedManyWithoutUserInput
     cooldowns?: CooldownUncheckedCreateNestedManyWithoutUserInput
     stocks?: StockHoldingUncheckedCreateNestedManyWithoutUserInput
@@ -16779,6 +16821,8 @@ export namespace Prisma {
     mailsTagsIgnored?: UserUpdatemailsTagsIgnoredInput | string[]
     dmNotification?: BoolFieldUpdateOperationsInput | boolean
     token?: NullableJsonNullValueInput | InputJsonValue
+    afkReasson?: NullableStringFieldUpdateOperationsInput | string | null
+    afkTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     company?: CompanyUpdateOneWithoutWorkersNestedInput
     logs?: LogUpdateManyWithoutUserNestedInput
     cooldowns?: CooldownUpdateManyWithoutUserNestedInput
@@ -16797,6 +16841,8 @@ export namespace Prisma {
     mailsTagsIgnored?: UserUpdatemailsTagsIgnoredInput | string[]
     dmNotification?: BoolFieldUpdateOperationsInput | boolean
     token?: NullableJsonNullValueInput | InputJsonValue
+    afkReasson?: NullableStringFieldUpdateOperationsInput | string | null
+    afkTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     logs?: LogUncheckedUpdateManyWithoutUserNestedInput
     cooldowns?: CooldownUncheckedUpdateManyWithoutUserNestedInput
     stocks?: StockHoldingUncheckedUpdateManyWithoutUserNestedInput
@@ -16814,6 +16860,8 @@ export namespace Prisma {
     mailsTagsIgnored?: UserCreatemailsTagsIgnoredInput | string[]
     dmNotification?: boolean
     token?: NullableJsonNullValueInput | InputJsonValue
+    afkReasson?: string | null
+    afkTime?: Date | string | null
   }
 
   export type UserUpdateManyMutationInput = {
@@ -16824,6 +16872,8 @@ export namespace Prisma {
     mailsTagsIgnored?: UserUpdatemailsTagsIgnoredInput | string[]
     dmNotification?: BoolFieldUpdateOperationsInput | boolean
     token?: NullableJsonNullValueInput | InputJsonValue
+    afkReasson?: NullableStringFieldUpdateOperationsInput | string | null
+    afkTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type UserUncheckedUpdateManyInput = {
@@ -16835,6 +16885,8 @@ export namespace Prisma {
     mailsTagsIgnored?: UserUpdatemailsTagsIgnoredInput | string[]
     dmNotification?: BoolFieldUpdateOperationsInput | boolean
     token?: NullableJsonNullValueInput | InputJsonValue
+    afkReasson?: NullableStringFieldUpdateOperationsInput | string | null
+    afkTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type ApplicationCreateInput = {
@@ -17600,6 +17652,32 @@ export namespace Prisma {
     not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
   }
 
+  export type StringNullableFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    mode?: QueryMode
+    not?: NestedStringNullableFilter<$PrismaModel> | string | null
+  }
+
+  export type DateTimeNullableFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
+  }
+
   export type CompanyNullableScalarRelationFilter = {
     is?: CompanyWhereInput | null
     isNot?: CompanyWhereInput | null
@@ -17669,6 +17747,8 @@ export namespace Prisma {
     mailsTagsIgnored?: SortOrder
     dmNotification?: SortOrder
     token?: SortOrder
+    afkReasson?: SortOrder
+    afkTime?: SortOrder
   }
 
   export type UserAvgOrderByAggregateInput = {
@@ -17685,6 +17765,8 @@ export namespace Prisma {
     xp?: SortOrder
     companyId?: SortOrder
     dmNotification?: SortOrder
+    afkReasson?: SortOrder
+    afkTime?: SortOrder
   }
 
   export type UserMinOrderByAggregateInput = {
@@ -17694,6 +17776,8 @@ export namespace Prisma {
     xp?: SortOrder
     companyId?: SortOrder
     dmNotification?: SortOrder
+    afkReasson?: SortOrder
+    afkTime?: SortOrder
   }
 
   export type UserSumOrderByAggregateInput = {
@@ -17803,7 +17887,7 @@ export namespace Prisma {
     _max?: NestedJsonNullableFilter<$PrismaModel>
   }
 
-  export type StringNullableFilter<$PrismaModel = never> = {
+  export type StringNullableWithAggregatesFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel> | null
     in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
     notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
@@ -17815,7 +17899,24 @@ export namespace Prisma {
     startsWith?: string | StringFieldRefInput<$PrismaModel>
     endsWith?: string | StringFieldRefInput<$PrismaModel>
     mode?: QueryMode
-    not?: NestedStringNullableFilter<$PrismaModel> | string | null
+    not?: NestedStringNullableWithAggregatesFilter<$PrismaModel> | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedStringNullableFilter<$PrismaModel>
+    _max?: NestedStringNullableFilter<$PrismaModel>
+  }
+
+  export type DateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedDateTimeNullableFilter<$PrismaModel>
+    _max?: NestedDateTimeNullableFilter<$PrismaModel>
   }
 
   export type UserScalarRelationFilter = {
@@ -17860,24 +17961,6 @@ export namespace Prisma {
 
   export type ApplicationSumOrderByAggregateInput = {
     money?: SortOrder
-  }
-
-  export type StringNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: string | StringFieldRefInput<$PrismaModel> | null
-    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    lt?: string | StringFieldRefInput<$PrismaModel>
-    lte?: string | StringFieldRefInput<$PrismaModel>
-    gt?: string | StringFieldRefInput<$PrismaModel>
-    gte?: string | StringFieldRefInput<$PrismaModel>
-    contains?: string | StringFieldRefInput<$PrismaModel>
-    startsWith?: string | StringFieldRefInput<$PrismaModel>
-    endsWith?: string | StringFieldRefInput<$PrismaModel>
-    mode?: QueryMode
-    not?: NestedStringNullableWithAggregatesFilter<$PrismaModel> | string | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedStringNullableFilter<$PrismaModel>
-    _max?: NestedStringNullableFilter<$PrismaModel>
   }
 
   export type DateTimeFilter<$PrismaModel = never> = {
@@ -18519,6 +18602,14 @@ export namespace Prisma {
     set?: boolean
   }
 
+  export type NullableStringFieldUpdateOperationsInput = {
+    set?: string | null
+  }
+
+  export type NullableDateTimeFieldUpdateOperationsInput = {
+    set?: Date | string | null
+  }
+
   export type CompanyUpdateOneWithoutWorkersNestedInput = {
     create?: XOR<CompanyCreateWithoutWorkersInput, CompanyUncheckedCreateWithoutWorkersInput>
     connectOrCreate?: CompanyCreateOrConnectWithoutWorkersInput
@@ -18723,10 +18814,6 @@ export namespace Prisma {
     connectOrCreate?: RequisitionCreateOrConnectWithoutApplicationInput | RequisitionCreateOrConnectWithoutApplicationInput[]
     createMany?: RequisitionCreateManyApplicationInputEnvelope
     connect?: RequisitionWhereUniqueInput | RequisitionWhereUniqueInput[]
-  }
-
-  export type NullableStringFieldUpdateOperationsInput = {
-    set?: string | null
   }
 
   export type UserUpdateOneRequiredWithoutApplicationsNestedInput = {
@@ -19186,6 +19273,31 @@ export namespace Prisma {
     not?: NestedBoolFilter<$PrismaModel> | boolean
   }
 
+  export type NestedStringNullableFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    not?: NestedStringNullableFilter<$PrismaModel> | string | null
+  }
+
+  export type NestedDateTimeNullableFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
+  }
+
   export type NestedStringWithAggregatesFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -19304,20 +19416,6 @@ export namespace Prisma {
     not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
   }
 
-  export type NestedStringNullableFilter<$PrismaModel = never> = {
-    equals?: string | StringFieldRefInput<$PrismaModel> | null
-    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    lt?: string | StringFieldRefInput<$PrismaModel>
-    lte?: string | StringFieldRefInput<$PrismaModel>
-    gt?: string | StringFieldRefInput<$PrismaModel>
-    gte?: string | StringFieldRefInput<$PrismaModel>
-    contains?: string | StringFieldRefInput<$PrismaModel>
-    startsWith?: string | StringFieldRefInput<$PrismaModel>
-    endsWith?: string | StringFieldRefInput<$PrismaModel>
-    not?: NestedStringNullableFilter<$PrismaModel> | string | null
-  }
-
   export type NestedStringNullableWithAggregatesFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel> | null
     in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
@@ -19333,6 +19431,20 @@ export namespace Prisma {
     _count?: NestedIntNullableFilter<$PrismaModel>
     _min?: NestedStringNullableFilter<$PrismaModel>
     _max?: NestedStringNullableFilter<$PrismaModel>
+  }
+
+  export type NestedDateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedDateTimeNullableFilter<$PrismaModel>
+    _max?: NestedDateTimeNullableFilter<$PrismaModel>
   }
 
   export type NestedDateTimeFilter<$PrismaModel = never> = {
@@ -19763,6 +19875,8 @@ export namespace Prisma {
     mailsTagsIgnored?: UserCreatemailsTagsIgnoredInput | string[]
     dmNotification?: boolean
     token?: NullableJsonNullValueInput | InputJsonValue
+    afkReasson?: string | null
+    afkTime?: Date | string | null
     company?: CompanyCreateNestedOneWithoutWorkersInput
     logs?: LogCreateNestedManyWithoutUserInput
     cooldowns?: CooldownCreateNestedManyWithoutUserInput
@@ -19780,6 +19894,8 @@ export namespace Prisma {
     mailsTagsIgnored?: UserCreatemailsTagsIgnoredInput | string[]
     dmNotification?: boolean
     token?: NullableJsonNullValueInput | InputJsonValue
+    afkReasson?: string | null
+    afkTime?: Date | string | null
     logs?: LogUncheckedCreateNestedManyWithoutUserInput
     cooldowns?: CooldownUncheckedCreateNestedManyWithoutUserInput
     stocks?: StockHoldingUncheckedCreateNestedManyWithoutUserInput
@@ -19832,6 +19948,8 @@ export namespace Prisma {
     mailsTagsIgnored?: UserUpdatemailsTagsIgnoredInput | string[]
     dmNotification?: BoolFieldUpdateOperationsInput | boolean
     token?: NullableJsonNullValueInput | InputJsonValue
+    afkReasson?: NullableStringFieldUpdateOperationsInput | string | null
+    afkTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     company?: CompanyUpdateOneWithoutWorkersNestedInput
     logs?: LogUpdateManyWithoutUserNestedInput
     cooldowns?: CooldownUpdateManyWithoutUserNestedInput
@@ -19849,6 +19967,8 @@ export namespace Prisma {
     mailsTagsIgnored?: UserUpdatemailsTagsIgnoredInput | string[]
     dmNotification?: BoolFieldUpdateOperationsInput | boolean
     token?: NullableJsonNullValueInput | InputJsonValue
+    afkReasson?: NullableStringFieldUpdateOperationsInput | string | null
+    afkTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     logs?: LogUncheckedUpdateManyWithoutUserNestedInput
     cooldowns?: CooldownUncheckedUpdateManyWithoutUserNestedInput
     stocks?: StockHoldingUncheckedUpdateManyWithoutUserNestedInput
@@ -19934,6 +20054,8 @@ export namespace Prisma {
     mailsTagsIgnored?: UserCreatemailsTagsIgnoredInput | string[]
     dmNotification?: boolean
     token?: NullableJsonNullValueInput | InputJsonValue
+    afkReasson?: string | null
+    afkTime?: Date | string | null
     company?: CompanyCreateNestedOneWithoutWorkersInput
     cooldowns?: CooldownCreateNestedManyWithoutUserInput
     stocks?: StockHoldingCreateNestedManyWithoutUserInput
@@ -19951,6 +20073,8 @@ export namespace Prisma {
     mailsTagsIgnored?: UserCreatemailsTagsIgnoredInput | string[]
     dmNotification?: boolean
     token?: NullableJsonNullValueInput | InputJsonValue
+    afkReasson?: string | null
+    afkTime?: Date | string | null
     cooldowns?: CooldownUncheckedCreateNestedManyWithoutUserInput
     stocks?: StockHoldingUncheckedCreateNestedManyWithoutUserInput
     mails?: MailsUncheckedCreateNestedManyWithoutUserInput
@@ -19982,6 +20106,8 @@ export namespace Prisma {
     mailsTagsIgnored?: UserUpdatemailsTagsIgnoredInput | string[]
     dmNotification?: BoolFieldUpdateOperationsInput | boolean
     token?: NullableJsonNullValueInput | InputJsonValue
+    afkReasson?: NullableStringFieldUpdateOperationsInput | string | null
+    afkTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     company?: CompanyUpdateOneWithoutWorkersNestedInput
     cooldowns?: CooldownUpdateManyWithoutUserNestedInput
     stocks?: StockHoldingUpdateManyWithoutUserNestedInput
@@ -19999,6 +20125,8 @@ export namespace Prisma {
     mailsTagsIgnored?: UserUpdatemailsTagsIgnoredInput | string[]
     dmNotification?: BoolFieldUpdateOperationsInput | boolean
     token?: NullableJsonNullValueInput | InputJsonValue
+    afkReasson?: NullableStringFieldUpdateOperationsInput | string | null
+    afkTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     cooldowns?: CooldownUncheckedUpdateManyWithoutUserNestedInput
     stocks?: StockHoldingUncheckedUpdateManyWithoutUserNestedInput
     mails?: MailsUncheckedUpdateManyWithoutUserNestedInput
@@ -20014,6 +20142,8 @@ export namespace Prisma {
     mailsTagsIgnored?: UserCreatemailsTagsIgnoredInput | string[]
     dmNotification?: boolean
     token?: NullableJsonNullValueInput | InputJsonValue
+    afkReasson?: string | null
+    afkTime?: Date | string | null
     company?: CompanyCreateNestedOneWithoutWorkersInput
     logs?: LogCreateNestedManyWithoutUserInput
     stocks?: StockHoldingCreateNestedManyWithoutUserInput
@@ -20031,6 +20161,8 @@ export namespace Prisma {
     mailsTagsIgnored?: UserCreatemailsTagsIgnoredInput | string[]
     dmNotification?: boolean
     token?: NullableJsonNullValueInput | InputJsonValue
+    afkReasson?: string | null
+    afkTime?: Date | string | null
     logs?: LogUncheckedCreateNestedManyWithoutUserInput
     stocks?: StockHoldingUncheckedCreateNestedManyWithoutUserInput
     mails?: MailsUncheckedCreateNestedManyWithoutUserInput
@@ -20062,6 +20194,8 @@ export namespace Prisma {
     mailsTagsIgnored?: UserUpdatemailsTagsIgnoredInput | string[]
     dmNotification?: BoolFieldUpdateOperationsInput | boolean
     token?: NullableJsonNullValueInput | InputJsonValue
+    afkReasson?: NullableStringFieldUpdateOperationsInput | string | null
+    afkTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     company?: CompanyUpdateOneWithoutWorkersNestedInput
     logs?: LogUpdateManyWithoutUserNestedInput
     stocks?: StockHoldingUpdateManyWithoutUserNestedInput
@@ -20079,6 +20213,8 @@ export namespace Prisma {
     mailsTagsIgnored?: UserUpdatemailsTagsIgnoredInput | string[]
     dmNotification?: BoolFieldUpdateOperationsInput | boolean
     token?: NullableJsonNullValueInput | InputJsonValue
+    afkReasson?: NullableStringFieldUpdateOperationsInput | string | null
+    afkTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     logs?: LogUncheckedUpdateManyWithoutUserNestedInput
     stocks?: StockHoldingUncheckedUpdateManyWithoutUserNestedInput
     mails?: MailsUncheckedUpdateManyWithoutUserNestedInput
@@ -20094,6 +20230,8 @@ export namespace Prisma {
     mailsTagsIgnored?: UserCreatemailsTagsIgnoredInput | string[]
     dmNotification?: boolean
     token?: NullableJsonNullValueInput | InputJsonValue
+    afkReasson?: string | null
+    afkTime?: Date | string | null
     logs?: LogCreateNestedManyWithoutUserInput
     cooldowns?: CooldownCreateNestedManyWithoutUserInput
     stocks?: StockHoldingCreateNestedManyWithoutUserInput
@@ -20110,6 +20248,8 @@ export namespace Prisma {
     mailsTagsIgnored?: UserCreatemailsTagsIgnoredInput | string[]
     dmNotification?: boolean
     token?: NullableJsonNullValueInput | InputJsonValue
+    afkReasson?: string | null
+    afkTime?: Date | string | null
     logs?: LogUncheckedCreateNestedManyWithoutUserInput
     cooldowns?: CooldownUncheckedCreateNestedManyWithoutUserInput
     stocks?: StockHoldingUncheckedCreateNestedManyWithoutUserInput
@@ -20156,6 +20296,8 @@ export namespace Prisma {
     mailsTagsIgnored?: StringNullableListFilter<"User">
     dmNotification?: BoolFilter<"User"> | boolean
     token?: JsonNullableFilter<"User">
+    afkReasson?: StringNullableFilter<"User"> | string | null
+    afkTime?: DateTimeNullableFilter<"User"> | Date | string | null
   }
 
   export type StockHistoryCreateWithoutStockInput = {
@@ -20304,6 +20446,8 @@ export namespace Prisma {
     mailsTagsIgnored?: UserCreatemailsTagsIgnoredInput | string[]
     dmNotification?: boolean
     token?: NullableJsonNullValueInput | InputJsonValue
+    afkReasson?: string | null
+    afkTime?: Date | string | null
     company?: CompanyCreateNestedOneWithoutWorkersInput
     logs?: LogCreateNestedManyWithoutUserInput
     cooldowns?: CooldownCreateNestedManyWithoutUserInput
@@ -20321,6 +20465,8 @@ export namespace Prisma {
     mailsTagsIgnored?: UserCreatemailsTagsIgnoredInput | string[]
     dmNotification?: boolean
     token?: NullableJsonNullValueInput | InputJsonValue
+    afkReasson?: string | null
+    afkTime?: Date | string | null
     logs?: LogUncheckedCreateNestedManyWithoutUserInput
     cooldowns?: CooldownUncheckedCreateNestedManyWithoutUserInput
     mails?: MailsUncheckedCreateNestedManyWithoutUserInput
@@ -20376,6 +20522,8 @@ export namespace Prisma {
     mailsTagsIgnored?: UserUpdatemailsTagsIgnoredInput | string[]
     dmNotification?: BoolFieldUpdateOperationsInput | boolean
     token?: NullableJsonNullValueInput | InputJsonValue
+    afkReasson?: NullableStringFieldUpdateOperationsInput | string | null
+    afkTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     company?: CompanyUpdateOneWithoutWorkersNestedInput
     logs?: LogUpdateManyWithoutUserNestedInput
     cooldowns?: CooldownUpdateManyWithoutUserNestedInput
@@ -20393,6 +20541,8 @@ export namespace Prisma {
     mailsTagsIgnored?: UserUpdatemailsTagsIgnoredInput | string[]
     dmNotification?: BoolFieldUpdateOperationsInput | boolean
     token?: NullableJsonNullValueInput | InputJsonValue
+    afkReasson?: NullableStringFieldUpdateOperationsInput | string | null
+    afkTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     logs?: LogUncheckedUpdateManyWithoutUserNestedInput
     cooldowns?: CooldownUncheckedUpdateManyWithoutUserNestedInput
     mails?: MailsUncheckedUpdateManyWithoutUserNestedInput
@@ -20571,6 +20721,8 @@ export namespace Prisma {
     mailsTagsIgnored?: UserCreatemailsTagsIgnoredInput | string[]
     dmNotification?: boolean
     token?: NullableJsonNullValueInput | InputJsonValue
+    afkReasson?: string | null
+    afkTime?: Date | string | null
     company?: CompanyCreateNestedOneWithoutWorkersInput
     logs?: LogCreateNestedManyWithoutUserInput
     cooldowns?: CooldownCreateNestedManyWithoutUserInput
@@ -20588,6 +20740,8 @@ export namespace Prisma {
     mailsTagsIgnored?: UserCreatemailsTagsIgnoredInput | string[]
     dmNotification?: boolean
     token?: NullableJsonNullValueInput | InputJsonValue
+    afkReasson?: string | null
+    afkTime?: Date | string | null
     logs?: LogUncheckedCreateNestedManyWithoutUserInput
     cooldowns?: CooldownUncheckedCreateNestedManyWithoutUserInput
     stocks?: StockHoldingUncheckedCreateNestedManyWithoutUserInput
@@ -20608,6 +20762,8 @@ export namespace Prisma {
     mailsTagsIgnored?: UserCreatemailsTagsIgnoredInput | string[]
     dmNotification?: boolean
     token?: NullableJsonNullValueInput | InputJsonValue
+    afkReasson?: string | null
+    afkTime?: Date | string | null
     company?: CompanyCreateNestedOneWithoutWorkersInput
     logs?: LogCreateNestedManyWithoutUserInput
     cooldowns?: CooldownCreateNestedManyWithoutUserInput
@@ -20625,6 +20781,8 @@ export namespace Prisma {
     mailsTagsIgnored?: UserCreatemailsTagsIgnoredInput | string[]
     dmNotification?: boolean
     token?: NullableJsonNullValueInput | InputJsonValue
+    afkReasson?: string | null
+    afkTime?: Date | string | null
     logs?: LogUncheckedCreateNestedManyWithoutUserInput
     cooldowns?: CooldownUncheckedCreateNestedManyWithoutUserInput
     stocks?: StockHoldingUncheckedCreateNestedManyWithoutUserInput
@@ -20656,6 +20814,8 @@ export namespace Prisma {
     mailsTagsIgnored?: UserUpdatemailsTagsIgnoredInput | string[]
     dmNotification?: BoolFieldUpdateOperationsInput | boolean
     token?: NullableJsonNullValueInput | InputJsonValue
+    afkReasson?: NullableStringFieldUpdateOperationsInput | string | null
+    afkTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     company?: CompanyUpdateOneWithoutWorkersNestedInput
     logs?: LogUpdateManyWithoutUserNestedInput
     cooldowns?: CooldownUpdateManyWithoutUserNestedInput
@@ -20673,6 +20833,8 @@ export namespace Prisma {
     mailsTagsIgnored?: UserUpdatemailsTagsIgnoredInput | string[]
     dmNotification?: BoolFieldUpdateOperationsInput | boolean
     token?: NullableJsonNullValueInput | InputJsonValue
+    afkReasson?: NullableStringFieldUpdateOperationsInput | string | null
+    afkTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     logs?: LogUncheckedUpdateManyWithoutUserNestedInput
     cooldowns?: CooldownUncheckedUpdateManyWithoutUserNestedInput
     stocks?: StockHoldingUncheckedUpdateManyWithoutUserNestedInput
@@ -20699,6 +20861,8 @@ export namespace Prisma {
     mailsTagsIgnored?: UserUpdatemailsTagsIgnoredInput | string[]
     dmNotification?: BoolFieldUpdateOperationsInput | boolean
     token?: NullableJsonNullValueInput | InputJsonValue
+    afkReasson?: NullableStringFieldUpdateOperationsInput | string | null
+    afkTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     company?: CompanyUpdateOneWithoutWorkersNestedInput
     logs?: LogUpdateManyWithoutUserNestedInput
     cooldowns?: CooldownUpdateManyWithoutUserNestedInput
@@ -20716,6 +20880,8 @@ export namespace Prisma {
     mailsTagsIgnored?: UserUpdatemailsTagsIgnoredInput | string[]
     dmNotification?: BoolFieldUpdateOperationsInput | boolean
     token?: NullableJsonNullValueInput | InputJsonValue
+    afkReasson?: NullableStringFieldUpdateOperationsInput | string | null
+    afkTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     logs?: LogUncheckedUpdateManyWithoutUserNestedInput
     cooldowns?: CooldownUncheckedUpdateManyWithoutUserNestedInput
     stocks?: StockHoldingUncheckedUpdateManyWithoutUserNestedInput
@@ -20935,6 +21101,8 @@ export namespace Prisma {
     mailsTagsIgnored?: UserCreatemailsTagsIgnoredInput | string[]
     dmNotification?: boolean
     token?: NullableJsonNullValueInput | InputJsonValue
+    afkReasson?: string | null
+    afkTime?: Date | string | null
   }
 
   export type UserUpdateWithoutCompanyInput = {
@@ -20945,6 +21113,8 @@ export namespace Prisma {
     mailsTagsIgnored?: UserUpdatemailsTagsIgnoredInput | string[]
     dmNotification?: BoolFieldUpdateOperationsInput | boolean
     token?: NullableJsonNullValueInput | InputJsonValue
+    afkReasson?: NullableStringFieldUpdateOperationsInput | string | null
+    afkTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     logs?: LogUpdateManyWithoutUserNestedInput
     cooldowns?: CooldownUpdateManyWithoutUserNestedInput
     stocks?: StockHoldingUpdateManyWithoutUserNestedInput
@@ -20961,6 +21131,8 @@ export namespace Prisma {
     mailsTagsIgnored?: UserUpdatemailsTagsIgnoredInput | string[]
     dmNotification?: BoolFieldUpdateOperationsInput | boolean
     token?: NullableJsonNullValueInput | InputJsonValue
+    afkReasson?: NullableStringFieldUpdateOperationsInput | string | null
+    afkTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     logs?: LogUncheckedUpdateManyWithoutUserNestedInput
     cooldowns?: CooldownUncheckedUpdateManyWithoutUserNestedInput
     stocks?: StockHoldingUncheckedUpdateManyWithoutUserNestedInput
@@ -20977,6 +21149,8 @@ export namespace Prisma {
     mailsTagsIgnored?: UserUpdatemailsTagsIgnoredInput | string[]
     dmNotification?: BoolFieldUpdateOperationsInput | boolean
     token?: NullableJsonNullValueInput | InputJsonValue
+    afkReasson?: NullableStringFieldUpdateOperationsInput | string | null
+    afkTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type StockHistoryCreateManyStockInput = {

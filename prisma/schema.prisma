@@ -11,7 +11,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+  url      = env("DEV_DATABASE_URL")
 }
 
 model User {
@@ -30,6 +30,8 @@ model User {
   dmNotification Boolean @default(false)
   applications Application[]
   token        Json?
+  afkReasson           String?
+  afkTime              DateTime?
 }
 
 model Application {
