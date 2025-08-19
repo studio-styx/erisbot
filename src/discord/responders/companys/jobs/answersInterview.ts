@@ -1,7 +1,7 @@
 import { createResponder, ResponderType } from "#base";
-import { clearInterviewQuestions, generateGeminiContent, getInterviewQuestions, icon, registerLog, res, resv2, updateInterviewAnswer } from "#functions";
+import { prisma } from "#database";
+import { clearInterviewQuestions, generateGeminiContent, getInterviewQuestions, icon, registerLog, removeInterviewCooldown, res, resv2, updateInterviewAnswer } from "#functions";
 import { menus } from "#menus";
-import { PrismaClient } from "#prisma";
 import { createModalFields } from "@magicyan/discord";
 import { TextInputStyle } from "discord.js";
 
@@ -32,8 +32,6 @@ createResponder({
     },
 });
 
-const prisma = new PrismaClient();
-
 createResponder({
     customId: "company/:userid/modalInterview/:page/:companyId",
     types: [ResponderType.ModalComponent],
@@ -46,17 +44,24 @@ createResponder({
 
         const response = interaction.fields.getTextInputValue("response");
         const pageNum = parseInt(page);
+        await updateInterviewAnswer(userid, companyId, pageNum, response);
 
-        // Salva a resposta no cache
-        updateInterviewAnswer(userid, companyId, pageNum, response);
+        // Aguardar um pouco para garantir que o Redis foi atualizado
+        await new Promise(resolve => setTimeout(resolve, 100));
 
-        const questions = getInterviewQuestions(userid, companyId) || [{ question: `Pergunta não encontrada` }];
+        const questions = await getInterviewQuestions(userid, companyId);
+        
+        if (!questions || questions.length === 0) {
+            await interaction.reply(resv2.danger(`${icon.error} | Erro ao carregar as perguntas. Tente novamente.`));
+            return;
+        }
+
         const nextPage = pageNum + 1;
 
         if (nextPage >= questions.length) {
             await interaction.update(resv2.warning(`${icon.waiting_white} | A IA está processando a pergunta.`));
 
-            const allAnswersAndResponses = getInterviewQuestions(userid, companyId)
+            const allAnswersAndResponses = (await getInterviewQuestions(userid, companyId))
                 ?.map(({ question, answer }) => `**Pergunta:** ${question}\n**Resposta:** ${answer || "Sem resposta"}`)
                 .join("\n\n") ?? `Nenhuma pergunta encontrada`;
 
@@ -125,7 +130,7 @@ createResponder({
                 const geminiResponse: GeminiResponse = JSON.parse(text);
                 
                 if (!geminiResponse.contracted) {
-                    interaction.editReply(resv2.danger(`${icon.error} | O candidato foi reprovado. Motivo: ${geminiResponse.reason}`));
+                    interaction.editReply(resv2.danger(`**${icon.error} | O candidato foi reprovado. Motivo: ${geminiResponse.reason}**`));
                     await registerLog({
                         message: `Tentou uma entrevista com a empresa ${company.name} e foi reprovado. Motivo: ${geminiResponse.reason}`,
                         level: 10,
@@ -133,10 +138,12 @@ createResponder({
                         user: userid,
                         tags: ["interview"]
                     });
+                    await clearInterviewQuestions(userid, companyId);
+                    await removeInterviewCooldown(userid)
                     return;
                 }
 
-                interaction.editReply(resv2.success(`${icon.success} | O candidato foi aprovado! Motivo: ${geminiResponse.reason}`));
+                interaction.editReply(resv2.success(`**${icon.success} | O candidato foi aprovado! Motivo:** ${geminiResponse.reason}`));
                 
                 await prisma.user.update({
                     where: { id: userid },
@@ -156,7 +163,8 @@ createResponder({
                 return;
             }
 
-            clearInterviewQuestions(userid, companyId);
+            await clearInterviewQuestions(userid, companyId);
+            await removeInterviewCooldown(userid)
             return;
         }
 
@@ -171,7 +179,7 @@ createResponder({
         });
         
         setTimeout(async () => {
-            await interaction.editReply(menus.jobs.interview(nextPage, userid, companyId));
+            await interaction.editReply(await menus.jobs.interview(nextPage, userid, companyId));
         }, Math.floor(Math.random() * (7000 - 3000 + 1)) + 3000);
     },
 });

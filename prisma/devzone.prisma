@@ -21,6 +21,7 @@ model User {
   coins       Int @default(0)
   analyzes    Analyze[]
   votes       Votes[]
+  items       Item[]
 }
 
 
@@ -37,6 +38,17 @@ model Votes {
 enum Origin {
     SERVER
     WEBSITE
+}
+
+model Item {
+  id         Int
+  userId     String
+  quantity   Int
+  user       User @relation(fields: [userId], references: [id])
+  expiresAt  DateTime?
+  createdAt  DateTime @default(now())
+
+  @@id([userId, id])
 }
 
 model Application {

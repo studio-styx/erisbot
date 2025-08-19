@@ -1,5 +1,5 @@
 import { getCommandId, icon } from "#functions";
-import { settings } from "#settings";
+import { env, settings } from "#settings";
 import { brBuilder, createRow } from "@magicyan/discord";
 import { EmbedBuilder, StringSelectMenuBuilder, type InteractionReplyOptions, Interaction } from "discord.js";
 
@@ -111,6 +111,23 @@ export async function commandsMenu<R>(page: "economy" | "bot" | "user" | "modera
                     `**</xp reset server:${xpCommandId}>** - Resetar o xp do server`,
                 )
             })
+            embed.setDescription(brBuilder(
+                    "Agora a configuração do server fica por parte do site!",
+                    "No site é possivel configurar:",
+                    "- Chatbot",
+                    "- Canais onde pode ser usado comandos",
+                    "- Sistema de xp que é possivel configurar:",
+                    "> - Dificuldade",
+                    "> - Cargos que recebem mais ou menos xp",
+                    "> - Cargos que não recebem xp",
+                    "> - Canais que recebem mais ou menos xp",
+                    "> - Canais que não recebem xp",
+                    "> - Canal de aviso de levelUp",
+                    "> - Mensagem de aviso de levelUp",
+                    "> - Cargos que o usuário receberá se subir de nivel",
+                    "> - Canais que o usuário poderá ver se subir de nível",
+                    `Use já o meu dashboard! [Clique aqui!](${env.FRONT_BASE_URL}/guilds${interaction.guildId ? `/${interaction.guildId}` : ""})`
+                ))
             break;
         }
     }

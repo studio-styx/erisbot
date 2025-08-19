@@ -145,7 +145,7 @@ export default async function takeStx(app: FastifyInstance, client: Client<true>
                                 user: memberId,
                                 tags: ["economy", "transfer", "cancel", "api", "transaction"]
                             })
-                        return reply.status(StatusCodes.NON_AUTHORITATIVE_INFORMATION).send({ message: `User canceled the transaction` });
+                        return reply.status(StatusCodes.UNPROCESSABLE_ENTITY).send({ message: `User canceled the transaction` });
                     case "expired":
                         msg.edit(res.danger(`${icon.error} | Transação expirada, você demorou demais para responder`, { components: [makeRow(true)] }))
                         await redis.del(`tx:${memberId}:${application.data.id}`);
@@ -172,7 +172,6 @@ export default async function takeStx(app: FastifyInstance, client: Client<true>
         types: [ResponderType.Button],
         cache: "cached",
         async run(interaction, { confirm, appId, targetId }): Promise<any> {
-            console.log(`Interação recebida: confirm=${confirm}, appId=${appId}, targetId=${targetId}`);
             if (targetId !== interaction.user.id) {
                 console.log('Interação rejeitada: usuário não autorizado');
                 return interaction.reply(res.danger(`${icon.error} | Ei, essa transação não é sua! ${icon.Eris_Angry_left}`));
@@ -190,23 +189,17 @@ export default async function takeStx(app: FastifyInstance, client: Client<true>
                 return interaction.update(res.danger(`${icon.error} | Você já finalizou essa transação!`, { components: [] }));
             }
 
-            console.log('Deferindo interação');
             await interaction.deferUpdate();
-            console.log('Editando mensagem para "Processando"');
             await interaction.editReply(res.primary(`${icon.info} | Processando... ${icon.Eris_thinking_left}`, { components: [] }));
 
-            console.log(`Buscando aplicação ${appId} no Prisma`);
             const application = await prisma.application.findUnique({ where: { id: appId } });
             if (!application) {
-                console.log(`Aplicação ${appId} não encontrada`);
                 await redis.setex(transactionKey, 60, JSON.stringify({ ...transactionData, confirm: false }));
                 return interaction.editReply(res.danger(`${icon.error} | Aplicação não encontrada`, { components: [] }));
             }
 
-            console.log(`Buscando usuário ${targetId} no Prisma`);
             const user = await prisma.user.findUnique({ where: { id: targetId } });
             if (!user || user.money.toNumber() < transactionData.amount) {
-                console.log(`Usuário ${targetId} sem dinheiro suficiente`);
                 await redis.setex(transactionKey, 60, JSON.stringify({ ...transactionData, confirm: false }));
                 return interaction.editReply(res.danger(`${icon.error} | O usuário não tem dinheiro suficiente!`, { components: [] }));
             }

@@ -3,8 +3,8 @@ import { createContainer, createRow, createSeparator } from "@magicyan/discord";
 import { ButtonBuilder, ButtonStyle, type InteractionReplyOptions } from "discord.js";
 import { getInterviewQuestions } from "#functions";
 
-export function interviewMenu<R>(page: number, userid: string, companyId: string): R {
-    const questions = getInterviewQuestions(userid, companyId) || [{ question: "Não encontrado" }];
+export async function interviewMenu<R>(page: number, userid: string, companyId: string): Promise<R> {
+    const questions = await getInterviewQuestions(userid, companyId) || [{ question: "Não encontrado" }];
     const components = [
         page === 0
             ? "**Entrevista iniciada com sucesso! responda a pergunta abaixo clicando no botão de responder**"

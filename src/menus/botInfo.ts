@@ -134,7 +134,7 @@ export async function botInfoMenu<R>(page: 'main' | 'hardware' | 'software' | 'c
                 `# Olá ${user.username.replace(/([\\_*~`|>])/g, '\\$1')}, veja minhas informações abaixo! ${icon.Eris_happy_left}`,
                 brBuilder(
                     `### Curiosidades`,
-                    `- Minha desenvolvedora é o **Studio Styx**, comandado por **BirdTool**, saiba mais usando o comando \`/bot creators\``,
+                    `- Minha desenvolvedora é o **Studio Styx**, comandado por **BirdTool**`,
                     `- Sou um bot de código aberto e meu código fonte está disponível no [GitHub](https://github.com/studio-styx/erisbot)`,
                     `- Uso o banco de dados PostgreSQL hospedado pela [Neon](https://neon.com/)`,
                     `- Sabia que era pra eu ter originalmente sido feita em Kotlin? é possivel ver meu código antigo nos primeiros commits do meu github`,

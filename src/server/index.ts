@@ -11,7 +11,6 @@ import fastifyAutoload from "@fastify/autoload";
 import path from "node:path";
 import cookie from "@fastify/cookie";
 import jwt from "jsonwebtoken"
-import fastifyWebsocket from "@fastify/websocket";
 
 export const reservedToken = crypto.randomBytes(16).toString("hex")
 
@@ -20,7 +19,6 @@ createEvent({
     event: "ready", once: true,
     async run(client) {
         const app = fastify();
-        app.register(fastifyWebsocket);
 
         // CORS e tratamento de erros
         app.register(cors, {
@@ -44,7 +42,6 @@ createEvent({
 
         app.setErrorHandler(serverErrorHandler);
 
-        // Adiciona tipagem customizada (opcional)
         app.decorateRequest("application", null);
 
         app.register(cookie, {
@@ -52,73 +49,11 @@ createEvent({
             parseOptions: {}
         });
 
-        /*
         await app.register(import('@fastify/rate-limit'), {
             max: 50,
             timeWindow: '1 minute',
         });
-        */
 
-
-        app.addHook('preValidation', async (req, res) => {
-            if (req.headers['upgrade'] === 'websocket') {
-                if (req.raw.url?.startsWith("/v1/bot/economy/ws/take-stx")) {
-                    return;
-                }
-            }
-
-            if (req.url.startsWith("/auth")) return;
-            if (req.url.startsWith("/user") || req.url.startsWith("/guilds") || req.url.startsWith("/botlist") || req.url.startsWith("/bot")) {
-                const token = req.cookies.auth;
-                if (!token) return res.status(StatusCodes.UNAUTHORIZED).send({ error: "Not logged in" });
-                const secret = process.env.JWT_SECRET || (typeof jwtReservedToken === "function" ? jwtReservedToken : jwtReservedToken);
-                const decoded = jwt.verify(token, secret) as jwt.JwtPayload;
-                const userId = decoded.sub;
-
-                if (!userId) {
-                    return res.status(StatusCodes.UNAUTHORIZED).send({ error: "Invalid token" });
-                }
-
-                req.userId = userId;
-                return;
-            }
-            if (req.url.startsWith("/web")) {
-                const secret = process.env.FRONT_SECRET;
-                const token = req.headers.token;
-
-                if (!token || typeof token !== "string") return res.status(StatusCodes.UNAUTHORIZED).send();
-
-                if (token !== secret) return res.status(StatusCodes.UNAUTHORIZED).send();
-                return;
-            }
-            const token = req.headers.authorization;
-
-            if (!token) {
-                return res.status(StatusCodes.UNAUTHORIZED).send({ message: "Unauthorized" });
-            }
-
-            const hash256 = crypto.createHash("sha256").update(token).digest("hex");
-
-            const application = await prisma.application.findUnique({
-                where: { token: hash256 }
-            });
-
-            if (!application) {
-                return res.status(StatusCodes.UNAUTHORIZED).send({ message: "Unauthorized" });
-            }
-
-            // Armazena no request para ser usado nas rotas
-            req.application = { data: application, tokenHash: hash256 };
-
-            await prisma.requisition.create({
-                data: {
-                    applicationId: application.id,
-                    url: req.url,
-                }
-            }).catch(e => {
-                logger.error("Erro ao salvar requisition:", e);
-            });
-        });
 
         // Middleware de autenticação
         app.addHook("onRequest", async (req, res) => {

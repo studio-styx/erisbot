@@ -26,38 +26,3 @@ export const redis = new Redis(redisUrl, {
         // Em produção, use rejectUnauthorized: true e forneça CA se necessário
     },
 });
-
-// Conectar ao Redis com retry
-async function connectRedis() {
-    let attempts = 0;
-    const maxAttempts = 15; // Aumentar para 15 tentativas
-
-    while (attempts < maxAttempts) {
-        try {
-            await redis.connect();
-            console.log('Conexão inicial ao Redis bem-sucedida');
-            const pingResponse = await redis.ping();
-            console.log('Ping Redis:', pingResponse);
-            return true;
-        } catch (err) {
-            attempts++;
-            console.error(`Falha na tentativa ${attempts}/${maxAttempts} de conexão ao Redis:`, err);
-            if (attempts === maxAttempts) {
-                console.error('Número máximo de tentativas atingido.');
-                return false;
-            }
-            await new Promise((resolve) => setTimeout(resolve, 2000));
-        }
-    }
-    return false;
-}
-
-// Chamar no startup
-connectRedis().then((success) => {
-    if (!success) {
-        console.error('Não foi possível conectar ao Redis. Encerrando aplicação.');
-        process.exit(1);
-    }
-});
-
-export { connectRedis };

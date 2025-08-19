@@ -22,8 +22,6 @@ export async function EconomyDismissCommand(interaction: ChatInputCommandInterac
 
     await interaction.editReply(res.danger(`${icon.success} | você saiu do seu emprego!`));
 
-    interaction.editReply(res.danger(`${icon.success} | você saiu do seu emprego!`));
-
     await registerLog({
         level: 7,
         message: "Saiu de seu emprego",

@@ -33,6 +33,8 @@ export default function addBotRoute(app: FastifyInstance, client: Client<true>) 
         );
         const body = addBotSchemaBody.parse(req.body);
 
+        if (body.description.includes("@everyone") || body.description.includes("@here")) return reply.status(StatusCodes.BAD_REQUEST).send({ error: `The description has keywords not authorized` })
+
         const token = req.cookies.auth;
         if (!token) return reply.status(StatusCodes.UNAUTHORIZED).send({ error: "Not logged in" });
         const userId = getJwtToken(token);

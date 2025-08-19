@@ -1,23 +1,31 @@
 import { createResponder, ResponderType, Store } from "#base";
-import { generateGeminiContent, getCommandId, getInterviewQuestions, icon, registerLog, resv2, setInterviewQuestions } from "#functions";
+import { prisma } from "#database";
+import { generateGeminiContent, getCommandId, getInterviewCooldown, getInterviewQuestions, icon, registerLog, resv2, setInterviewCooldown, setInterviewQuestions } from "#functions";
 import { menus } from "#menus";
-import { PrismaClient } from "#prisma";
 import { time } from "discord.js";
 
-const prisma = new PrismaClient();
-
-const cooldown = new Store<Date>()
+const simpleCooldown = new Store<Date>()
 
 createResponder({
     customId: "companys/interview/:companyId",
     types: [ResponderType.Button],
     cache: "cached",
     async run(interaction, { companyId }) {
-        const userCooldown = cooldown.get(interaction.user.id);
-        if (userCooldown) {
-            interaction.reply(resv2.danger(`${icon.denied} | você está em cooldown! volte novamente em: ${time(userCooldown, "R")}`));
+        if (simpleCooldown.has(interaction.user.id)) {
+            interaction.reply(resv2.danger(`${icon.denied} | Você está em cooldown! volte novamente em: ${time(simpleCooldown.get(interaction.user.id)!, "R")} ou termine sua entrevista atual.`));
             return;
         }
+        const userCooldown = await getInterviewCooldown(interaction.user.id);
+        if (userCooldown) {
+            const endTimestamp = Date.now() + userCooldown;
+            const endTimestampSeconds = Math.floor(endTimestamp / 1000); // Converter para segundos e arredondar para baixo
+            interaction.reply(resv2.danger(`${icon.denied} | você está em cooldown! volte novamente ${time(endTimestampSeconds, "R")}`));
+            return;
+        }
+
+        simpleCooldown.set(interaction.user.id, new Date(Date.now() + 1000 * 10), {
+            time: 1000 * 10
+        })
 
         const company = await prisma.company.findUnique({
             where: {
@@ -40,8 +48,8 @@ createResponder({
             return;
         }
         if (user.companyId) {
-            const commandId = await getCommandId(interaction, "economy")
-            interaction.reply(resv2.danger(`${icon.denied} | Você já está empregado! para sair de seu emprego use o comando ${commandId ? `</economy general dismiss:${commandId}>` : "\`/economy general dismiss\`"}`));
+            const commandId = await getCommandId(interaction, "jobs")
+            interaction.reply(resv2.danger(`${icon.denied} | Você já está empregado! para sair de seu emprego use o comando ${commandId ? `</jobs dismiss:${commandId}>` : "\`/economy general dismiss\`"}`));
             return;
         }
         if (user.xp < company.experience) {
@@ -52,7 +60,7 @@ createResponder({
 
         await interaction.editReply(resv2.warning(`${icon.waiting_white} | Aguarde enquanto o entrevistador chama a sua vez.`));
 
-        let questions = getInterviewQuestions(interaction.user.id, companyId);
+        let questions = await getInterviewQuestions(interaction.user.id, companyId);
 
         const companyExpectations = (company?.expectations as string[] | { level: number, skill: string }[])
 
@@ -99,7 +107,6 @@ createResponder({
             });
 
             try {
-                cooldown.set(interaction.user.id, new Date(Date.now() + 1000 * 10)), { time: 1000 * 10 };
                 const result = await generateGeminiContent(prompt);
                 
                 if (!result.success || !result.text) {
@@ -119,9 +126,11 @@ createResponder({
                 if (text.endsWith("```")) {
                     text = text.slice(0, -3);
                 }
-                const rawQuestions: string[] = JSON.parse(text);
+                const rawQuestions: string[] = JSON.parse(text) as string[];
                 questions = rawQuestions.map((question) => ({ question }));
-                setInterviewQuestions(interaction.user.id, companyId, questions);
+                await setInterviewQuestions(interaction.user.id, companyId, questions);
+                
+                await new Promise(resolve => setTimeout(resolve, 100));
             } catch (error) {
                 console.error(error)
                 interaction.editReply(resv2.danger(`${icon.error} | Não foi possível gerar as perguntas, tente novamente mais tarde.`));
@@ -129,9 +138,15 @@ createResponder({
             }
         }
 
-        interaction.editReply(menus.jobs.interview(0, interaction.user.id, companyId));
+        // Verificar novamente se as perguntas foram carregadas
+        const currentQuestions = await getInterviewQuestions(interaction.user.id, companyId);
+        if (!currentQuestions || currentQuestions.length === 0) {
+            interaction.editReply(resv2.danger(`${icon.error} | Erro ao carregar as perguntas.`));
+            return;
+        }
 
-        cooldown.set(interaction.user.id, new Date(Date.now() + 1000 * 60 * 20)), { time: 1000 * 60 * 20 };
+        interaction.editReply(await menus.jobs.interview(0, interaction.user.id, companyId));
+        await setInterviewCooldown(interaction.user.id);
         return;
     },
 });

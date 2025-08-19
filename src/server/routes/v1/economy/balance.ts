@@ -24,4 +24,13 @@ export default async function balance(app: FastifyInstance, client: Client<true>
 
         return reply.status(StatusCodes.OK).send({ money: user.money.toNumber(), bank: user.bank.toNumber() });
     });
+    app.get("/balance", async (req, reply) => {
+        const app = req.application;
+
+        if (!app) return reply.status(StatusCodes.UNAUTHORIZED).send({ message: "Unauthorized" });
+
+        return reply.status(StatusCodes.OK).send({
+            money: app.data.money.toNumber(),
+        })
+    })
 }
