@@ -1,8 +1,8 @@
 import { asPrisma, dzonePrisma } from "#database";
 import { getJwtToken } from "#functions";
 import { settings } from "#settings";
-import { createContainer, createSeparator, brBuilder, createSection, createEmbed } from "@magicyan/discord";
-import { Client, roleMention, userMention } from "discord.js";
+import { createContainer, createSeparator, brBuilder, createSection, createEmbed, createRow } from "@magicyan/discord";
+import { ButtonBuilder, ButtonStyle, Client, roleMention, userMention } from "discord.js";
 import { FastifyInstance } from "fastify";
 import { StatusCodes } from "http-status-codes";
 import z from "zod";
@@ -156,8 +156,15 @@ export default function addBotRoute(app: FastifyInstance, client: Client<true>) 
             ]
         })
 
-        if ("send" in channel) channel.send({ components: [container], flags: ["IsComponentsV2"] });
+        const row = createRow(
+            new ButtonBuilder({
+                style: ButtonStyle.Link,
+                label: "Adicionar aplicação",
+                url: `https://discord.com/oauth2/authorize?client_id=${discordApp.id}&scope=bot&permissions=81920`
+            })
+        )
 
+        if ("send" in channel) channel.send({ components: [container, row], flags: ["IsComponentsV2"] });
 
         const mailEmbed = createEmbed({
             title: "Nova aplicação",

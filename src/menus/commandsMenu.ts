@@ -3,7 +3,7 @@ import { env, settings } from "#settings";
 import { brBuilder, createRow } from "@magicyan/discord";
 import { EmbedBuilder, StringSelectMenuBuilder, type InteractionReplyOptions, Interaction } from "discord.js";
 
-export async function commandsMenu<R>(page: "economy" | "bot" | "user" | "moderation", interaction: Interaction): Promise<R> {
+export async function commandsMenu<R>(page: "economy" | "bot" | "user" | "moderation" | "utility", interaction: Interaction): Promise<R> {
     const embed = new EmbedBuilder({
         title: "Commands",
         color: parseInt(settings.colors.fuchsia.replace("#", ""), 16),
@@ -130,6 +130,20 @@ export async function commandsMenu<R>(page: "economy" | "bot" | "user" | "modera
                 ))
             break;
         }
+        case "utility": {
+            const [afk] = await Promise.all([
+                getCommandId(interaction, "afk")
+            ])
+
+            embed.addFields({
+                name: "",
+                value: brBuilder(
+                    `**</afk set:${afk}>** - Definir seu afk`,
+                    `**</afk remove:${afk}>** - Remover seu afk`,
+                )
+            })
+            break;
+        }
     }
 
     const components = [
@@ -138,10 +152,11 @@ export async function commandsMenu<R>(page: "economy" | "bot" | "user" | "modera
                 customId: "menu/help/commands",
                 placeholder: "Select a category",
                 options: [
-                    { label: "Economy", value: "economy", emoji: icon.money_bag, default: page === "economy" },
+                    { label: "Economia", value: "economy", emoji: icon.money_bag, default: page === "economy" },
                     { label: "Bot", value: "bot", emoji: icon.bot, default: page === "bot" },
-                    { label: "User", value: "user", emoji: icon.investment_graph, default: page === "user" },
-                    { label: "Moderation", value: "moderation", emoji: icon.lock, default: page === "moderation" }
+                    { label: "Usuário", value: "user", emoji: icon.investment_graph, default: page === "user" },
+                    { label: "Moderação", value: "moderation", emoji: icon.security, default: page === "moderation" },
+                    { label: "Utilidades", value: "utility", emoji: icon.key, default: page === "utility" }
                 ]
             })
         )

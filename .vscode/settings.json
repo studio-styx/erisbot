@@ -29,14 +29,18 @@
     "config.json": "Raml",
     "*.lang.json": "i18n",
     "lang.json": "i18n",
-    "gitignore": "Git",
+    "gitignore": "Git"
   },
-  "material-icon-theme.folders.customClones": [{
+  "material-icon-theme.folders.customClones": [
+    {
       "name": "discord",
       "base": "vm",
       "color": "indigo-500",
-      "folderNames": ["discord"]
-  }],
+      "folderNames": [
+        "discord"
+      ]
+    }
+  ],
   "material-icon-theme.folders.theme": "specific",
   "explorer.fileNesting.enabled": true,
   "explorer.fileNesting.patterns": {
@@ -51,4 +55,10 @@
   "files.readonlyInclude": {
     "src/discord/base/**": true
   },
+  "search.exclude": {
+    "**/.yarn": true,
+    "**/.pnp.*": true
+  },
+  "typescript.tsdk": ".yarn/sdks/typescript/lib",
+  "typescript.enablePromptUseWorkspaceTsdk": true
 }

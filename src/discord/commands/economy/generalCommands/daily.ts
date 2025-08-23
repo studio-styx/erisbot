@@ -113,7 +113,7 @@ export async function economyDailyCommand(interaction: ChatInputCommandInteracti
         })
     ])
 
-    interaction.editReply(res.fuchsia(`${icon.Eris_enchanted} | Parabéns! você pegou seu prêmio diário de **${dailyValue}** styx! agora você possui: **${newUser.money}** styx em sua carteira! ${icon.Eris_ok_left}`));
+    interaction.editReply(res.fuchsia(`${icon.Eris_enchanted} | Parabéns! você pegou seu prêmio diário de **${dailyValue}** stx! agora você possui: **${newUser.money}** stx em sua carteira! ${icon.Eris_ok_left}`));
 
     await registerLog({
         level: 3,

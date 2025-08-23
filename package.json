@@ -1,17 +1,23 @@
 {
-  "name": "eris",
-  "version": "1.2.4",
-  "type": "module",
+  "name": "erisbarry",
+  "version": "1.2.6",
   "main": "src/index.ts",
+  "type": "module",
+  "license": "MIT",
+  "packageManager": "yarn@4.9.3",
   "scripts": {
     "check": "tsc --noEmit && echo ✔ Ok",
     "build": "tsc",
     "dev": "bun --env-file .env ./src/index.ts",
     "dev:dev": "bun --env-file .env.dev ./src/index.ts",
+    "dev:test": "yarn run tsx src/index.ts",
     "watch": "bun --watch --env-file .env ./src/index.ts",
     "watch:dev": "bun --hot --env-file .env.dev ./src/index.ts",
     "start": "node --env-file .env ./build/index.js",
-    "start:dev": "node --env-file .env.dev ."
+    "start:dev": "node --env-file .env.dev .",
+    "prisma:generate": "prisma generate --schema=prisma/schema.prisma && prisma generate --schema=prisma/erisHelper.prisma && prisma generate --schema=prisma/devzone.prisma",
+    "prisma:generate:eris": "prisma generate --schema=prisma/erisHelper.prisma",
+    "prisma:generate:dzone": "prisma generate --schema=prisma/devzone.prisma"
   },
   "dependencies": {
     "@fastify/autoload": "^6.3.1",
@@ -22,7 +28,7 @@
     "@google/generative-ai": "^0.24.1",
     "@magicyan/discord": "^1.4.11",
     "@napi-rs/canvas": "^0.1.76",
-    "@prisma/client": "^6.13.0",
+    "@prisma/client": "6.14.0",
     "@reliverse/reglob": "1.0.0",
     "axios": "^1.11.0",
     "chalk": "5.4.1",
@@ -32,7 +38,6 @@
     "ioredis": "^5.7.0",
     "jsonwebtoken": "^9.0.2",
     "node-cache": "^5.1.2",
-    "prisma": "^6.13.0",
     "rou3": "0.5.1",
     "systeminformation": "^5.27.7",
     "uuid": "^11.1.0",
@@ -43,7 +48,9 @@
     "@types/bun": "^1.2.10",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/ws": "^8.18.1",
+    "prisma": "6.14.0",
     "tsup": "^8.3.5",
+    "tsx": "^4.20.4",
     "typescript": "5.7.2"
   },
   "imports": {

@@ -19,49 +19,53 @@ export async function economyBalanceCommand(interaction: ChatInputCommandInterac
 
     await interaction.deferReply();
 
-    const userData = await prisma.user.findUnique({
+    const userData = await prisma.user.upsert({
         where: {
             id
         },
         select: {
             money: true,
             bank: true
-        }
+        },
+        create: {
+            id: interaction.user.id
+        },
+        update: {}
     });
 
-    const money = userData?.money.toNumber() ?? 0;
-    const bank = userData?.bank.toNumber() ?? 50;
+    const money = userData?.money.toNumber()
+    const bank = userData?.bank.toNumber()
 
     const messages: string[] = []
 
     if (money + bank > 800) {
         messages.push(
-            `${icon.Eris_enchanted} | ${userMention(id)} tem **${money}** styx em sua carteira e **${bank}** styx em sua conta bancária, eu acho que ele poderia dividir`,
-            `${icon.Eris_enchanted} | ${userMention(id)} tem impressionantes: **${money}** styx em sua carteira e **${bank}** styx em sua conta bancária!`,
-            `${icon.Eris_enchanted} | ${userMention(id)} tem um saldo impressionante: **${money}** styx em sua carteira e **${bank}** styx em sua conta bancária!`,
-            `${icon.Eris_enchanted} | ${userMention(id)} tem **${money}** styx em sua carteira e **${bank}** styx em sua conta bancária, que inveja!`,
-            `${icon.Eris_enchanted} | ${userMention(id)} tem **${money}** styx em sua carteira e **${bank}** styx em sua conta bancária, eu queria ser que nem ele algum dia...`,
+            `${icon.Eris_enchanted} | ${userMention(id)} tem **${money}** stx em sua carteira e **${bank}** stx em sua conta bancária, eu acho que ele poderia dividir`,
+            `${icon.Eris_enchanted} | ${userMention(id)} tem impressionantes: **${money}** stx em sua carteira e **${bank}** stx em sua conta bancária!`,
+            `${icon.Eris_enchanted} | ${userMention(id)} tem um saldo impressionante: **${money}** stx em sua carteira e **${bank}** stx em sua conta bancária!`,
+            `${icon.Eris_enchanted} | ${userMention(id)} tem **${money}** stx em sua carteira e **${bank}** stx em sua conta bancária, que inveja!`,
+            `${icon.Eris_enchanted} | ${userMention(id)} tem **${money}** stx em sua carteira e **${bank}** stx em sua conta bancária, eu queria ser que nem ele algum dia...`,
         )
     } else if (money + bank > 200 && money + bank < 800) {
         messages.push(
-            `${icon.money_bag} | ${userMention(id)} tem **${money}** styx em sua carteira e **${bank}** styx em sua conta bancária.`,
-            `${icon.money_bag} | ${userMention(id)} tem **${money}** styx em sua carteira e **${bank}** styx em sua conta bancária, eu gostaria de ter isso...`,
-            `${icon.money_bag} | ${userMention(id)} tem **${money}** styx em sua carteira e **${bank}** styx em sua conta bancária, poderia ser mais ${icon.Eris_Angry_left}`,
-            `${icon.money_bag} | ${userMention(id)} tem **${money}** styx em sua carteira e **${bank}** styx em sua conta bancária, ele deve estar feliz com tudo isso de dinheiro`,
+            `${icon.money_bag} | ${userMention(id)} tem **${money}** stx em sua carteira e **${bank}** stx em sua conta bancária.`,
+            `${icon.money_bag} | ${userMention(id)} tem **${money}** stx em sua carteira e **${bank}** stx em sua conta bancária, eu gostaria de ter isso...`,
+            `${icon.money_bag} | ${userMention(id)} tem **${money}** stx em sua carteira e **${bank}** stx em sua conta bancária, poderia ser mais ${icon.Eris_Angry_left}`,
+            `${icon.money_bag} | ${userMention(id)} tem **${money}** stx em sua carteira e **${bank}** stx em sua conta bancária, ele deve estar feliz com tudo isso de dinheiro`,
         )
     } else {
         messages.push(
-            `${icon.money} | ${userMention(id)} tem **${money}** styx em sua carteira e **${bank}** styx em sua conta bancária.`,
-            `${icon.money} | ${userMention(id)} tem **${money}** styx em sua carteira e **${bank}** styx em sua conta bancária, muito pouco...`,
-            `${icon.money} | ${userMention(id)} tem **${money}** styx em sua carteira e **${bank}** styx em sua conta bancária, eu não sei o que fazer só com isso...`,
-            `${icon.money} | ${userMention(id)} tem apenas **${money}** styx em sua carteira e **${bank}** styx em sua conta bancária, eu acho que a gente deveria dividir com ele...`,
-            `${icon.money} | ${userMention(id)} tem apenas **${money}** styx em sua carteira e **${bank}** styx em sua conta bancária, como alguem consegue sobreviver só com isso ${icon.Eris_cry_left}`
+            `${icon.money} | ${userMention(id)} tem **${money}** stx em sua carteira e **${bank}** stx em sua conta bancária.`,
+            `${icon.money} | ${userMention(id)} tem **${money}** stx em sua carteira e **${bank}** stx em sua conta bancária, muito pouco...`,
+            `${icon.money} | ${userMention(id)} tem **${money}** stx em sua carteira e **${bank}** stx em sua conta bancária, eu não sei o que fazer só com isso...`,
+            `${icon.money} | ${userMention(id)} tem apenas **${money}** stx em sua carteira e **${bank}** stx em sua conta bancária, eu acho que a gente deveria dividir com ele...`,
+            `${icon.money} | ${userMention(id)} tem apenas **${money}** stx em sua carteira e **${bank}** stx em sua conta bancária, como alguem consegue sobreviver só com isso ${icon.Eris_cry_left}`
         )
     }
     if (money > 500) {
         messages.push(
-            `${icon.Eris_enchanted} | ${userMention(id)} tem **${money}** styx em sua conta e **${bank}** styx em sua conta bancária, como que ele tem coragem pra andar com tudo isso no bolso? ${icon.Eris_thinking_left}`,
-            `${icon.Eris_enchanted} | ${userMention(id)} tem **${money}** styx em sua conta e **${bank}** styx em sua conta bancária, ele tem muita coragem pra andar com tudo isso no bolso!`,
+            `${icon.Eris_enchanted} | ${userMention(id)} tem **${money}** stx em sua conta e **${bank}** stx em sua conta bancária, como que ele tem coragem pra andar com tudo isso no bolso? ${icon.Eris_thinking_left}`,
+            `${icon.Eris_enchanted} | ${userMention(id)} tem **${money}** stx em sua conta e **${bank}** stx em sua conta bancária, ele tem muita coragem pra andar com tudo isso no bolso!`,
         )
     }
 

@@ -4,155 +4,186 @@ import { settings } from "#settings";
 import { createEmbed, EmbedPlusBuilder } from "@magicyan/discord";
 import { OmitPartialGroupDMChannel, Message, time, userMention } from "discord.js";
 
-const isAAfkUser = async (userId: string) => {
-    const afkRedis = await redis.get(`afk:${userId}`);
-    const removeAfkUser = async () => {
+// Interface para dados de AFK
+interface AfkData {
+    reason: string;
+    time: string; // String ISO para compatibilidade com Redis
+}
+
+// Obtém status AFK do Redis
+const getRedisAfk = async (id: string): Promise<AfkData | null> => {
+    const afkRedis = await redis.get(`afk:${id}`);
+    if (!afkRedis || afkRedis === "no") {
+        await redis.setex(`afk:${id}`, 3600, "no"); // Expira em 1 hora
+        return null;
+    }
+    try {
+        return JSON.parse(afkRedis) as AfkData;
+    } catch (error) {
+        console.error(`Erro ao parsear dados AFK do Redis para o usuário ${id}:`, error);
+        await redis.setex(`afk:${id}`, 3600, "no");
+        return null;
+    }
+};
+
+// Define status AFK
+export const setAfk = async (userId: string, reason: string): Promise<void> => {
+    const afkData: AfkData = {
+        reason,
+        time: new Date().toISOString(),
+    };
+    await redis.setex(`afk:${userId}`, 86400, JSON.stringify(afkData)); // Expira em 24 horas
+    await prisma.user.update({
+        where: { id: userId },
+        data: { afkReasson: reason, afkTime: new Date() },
+    });
+};
+
+// Verifica se o usuário está AFK e remove o status se estiver
+const isAfkUser = async (userId: string): Promise<{ afk: boolean; reason?: string; time?: Date }> => {
+    const removeAfkUser = async (): Promise<{ afkReasson: string | null; afkTime: Date | null }> => {
         const userBeforeUpdate = await prisma.user.findUnique({
             where: { id: userId },
-            select: { afkReasson: true, afkTime: true }
+            select: { afkReasson: true, afkTime: true },
         });
 
-        if (userBeforeUpdate) await prisma.user.update({
-            where: { id: userId },
-            data: { afkReasson: null, afkTime: null }
-        });
+        if (userBeforeUpdate?.afkReasson) {
+            await prisma.user.update({
+                where: { id: userId },
+                data: { afkReasson: null, afkTime: null },
+            });
+        }
 
-        await redis.del(`afk:${userId}`);
+        await redis.setex(`afk:${userId}`, 3600, "no");
+        return userBeforeUpdate || { afkReasson: null, afkTime: null };
+    };
 
-        return userBeforeUpdate as {
-            afkReasson: string;
-            afkTime: Date;
-        };
-    }
-
+    const afkRedis = await getRedisAfk(userId);
     if (afkRedis) {
         const result = await removeAfkUser();
         return {
             afk: true,
-            reason: result.afkReasson,
-            time: result.afkTime
+            reason: result.afkReasson || afkRedis.reason,
+            time: result.afkTime || new Date(afkRedis.time),
         };
     }
 
     const afkPrisma = await prisma.user.findUnique({
-        where: {
-            id: userId
-        },
-        select: {
-            afkReasson: true,
-            afkTime: true
-        }
+        where: { id: userId },
+        select: { afkReasson: true, afkTime: true },
     });
 
-    if (afkPrisma && afkPrisma.afkReasson && afkPrisma.afkTime) {
+    if (afkPrisma?.afkReasson && afkPrisma.afkTime) {
+        await redis.setex(`afk:${userId}`, 86400, JSON.stringify({
+            reason: afkPrisma.afkReasson,
+            time: afkPrisma.afkTime.toISOString(),
+        }));
         const result = await removeAfkUser();
         return {
             afk: true,
-            reason: result.afkReasson,
-            time: result.afkTime
+            reason: result.afkReasson!,
+            time: result.afkTime!,
         };
     }
 
-    return {
-        afk: false
-    }
-}
+    return { afk: false };
+};
 
-const mentionedAAfkUser = async (message: string) => {
-    const userMentioned = message.match(/<@!?(\d{17,20})>/g);
-    if (!userMentioned) return [];
-    const afkUsers: { userId: string, reason: string, time: Date }[] = [];
-    for (const mention of userMentioned) {
-        const userId = mention.replace(/<@!?/, '').replace('>', '');
-        const redisAfk = await redis.get(`afk:${userId}`);
-        let afk: { userId: string, reason: string, time: Date } | null = null;
-        if (redisAfk) afk = {
-            userId,
-            reason: JSON.parse(redisAfk).reason,
-            time: new Date(JSON.parse(redisAfk).time)
-        }
-        if (!afk) {
+// Verifica usuários mencionados com status AFK
+const mentionedAfkUsers = async (message: string): Promise<{ userId: string; reason: string; time: Date }[]> => {
+    const userMentions = message.match(/<@!?(\d{17,20})>/g);
+    if (!userMentions) return [];
+
+    const afkUsers: { userId: string; reason: string; time: Date }[] = [];
+    const uniqueUserIds = new Set(userMentions.map(mention => mention.replace(/<@!?/, '').replace('>', '')));
+
+    for (const userId of uniqueUserIds) {
+        const afkRedis = await getRedisAfk(userId);
+        let afk: { userId: string; reason: string; time: Date } | null = null;
+
+        if (afkRedis) {
+            afk = {
+                userId,
+                reason: afkRedis.reason,
+                time: new Date(afkRedis.time),
+            };
+        } else {
             const user = await prisma.user.findUnique({
                 where: { id: userId },
-                select: { afkReasson: true, afkTime: true }
+                select: { afkReasson: true, afkTime: true },
             });
-            if (user && user.afkReasson && user.afkTime) {
+            if (user?.afkReasson && user.afkTime) {
                 afk = {
                     userId,
                     reason: user.afkReasson,
-                    time: user.afkTime
+                    time: user.afkTime,
                 };
-                await redis.set(`afk:${userId}`, JSON.stringify({
+                await redis.setex(`afk:${userId}`, 86400, JSON.stringify({
                     reason: user.afkReasson,
-                    time: user.afkTime
+                    time: user.afkTime.toISOString(),
                 }));
             }
         }
+
         if (afk) {
-            if (afkUsers.some(a => a.userId === userId)) continue;
-            afkUsers.push({
-                userId,
-                reason: afk.reason!,
-                time: afk.time!
-            })
+            afkUsers.push(afk);
         }
-    };
+    }
 
     return afkUsers;
-}
+};
 
+// Lida com menções de usuários AFK em mensagens
 export async function onAfkMentioned(interaction: OmitPartialGroupDMChannel<Message<boolean>>) {
     if (interaction.author.bot) return;
 
-    isAAfkUser(interaction.author.id).then(async result => {
-        if (result.afk) {
-            const msg = await interaction.reply(res.fuchsia(`${icon.Eris_happy} | Que bom que você voltou! eu retirei seu afk automaticamente para você! sabia que você estava afk dês de ${time(result.time!, "R")}?`));
+    // Verifica se o autor está AFK
+    const authorAfk = await isAfkUser(interaction.author.id);
+    if (authorAfk.afk) {
+        const msg = await interaction.reply(
+            res.fuchsia(
+                `${icon.Eris_happy} | Que bom que você voltou! Eu retirei seu AFK automaticamente. Você estava AFK desde ${time(authorAfk.time!, "R")}.`
+            )
+        );
+        setTimeout(() => msg.delete().catch(() => { }), 20_000);
+    }
 
-            setTimeout(() => msg.delete(), 20_000);
-            return;
-        }
-    })
-    const afkUsers = await mentionedAAfkUser(interaction.content);
-
+    // Verifica usuários mencionados
+    const afkUsers = await mentionedAfkUsers(interaction.content);
     if (afkUsers.length === 0) return;
 
     const embeds: EmbedPlusBuilder[] = [];
-    
-    const message = (afk: { reason: string, time: Date, username: string }) => {
-        const messages = [
-            `${icon.Eris_cry} | Parece que ${afk.username} não está aqui! ele saiu e deixou comigo uma carta: **\`${afk.reason}\`**`,
-            `${icon.Eris_fair} | ${afk.username} sumiu! e sua ultima mensagem foi: **\`${afk.reason}\`** há ${time(afk.time, "R")}`,
-            `${icon.denied} | O usuário ${afk.username} está afk! pelo motivo: **\`${afk.reason}\`** há ${time(afk.time, "R")}`,
-            `${icon.Eris_thinking} | ${afk.username} está temporariamente indisponível! Motivo: **\`${afk.reason}\`** (desde ${time(afk.time, "R")})`,
-            `${icon.Eris_shy} | Shhh! ${afk.username} está ocupado: **\`${afk.reason}\`** - ausente desde ${time(afk.time, "R")}`,
-            `${icon.Eris_ok} | ${afk.username} se afastou do teclado! Razão: **\`${afk.reason}\`** ${time(afk.time, "R")}`,
-            `${icon.Eris_thinking} | ${afk.username} está AFK! Deixou este recado: **\`${afk.reason}\`** há ${time(afk.time, "R")}`,
-            `${icon.Eris_cry} | ${afk.username} não está disponível no momento! Motivo: **\`${afk.reason}\`** (${time(afk.time, "R")})`
-        ];
-        
-        // Retorna uma mensagem aleatória do array
-        return messages[Math.floor(Math.random() * messages.length)];
-    }
-
     for (const user of afkUsers) {
         const embed = createEmbed({
             color: settings.colors.fuchsia,
-            description: message({
+            description: getRandomAfkMessage({
                 reason: user.reason,
                 time: user.time,
-                username: userMention(user.userId)
-            })
-        })
-
+                username: userMention(user.userId),
+            }),
+        });
         embeds.push(embed);
     }
 
     const msg = await interaction.reply({ embeds });
-
     const extraPerEmbed = 15_000;
     const base = 25_000;
     const delay = base + (embeds.length - 1) * extraPerEmbed;
 
-    setTimeout(() => msg.delete(), delay);
-    return;
+    setTimeout(() => msg.delete().catch(() => { }), delay);
 }
+
+// Função auxiliar para gerar mensagens AFK aleatórias
+const getRandomAfkMessage = (afk: { reason: string; time: Date; username: string }): string => {
+    const messages = [
+        `${icon.Eris_cry} | Parece que ${afk.username} não está aqui! Ele saiu e deixou uma carta: **\`${afk.reason}\`**`,
+        `${icon.Eris_fair} | ${afk.username} sumiu! Sua última mensagem foi: **\`${afk.reason}\`** há ${time(afk.time, "R")}`,
+        `${icon.denied} | O usuário ${afk.username} está AFK! Motivo: **\`${afk.reason}\`** há ${time(afk.time, "R")}`,
+        `${icon.Eris_thinking} | ${afk.username} está temporariamente indisponível! Motivo: **\`${afk.reason}\`** (desde ${time(afk.time, "R")})`,
+        `${icon.Eris_shy} | Shhh! ${afk.username} está ocupado: **\`${afk.reason}\`** - ausente desde ${time(afk.time, "R")}`,
+        `${icon.Eris_ok} | ${afk.username} se afastou do teclado! Razão: **\`${afk.reason}\`** ${time(afk.time, "R")}`,
+        `${icon.Eris_thinking} | ${afk.username} está AFK! Deixou este recado: **\`${afk.reason}\`** há ${time(afk.time, "R")}`,
+        `${icon.Eris_cry} | ${afk.username} não está disponível no momento! Motivo: **\`${afk.reason}\`** (${time(afk.time, "R")})`,
+    ];
+    return messages[Math.floor(Math.random() * messages.length)];
+};

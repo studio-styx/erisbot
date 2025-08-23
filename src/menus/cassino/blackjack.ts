@@ -125,7 +125,11 @@ export function blackjackMenu<R>(userId: string, amount: number, game?: Blackjac
             options.wins === "eris" ? 
                 `## Você apostou: ${game.amountAposted} stx e perdeu!`
                 : options.wins === "user" 
-                    ? `## Você apostou: ${game.amountAposted} stx e ganhou: ${game.amountAposted * multiplier} stx!`
+                    ? `## Você apostou: ${game.amountAposted} stx e ganhou: ${
+                        (game.amountAposted * multiplier) % 1 === 0
+                            ? (game.amountAposted * multiplier)
+                            : (game.amountAposted * multiplier).toFixed(2)
+                    } stx!`
                     : `## Você apostou: ${game.amountAposted} stx e a partida acabou em empate!`
         ];
 
