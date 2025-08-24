@@ -11,7 +11,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+  url      = env("DEV_DATABASE_URL")
 }
 
 model User {
@@ -32,6 +32,33 @@ model User {
   token        Json?
   afkReasson           String?
   afkTime              DateTime?
+  inventory     Inventory[]
+}
+
+model Items {
+  id        Int @id @default(autoincrement())
+  name      String @unique
+  type      String
+  price     Float
+  details   Json
+  createdAt DateTime @default(now())
+  inventory Inventory[]
+  rarity    Int @default(1)
+  baseDurability Int?
+}
+
+model Inventory {
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  item      Items    @relation(fields: [itemId], references: [id])
+  itemId    Int
+  amount    Int
+  createdAt DateTime @default(now())
+  expiresAt DateTime?
+  durability  Float?
+
+
+  @@id([userId, itemId])
 }
 
 model Application {

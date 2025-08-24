@@ -8,6 +8,7 @@ import { avaibleJobsMenu } from "./jobs/avaibleJobs.js";
 import { interviewMenu } from "./jobs/interview.js";
 import { ignoreTagMenu } from "./mail/ignoreTag.js";
 import { userMailsMenu } from "./mail/userMails.js";
+import { fishingMenu } from "./rp/fishing/fishing.js";
 import { dashboardMenu } from "./settings/dashboard.js";
 import { userLogsMenu } from "./userLogs.js";
 import { rankMenu } from "./xpSystem/rank.js";
@@ -37,5 +38,8 @@ export const menus = {
     },
     xpSystem: {
         rank: rankMenu
+    },
+    fishing: {
+        fishingMenu
     }
 }

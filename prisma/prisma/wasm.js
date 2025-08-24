@@ -133,6 +133,26 @@ exports.Prisma.UserScalarFieldEnum = {
   afkTime: 'afkTime'
 };
 
+exports.Prisma.ItemsScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  type: 'type',
+  price: 'price',
+  details: 'details',
+  createdAt: 'createdAt',
+  rarity: 'rarity',
+  baseDurability: 'baseDurability'
+};
+
+exports.Prisma.InventoryScalarFieldEnum = {
+  userId: 'userId',
+  itemId: 'itemId',
+  amount: 'amount',
+  createdAt: 'createdAt',
+  expiresAt: 'expiresAt',
+  durability: 'durability'
+};
+
 exports.Prisma.ApplicationScalarFieldEnum = {
   id: 'id',
   money: 'money',
@@ -265,6 +285,8 @@ exports.Prisma.NullsOrder = {
 
 exports.Prisma.ModelName = {
   User: 'User',
+  Items: 'Items',
+  Inventory: 'Inventory',
   Application: 'Application',
   Requisition: 'Requisition',
   Log: 'Log',

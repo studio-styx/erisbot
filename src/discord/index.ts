@@ -98,6 +98,7 @@ export const { createCommand, createEvent, createResponder } = setupCreators({
                 block()
                 return;
             }
+            if (interaction.customId.startsWith("fishing")) return;
             cooldown.set(interaction.user.id, new Date(Date.now() + 1000 * 1.6), { time: 1000 * 1.6 });
         }
     }

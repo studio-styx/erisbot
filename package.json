@@ -1,6 +1,6 @@
 {
   "name": "erisbarry",
-  "version": "1.2.6",
+  "version": "1.3.0",
   "main": "src/index.ts",
   "type": "module",
   "license": "MIT",
@@ -14,7 +14,7 @@
     "watch": "bun --watch --env-file .env ./src/index.ts",
     "watch:dev": "bun --hot --env-file .env.dev ./src/index.ts",
     "start": "node --env-file .env ./build/index.js",
-    "start:dev": "node --env-file .env.dev .",
+    "start:dev": "node --env-file .env.dev ./build/index.js",
     "prisma:generate": "prisma generate --schema=prisma/schema.prisma && prisma generate --schema=prisma/erisHelper.prisma && prisma generate --schema=prisma/devzone.prisma",
     "prisma:generate:eris": "prisma generate --schema=prisma/erisHelper.prisma",
     "prisma:generate:dzone": "prisma generate --schema=prisma/devzone.prisma"
