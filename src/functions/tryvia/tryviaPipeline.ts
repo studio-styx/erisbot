@@ -1,12 +1,40 @@
 import { prisma } from "#database";
-import { tryviaApiRequest } from "./tryviaApiRequest.js";
+import { theTriviaApiRequest, tryviaApiRequest } from "./tryviaApiRequest.js";
 import { mapApiDifficultyToPrisma, sanitizeQuestionText, questionExists } from "./tryviaUtils.js";
+import { translate } from "@vitalets/google-translate-api";
 
 interface PipelineResult {
     totalProcessed: number;
     saved: number;
     skipped: number;
     errors: number;
+}
+
+// Função para traduzir texto
+async function translateToPortuguese(text: string): Promise<string> {
+    try {
+        const result = await translate(text, { to: 'pt' });
+        return result.text;
+    } catch (error) {
+        console.error('Erro ao traduzir texto:', error);
+        return text; // Retorna o texto original em caso de erro
+    }
+}
+
+// Função para traduzir array de respostas
+async function translateAnswers(answers: string[]): Promise<string[]> {
+    try {
+        const translatedAnswers = await Promise.all(
+            answers.map(async (answer) => {
+                const translated = await translateToPortuguese(answer);
+                return translated;
+            })
+        );
+        return translatedAnswers;
+    } catch (error) {
+        console.error('Erro ao traduzir respostas:', error);
+        return answers;
+    }
 }
 
 export async function tryviaPipeline(): Promise<void> {
@@ -33,50 +61,140 @@ export async function processApiQuestions(): Promise<PipelineResult> {
     };
 
     try {
-        const apiResponse = await tryviaApiRequest(50);
+        const [tryviaApiResponse, tryviaOpenTdbResponse, theTriviaApiResponse] = await Promise.all([
+            tryviaApiRequest(20),
+            tryviaApiRequest(20),
+            theTriviaApiRequest(20)
+        ]);
         
-        if (apiResponse.response_code !== 0) {
-            throw new Error(`API retornou código: ${apiResponse.response_code}`);
-        }
-
-        for (const questionData of apiResponse.results) {
-            result.totalProcessed++;
-            
-            try {
-                const sanitizedQuestion = sanitizeQuestionText(questionData.question);
-                
-                if (await questionExists(sanitizedQuestion)) {
+        const tryviaApiFormatted = tryviaApiResponse.results.map(item => ({
+            question: sanitizeQuestionText(item.question),
+            correctAnswer: item.correct_answer,
+            incorrectAnswers: item.incorrect_answers,
+            tags: [item.category],
+            difficulty: item.difficulty.toUpperCase() as 'EASY' | 'MEDIUM' | 'HARD'
+        }));
+        
+        const putInDbTryviaApi = async () => {
+            for (const item of tryviaApiFormatted) {
+                const exists = await questionExists(item.question);
+                if (exists) {
                     result.skipped++;
                     continue;
                 }
-
-                await prisma.tryviaQuestions.create({
-                    data: {
-                        question: sanitizedQuestion,
-                        difficulty: mapApiDifficultyToPrisma(questionData.difficulty),
-                        tags: [questionData.category],
-                        correctAnswer: questionData.correct_answer,
-                        correctAnswersVariation: [questionData.correct_answer],
-                        incorrectAnswers: questionData.incorrect_answers,
-                        status: 'PENDING',
-                        origin: 'API'
-                    }
-                });
-
-                result.saved++;
-                
-            } catch (error) {
-                console.error(`Erro processando pergunta:`, error);
-                result.errors++;
+                try {
+                    await prisma.tryviaQuestions.create({
+                        data: {
+                            question: item.question,
+                            correctAnswer: item.correctAnswer,
+                            incorrectAnswers: item.incorrectAnswers,
+                            difficulty: item.difficulty,
+                            tags: item.tags,
+                            origin: "API",
+                            status: "APPROVED"
+                        }
+                    });
+                    result.saved++;
+                } catch (error) {
+                    console.error('Erro ao salvar pergunta do Tryvia API:', error);
+                    result.errors++;
+                }
             }
-        }
+        };
 
-        return result;
+        const opentTdbApiFormatted = tryviaOpenTdbResponse.results.map(item => ({
+            question: sanitizeQuestionText(item.question),
+            correctAnswer: item.correct_answer,
+            incorrectAnswers: item.incorrect_answers,
+            tags: [item.category],
+            difficulty: mapApiDifficultyToPrisma(item.difficulty)
+        }));
+        
+        const putInDbOpenTdbApi = async () => {
+            for (const item of opentTdbApiFormatted) {
+                const translatedQuestion = await translateToPortuguese(item.question);
+                const exists = await questionExists(translatedQuestion);
+                if (exists) {
+                    result.skipped++;
+                    continue;
+                }
+                const translatedCorrectAnswer = await translateToPortuguese(item.correctAnswer);
+                const translatedIncorrectAnswers = await translateAnswers(item.incorrectAnswers);
+                try {
+                    await prisma.tryviaQuestions.create({
+                        data: {
+                            question: translatedQuestion,
+                            correctAnswer: translatedCorrectAnswer,
+                            incorrectAnswers: translatedIncorrectAnswers,
+                            difficulty: item.difficulty,
+                            tags: item.tags,
+                            origin: "API",
+                            status: "PENDING"
+                        }
+                    });
+                    result.saved++;
+                } catch (error) {
+                    console.error('Erro ao salvar pergunta do Tryvia API:', error);
+                    result.errors++;
+                }
+            }
+        };
 
+        const putInDbTheTriviaApi = async () => {
+            for (const item of theTriviaApiResponse) {
+                try {
+                    // Traduzir pergunta e respostas
+                    const translatedQuestion = await translateToPortuguese(item.question.text);
+                    const translatedCorrectAnswer = await translateToPortuguese(item.correctAnswer);
+                    const translatedIncorrectAnswers = await translateAnswers(item.incorrectAnswers);
+                    
+                    const formattedItem = {
+                        question: sanitizeQuestionText(translatedQuestion),
+                        correctAnswer: translatedCorrectAnswer,
+                        incorrectAnswers: translatedIncorrectAnswers,
+                        tags: item.tags,
+                        difficulty: mapApiDifficultyToPrisma(item.difficulty)
+                    };
+
+                    const exists = await questionExists(formattedItem.question);
+                    if (exists) {
+                        result.skipped++;
+                        continue;
+                    }
+
+                    await prisma.tryviaQuestions.create({
+                        data: {
+                            question: formattedItem.question,
+                            correctAnswer: formattedItem.correctAnswer,
+                            incorrectAnswers: formattedItem.incorrectAnswers,
+                            difficulty: formattedItem.difficulty,
+                            tags: formattedItem.tags,
+                            origin: "API",
+                            status: "PENDING"
+                        }
+                    });
+                    result.saved++;
+                } catch (error) {
+                    console.error('Erro ao processar/traduzir pergunta do The Trivia API:', error);
+                    result.errors++;
+                }
+            }
+        };
+
+        await Promise.all([
+            putInDbTryviaApi(),
+            putInDbOpenTdbApi(),
+            putInDbTheTriviaApi()
+        ]);
+
+        result.totalProcessed = result.saved + result.skipped + result.errors;
+        
     } catch (error) {
         console.error('Erro ao processar API:', error);
-        throw error;
+        result.errors++;
     }
+
+    return result;
 }
 
 // Executar imediatamente se necessário

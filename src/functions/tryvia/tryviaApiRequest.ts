@@ -1,7 +1,8 @@
 import { redis } from "#database";
-import { TryviaApiResponseData } from "#types/tryviaApiResponse.js";
+import { TriviaAPIItemResponse, TryviaApiResponseData } from "#types/tryviaApiResponse.js";
 import axios from "axios";
 
+/** tryviaApi */
 export async function tryviaApiRequest(amount: number = 10) {
     try {
         let token = await redis.get("tryviaApiSessionToken");
@@ -14,7 +15,7 @@ export async function tryviaApiRequest(amount: number = 10) {
             };
             try {
                 const tokenResponse = await axios.get('https://tryvia.ptr.red/api_token.php?command=request');
-    
+
                 const tokenData = tokenResponse.data as ResponseData;
                 token = tokenData.token;
                 if (!token) {
@@ -37,6 +38,7 @@ export async function tryviaApiRequest(amount: number = 10) {
     }
 }
 
+/** OpenTdb */
 export async function tryviaOpenTdbRequest(amount: number = 10) {
     try {
         let token = await redis.get("tryviaOpenTdbSessionToken");
@@ -48,7 +50,7 @@ export async function tryviaOpenTdbRequest(amount: number = 10) {
             };
             try {
                 const tokenResponse = await axios.get('https://opentdb.com/api_token.php?command=request');
-    
+
                 const tokenData = tokenResponse.data as ResponseData;
                 token = tokenData.token;
                 await redis.setex("tryviaOpenTdbSessionToken", 60 * 60 * 6, token); // 6 horas
@@ -62,4 +64,11 @@ export async function tryviaOpenTdbRequest(amount: number = 10) {
         console.error("Error fetching data from OpenTDB API:", error);
         throw error;
     }
+}
+
+/** The Trivia API */
+export async function theTriviaApiRequest(limit = 10, categories?: string[]) {
+    const categoriesParam = categories ? `?limit=${limit}&categories=${categories.join(",")}` : `?limit=${limit}`;
+    const res = await axios.get(`https://the-trivia-api.com/v2/questions${categoriesParam}`);
+    return res.data as TriviaAPIItemResponse[];
 }

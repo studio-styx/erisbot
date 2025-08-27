@@ -30,6 +30,7 @@
     "@napi-rs/canvas": "^0.1.76",
     "@prisma/client": "6.14.0",
     "@reliverse/reglob": "1.0.0",
+    "@vitalets/google-translate-api": "^9.2.1",
     "axios": "^1.11.0",
     "chalk": "5.4.1",
     "discord.js": "14.21.0",

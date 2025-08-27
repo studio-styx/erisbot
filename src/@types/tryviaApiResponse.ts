@@ -11,3 +11,18 @@ export interface TryviaApiResponseResultsData {
     correct_answer: string;
     incorrect_answers: string[];
 }
+
+export interface TriviaAPIItemResponse {
+    category: string;
+    id: string;
+    correctAnswer: string;
+    incorrectAnswers: string[]
+    question: {
+      text: string;
+    };
+    tags: string[];
+    type: "text_choice";
+    difficulty: "easy" | "medium" | "hard";
+    regions: [];
+    isNiche: boolean;
+}[]
