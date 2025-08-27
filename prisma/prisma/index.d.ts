@@ -29,6 +29,11 @@ export type Items = $Result.DefaultSelection<Prisma.$ItemsPayload>
  */
 export type Inventory = $Result.DefaultSelection<Prisma.$InventoryPayload>
 /**
+ * Model TryviaQuestions
+ * 
+ */
+export type TryviaQuestions = $Result.DefaultSelection<Prisma.$TryviaQuestionsPayload>
+/**
  * Model Application
  * 
  */
@@ -83,6 +88,51 @@ export type GuildMember = $Result.DefaultSelection<Prisma.$GuildMemberPayload>
  * 
  */
 export type Mails = $Result.DefaultSelection<Prisma.$MailsPayload>
+
+/**
+ * Enums
+ */
+export namespace $Enums {
+  export const TryviaStatus: {
+  APPROVED: 'APPROVED',
+  PENDING: 'PENDING',
+  REJECTED: 'REJECTED'
+};
+
+export type TryviaStatus = (typeof TryviaStatus)[keyof typeof TryviaStatus]
+
+
+export const TryviaOrigin: {
+  USER: 'USER',
+  API: 'API',
+  IA: 'IA',
+  ADMIN: 'ADMIN'
+};
+
+export type TryviaOrigin = (typeof TryviaOrigin)[keyof typeof TryviaOrigin]
+
+
+export const TryviaDifficulty: {
+  EASY: 'EASY',
+  MEDIUM: 'MEDIUM',
+  HARD: 'HARD'
+};
+
+export type TryviaDifficulty = (typeof TryviaDifficulty)[keyof typeof TryviaDifficulty]
+
+}
+
+export type TryviaStatus = $Enums.TryviaStatus
+
+export const TryviaStatus: typeof $Enums.TryviaStatus
+
+export type TryviaOrigin = $Enums.TryviaOrigin
+
+export const TryviaOrigin: typeof $Enums.TryviaOrigin
+
+export type TryviaDifficulty = $Enums.TryviaDifficulty
+
+export const TryviaDifficulty: typeof $Enums.TryviaDifficulty
 
 /**
  * ##  Prisma Client ʲˢ
@@ -231,6 +281,16 @@ export class PrismaClient<
     * ```
     */
   get inventory(): Prisma.InventoryDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.tryviaQuestions`: Exposes CRUD operations for the **TryviaQuestions** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more TryviaQuestions
+    * const tryviaQuestions = await prisma.tryviaQuestions.findMany()
+    * ```
+    */
+  get tryviaQuestions(): Prisma.TryviaQuestionsDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.application`: Exposes CRUD operations for the **Application** model.
@@ -784,6 +844,7 @@ export namespace Prisma {
     User: 'User',
     Items: 'Items',
     Inventory: 'Inventory',
+    TryviaQuestions: 'TryviaQuestions',
     Application: 'Application',
     Requisition: 'Requisition',
     Log: 'Log',
@@ -813,7 +874,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "items" | "inventory" | "application" | "requisition" | "log" | "cooldown" | "company" | "stock" | "stockHistory" | "stockHolding" | "guildSettings" | "guildMember" | "mails"
+      modelProps: "user" | "items" | "inventory" | "tryviaQuestions" | "application" | "requisition" | "log" | "cooldown" | "company" | "stock" | "stockHistory" | "stockHolding" | "guildSettings" | "guildMember" | "mails"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1036,6 +1097,80 @@ export namespace Prisma {
           count: {
             args: Prisma.InventoryCountArgs<ExtArgs>
             result: $Utils.Optional<InventoryCountAggregateOutputType> | number
+          }
+        }
+      }
+      TryviaQuestions: {
+        payload: Prisma.$TryviaQuestionsPayload<ExtArgs>
+        fields: Prisma.TryviaQuestionsFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.TryviaQuestionsFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TryviaQuestionsPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.TryviaQuestionsFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TryviaQuestionsPayload>
+          }
+          findFirst: {
+            args: Prisma.TryviaQuestionsFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TryviaQuestionsPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.TryviaQuestionsFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TryviaQuestionsPayload>
+          }
+          findMany: {
+            args: Prisma.TryviaQuestionsFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TryviaQuestionsPayload>[]
+          }
+          create: {
+            args: Prisma.TryviaQuestionsCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TryviaQuestionsPayload>
+          }
+          createMany: {
+            args: Prisma.TryviaQuestionsCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.TryviaQuestionsCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TryviaQuestionsPayload>[]
+          }
+          delete: {
+            args: Prisma.TryviaQuestionsDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TryviaQuestionsPayload>
+          }
+          update: {
+            args: Prisma.TryviaQuestionsUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TryviaQuestionsPayload>
+          }
+          deleteMany: {
+            args: Prisma.TryviaQuestionsDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.TryviaQuestionsUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.TryviaQuestionsUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TryviaQuestionsPayload>[]
+          }
+          upsert: {
+            args: Prisma.TryviaQuestionsUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TryviaQuestionsPayload>
+          }
+          aggregate: {
+            args: Prisma.TryviaQuestionsAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateTryviaQuestions>
+          }
+          groupBy: {
+            args: Prisma.TryviaQuestionsGroupByArgs<ExtArgs>
+            result: $Utils.Optional<TryviaQuestionsGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.TryviaQuestionsCountArgs<ExtArgs>
+            result: $Utils.Optional<TryviaQuestionsCountAggregateOutputType> | number
           }
         }
       }
@@ -1948,6 +2083,7 @@ export namespace Prisma {
     user?: UserOmit
     items?: ItemsOmit
     inventory?: InventoryOmit
+    tryviaQuestions?: TryviaQuestionsOmit
     application?: ApplicationOmit
     requisition?: RequisitionOmit
     log?: LogOmit
@@ -5934,6 +6070,1101 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: InventoryInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model TryviaQuestions
+   */
+
+  export type AggregateTryviaQuestions = {
+    _count: TryviaQuestionsCountAggregateOutputType | null
+    _avg: TryviaQuestionsAvgAggregateOutputType | null
+    _sum: TryviaQuestionsSumAggregateOutputType | null
+    _min: TryviaQuestionsMinAggregateOutputType | null
+    _max: TryviaQuestionsMaxAggregateOutputType | null
+  }
+
+  export type TryviaQuestionsAvgAggregateOutputType = {
+    id: number | null
+  }
+
+  export type TryviaQuestionsSumAggregateOutputType = {
+    id: number | null
+  }
+
+  export type TryviaQuestionsMinAggregateOutputType = {
+    id: number | null
+    question: string | null
+    difficulty: $Enums.TryviaDifficulty | null
+    correctAnswer: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+    status: $Enums.TryviaStatus | null
+    origin: $Enums.TryviaOrigin | null
+  }
+
+  export type TryviaQuestionsMaxAggregateOutputType = {
+    id: number | null
+    question: string | null
+    difficulty: $Enums.TryviaDifficulty | null
+    correctAnswer: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+    status: $Enums.TryviaStatus | null
+    origin: $Enums.TryviaOrigin | null
+  }
+
+  export type TryviaQuestionsCountAggregateOutputType = {
+    id: number
+    question: number
+    difficulty: number
+    tags: number
+    correctAnswer: number
+    correctAnswersVariation: number
+    incorrectAnswers: number
+    createdAt: number
+    updatedAt: number
+    status: number
+    origin: number
+    _all: number
+  }
+
+
+  export type TryviaQuestionsAvgAggregateInputType = {
+    id?: true
+  }
+
+  export type TryviaQuestionsSumAggregateInputType = {
+    id?: true
+  }
+
+  export type TryviaQuestionsMinAggregateInputType = {
+    id?: true
+    question?: true
+    difficulty?: true
+    correctAnswer?: true
+    createdAt?: true
+    updatedAt?: true
+    status?: true
+    origin?: true
+  }
+
+  export type TryviaQuestionsMaxAggregateInputType = {
+    id?: true
+    question?: true
+    difficulty?: true
+    correctAnswer?: true
+    createdAt?: true
+    updatedAt?: true
+    status?: true
+    origin?: true
+  }
+
+  export type TryviaQuestionsCountAggregateInputType = {
+    id?: true
+    question?: true
+    difficulty?: true
+    tags?: true
+    correctAnswer?: true
+    correctAnswersVariation?: true
+    incorrectAnswers?: true
+    createdAt?: true
+    updatedAt?: true
+    status?: true
+    origin?: true
+    _all?: true
+  }
+
+  export type TryviaQuestionsAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which TryviaQuestions to aggregate.
+     */
+    where?: TryviaQuestionsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of TryviaQuestions to fetch.
+     */
+    orderBy?: TryviaQuestionsOrderByWithRelationInput | TryviaQuestionsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: TryviaQuestionsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` TryviaQuestions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` TryviaQuestions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned TryviaQuestions
+    **/
+    _count?: true | TryviaQuestionsCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: TryviaQuestionsAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: TryviaQuestionsSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: TryviaQuestionsMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: TryviaQuestionsMaxAggregateInputType
+  }
+
+  export type GetTryviaQuestionsAggregateType<T extends TryviaQuestionsAggregateArgs> = {
+        [P in keyof T & keyof AggregateTryviaQuestions]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateTryviaQuestions[P]>
+      : GetScalarType<T[P], AggregateTryviaQuestions[P]>
+  }
+
+
+
+
+  export type TryviaQuestionsGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: TryviaQuestionsWhereInput
+    orderBy?: TryviaQuestionsOrderByWithAggregationInput | TryviaQuestionsOrderByWithAggregationInput[]
+    by: TryviaQuestionsScalarFieldEnum[] | TryviaQuestionsScalarFieldEnum
+    having?: TryviaQuestionsScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: TryviaQuestionsCountAggregateInputType | true
+    _avg?: TryviaQuestionsAvgAggregateInputType
+    _sum?: TryviaQuestionsSumAggregateInputType
+    _min?: TryviaQuestionsMinAggregateInputType
+    _max?: TryviaQuestionsMaxAggregateInputType
+  }
+
+  export type TryviaQuestionsGroupByOutputType = {
+    id: number
+    question: string
+    difficulty: $Enums.TryviaDifficulty
+    tags: string[]
+    correctAnswer: string
+    correctAnswersVariation: string[]
+    incorrectAnswers: string[]
+    createdAt: Date
+    updatedAt: Date
+    status: $Enums.TryviaStatus
+    origin: $Enums.TryviaOrigin
+    _count: TryviaQuestionsCountAggregateOutputType | null
+    _avg: TryviaQuestionsAvgAggregateOutputType | null
+    _sum: TryviaQuestionsSumAggregateOutputType | null
+    _min: TryviaQuestionsMinAggregateOutputType | null
+    _max: TryviaQuestionsMaxAggregateOutputType | null
+  }
+
+  type GetTryviaQuestionsGroupByPayload<T extends TryviaQuestionsGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<TryviaQuestionsGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof TryviaQuestionsGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], TryviaQuestionsGroupByOutputType[P]>
+            : GetScalarType<T[P], TryviaQuestionsGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type TryviaQuestionsSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    question?: boolean
+    difficulty?: boolean
+    tags?: boolean
+    correctAnswer?: boolean
+    correctAnswersVariation?: boolean
+    incorrectAnswers?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    status?: boolean
+    origin?: boolean
+  }, ExtArgs["result"]["tryviaQuestions"]>
+
+  export type TryviaQuestionsSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    question?: boolean
+    difficulty?: boolean
+    tags?: boolean
+    correctAnswer?: boolean
+    correctAnswersVariation?: boolean
+    incorrectAnswers?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    status?: boolean
+    origin?: boolean
+  }, ExtArgs["result"]["tryviaQuestions"]>
+
+  export type TryviaQuestionsSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    question?: boolean
+    difficulty?: boolean
+    tags?: boolean
+    correctAnswer?: boolean
+    correctAnswersVariation?: boolean
+    incorrectAnswers?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    status?: boolean
+    origin?: boolean
+  }, ExtArgs["result"]["tryviaQuestions"]>
+
+  export type TryviaQuestionsSelectScalar = {
+    id?: boolean
+    question?: boolean
+    difficulty?: boolean
+    tags?: boolean
+    correctAnswer?: boolean
+    correctAnswersVariation?: boolean
+    incorrectAnswers?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    status?: boolean
+    origin?: boolean
+  }
+
+  export type TryviaQuestionsOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "question" | "difficulty" | "tags" | "correctAnswer" | "correctAnswersVariation" | "incorrectAnswers" | "createdAt" | "updatedAt" | "status" | "origin", ExtArgs["result"]["tryviaQuestions"]>
+
+  export type $TryviaQuestionsPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "TryviaQuestions"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      id: number
+      question: string
+      difficulty: $Enums.TryviaDifficulty
+      tags: string[]
+      correctAnswer: string
+      correctAnswersVariation: string[]
+      incorrectAnswers: string[]
+      createdAt: Date
+      updatedAt: Date
+      status: $Enums.TryviaStatus
+      origin: $Enums.TryviaOrigin
+    }, ExtArgs["result"]["tryviaQuestions"]>
+    composites: {}
+  }
+
+  type TryviaQuestionsGetPayload<S extends boolean | null | undefined | TryviaQuestionsDefaultArgs> = $Result.GetResult<Prisma.$TryviaQuestionsPayload, S>
+
+  type TryviaQuestionsCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<TryviaQuestionsFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: TryviaQuestionsCountAggregateInputType | true
+    }
+
+  export interface TryviaQuestionsDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['TryviaQuestions'], meta: { name: 'TryviaQuestions' } }
+    /**
+     * Find zero or one TryviaQuestions that matches the filter.
+     * @param {TryviaQuestionsFindUniqueArgs} args - Arguments to find a TryviaQuestions
+     * @example
+     * // Get one TryviaQuestions
+     * const tryviaQuestions = await prisma.tryviaQuestions.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends TryviaQuestionsFindUniqueArgs>(args: SelectSubset<T, TryviaQuestionsFindUniqueArgs<ExtArgs>>): Prisma__TryviaQuestionsClient<$Result.GetResult<Prisma.$TryviaQuestionsPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one TryviaQuestions that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {TryviaQuestionsFindUniqueOrThrowArgs} args - Arguments to find a TryviaQuestions
+     * @example
+     * // Get one TryviaQuestions
+     * const tryviaQuestions = await prisma.tryviaQuestions.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends TryviaQuestionsFindUniqueOrThrowArgs>(args: SelectSubset<T, TryviaQuestionsFindUniqueOrThrowArgs<ExtArgs>>): Prisma__TryviaQuestionsClient<$Result.GetResult<Prisma.$TryviaQuestionsPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first TryviaQuestions that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TryviaQuestionsFindFirstArgs} args - Arguments to find a TryviaQuestions
+     * @example
+     * // Get one TryviaQuestions
+     * const tryviaQuestions = await prisma.tryviaQuestions.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends TryviaQuestionsFindFirstArgs>(args?: SelectSubset<T, TryviaQuestionsFindFirstArgs<ExtArgs>>): Prisma__TryviaQuestionsClient<$Result.GetResult<Prisma.$TryviaQuestionsPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first TryviaQuestions that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TryviaQuestionsFindFirstOrThrowArgs} args - Arguments to find a TryviaQuestions
+     * @example
+     * // Get one TryviaQuestions
+     * const tryviaQuestions = await prisma.tryviaQuestions.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends TryviaQuestionsFindFirstOrThrowArgs>(args?: SelectSubset<T, TryviaQuestionsFindFirstOrThrowArgs<ExtArgs>>): Prisma__TryviaQuestionsClient<$Result.GetResult<Prisma.$TryviaQuestionsPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more TryviaQuestions that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TryviaQuestionsFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all TryviaQuestions
+     * const tryviaQuestions = await prisma.tryviaQuestions.findMany()
+     * 
+     * // Get first 10 TryviaQuestions
+     * const tryviaQuestions = await prisma.tryviaQuestions.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const tryviaQuestionsWithIdOnly = await prisma.tryviaQuestions.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends TryviaQuestionsFindManyArgs>(args?: SelectSubset<T, TryviaQuestionsFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TryviaQuestionsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a TryviaQuestions.
+     * @param {TryviaQuestionsCreateArgs} args - Arguments to create a TryviaQuestions.
+     * @example
+     * // Create one TryviaQuestions
+     * const TryviaQuestions = await prisma.tryviaQuestions.create({
+     *   data: {
+     *     // ... data to create a TryviaQuestions
+     *   }
+     * })
+     * 
+     */
+    create<T extends TryviaQuestionsCreateArgs>(args: SelectSubset<T, TryviaQuestionsCreateArgs<ExtArgs>>): Prisma__TryviaQuestionsClient<$Result.GetResult<Prisma.$TryviaQuestionsPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many TryviaQuestions.
+     * @param {TryviaQuestionsCreateManyArgs} args - Arguments to create many TryviaQuestions.
+     * @example
+     * // Create many TryviaQuestions
+     * const tryviaQuestions = await prisma.tryviaQuestions.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends TryviaQuestionsCreateManyArgs>(args?: SelectSubset<T, TryviaQuestionsCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many TryviaQuestions and returns the data saved in the database.
+     * @param {TryviaQuestionsCreateManyAndReturnArgs} args - Arguments to create many TryviaQuestions.
+     * @example
+     * // Create many TryviaQuestions
+     * const tryviaQuestions = await prisma.tryviaQuestions.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many TryviaQuestions and only return the `id`
+     * const tryviaQuestionsWithIdOnly = await prisma.tryviaQuestions.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends TryviaQuestionsCreateManyAndReturnArgs>(args?: SelectSubset<T, TryviaQuestionsCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TryviaQuestionsPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a TryviaQuestions.
+     * @param {TryviaQuestionsDeleteArgs} args - Arguments to delete one TryviaQuestions.
+     * @example
+     * // Delete one TryviaQuestions
+     * const TryviaQuestions = await prisma.tryviaQuestions.delete({
+     *   where: {
+     *     // ... filter to delete one TryviaQuestions
+     *   }
+     * })
+     * 
+     */
+    delete<T extends TryviaQuestionsDeleteArgs>(args: SelectSubset<T, TryviaQuestionsDeleteArgs<ExtArgs>>): Prisma__TryviaQuestionsClient<$Result.GetResult<Prisma.$TryviaQuestionsPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one TryviaQuestions.
+     * @param {TryviaQuestionsUpdateArgs} args - Arguments to update one TryviaQuestions.
+     * @example
+     * // Update one TryviaQuestions
+     * const tryviaQuestions = await prisma.tryviaQuestions.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends TryviaQuestionsUpdateArgs>(args: SelectSubset<T, TryviaQuestionsUpdateArgs<ExtArgs>>): Prisma__TryviaQuestionsClient<$Result.GetResult<Prisma.$TryviaQuestionsPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more TryviaQuestions.
+     * @param {TryviaQuestionsDeleteManyArgs} args - Arguments to filter TryviaQuestions to delete.
+     * @example
+     * // Delete a few TryviaQuestions
+     * const { count } = await prisma.tryviaQuestions.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends TryviaQuestionsDeleteManyArgs>(args?: SelectSubset<T, TryviaQuestionsDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more TryviaQuestions.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TryviaQuestionsUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many TryviaQuestions
+     * const tryviaQuestions = await prisma.tryviaQuestions.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends TryviaQuestionsUpdateManyArgs>(args: SelectSubset<T, TryviaQuestionsUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more TryviaQuestions and returns the data updated in the database.
+     * @param {TryviaQuestionsUpdateManyAndReturnArgs} args - Arguments to update many TryviaQuestions.
+     * @example
+     * // Update many TryviaQuestions
+     * const tryviaQuestions = await prisma.tryviaQuestions.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more TryviaQuestions and only return the `id`
+     * const tryviaQuestionsWithIdOnly = await prisma.tryviaQuestions.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends TryviaQuestionsUpdateManyAndReturnArgs>(args: SelectSubset<T, TryviaQuestionsUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TryviaQuestionsPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one TryviaQuestions.
+     * @param {TryviaQuestionsUpsertArgs} args - Arguments to update or create a TryviaQuestions.
+     * @example
+     * // Update or create a TryviaQuestions
+     * const tryviaQuestions = await prisma.tryviaQuestions.upsert({
+     *   create: {
+     *     // ... data to create a TryviaQuestions
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the TryviaQuestions we want to update
+     *   }
+     * })
+     */
+    upsert<T extends TryviaQuestionsUpsertArgs>(args: SelectSubset<T, TryviaQuestionsUpsertArgs<ExtArgs>>): Prisma__TryviaQuestionsClient<$Result.GetResult<Prisma.$TryviaQuestionsPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of TryviaQuestions.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TryviaQuestionsCountArgs} args - Arguments to filter TryviaQuestions to count.
+     * @example
+     * // Count the number of TryviaQuestions
+     * const count = await prisma.tryviaQuestions.count({
+     *   where: {
+     *     // ... the filter for the TryviaQuestions we want to count
+     *   }
+     * })
+    **/
+    count<T extends TryviaQuestionsCountArgs>(
+      args?: Subset<T, TryviaQuestionsCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], TryviaQuestionsCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a TryviaQuestions.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TryviaQuestionsAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends TryviaQuestionsAggregateArgs>(args: Subset<T, TryviaQuestionsAggregateArgs>): Prisma.PrismaPromise<GetTryviaQuestionsAggregateType<T>>
+
+    /**
+     * Group by TryviaQuestions.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TryviaQuestionsGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends TryviaQuestionsGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: TryviaQuestionsGroupByArgs['orderBy'] }
+        : { orderBy?: TryviaQuestionsGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, TryviaQuestionsGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetTryviaQuestionsGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the TryviaQuestions model
+   */
+  readonly fields: TryviaQuestionsFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for TryviaQuestions.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__TryviaQuestionsClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the TryviaQuestions model
+   */
+  interface TryviaQuestionsFieldRefs {
+    readonly id: FieldRef<"TryviaQuestions", 'Int'>
+    readonly question: FieldRef<"TryviaQuestions", 'String'>
+    readonly difficulty: FieldRef<"TryviaQuestions", 'TryviaDifficulty'>
+    readonly tags: FieldRef<"TryviaQuestions", 'String[]'>
+    readonly correctAnswer: FieldRef<"TryviaQuestions", 'String'>
+    readonly correctAnswersVariation: FieldRef<"TryviaQuestions", 'String[]'>
+    readonly incorrectAnswers: FieldRef<"TryviaQuestions", 'String[]'>
+    readonly createdAt: FieldRef<"TryviaQuestions", 'DateTime'>
+    readonly updatedAt: FieldRef<"TryviaQuestions", 'DateTime'>
+    readonly status: FieldRef<"TryviaQuestions", 'TryviaStatus'>
+    readonly origin: FieldRef<"TryviaQuestions", 'TryviaOrigin'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * TryviaQuestions findUnique
+   */
+  export type TryviaQuestionsFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TryviaQuestions
+     */
+    select?: TryviaQuestionsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TryviaQuestions
+     */
+    omit?: TryviaQuestionsOmit<ExtArgs> | null
+    /**
+     * Filter, which TryviaQuestions to fetch.
+     */
+    where: TryviaQuestionsWhereUniqueInput
+  }
+
+  /**
+   * TryviaQuestions findUniqueOrThrow
+   */
+  export type TryviaQuestionsFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TryviaQuestions
+     */
+    select?: TryviaQuestionsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TryviaQuestions
+     */
+    omit?: TryviaQuestionsOmit<ExtArgs> | null
+    /**
+     * Filter, which TryviaQuestions to fetch.
+     */
+    where: TryviaQuestionsWhereUniqueInput
+  }
+
+  /**
+   * TryviaQuestions findFirst
+   */
+  export type TryviaQuestionsFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TryviaQuestions
+     */
+    select?: TryviaQuestionsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TryviaQuestions
+     */
+    omit?: TryviaQuestionsOmit<ExtArgs> | null
+    /**
+     * Filter, which TryviaQuestions to fetch.
+     */
+    where?: TryviaQuestionsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of TryviaQuestions to fetch.
+     */
+    orderBy?: TryviaQuestionsOrderByWithRelationInput | TryviaQuestionsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for TryviaQuestions.
+     */
+    cursor?: TryviaQuestionsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` TryviaQuestions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` TryviaQuestions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of TryviaQuestions.
+     */
+    distinct?: TryviaQuestionsScalarFieldEnum | TryviaQuestionsScalarFieldEnum[]
+  }
+
+  /**
+   * TryviaQuestions findFirstOrThrow
+   */
+  export type TryviaQuestionsFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TryviaQuestions
+     */
+    select?: TryviaQuestionsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TryviaQuestions
+     */
+    omit?: TryviaQuestionsOmit<ExtArgs> | null
+    /**
+     * Filter, which TryviaQuestions to fetch.
+     */
+    where?: TryviaQuestionsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of TryviaQuestions to fetch.
+     */
+    orderBy?: TryviaQuestionsOrderByWithRelationInput | TryviaQuestionsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for TryviaQuestions.
+     */
+    cursor?: TryviaQuestionsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` TryviaQuestions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` TryviaQuestions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of TryviaQuestions.
+     */
+    distinct?: TryviaQuestionsScalarFieldEnum | TryviaQuestionsScalarFieldEnum[]
+  }
+
+  /**
+   * TryviaQuestions findMany
+   */
+  export type TryviaQuestionsFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TryviaQuestions
+     */
+    select?: TryviaQuestionsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TryviaQuestions
+     */
+    omit?: TryviaQuestionsOmit<ExtArgs> | null
+    /**
+     * Filter, which TryviaQuestions to fetch.
+     */
+    where?: TryviaQuestionsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of TryviaQuestions to fetch.
+     */
+    orderBy?: TryviaQuestionsOrderByWithRelationInput | TryviaQuestionsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing TryviaQuestions.
+     */
+    cursor?: TryviaQuestionsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` TryviaQuestions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` TryviaQuestions.
+     */
+    skip?: number
+    distinct?: TryviaQuestionsScalarFieldEnum | TryviaQuestionsScalarFieldEnum[]
+  }
+
+  /**
+   * TryviaQuestions create
+   */
+  export type TryviaQuestionsCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TryviaQuestions
+     */
+    select?: TryviaQuestionsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TryviaQuestions
+     */
+    omit?: TryviaQuestionsOmit<ExtArgs> | null
+    /**
+     * The data needed to create a TryviaQuestions.
+     */
+    data: XOR<TryviaQuestionsCreateInput, TryviaQuestionsUncheckedCreateInput>
+  }
+
+  /**
+   * TryviaQuestions createMany
+   */
+  export type TryviaQuestionsCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many TryviaQuestions.
+     */
+    data: TryviaQuestionsCreateManyInput | TryviaQuestionsCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * TryviaQuestions createManyAndReturn
+   */
+  export type TryviaQuestionsCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TryviaQuestions
+     */
+    select?: TryviaQuestionsSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the TryviaQuestions
+     */
+    omit?: TryviaQuestionsOmit<ExtArgs> | null
+    /**
+     * The data used to create many TryviaQuestions.
+     */
+    data: TryviaQuestionsCreateManyInput | TryviaQuestionsCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * TryviaQuestions update
+   */
+  export type TryviaQuestionsUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TryviaQuestions
+     */
+    select?: TryviaQuestionsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TryviaQuestions
+     */
+    omit?: TryviaQuestionsOmit<ExtArgs> | null
+    /**
+     * The data needed to update a TryviaQuestions.
+     */
+    data: XOR<TryviaQuestionsUpdateInput, TryviaQuestionsUncheckedUpdateInput>
+    /**
+     * Choose, which TryviaQuestions to update.
+     */
+    where: TryviaQuestionsWhereUniqueInput
+  }
+
+  /**
+   * TryviaQuestions updateMany
+   */
+  export type TryviaQuestionsUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update TryviaQuestions.
+     */
+    data: XOR<TryviaQuestionsUpdateManyMutationInput, TryviaQuestionsUncheckedUpdateManyInput>
+    /**
+     * Filter which TryviaQuestions to update
+     */
+    where?: TryviaQuestionsWhereInput
+    /**
+     * Limit how many TryviaQuestions to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * TryviaQuestions updateManyAndReturn
+   */
+  export type TryviaQuestionsUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TryviaQuestions
+     */
+    select?: TryviaQuestionsSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the TryviaQuestions
+     */
+    omit?: TryviaQuestionsOmit<ExtArgs> | null
+    /**
+     * The data used to update TryviaQuestions.
+     */
+    data: XOR<TryviaQuestionsUpdateManyMutationInput, TryviaQuestionsUncheckedUpdateManyInput>
+    /**
+     * Filter which TryviaQuestions to update
+     */
+    where?: TryviaQuestionsWhereInput
+    /**
+     * Limit how many TryviaQuestions to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * TryviaQuestions upsert
+   */
+  export type TryviaQuestionsUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TryviaQuestions
+     */
+    select?: TryviaQuestionsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TryviaQuestions
+     */
+    omit?: TryviaQuestionsOmit<ExtArgs> | null
+    /**
+     * The filter to search for the TryviaQuestions to update in case it exists.
+     */
+    where: TryviaQuestionsWhereUniqueInput
+    /**
+     * In case the TryviaQuestions found by the `where` argument doesn't exist, create a new TryviaQuestions with this data.
+     */
+    create: XOR<TryviaQuestionsCreateInput, TryviaQuestionsUncheckedCreateInput>
+    /**
+     * In case the TryviaQuestions was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<TryviaQuestionsUpdateInput, TryviaQuestionsUncheckedUpdateInput>
+  }
+
+  /**
+   * TryviaQuestions delete
+   */
+  export type TryviaQuestionsDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TryviaQuestions
+     */
+    select?: TryviaQuestionsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TryviaQuestions
+     */
+    omit?: TryviaQuestionsOmit<ExtArgs> | null
+    /**
+     * Filter which TryviaQuestions to delete.
+     */
+    where: TryviaQuestionsWhereUniqueInput
+  }
+
+  /**
+   * TryviaQuestions deleteMany
+   */
+  export type TryviaQuestionsDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which TryviaQuestions to delete
+     */
+    where?: TryviaQuestionsWhereInput
+    /**
+     * Limit how many TryviaQuestions to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * TryviaQuestions without action
+   */
+  export type TryviaQuestionsDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TryviaQuestions
+     */
+    select?: TryviaQuestionsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TryviaQuestions
+     */
+    omit?: TryviaQuestionsOmit<ExtArgs> | null
   }
 
 
@@ -18246,6 +19477,23 @@ export namespace Prisma {
   export type InventoryScalarFieldEnum = (typeof InventoryScalarFieldEnum)[keyof typeof InventoryScalarFieldEnum]
 
 
+  export const TryviaQuestionsScalarFieldEnum: {
+    id: 'id',
+    question: 'question',
+    difficulty: 'difficulty',
+    tags: 'tags',
+    correctAnswer: 'correctAnswer',
+    correctAnswersVariation: 'correctAnswersVariation',
+    incorrectAnswers: 'incorrectAnswers',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt',
+    status: 'status',
+    origin: 'origin'
+  };
+
+  export type TryviaQuestionsScalarFieldEnum = (typeof TryviaQuestionsScalarFieldEnum)[keyof typeof TryviaQuestionsScalarFieldEnum]
+
+
   export const ApplicationScalarFieldEnum: {
     id: 'id',
     money: 'money',
@@ -18520,6 +19768,48 @@ export namespace Prisma {
    */
   export type ListFloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float[]'>
     
+
+
+  /**
+   * Reference to a field of type 'TryviaDifficulty'
+   */
+  export type EnumTryviaDifficultyFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'TryviaDifficulty'>
+    
+
+
+  /**
+   * Reference to a field of type 'TryviaDifficulty[]'
+   */
+  export type ListEnumTryviaDifficultyFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'TryviaDifficulty[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'TryviaStatus'
+   */
+  export type EnumTryviaStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'TryviaStatus'>
+    
+
+
+  /**
+   * Reference to a field of type 'TryviaStatus[]'
+   */
+  export type ListEnumTryviaStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'TryviaStatus[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'TryviaOrigin'
+   */
+  export type EnumTryviaOriginFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'TryviaOrigin'>
+    
+
+
+  /**
+   * Reference to a field of type 'TryviaOrigin[]'
+   */
+  export type ListEnumTryviaOriginFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'TryviaOrigin[]'>
+    
   /**
    * Deep Input Types
    */
@@ -18764,6 +20054,90 @@ export namespace Prisma {
     createdAt?: DateTimeWithAggregatesFilter<"Inventory"> | Date | string
     expiresAt?: DateTimeNullableWithAggregatesFilter<"Inventory"> | Date | string | null
     durability?: FloatNullableWithAggregatesFilter<"Inventory"> | number | null
+  }
+
+  export type TryviaQuestionsWhereInput = {
+    AND?: TryviaQuestionsWhereInput | TryviaQuestionsWhereInput[]
+    OR?: TryviaQuestionsWhereInput[]
+    NOT?: TryviaQuestionsWhereInput | TryviaQuestionsWhereInput[]
+    id?: IntFilter<"TryviaQuestions"> | number
+    question?: StringFilter<"TryviaQuestions"> | string
+    difficulty?: EnumTryviaDifficultyFilter<"TryviaQuestions"> | $Enums.TryviaDifficulty
+    tags?: StringNullableListFilter<"TryviaQuestions">
+    correctAnswer?: StringFilter<"TryviaQuestions"> | string
+    correctAnswersVariation?: StringNullableListFilter<"TryviaQuestions">
+    incorrectAnswers?: StringNullableListFilter<"TryviaQuestions">
+    createdAt?: DateTimeFilter<"TryviaQuestions"> | Date | string
+    updatedAt?: DateTimeFilter<"TryviaQuestions"> | Date | string
+    status?: EnumTryviaStatusFilter<"TryviaQuestions"> | $Enums.TryviaStatus
+    origin?: EnumTryviaOriginFilter<"TryviaQuestions"> | $Enums.TryviaOrigin
+  }
+
+  export type TryviaQuestionsOrderByWithRelationInput = {
+    id?: SortOrder
+    question?: SortOrder
+    difficulty?: SortOrder
+    tags?: SortOrder
+    correctAnswer?: SortOrder
+    correctAnswersVariation?: SortOrder
+    incorrectAnswers?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    status?: SortOrder
+    origin?: SortOrder
+  }
+
+  export type TryviaQuestionsWhereUniqueInput = Prisma.AtLeast<{
+    id?: number
+    question?: string
+    AND?: TryviaQuestionsWhereInput | TryviaQuestionsWhereInput[]
+    OR?: TryviaQuestionsWhereInput[]
+    NOT?: TryviaQuestionsWhereInput | TryviaQuestionsWhereInput[]
+    difficulty?: EnumTryviaDifficultyFilter<"TryviaQuestions"> | $Enums.TryviaDifficulty
+    tags?: StringNullableListFilter<"TryviaQuestions">
+    correctAnswer?: StringFilter<"TryviaQuestions"> | string
+    correctAnswersVariation?: StringNullableListFilter<"TryviaQuestions">
+    incorrectAnswers?: StringNullableListFilter<"TryviaQuestions">
+    createdAt?: DateTimeFilter<"TryviaQuestions"> | Date | string
+    updatedAt?: DateTimeFilter<"TryviaQuestions"> | Date | string
+    status?: EnumTryviaStatusFilter<"TryviaQuestions"> | $Enums.TryviaStatus
+    origin?: EnumTryviaOriginFilter<"TryviaQuestions"> | $Enums.TryviaOrigin
+  }, "id" | "question">
+
+  export type TryviaQuestionsOrderByWithAggregationInput = {
+    id?: SortOrder
+    question?: SortOrder
+    difficulty?: SortOrder
+    tags?: SortOrder
+    correctAnswer?: SortOrder
+    correctAnswersVariation?: SortOrder
+    incorrectAnswers?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    status?: SortOrder
+    origin?: SortOrder
+    _count?: TryviaQuestionsCountOrderByAggregateInput
+    _avg?: TryviaQuestionsAvgOrderByAggregateInput
+    _max?: TryviaQuestionsMaxOrderByAggregateInput
+    _min?: TryviaQuestionsMinOrderByAggregateInput
+    _sum?: TryviaQuestionsSumOrderByAggregateInput
+  }
+
+  export type TryviaQuestionsScalarWhereWithAggregatesInput = {
+    AND?: TryviaQuestionsScalarWhereWithAggregatesInput | TryviaQuestionsScalarWhereWithAggregatesInput[]
+    OR?: TryviaQuestionsScalarWhereWithAggregatesInput[]
+    NOT?: TryviaQuestionsScalarWhereWithAggregatesInput | TryviaQuestionsScalarWhereWithAggregatesInput[]
+    id?: IntWithAggregatesFilter<"TryviaQuestions"> | number
+    question?: StringWithAggregatesFilter<"TryviaQuestions"> | string
+    difficulty?: EnumTryviaDifficultyWithAggregatesFilter<"TryviaQuestions"> | $Enums.TryviaDifficulty
+    tags?: StringNullableListFilter<"TryviaQuestions">
+    correctAnswer?: StringWithAggregatesFilter<"TryviaQuestions"> | string
+    correctAnswersVariation?: StringNullableListFilter<"TryviaQuestions">
+    incorrectAnswers?: StringNullableListFilter<"TryviaQuestions">
+    createdAt?: DateTimeWithAggregatesFilter<"TryviaQuestions"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"TryviaQuestions"> | Date | string
+    status?: EnumTryviaStatusWithAggregatesFilter<"TryviaQuestions"> | $Enums.TryviaStatus
+    origin?: EnumTryviaOriginWithAggregatesFilter<"TryviaQuestions"> | $Enums.TryviaOrigin
   }
 
   export type ApplicationWhereInput = {
@@ -19719,6 +21093,101 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     expiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     durability?: NullableFloatFieldUpdateOperationsInput | number | null
+  }
+
+  export type TryviaQuestionsCreateInput = {
+    question: string
+    difficulty: $Enums.TryviaDifficulty
+    tags?: TryviaQuestionsCreatetagsInput | string[]
+    correctAnswer: string
+    correctAnswersVariation?: TryviaQuestionsCreatecorrectAnswersVariationInput | string[]
+    incorrectAnswers?: TryviaQuestionsCreateincorrectAnswersInput | string[]
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    status: $Enums.TryviaStatus
+    origin: $Enums.TryviaOrigin
+  }
+
+  export type TryviaQuestionsUncheckedCreateInput = {
+    id?: number
+    question: string
+    difficulty: $Enums.TryviaDifficulty
+    tags?: TryviaQuestionsCreatetagsInput | string[]
+    correctAnswer: string
+    correctAnswersVariation?: TryviaQuestionsCreatecorrectAnswersVariationInput | string[]
+    incorrectAnswers?: TryviaQuestionsCreateincorrectAnswersInput | string[]
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    status: $Enums.TryviaStatus
+    origin: $Enums.TryviaOrigin
+  }
+
+  export type TryviaQuestionsUpdateInput = {
+    question?: StringFieldUpdateOperationsInput | string
+    difficulty?: EnumTryviaDifficultyFieldUpdateOperationsInput | $Enums.TryviaDifficulty
+    tags?: TryviaQuestionsUpdatetagsInput | string[]
+    correctAnswer?: StringFieldUpdateOperationsInput | string
+    correctAnswersVariation?: TryviaQuestionsUpdatecorrectAnswersVariationInput | string[]
+    incorrectAnswers?: TryviaQuestionsUpdateincorrectAnswersInput | string[]
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    status?: EnumTryviaStatusFieldUpdateOperationsInput | $Enums.TryviaStatus
+    origin?: EnumTryviaOriginFieldUpdateOperationsInput | $Enums.TryviaOrigin
+  }
+
+  export type TryviaQuestionsUncheckedUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    question?: StringFieldUpdateOperationsInput | string
+    difficulty?: EnumTryviaDifficultyFieldUpdateOperationsInput | $Enums.TryviaDifficulty
+    tags?: TryviaQuestionsUpdatetagsInput | string[]
+    correctAnswer?: StringFieldUpdateOperationsInput | string
+    correctAnswersVariation?: TryviaQuestionsUpdatecorrectAnswersVariationInput | string[]
+    incorrectAnswers?: TryviaQuestionsUpdateincorrectAnswersInput | string[]
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    status?: EnumTryviaStatusFieldUpdateOperationsInput | $Enums.TryviaStatus
+    origin?: EnumTryviaOriginFieldUpdateOperationsInput | $Enums.TryviaOrigin
+  }
+
+  export type TryviaQuestionsCreateManyInput = {
+    id?: number
+    question: string
+    difficulty: $Enums.TryviaDifficulty
+    tags?: TryviaQuestionsCreatetagsInput | string[]
+    correctAnswer: string
+    correctAnswersVariation?: TryviaQuestionsCreatecorrectAnswersVariationInput | string[]
+    incorrectAnswers?: TryviaQuestionsCreateincorrectAnswersInput | string[]
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    status: $Enums.TryviaStatus
+    origin: $Enums.TryviaOrigin
+  }
+
+  export type TryviaQuestionsUpdateManyMutationInput = {
+    question?: StringFieldUpdateOperationsInput | string
+    difficulty?: EnumTryviaDifficultyFieldUpdateOperationsInput | $Enums.TryviaDifficulty
+    tags?: TryviaQuestionsUpdatetagsInput | string[]
+    correctAnswer?: StringFieldUpdateOperationsInput | string
+    correctAnswersVariation?: TryviaQuestionsUpdatecorrectAnswersVariationInput | string[]
+    incorrectAnswers?: TryviaQuestionsUpdateincorrectAnswersInput | string[]
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    status?: EnumTryviaStatusFieldUpdateOperationsInput | $Enums.TryviaStatus
+    origin?: EnumTryviaOriginFieldUpdateOperationsInput | $Enums.TryviaOrigin
+  }
+
+  export type TryviaQuestionsUncheckedUpdateManyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    question?: StringFieldUpdateOperationsInput | string
+    difficulty?: EnumTryviaDifficultyFieldUpdateOperationsInput | $Enums.TryviaDifficulty
+    tags?: TryviaQuestionsUpdatetagsInput | string[]
+    correctAnswer?: StringFieldUpdateOperationsInput | string
+    correctAnswersVariation?: TryviaQuestionsUpdatecorrectAnswersVariationInput | string[]
+    incorrectAnswers?: TryviaQuestionsUpdateincorrectAnswersInput | string[]
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    status?: EnumTryviaStatusFieldUpdateOperationsInput | $Enums.TryviaStatus
+    origin?: EnumTryviaOriginFieldUpdateOperationsInput | $Enums.TryviaOrigin
   }
 
   export type ApplicationCreateInput = {
@@ -20988,6 +22457,101 @@ export namespace Prisma {
     _max?: NestedFloatNullableFilter<$PrismaModel>
   }
 
+  export type EnumTryviaDifficultyFilter<$PrismaModel = never> = {
+    equals?: $Enums.TryviaDifficulty | EnumTryviaDifficultyFieldRefInput<$PrismaModel>
+    in?: $Enums.TryviaDifficulty[] | ListEnumTryviaDifficultyFieldRefInput<$PrismaModel>
+    notIn?: $Enums.TryviaDifficulty[] | ListEnumTryviaDifficultyFieldRefInput<$PrismaModel>
+    not?: NestedEnumTryviaDifficultyFilter<$PrismaModel> | $Enums.TryviaDifficulty
+  }
+
+  export type EnumTryviaStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.TryviaStatus | EnumTryviaStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.TryviaStatus[] | ListEnumTryviaStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.TryviaStatus[] | ListEnumTryviaStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumTryviaStatusFilter<$PrismaModel> | $Enums.TryviaStatus
+  }
+
+  export type EnumTryviaOriginFilter<$PrismaModel = never> = {
+    equals?: $Enums.TryviaOrigin | EnumTryviaOriginFieldRefInput<$PrismaModel>
+    in?: $Enums.TryviaOrigin[] | ListEnumTryviaOriginFieldRefInput<$PrismaModel>
+    notIn?: $Enums.TryviaOrigin[] | ListEnumTryviaOriginFieldRefInput<$PrismaModel>
+    not?: NestedEnumTryviaOriginFilter<$PrismaModel> | $Enums.TryviaOrigin
+  }
+
+  export type TryviaQuestionsCountOrderByAggregateInput = {
+    id?: SortOrder
+    question?: SortOrder
+    difficulty?: SortOrder
+    tags?: SortOrder
+    correctAnswer?: SortOrder
+    correctAnswersVariation?: SortOrder
+    incorrectAnswers?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    status?: SortOrder
+    origin?: SortOrder
+  }
+
+  export type TryviaQuestionsAvgOrderByAggregateInput = {
+    id?: SortOrder
+  }
+
+  export type TryviaQuestionsMaxOrderByAggregateInput = {
+    id?: SortOrder
+    question?: SortOrder
+    difficulty?: SortOrder
+    correctAnswer?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    status?: SortOrder
+    origin?: SortOrder
+  }
+
+  export type TryviaQuestionsMinOrderByAggregateInput = {
+    id?: SortOrder
+    question?: SortOrder
+    difficulty?: SortOrder
+    correctAnswer?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    status?: SortOrder
+    origin?: SortOrder
+  }
+
+  export type TryviaQuestionsSumOrderByAggregateInput = {
+    id?: SortOrder
+  }
+
+  export type EnumTryviaDifficultyWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.TryviaDifficulty | EnumTryviaDifficultyFieldRefInput<$PrismaModel>
+    in?: $Enums.TryviaDifficulty[] | ListEnumTryviaDifficultyFieldRefInput<$PrismaModel>
+    notIn?: $Enums.TryviaDifficulty[] | ListEnumTryviaDifficultyFieldRefInput<$PrismaModel>
+    not?: NestedEnumTryviaDifficultyWithAggregatesFilter<$PrismaModel> | $Enums.TryviaDifficulty
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumTryviaDifficultyFilter<$PrismaModel>
+    _max?: NestedEnumTryviaDifficultyFilter<$PrismaModel>
+  }
+
+  export type EnumTryviaStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.TryviaStatus | EnumTryviaStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.TryviaStatus[] | ListEnumTryviaStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.TryviaStatus[] | ListEnumTryviaStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumTryviaStatusWithAggregatesFilter<$PrismaModel> | $Enums.TryviaStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumTryviaStatusFilter<$PrismaModel>
+    _max?: NestedEnumTryviaStatusFilter<$PrismaModel>
+  }
+
+  export type EnumTryviaOriginWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.TryviaOrigin | EnumTryviaOriginFieldRefInput<$PrismaModel>
+    in?: $Enums.TryviaOrigin[] | ListEnumTryviaOriginFieldRefInput<$PrismaModel>
+    notIn?: $Enums.TryviaOrigin[] | ListEnumTryviaOriginFieldRefInput<$PrismaModel>
+    not?: NestedEnumTryviaOriginWithAggregatesFilter<$PrismaModel> | $Enums.TryviaOrigin
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumTryviaOriginFilter<$PrismaModel>
+    _max?: NestedEnumTryviaOriginFilter<$PrismaModel>
+  }
+
   export type RequisitionListRelationFilter = {
     every?: RequisitionWhereInput
     some?: RequisitionWhereInput
@@ -21891,6 +23455,45 @@ export namespace Prisma {
     update?: XOR<XOR<ItemsUpdateToOneWithWhereWithoutInventoryInput, ItemsUpdateWithoutInventoryInput>, ItemsUncheckedUpdateWithoutInventoryInput>
   }
 
+  export type TryviaQuestionsCreatetagsInput = {
+    set: string[]
+  }
+
+  export type TryviaQuestionsCreatecorrectAnswersVariationInput = {
+    set: string[]
+  }
+
+  export type TryviaQuestionsCreateincorrectAnswersInput = {
+    set: string[]
+  }
+
+  export type EnumTryviaDifficultyFieldUpdateOperationsInput = {
+    set?: $Enums.TryviaDifficulty
+  }
+
+  export type TryviaQuestionsUpdatetagsInput = {
+    set?: string[]
+    push?: string | string[]
+  }
+
+  export type TryviaQuestionsUpdatecorrectAnswersVariationInput = {
+    set?: string[]
+    push?: string | string[]
+  }
+
+  export type TryviaQuestionsUpdateincorrectAnswersInput = {
+    set?: string[]
+    push?: string | string[]
+  }
+
+  export type EnumTryviaStatusFieldUpdateOperationsInput = {
+    set?: $Enums.TryviaStatus
+  }
+
+  export type EnumTryviaOriginFieldUpdateOperationsInput = {
+    set?: $Enums.TryviaOrigin
+  }
+
   export type UserCreateNestedOneWithoutApplicationsInput = {
     create?: XOR<UserCreateWithoutApplicationsInput, UserUncheckedCreateWithoutApplicationsInput>
     connectOrCreate?: UserCreateOrConnectWithoutApplicationsInput
@@ -22608,6 +24211,57 @@ export namespace Prisma {
     _sum?: NestedFloatNullableFilter<$PrismaModel>
     _min?: NestedFloatNullableFilter<$PrismaModel>
     _max?: NestedFloatNullableFilter<$PrismaModel>
+  }
+
+  export type NestedEnumTryviaDifficultyFilter<$PrismaModel = never> = {
+    equals?: $Enums.TryviaDifficulty | EnumTryviaDifficultyFieldRefInput<$PrismaModel>
+    in?: $Enums.TryviaDifficulty[] | ListEnumTryviaDifficultyFieldRefInput<$PrismaModel>
+    notIn?: $Enums.TryviaDifficulty[] | ListEnumTryviaDifficultyFieldRefInput<$PrismaModel>
+    not?: NestedEnumTryviaDifficultyFilter<$PrismaModel> | $Enums.TryviaDifficulty
+  }
+
+  export type NestedEnumTryviaStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.TryviaStatus | EnumTryviaStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.TryviaStatus[] | ListEnumTryviaStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.TryviaStatus[] | ListEnumTryviaStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumTryviaStatusFilter<$PrismaModel> | $Enums.TryviaStatus
+  }
+
+  export type NestedEnumTryviaOriginFilter<$PrismaModel = never> = {
+    equals?: $Enums.TryviaOrigin | EnumTryviaOriginFieldRefInput<$PrismaModel>
+    in?: $Enums.TryviaOrigin[] | ListEnumTryviaOriginFieldRefInput<$PrismaModel>
+    notIn?: $Enums.TryviaOrigin[] | ListEnumTryviaOriginFieldRefInput<$PrismaModel>
+    not?: NestedEnumTryviaOriginFilter<$PrismaModel> | $Enums.TryviaOrigin
+  }
+
+  export type NestedEnumTryviaDifficultyWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.TryviaDifficulty | EnumTryviaDifficultyFieldRefInput<$PrismaModel>
+    in?: $Enums.TryviaDifficulty[] | ListEnumTryviaDifficultyFieldRefInput<$PrismaModel>
+    notIn?: $Enums.TryviaDifficulty[] | ListEnumTryviaDifficultyFieldRefInput<$PrismaModel>
+    not?: NestedEnumTryviaDifficultyWithAggregatesFilter<$PrismaModel> | $Enums.TryviaDifficulty
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumTryviaDifficultyFilter<$PrismaModel>
+    _max?: NestedEnumTryviaDifficultyFilter<$PrismaModel>
+  }
+
+  export type NestedEnumTryviaStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.TryviaStatus | EnumTryviaStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.TryviaStatus[] | ListEnumTryviaStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.TryviaStatus[] | ListEnumTryviaStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumTryviaStatusWithAggregatesFilter<$PrismaModel> | $Enums.TryviaStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumTryviaStatusFilter<$PrismaModel>
+    _max?: NestedEnumTryviaStatusFilter<$PrismaModel>
+  }
+
+  export type NestedEnumTryviaOriginWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.TryviaOrigin | EnumTryviaOriginFieldRefInput<$PrismaModel>
+    in?: $Enums.TryviaOrigin[] | ListEnumTryviaOriginFieldRefInput<$PrismaModel>
+    notIn?: $Enums.TryviaOrigin[] | ListEnumTryviaOriginFieldRefInput<$PrismaModel>
+    not?: NestedEnumTryviaOriginWithAggregatesFilter<$PrismaModel> | $Enums.TryviaOrigin
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumTryviaOriginFilter<$PrismaModel>
+    _max?: NestedEnumTryviaOriginFilter<$PrismaModel>
   }
 
   export type CompanyCreateWithoutWorkersInput = {

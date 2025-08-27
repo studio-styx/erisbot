@@ -60,6 +60,39 @@ model Inventory {
   @@id([userId, itemId])
 }
 
+model TryviaQuestions {
+  id                      Int              @id @default(autoincrement())
+  question                String           @unique
+  difficulty              TryviaDifficulty
+  tags                    String[]
+  correctAnswer           String
+  correctAnswersVariation String[]         @default([])
+  incorrectAnswers        String[]
+  createdAt               DateTime         @default(now())
+  updatedAt               DateTime         @default(now())
+  status                  TryviaStatus
+  origin                  TryviaOrigin
+}
+
+enum TryviaStatus {
+  APPROVED
+  PENDING
+  REJECTED
+}
+
+enum TryviaOrigin {
+  USER
+  API
+  IA
+  ADMIN
+}
+
+enum TryviaDifficulty {
+  EASY
+  MEDIUM
+  HARD
+}
+
 model Application {
   id           String        @id
   money        Decimal       @default(0.0) @db.Decimal(12, 2)

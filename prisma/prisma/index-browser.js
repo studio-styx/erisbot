@@ -153,6 +153,20 @@ exports.Prisma.InventoryScalarFieldEnum = {
   durability: 'durability'
 };
 
+exports.Prisma.TryviaQuestionsScalarFieldEnum = {
+  id: 'id',
+  question: 'question',
+  difficulty: 'difficulty',
+  tags: 'tags',
+  correctAnswer: 'correctAnswer',
+  correctAnswersVariation: 'correctAnswersVariation',
+  incorrectAnswers: 'incorrectAnswers',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  status: 'status',
+  origin: 'origin'
+};
+
 exports.Prisma.ApplicationScalarFieldEnum = {
   id: 'id',
   money: 'money',
@@ -281,12 +295,30 @@ exports.Prisma.NullsOrder = {
   first: 'first',
   last: 'last'
 };
+exports.TryviaDifficulty = exports.$Enums.TryviaDifficulty = {
+  EASY: 'EASY',
+  MEDIUM: 'MEDIUM',
+  HARD: 'HARD'
+};
 
+exports.TryviaStatus = exports.$Enums.TryviaStatus = {
+  APPROVED: 'APPROVED',
+  PENDING: 'PENDING',
+  REJECTED: 'REJECTED'
+};
+
+exports.TryviaOrigin = exports.$Enums.TryviaOrigin = {
+  USER: 'USER',
+  API: 'API',
+  IA: 'IA',
+  ADMIN: 'ADMIN'
+};
 
 exports.Prisma.ModelName = {
   User: 'User',
   Items: 'Items',
   Inventory: 'Inventory',
+  TryviaQuestions: 'TryviaQuestions',
   Application: 'Application',
   Requisition: 'Requisition',
   Log: 'Log',
