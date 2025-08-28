@@ -43,6 +43,12 @@ export default function addBotRoute(app: FastifyInstance, client: Client<true>) 
         if (typeof userId !== "string") {
             return reply.status(401).send({ error: "Invalid token" });
         }
+
+        const member = server === "eris" ? await client.guilds.cache.get("1395383469210865694")?.members.fetch(userId).catch(() => null) : await client.guilds.cache.get("1338980027529957396")?.members.fetch(userId).catch(() => null);
+
+        if (!member) return reply.status(StatusCodes.UNAUTHORIZED).send({ error: "You must be in the server to add a bot" });
+        if (member.user.bot) return reply.status(StatusCodes.FORBIDDEN).send({ error: "Bots cannot add applications" });
+
         const user = server === "eris" ? await asPrisma.user.upsert({
             where: { id: userId },
             create: { id: userId },

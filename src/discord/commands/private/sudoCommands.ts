@@ -2,6 +2,7 @@
 import { createCommand } from "#base";
 import { prisma } from "#database";
 import { stocksEventuals, res, icon } from "#functions";
+import { menus } from "#menus";
 import { Mails } from "#prisma";
 import { settings } from "#settings";
 import { brBuilder, createContainer, createSeparator } from "@magicyan/discord";
@@ -102,6 +103,11 @@ createCommand({
                     required: false
                 }
             ]
+        },
+        {
+            name: "dashboard",
+            description: "open the dev dashboard",
+            type: ApplicationCommandOptionType.Subcommand,
         }
     ],
     async autocomplete(interaction) {
@@ -473,6 +479,10 @@ createCommand({
                         await prisma.$disconnect();
                     }
                 }
+            }
+            case "dashboard": {
+                interaction.reply(menus.dev.dashboard())
+                return;
             }
         }
     },

@@ -21,4 +21,5 @@ export const envSchema = z.object({
     SERVER_BASE_URL: z.string("Server Base URL is required").min(1),
     CLIENT_ID: z.string("Client ID is required").min(1),
     CLIENT_SECRET: z.string("Client Secret is required").min(1),
+    WEBHOOK_TRYVIA_PIPELINE_URL: z.string("Webhook Tryvia Pipeline URL is required").min(1)
 });
