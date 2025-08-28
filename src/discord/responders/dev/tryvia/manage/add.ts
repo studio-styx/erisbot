@@ -1,5 +1,5 @@
 import { createResponder, ResponderType } from "#base";
-import { redis } from "#database";
+import { prisma, redis } from "#database";
 import { icon, resv2 } from "#functions";
 import { menus } from "#menus";
 import { createModalFields } from "@magicyan/discord";
@@ -10,7 +10,7 @@ createResponder({
     types: [ResponderType.Button, ResponderType.ModalComponent], cache: "cached",
     parse(params) {
         return {
-            field: params.field as "question" | "difficulty" | "tags" | "correctAnswer" | "correctAnswersVariation" | "incorrectAnswers",
+            field: params.field as "question" | "difficulty" | "tags" | "correctAnswer" | "correctAnswersVariation" | "incorrectAnswers" | "submit",
         }
     },
     async run(interaction, { field }) {
@@ -234,6 +234,34 @@ createResponder({
                     correctAnswersVariation: question.correctAnswersVariation,
                     incorrectAnswers
                 }));
+                return;
+            }
+            case "submit": {
+                if (!interaction.isButton()) return;
+
+                await prisma.tryviaQuestions.create({
+                    data: {
+                        correctAnswer: question.correctAnswer,
+                        correctAnswersVariation: question.correctAnswersVariation,
+                        difficulty: question.difficulty,
+                        incorrectAnswers: question.incorrectAnswers,
+                        question: question.question,
+                        tags: question.tags,
+                        origin: "ADMIN",
+                        status: "APPROVED",
+                    }
+                })
+
+                await redis.del(`devmenu:tryvia:add`);
+                interaction.editReply(menus.dev.tryvia.addQuestion({
+                    question: null,
+                    difficulty: null,
+                    tags: null,
+                    correctAnswer: null,
+                    correctAnswersVariation: null,
+                    incorrectAnswers: null
+                }))
+                interaction.followUp(resv2.success("Pergunta adicionada com sucesso!"));
                 return;
             }
         }

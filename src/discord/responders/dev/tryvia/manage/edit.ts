@@ -10,7 +10,7 @@ createResponder({
     types: [ResponderType.Button, ResponderType.ModalComponent], cache: "cached",
     parse(params) {
         return {
-            field: params.field as "question" | "difficulty" | "tags" | "correctAnswer" | "correctAnswersVariation" | "incorrectAnswers",
+            field: params.field as "question" | "difficulty" | "tags" | "correctAnswer" | "correctAnswersVariation" | "incorrectAnswers" | "submit",
             id: parseInt(params.id)
         }
     },
@@ -79,7 +79,7 @@ createResponder({
                     return;
                 }
                 const difficulty = interaction.fields.getTextInputValue("difficulty") as "EASY" | "MEDIUM" | "HARD";
-                
+
                 const newQuestion = await prisma.tryviaQuestions.update({
                     where: { id },
                     data: { difficulty }
@@ -230,6 +230,29 @@ createResponder({
                     correctAnswersVariation: newQuestion.correctAnswersVariation,
                     incorrectAnswers: newQuestion.incorrectAnswers
                 }));
+                return;
+            }
+            case "submit": {
+                if (!interaction.isButton()) return;
+
+                await prisma.tryviaQuestions.update({
+                    where: {
+                        id
+                    },
+                    data: {
+                        correctAnswer: question.correctAnswer,
+                        correctAnswersVariation: question.correctAnswersVariation,
+                        difficulty: question.difficulty,
+                        incorrectAnswers: question.incorrectAnswers,
+                        question: question.question,
+                        tags: question.tags,
+                        origin: "ADMIN",
+                        status: question.status,
+                    }
+                })
+
+                interaction.editReply(menus.dev.dashboard())
+                interaction.followUp(resv2.success("Pergunta editada com sucesso!"));
                 return;
             }
         }
