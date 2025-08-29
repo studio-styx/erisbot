@@ -14,7 +14,9 @@ createResponder({
         }
     },
     async run(interaction, { field }) {
-        await interaction.deferUpdate();
+        if (!interaction.isButton()) {
+            await interaction.deferUpdate();
+        }
 
         const raw = await redis.get(`devmenu:tryvia:add`);
         if (!raw) {
@@ -29,6 +31,7 @@ createResponder({
             correctAnswer: string;
             correctAnswersVariation: string[];
             incorrectAnswers: string[];
+            explanation: string;
         };
 
         switch (field) {
@@ -244,6 +247,7 @@ createResponder({
                         correctAnswer: question.correctAnswer,
                         correctAnswersVariation: question.correctAnswersVariation,
                         difficulty: question.difficulty,
+                        explanation: question.explanation,
                         incorrectAnswers: question.incorrectAnswers,
                         question: question.question,
                         tags: question.tags,

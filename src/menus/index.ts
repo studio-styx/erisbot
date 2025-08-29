@@ -15,6 +15,7 @@ import { ignoreTagMenu } from "./mail/ignoreTag.js";
 import { userMailsMenu } from "./mail/userMails.js";
 import { fishingMenu } from "./rp/fishing/fishing.js";
 import { dashboardMenu } from "./settings/dashboard.js";
+import { questionMenu } from "./tryviaGame/question.js";
 import { userLogsMenu } from "./userLogs.js";
 import { rankMenu } from "./xpSystem/rank.js";
 
@@ -55,5 +56,8 @@ export const menus = {
             addQuestion: addQuestionMenu,
             editQuestion: editQuestionMenu
         }
+    },
+    tryviaGame: {
+        question: questionMenu
     }
 }

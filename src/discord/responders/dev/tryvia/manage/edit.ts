@@ -2,6 +2,7 @@ import { createResponder, ResponderType } from "#base";
 import { prisma } from "#database";
 import { icon, resv2 } from "#functions";
 import { menus } from "#menus";
+import { TryviaQuestions } from "#prisma";
 import { createModalFields } from "@magicyan/discord";
 import { TextInputStyle } from "discord.js";
 
@@ -10,18 +11,21 @@ createResponder({
     types: [ResponderType.Button, ResponderType.ModalComponent], cache: "cached",
     parse(params) {
         return {
-            field: params.field as "question" | "difficulty" | "tags" | "correctAnswer" | "correctAnswersVariation" | "incorrectAnswers" | "submit",
+            field: params.field as "question" | "difficulty" | "tags" | "correctAnswer" | "correctAnswersVariation" | "incorrectAnswers",
             id: parseInt(params.id)
         }
     },
     async run(interaction, { field, id }) {
-        await interaction.deferUpdate();
+        let question: TryviaQuestions | null = null;
+        if (!interaction.isButton()) {
+            await interaction.deferUpdate();
+            question = await prisma.tryviaQuestions.findUniqueOrThrow({
+                where: { id }
+            }) as TryviaQuestions;
+        }
+        
 
-        const question = await prisma.tryviaQuestions.findUnique({
-            where: { id }
-        });
-
-        if (!question) {
+        if (!question && !interaction.isButton()) {
             interaction.editReply(resv2.danger(`${icon.Eris_cry} | Pergunta não encontrada!`));
             return;
         }
@@ -38,8 +42,7 @@ createResponder({
                                 label: "Nova pergunta",
                                 style: TextInputStyle.Short,
                                 required: true,
-                                placeholder: "Qual a pergunta?",
-                                value: question.question
+                                placeholder: "Qual a pergunta?"
                             }
                         })
                     })
@@ -72,7 +75,6 @@ createResponder({
                                 style: TextInputStyle.Short,
                                 required: true,
                                 placeholder: "Qual a dificuldade?",
-                                value: question.difficulty
                             }
                         })
                     })
@@ -106,7 +108,6 @@ createResponder({
                                 style: TextInputStyle.Short,
                                 required: true,
                                 placeholder: "Quais as tags?",
-                                value: question.tags.join(", ")
                             }
                         })
                     })
@@ -141,7 +142,6 @@ createResponder({
                                 style: TextInputStyle.Short,
                                 required: true,
                                 placeholder: "Qual a resposta correta?",
-                                value: question.correctAnswer
                             }
                         })
                     })
@@ -175,7 +175,6 @@ createResponder({
                                 style: TextInputStyle.Short,
                                 required: true,
                                 placeholder: "Quais as variações da resposta correta?",
-                                value: question.correctAnswersVariation.join(", ")
                             }
                         })
                     })
@@ -209,7 +208,6 @@ createResponder({
                                 style: TextInputStyle.Short,
                                 required: true,
                                 placeholder: "Quais as respostas incorretas?",
-                                value: question.incorrectAnswers.join(", ")
                             }
                         })
                     })
@@ -230,29 +228,6 @@ createResponder({
                     correctAnswersVariation: newQuestion.correctAnswersVariation,
                     incorrectAnswers: newQuestion.incorrectAnswers
                 }));
-                return;
-            }
-            case "submit": {
-                if (!interaction.isButton()) return;
-
-                await prisma.tryviaQuestions.update({
-                    where: {
-                        id
-                    },
-                    data: {
-                        correctAnswer: question.correctAnswer,
-                        correctAnswersVariation: question.correctAnswersVariation,
-                        difficulty: question.difficulty,
-                        incorrectAnswers: question.incorrectAnswers,
-                        question: question.question,
-                        tags: question.tags,
-                        origin: "ADMIN",
-                        status: question.status,
-                    }
-                })
-
-                interaction.editReply(menus.dev.dashboard())
-                interaction.followUp(resv2.success("Pergunta editada com sucesso!"));
                 return;
             }
         }

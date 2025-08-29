@@ -67,6 +67,7 @@ model TryviaQuestions {
   tags                    String[]
   correctAnswer           String
   correctAnswersVariation String[]         @default([])
+  explanation             String
   incorrectAnswers        String[]
   createdAt               DateTime         @default(now())
   updatedAt               DateTime         @default(now())

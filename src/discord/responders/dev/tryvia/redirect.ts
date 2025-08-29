@@ -20,10 +20,10 @@ createResponder({
             page: parseInt(params.page)
         }
     },
-    async run(interaction) {
+    async run(interaction, { page }) {
         await interaction.deferUpdate();
         const questions = await prisma.tryviaQuestions.findMany();
-        interaction.editReply(menus.dev.tryvia.fetchAllQuestions(questions));
+        interaction.editReply(menus.dev.tryvia.fetchAllQuestions(questions, page));
         return;
     }
 });
@@ -36,14 +36,14 @@ createResponder({
             page: parseInt(params.page)
         }
     },
-    async run(interaction) {
+    async run(interaction, { page }) {
         await interaction.deferUpdate();
         const questions = await prisma.tryviaQuestions.findMany({
             where: {
                 status: "PENDING"
             }
         });
-        interaction.editReply(menus.dev.tryvia.fetchAllQuestions(questions));
+        interaction.editReply(menus.dev.tryvia.fetchAllPendingQuestions(questions, page));
         return;
     }
 });

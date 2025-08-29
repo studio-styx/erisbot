@@ -459,8 +459,8 @@ export namespace Prisma {
   export import Exact = $Public.Exact
 
   /**
-   * Prisma Client JS version: 6.14.0
-   * Query Engine version: 717184b7b35ea05dfa71a3236b7af656013e1e49
+   * Prisma Client JS version: 6.15.0
+   * Query Engine version: 85179d7826409ee107a6ba334b5e305ae3fba9fb
    */
   export type PrismaVersion = {
     client: string
@@ -6098,6 +6098,7 @@ export namespace Prisma {
     question: string | null
     difficulty: $Enums.TryviaDifficulty | null
     correctAnswer: string | null
+    explanation: string | null
     createdAt: Date | null
     updatedAt: Date | null
     status: $Enums.TryviaStatus | null
@@ -6109,6 +6110,7 @@ export namespace Prisma {
     question: string | null
     difficulty: $Enums.TryviaDifficulty | null
     correctAnswer: string | null
+    explanation: string | null
     createdAt: Date | null
     updatedAt: Date | null
     status: $Enums.TryviaStatus | null
@@ -6122,6 +6124,7 @@ export namespace Prisma {
     tags: number
     correctAnswer: number
     correctAnswersVariation: number
+    explanation: number
     incorrectAnswers: number
     createdAt: number
     updatedAt: number
@@ -6144,6 +6147,7 @@ export namespace Prisma {
     question?: true
     difficulty?: true
     correctAnswer?: true
+    explanation?: true
     createdAt?: true
     updatedAt?: true
     status?: true
@@ -6155,6 +6159,7 @@ export namespace Prisma {
     question?: true
     difficulty?: true
     correctAnswer?: true
+    explanation?: true
     createdAt?: true
     updatedAt?: true
     status?: true
@@ -6168,6 +6173,7 @@ export namespace Prisma {
     tags?: true
     correctAnswer?: true
     correctAnswersVariation?: true
+    explanation?: true
     incorrectAnswers?: true
     createdAt?: true
     updatedAt?: true
@@ -6269,6 +6275,7 @@ export namespace Prisma {
     tags: string[]
     correctAnswer: string
     correctAnswersVariation: string[]
+    explanation: string
     incorrectAnswers: string[]
     createdAt: Date
     updatedAt: Date
@@ -6302,6 +6309,7 @@ export namespace Prisma {
     tags?: boolean
     correctAnswer?: boolean
     correctAnswersVariation?: boolean
+    explanation?: boolean
     incorrectAnswers?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -6316,6 +6324,7 @@ export namespace Prisma {
     tags?: boolean
     correctAnswer?: boolean
     correctAnswersVariation?: boolean
+    explanation?: boolean
     incorrectAnswers?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -6330,6 +6339,7 @@ export namespace Prisma {
     tags?: boolean
     correctAnswer?: boolean
     correctAnswersVariation?: boolean
+    explanation?: boolean
     incorrectAnswers?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -6344,6 +6354,7 @@ export namespace Prisma {
     tags?: boolean
     correctAnswer?: boolean
     correctAnswersVariation?: boolean
+    explanation?: boolean
     incorrectAnswers?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -6351,7 +6362,7 @@ export namespace Prisma {
     origin?: boolean
   }
 
-  export type TryviaQuestionsOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "question" | "difficulty" | "tags" | "correctAnswer" | "correctAnswersVariation" | "incorrectAnswers" | "createdAt" | "updatedAt" | "status" | "origin", ExtArgs["result"]["tryviaQuestions"]>
+  export type TryviaQuestionsOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "question" | "difficulty" | "tags" | "correctAnswer" | "correctAnswersVariation" | "explanation" | "incorrectAnswers" | "createdAt" | "updatedAt" | "status" | "origin", ExtArgs["result"]["tryviaQuestions"]>
 
   export type $TryviaQuestionsPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "TryviaQuestions"
@@ -6363,6 +6374,7 @@ export namespace Prisma {
       tags: string[]
       correctAnswer: string
       correctAnswersVariation: string[]
+      explanation: string
       incorrectAnswers: string[]
       createdAt: Date
       updatedAt: Date
@@ -6797,6 +6809,7 @@ export namespace Prisma {
     readonly tags: FieldRef<"TryviaQuestions", 'String[]'>
     readonly correctAnswer: FieldRef<"TryviaQuestions", 'String'>
     readonly correctAnswersVariation: FieldRef<"TryviaQuestions", 'String[]'>
+    readonly explanation: FieldRef<"TryviaQuestions", 'String'>
     readonly incorrectAnswers: FieldRef<"TryviaQuestions", 'String[]'>
     readonly createdAt: FieldRef<"TryviaQuestions", 'DateTime'>
     readonly updatedAt: FieldRef<"TryviaQuestions", 'DateTime'>
@@ -19484,6 +19497,7 @@ export namespace Prisma {
     tags: 'tags',
     correctAnswer: 'correctAnswer',
     correctAnswersVariation: 'correctAnswersVariation',
+    explanation: 'explanation',
     incorrectAnswers: 'incorrectAnswers',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt',
@@ -20066,6 +20080,7 @@ export namespace Prisma {
     tags?: StringNullableListFilter<"TryviaQuestions">
     correctAnswer?: StringFilter<"TryviaQuestions"> | string
     correctAnswersVariation?: StringNullableListFilter<"TryviaQuestions">
+    explanation?: StringFilter<"TryviaQuestions"> | string
     incorrectAnswers?: StringNullableListFilter<"TryviaQuestions">
     createdAt?: DateTimeFilter<"TryviaQuestions"> | Date | string
     updatedAt?: DateTimeFilter<"TryviaQuestions"> | Date | string
@@ -20080,6 +20095,7 @@ export namespace Prisma {
     tags?: SortOrder
     correctAnswer?: SortOrder
     correctAnswersVariation?: SortOrder
+    explanation?: SortOrder
     incorrectAnswers?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -20097,6 +20113,7 @@ export namespace Prisma {
     tags?: StringNullableListFilter<"TryviaQuestions">
     correctAnswer?: StringFilter<"TryviaQuestions"> | string
     correctAnswersVariation?: StringNullableListFilter<"TryviaQuestions">
+    explanation?: StringFilter<"TryviaQuestions"> | string
     incorrectAnswers?: StringNullableListFilter<"TryviaQuestions">
     createdAt?: DateTimeFilter<"TryviaQuestions"> | Date | string
     updatedAt?: DateTimeFilter<"TryviaQuestions"> | Date | string
@@ -20111,6 +20128,7 @@ export namespace Prisma {
     tags?: SortOrder
     correctAnswer?: SortOrder
     correctAnswersVariation?: SortOrder
+    explanation?: SortOrder
     incorrectAnswers?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -20133,6 +20151,7 @@ export namespace Prisma {
     tags?: StringNullableListFilter<"TryviaQuestions">
     correctAnswer?: StringWithAggregatesFilter<"TryviaQuestions"> | string
     correctAnswersVariation?: StringNullableListFilter<"TryviaQuestions">
+    explanation?: StringWithAggregatesFilter<"TryviaQuestions"> | string
     incorrectAnswers?: StringNullableListFilter<"TryviaQuestions">
     createdAt?: DateTimeWithAggregatesFilter<"TryviaQuestions"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"TryviaQuestions"> | Date | string
@@ -21101,6 +21120,7 @@ export namespace Prisma {
     tags?: TryviaQuestionsCreatetagsInput | string[]
     correctAnswer: string
     correctAnswersVariation?: TryviaQuestionsCreatecorrectAnswersVariationInput | string[]
+    explanation: string
     incorrectAnswers?: TryviaQuestionsCreateincorrectAnswersInput | string[]
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -21115,6 +21135,7 @@ export namespace Prisma {
     tags?: TryviaQuestionsCreatetagsInput | string[]
     correctAnswer: string
     correctAnswersVariation?: TryviaQuestionsCreatecorrectAnswersVariationInput | string[]
+    explanation: string
     incorrectAnswers?: TryviaQuestionsCreateincorrectAnswersInput | string[]
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -21128,6 +21149,7 @@ export namespace Prisma {
     tags?: TryviaQuestionsUpdatetagsInput | string[]
     correctAnswer?: StringFieldUpdateOperationsInput | string
     correctAnswersVariation?: TryviaQuestionsUpdatecorrectAnswersVariationInput | string[]
+    explanation?: StringFieldUpdateOperationsInput | string
     incorrectAnswers?: TryviaQuestionsUpdateincorrectAnswersInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -21142,6 +21164,7 @@ export namespace Prisma {
     tags?: TryviaQuestionsUpdatetagsInput | string[]
     correctAnswer?: StringFieldUpdateOperationsInput | string
     correctAnswersVariation?: TryviaQuestionsUpdatecorrectAnswersVariationInput | string[]
+    explanation?: StringFieldUpdateOperationsInput | string
     incorrectAnswers?: TryviaQuestionsUpdateincorrectAnswersInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -21156,6 +21179,7 @@ export namespace Prisma {
     tags?: TryviaQuestionsCreatetagsInput | string[]
     correctAnswer: string
     correctAnswersVariation?: TryviaQuestionsCreatecorrectAnswersVariationInput | string[]
+    explanation: string
     incorrectAnswers?: TryviaQuestionsCreateincorrectAnswersInput | string[]
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -21169,6 +21193,7 @@ export namespace Prisma {
     tags?: TryviaQuestionsUpdatetagsInput | string[]
     correctAnswer?: StringFieldUpdateOperationsInput | string
     correctAnswersVariation?: TryviaQuestionsUpdatecorrectAnswersVariationInput | string[]
+    explanation?: StringFieldUpdateOperationsInput | string
     incorrectAnswers?: TryviaQuestionsUpdateincorrectAnswersInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -21183,6 +21208,7 @@ export namespace Prisma {
     tags?: TryviaQuestionsUpdatetagsInput | string[]
     correctAnswer?: StringFieldUpdateOperationsInput | string
     correctAnswersVariation?: TryviaQuestionsUpdatecorrectAnswersVariationInput | string[]
+    explanation?: StringFieldUpdateOperationsInput | string
     incorrectAnswers?: TryviaQuestionsUpdateincorrectAnswersInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -22485,6 +22511,7 @@ export namespace Prisma {
     tags?: SortOrder
     correctAnswer?: SortOrder
     correctAnswersVariation?: SortOrder
+    explanation?: SortOrder
     incorrectAnswers?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -22501,6 +22528,7 @@ export namespace Prisma {
     question?: SortOrder
     difficulty?: SortOrder
     correctAnswer?: SortOrder
+    explanation?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     status?: SortOrder
@@ -22512,6 +22540,7 @@ export namespace Prisma {
     question?: SortOrder
     difficulty?: SortOrder
     correctAnswer?: SortOrder
+    explanation?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     status?: SortOrder

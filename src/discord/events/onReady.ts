@@ -7,6 +7,6 @@ createEvent({
     event: "ready",
     async run (client) {
         await setAllServerSettings(client);
-        tryviaPipeline()
+        tryviaPipeline();
     }
 });

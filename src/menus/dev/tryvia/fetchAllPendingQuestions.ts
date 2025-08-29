@@ -16,10 +16,13 @@ export function fetchAllPendingQuestionsMenu<R>(questions: TryviaQuestions[], pa
     pageQuestions.forEach((q, index) => {
         components.push(
             createSection({
-                    content: brBuilder(
-                    `**${startIndex + index + 1}.** ${q.question}`,
-                    "**Resposta:** " + q.correctAnswer,
-                    `**ID:** ${q.id} | **Status:** ${q.status} | **Dificuldade:** ${q.difficulty} | **Tags:** [${q.tags.join(", ")}]`,
+                content: brBuilder(
+                    `## **${startIndex + index + 1}.** ${q.question}`,
+                    `Resposta: **\`${q.correctAnswer}\`**`,
+                    `ID: **\`${q.id}\`**`,
+                    `Status: **\`${q.status}\`**`,
+                    `Dificuldade: **\`${q.difficulty}\`**`,
+                    `Tags: [**\`${q.tags.join(", ")}\`**]`,
                 ),
                 button: new ButtonBuilder({
                     customId: `devMenu/tryvia/edit/${q.id}`,

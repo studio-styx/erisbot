@@ -20,7 +20,7 @@ const safetySettings: SafetySetting[] = [
 
 const gemini = {
     text: genAI.getGenerativeModel({ model: "gemini-2.0-flash", safetySettings }),
-    getText(response: EnhancedGenerateContentResponse){
+    getText(response: EnhancedGenerateContentResponse) {
         try {
             return { success: true, text: response.text() }
         } catch (error) {
@@ -49,20 +49,25 @@ export async function tryviaPipeline(): Promise<void> {
         } catch (error) {
             console.error('❌ Erro crítico no pipeline:', error);
         }
-    }, 1000 * 60 * 5);
+    }, 1000 * 60 * 15);
 }
 
 async function getPotentialDuplicates(question: string): Promise<string[]> {
-    // Prepara termos para full-text search em português (assume PostgreSQL)
-    const terms = question.split(/\s+/).filter(t => t.length > 2).map(t => t + ':*').join(' & ');
+    // Remove caracteres especiais e aspas, mantendo apenas palavras válidas
+    const cleanQuestion = question.replace(/[^\w\s]/g, ''); // Remove caracteres especiais como aspas, pontos, etc.
+    const terms = cleanQuestion
+        .split(/\s+/)
+        .filter(t => t.length > 2)
+        .map(t => t + ':*')
+        .join(' & ');
     if (!terms) return [];
 
     try {
         const candidates = await prisma.$queryRaw<Array<{ question: string }>>`
-            SELECT "question" FROM "tryviaQuestions"
-            WHERE to_tsvector('portuguese', "question") @@ to_tsquery('portuguese', ${terms})
-            LIMIT 5;
-        `;
+      SELECT "question" FROM "TryviaQuestions"
+      WHERE to_tsvector('portuguese', "question") @@ to_tsquery('portuguese', ${terms})
+      LIMIT 5;
+    `;
         return candidates.map(c => c.question);
     } catch (error) {
         console.error('Erro ao buscar duplicatas potenciais:', error);
@@ -120,11 +125,13 @@ async function geminiIsDuplicate(
         .trim();
 
     try {
-        return JSON.parse(cleanText);
+        const parsed = JSON.parse(cleanText);
+        console.log(`Resposta do Gemini para duplicata: ${JSON.stringify(parsed)}`);
+        return parsed;
     } catch (err) {
         if (retry < 3) {
             console.warn(`⚠️ Resposta inválida no check de duplicata (não JSON), retry ${retry + 1}/3...`);
-            await new Promise(res => setTimeout(res, 5000));
+            await new Promise(res => setTimeout(res, 10000));
             return geminiIsDuplicate(newQuestion, existingQuestions, retry + 1);
         }
         console.error("Resposta crua do Gemini no check de duplicata:", cleanText);
@@ -154,6 +161,7 @@ export async function processApiQuestions(): Promise<PipelineResult> {
             incorrectAnswers: string[];
             tags: string[];
             difficulty: "EASY" | "MEDIUM" | "HARD";
+            explanation: string;
             confianca: number;
             justificativa: string;
         }
@@ -188,6 +196,7 @@ export async function processApiQuestions(): Promise<PipelineResult> {
                         "incorrectAnswers": ["incorreta 1", "incorreta 2"],
                         "tags": ["categoria1", "categoria2"],
                         difficulty: "EASY" | "MEDIUM" | "HARD",
+                        explanation: "explicação do porquê a resposta está correta em poetuguês"
                         "confianca": 0–10,
                         "justificativa": "frase curta explicando a nota"
                     }
@@ -229,10 +238,10 @@ export async function processApiQuestions(): Promise<PipelineResult> {
             }
         };
 
-        const processAndSave = async (
+        async function processAndSave(
             formattedItems: GeminiFormattedItem[],
             correctVariationsField: 'correctAnswer' | 'correctAnswersVariations'
-        ) => {
+        ) {
             for (const item of formattedItems) {
                 result.totalProcessed++;
                 if (item.confianca === 0) {
@@ -241,6 +250,17 @@ export async function processApiQuestions(): Promise<PipelineResult> {
                 }
 
                 try {
+                    // Verificação direta no banco de dados
+                    const existingQuestion = await prisma.tryviaQuestions.findFirst({
+                        where: { question: item.question },
+                    });
+                    if (existingQuestion) {
+                        console.log(`Duplicada detectada (verificação direta): ${item.question}`);
+                        result.skipped++;
+                        continue;
+                    }
+
+                    // Verificação de duplicatas por similaridade
                     const potentials = await getPotentialDuplicates(item.question);
                     let isDuplicate = false;
 
@@ -248,17 +268,14 @@ export async function processApiQuestions(): Promise<PipelineResult> {
                         const dupCheck = await geminiIsDuplicate(item.question, potentials);
                         isDuplicate = dupCheck.isDuplicate;
                         if (isDuplicate) {
-                            console.log(`Duplicada detectada: ${item.question} similar a ${dupCheck.similarTo || 'uma existente'}`);
+                            console.log(`Duplicada detectada (Gemini): ${item.question} similar a ${dupCheck.similarTo || 'uma existente'}`);
+                            result.skipped++;
+                            continue;
                         }
                     }
 
-                    if (isDuplicate) {
-                        result.skipped++;
-                        continue;
-                    }
-
-                    const variations = correctVariationsField === 'correctAnswer' 
-                        ? [item.correctAnswer] 
+                    const variations = correctVariationsField === 'correctAnswer'
+                        ? [item.correctAnswer]
                         : item.correctAnswersVariations;
 
                     await prisma.tryviaQuestions.create({
@@ -268,6 +285,7 @@ export async function processApiQuestions(): Promise<PipelineResult> {
                             correctAnswersVariation: variations,
                             incorrectAnswers: item.incorrectAnswers,
                             difficulty: item.difficulty,
+                            explanation: item.explanation,
                             tags: item.tags,
                             origin: "API",
                             status: item.confianca >= 8 ? "APPROVED" : "PENDING"
@@ -279,7 +297,7 @@ export async function processApiQuestions(): Promise<PipelineResult> {
                     result.errors++;
                 }
             }
-        };
+        }
 
         const putInDbTryviaApi = async () => {
             const tryviaApiFormatted = await geminiRequisition(tryviaApiResponse);
