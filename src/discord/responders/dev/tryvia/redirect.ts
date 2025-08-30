@@ -23,6 +23,13 @@ createResponder({
     async run(interaction, { page }) {
         await interaction.deferUpdate();
         const questions = await prisma.tryviaQuestions.findMany();
+        if (questions.length === 0) {
+            interaction.editReply(resv2.danger(`${icon.Eris_cry} | Nenhuma pergunta encontrada!`));
+            setTimeout(async () => {
+                await interaction.editReply(menus.dev.dashboard());
+            }, 5000)
+            return;
+        }
         interaction.editReply(menus.dev.tryvia.fetchAllQuestions(questions, page));
         return;
     }
@@ -43,6 +50,13 @@ createResponder({
                 status: "PENDING"
             }
         });
+        if (questions.length === 0) {
+            interaction.editReply(resv2.danger(`${icon.Eris_cry} | Nenhuma pergunta encontrada!`));
+            setTimeout(async () => {
+                await interaction.editReply(menus.dev.dashboard());
+            }, 5000)
+            return;
+        }
         interaction.editReply(menus.dev.tryvia.fetchAllPendingQuestions(questions, page));
         return;
     }

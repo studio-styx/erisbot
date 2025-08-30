@@ -4,7 +4,7 @@ import { menus } from "#menus";
 import { TryviaQuestions } from "#prisma";
 import { settings } from "#settings";
 import { TryviaGame } from "#types/tryviaGames.js";
-import { createContainer, brBuilder, createSeparator, createSection } from "@magicyan/discord";
+import { createContainer, brBuilder, createSeparator, createSection, createEmbed } from "@magicyan/discord";
 import { ChatInputCommandInteraction, DiscordAPIError, Message, OmitPartialGroupDMChannel, time } from "discord.js";
 
 async function sendIntervalMessage(
@@ -51,16 +51,16 @@ function buildSafeQuery(category: string | null, difficultyFilter: { in: string[
         paramIndex++;
     }
 
-    // Filtro de dificuldade
+    // Filtro de dificuldade com type cast corrigido
     if (difficultyFilter?.in) {
-        const difficultyPlaceholders = difficultyFilter.in.map(() => `$${paramIndex++}`).join(',');
+        const difficultyPlaceholders = difficultyFilter.in.map(() => `$${paramIndex++}::"TryviaDifficulty"`).join(',');
         whereParts.push(`difficulty IN (${difficultyPlaceholders})`);
         parameters.push(...difficultyFilter.in);
     }
 
-    // Filtro de tipo de pergunta (AGORA CORRIGIDO)
+    // Filtro de tipo de pergunta com type cast (se necessário)
     if (questionTypeFilter?.in) {
-        const typePlaceholders = questionTypeFilter.in.map(() => `$${paramIndex++}`).join(',');
+        const typePlaceholders = questionTypeFilter.in.map(() => `$${paramIndex++}::"TryviaTypes"`).join(',');
         whereParts.push(`type IN (${typePlaceholders})`);
         parameters.push(...questionTypeFilter.in);
     }
@@ -157,9 +157,29 @@ export async function startTryviaGame(interaction: ChatInputCommandInteraction<"
         hasResponse: false,
         consecutiveNoResponse: 0
     };
+
+    await prisma.guildMember.upsert({
+        where: {
+            guildId_id: {
+                id: interaction.user.id,
+                guildId: interaction.guildId!,
+            },
+        },
+        update: {
+            tryviaGames: {
+                increment: 1,
+            },
+        },
+        create: {
+            id: interaction.user.id,
+            guildId: interaction.guildId!,
+            tryviaGames: 1,
+        }
+    })
+
     await redis.setex(key, 60 * 30, JSON.stringify(object));
 
-    interaction.editReply(res.success(`${icon.Eris_happy} | Um novo jogo de trivia foi iniciado nesse canal!`));
+    interaction.editReply(res.success(`${icon.Eris_happy} | Um novo jogo de trivia foi iniciado nesse canal! ${questions.length < amount ? `Por causa de alguns critérios, não foi possivel obter todas as **${amount}** perguntas solicitadas, foram encontradas: **${questions.length}** perguntas.` : ""}`));
 
     const questionMsg = await interaction.channel.send(menus.tryviaGame.question(object));
 
@@ -172,7 +192,14 @@ export async function startTryviaGame(interaction: ChatInputCommandInteraction<"
         if (alreadyResponded) return;
         object.participants.forEach((p) => (p.streak = 0));
         await redis.set(key, JSON.stringify(object));
-        const questionMsgReplied = await questionMsg.reply(res.warning("Ninguém acertou a pergunta em 20 segundos! Streaks zerados."));
+        const questionMsgReplied = await questionMsg.reply(res.warning("Ninguém acertou a pergunta em 20 segundos! Streaks zerados.", {
+            embeds: [
+                createEmbed({
+                    description: `A resposta correta era: **${object.questions[object.currentQuestion].correctAnswer}**. \n **Explicação:** ${object.questions[object.currentQuestion].explanation}`,
+                    color: settings.colors.fuchsia
+                })
+            ]
+        }));
 
         const intervealMsg = await sendIntervalMessage(interaction.channel!, object, {
             avatarURL: () => interaction.client.user.displayAvatarURL(),

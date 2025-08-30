@@ -19,6 +19,17 @@ const safetySettings: SafetySetting[] = [
 
 
 const gemini = {
+    text: genAI.getGenerativeModel({ model: "gemini-2.5-flash", safetySettings }),
+    getText(response: EnhancedGenerateContentResponse) {
+        try {
+            return { success: true, text: response.text() }
+        } catch (error) {
+            return { success: false, error }
+        }
+    }
+}
+
+const geminiOut = {
     text: genAI.getGenerativeModel({ model: "gemini-2.0-flash", safetySettings }),
     getText(response: EnhancedGenerateContentResponse) {
         try {
@@ -49,10 +60,10 @@ export async function tryviaPipeline(): Promise<void> {
         } catch (error) {
             console.error('❌ Erro crítico no pipeline:', error);
         }
-    }, 1000 * 60 * 15);
+    }, 1000 * 60 * 60);
 }
 
-async function getPotentialDuplicates(question: string): Promise<string[]> {
+async function getPotentialDuplicates(question: string): Promise<{ text: string; type: "BOOLEAN" | "MULTIPLE" | "WRITEINCHAT" }[]> {
     // Remove caracteres especiais e aspas, mantendo apenas palavras válidas
     const cleanQuestion = question.replace(/[^\w\s]/g, ''); // Remove caracteres especiais como aspas, pontos, etc.
     const terms = cleanQuestion
@@ -63,12 +74,12 @@ async function getPotentialDuplicates(question: string): Promise<string[]> {
     if (!terms) return [];
 
     try {
-        const candidates = await prisma.$queryRaw<Array<{ question: string }>>`
-      SELECT "question" FROM "TryviaQuestions"
+        const candidates = await prisma.$queryRaw<Array<{ question: string, type: "BOOLEAN" | "MULTIPLE" | "WRITEINCHAT" }>>`
+      SELECT "question", "type" FROM "TryviaQuestions"
       WHERE to_tsvector('portuguese', "question") @@ to_tsquery('portuguese', ${terms})
       LIMIT 5;
     `;
-        return candidates.map(c => c.question);
+        return candidates.map(c => ({ text: c.question, type: c.type }));
     } catch (error) {
         console.error('Erro ao buscar duplicatas potenciais:', error);
         return [];
@@ -82,33 +93,33 @@ interface DuplicateCheckResponse {
 }
 
 async function geminiIsDuplicate(
-    newQuestion: string,
-    existingQuestions: string[],
+    newQuestion: { text: string; type: "BOOLEAN" | "MULTIPLE" | "WRITEINCHAT" },
+    existingQuestions: { text: string; type: "BOOLEAN" | "MULTIPLE" | "WRITEINCHAT" }[],
     retry = 0
 ): Promise<DuplicateCheckResponse> {
     const prompt = brBuilder(
         "Você é um avaliador de similaridade de perguntas de trivia.",
         "",
         "Regras:",
-        "1. Determine se a nova pergunta é semanticamente equivalente a alguma das existentes.",
-        "   - Equivalente: pergunta exatamente a mesma coisa, mas possivelmente com palavras diferentes.",
-        "   - Não equivalente: mesmo tema, mas pergunta algo diferente.",
+        "1. Determine se a nova pergunta é semanticamente equivalente a alguma das existentes, considerando o mesmo tipo (BOOLEAN, MULTIPLE, WRITEINCHAT).",
+        "   - Equivalente: pergunta exatamente a mesma coisa, com o mesmo tipo, mas possivelmente com palavras diferentes.",
+        "   - Não equivalente: mesmo tema, mas pergunta algo diferente ou tem tipo diferente.",
         "2. A saída DEVE ser JSON estritamente válido, apenas um objeto.",
         "3. Nunca use Markdown ou ```.",
         "",
         "Formato:",
         `{
-            "isDuplicate": true/false,
-            "justificativa": "explicação curta",
-            "similarTo": "pergunta similar se true, opcional"
-        }`,
+        "isDuplicate": true/false,
+        "justificativa": "explicação curta",
+        "similarTo": "pergunta similar se true, opcional"
+    }`,
         "",
-        `Nova pergunta: ${newQuestion}`,
+        `Nova pergunta: ${newQuestion} (tipo: ${newQuestion.type})`,
         `Perguntas existentes: ${JSON.stringify(existingQuestions, null, 2)}`
     );
 
-    const { response } = await gemini.text.generateContent(prompt);
-    const result = gemini.getText(response);
+    const { response } = await geminiOut.text.generateContent(prompt);
+    const result = geminiOut.getText(response);
 
     if (!result.success || !result.text) {
         if (retry < 3) {
@@ -161,6 +172,7 @@ export async function processApiQuestions(): Promise<PipelineResult> {
             incorrectAnswers: string[];
             tags: string[];
             difficulty: "EASY" | "MEDIUM" | "HARD";
+            correct: boolean | null;
             explanation: string;
             confianca: number;
             justificativa: string;
@@ -186,9 +198,13 @@ export async function processApiQuestions(): Promise<PipelineResult> {
                 "6. Nunca use explicações fora do JSON.",
                 "7. Nunca use Markdown ou ```.",
                 "8. A saída DEVE ser JSON estritamente válido, apenas um array de objetos.",
-                "9. Se a pergunta for de escrever no chat, faça com que a resposta seja pequena e direta, com várias variações (não faça variações de letra maiuscula ou minuscula, nem de acentos, pois é tratada posteriormente)",
-                "10. Faça 2 variações da pergunta, colocando-as no array de objeto, ou seja, se vier o type \"boolean\" então vc deve fazer variação em multiple, e writeInChat, e assim por diante",
-                "11. Mesmo que a pergunta seja boolean, ou writeInChat vc DEVE retornar: incorrectAnswers, correctAnswersVariation e correctAnswer, vc pode retornar os array de string como objetos vazios, e o correctAnswer sempre deve ser a resposta correta",
+                "9. Para cada pergunta recebida, você DEVE criar três variações, cada uma com um tipo diferente: BOOLEAN, MULTIPLE e WRITEINCHAT.",
+                "   - Para BOOLEAN: reformule a pergunta para ser respondida com 'Verdadeiro' ou 'Falso'.",
+                "   - Para MULTIPLE: forneça 4 opções (1 correta, 3 incorretas).",
+                "   - Para WRITEINCHAT: a pergunta deve ser clara, direta e de resposta curta, pois o usuário NÃO verá opções. Evite perguntas difíceis para WRITEINCHAT.",
+                "10. Para cada variação, inclua: correctAnswer, correctAnswersVariations (se aplicável), incorrectAnswers (se aplicável), tags, difficulty, explanation, confianca e justificativa.",
+                "11. Mesmo que a pergunta original seja de um tipo específico, você DEVE criar as três variações (BOOLEAN, MULTIPLE, WRITEINCHAT).",
+                "12. O nivel de dificuldade é MUITO especifico, vc não deve retornar a dificuldade com letras minusuculas ou qualquer outro texto que não seja: (EASY, MEDIUM, HARD)",
                 "",
                 "Formato esperado de resposta:",
                 `
@@ -197,14 +213,61 @@ export async function processApiQuestions(): Promise<PipelineResult> {
                         "question": "texto traduzido da pergunta",
                         "correctAnswer": "resposta correta traduzida",
                         "type": "BOOLEAN" | "MULTIPLE" | "WRITEINCHAT",
-                        "correct": "boolean |  null se não for pergunta de verdadeiro ou falso",
+                        "correct": boolean | null,
                         "correctAnswersVariations": ["variação 1", "variação 2"],
                         "incorrectAnswers": ["incorreta 1", "incorreta 2"],
                         "tags": ["categoria1 em português", "categoria2 em português"],
                         "difficulty": "EASY" | "MEDIUM" | "HARD",
-                        "explanation": "explicação do porquê a resposta está correta em português"
+                        "explanation": "explicação do porquê a resposta está correta em português",
                         "confianca": 0–10,
                         "justificativa": "frase curta explicando a nota"
+                    }
+                ]
+                `,
+                "",
+                "Exemplo de entrada e saída esperada:",
+                "Entrada: { question: 'Which of these countries borders Russia?', type: 'MULTIPLE', ... }",
+                "Saída esperada:",
+                `
+                [
+                    {
+                        "question": "A Rússia faz fronteira com a China?",
+                        "correctAnswer": "Verdadeiro",
+                        "type": "BOOLEAN",
+                        "correct": true,
+                        "correctAnswersVariations": [],
+                        "incorrectAnswers": [],
+                        "tags": ["geografia", "fronteiras"],
+                        "difficulty": "EASY",
+                        "explanation": "A Rússia faz fronteira com a China ao sul.",
+                        "confianca": 8,
+                        "justificativa": "Pergunta clara e verificável."
+                    },
+                    {
+                        "question": "Qual desses países faz fronteira com a Rússia?",
+                        "correctAnswer": "China",
+                        "type": "MULTIPLE",
+                        "correct": null,
+                        "correctAnswersVariations": ["China"],
+                        "incorrectAnswers": ["Brasil", "Japão", "Índia"],
+                        "tags": ["geografia", "fronteiras"],
+                        "difficulty": "MEDIUM",
+                        "explanation": "A China é um dos países que faz fronteira com a Rússia.",
+                        "confianca": 8,
+                        "justificativa": "Boa pergunta com opções claras."
+                    },
+                    {
+                        "question": "Cite um país que faz fronteira com a Rússia.",
+                        "correctAnswer": "China",
+                        "type": "WRITEINCHAT",
+                        "correct": null,
+                        "correctAnswersVariations": ["China", "Finlândia", "Noruega"],
+                        "incorrectAnswers": [],
+                        "tags": ["geografia", "fronteiras"],
+                        "difficulty": "EASY",
+                        "explanation": "A Rússia tem várias fronteiras, incluindo com a China.",
+                        "confianca": 7,
+                        "justificativa": "Pergunta direta, mas depende do conhecimento do usuário."
                     }
                 ]
                 `,
@@ -232,7 +295,12 @@ export async function processApiQuestions(): Promise<PipelineResult> {
                 .trim();
 
             try {
-                return JSON.parse(cleanText);
+                const json = JSON.parse(cleanText) as GeminiFormattedItem[];
+                return json.map(item => ({
+                    ...item,
+                    difficulty: item.difficulty.toUpperCase() as GeminiFormattedItem['difficulty'],
+                    type: item.type.toUpperCase() as GeminiFormattedItem['type']
+                }))
             } catch (err) {
                 if (retry < 3) {
                     console.warn(`⚠️ Resposta inválida (não JSON), retry ${retry + 1}/3...`);
@@ -256,48 +324,52 @@ export async function processApiQuestions(): Promise<PipelineResult> {
                 }
 
                 try {
-                    // Verificação direta no banco de dados
-                    const existingQuestion = await prisma.tryviaQuestions.findFirst({
-                        where: { question: item.question },
-                    });
-                    if (existingQuestion) {
-                        console.log(`Duplicada detectada (verificação direta): ${item.question}`);
-                        result.skipped++;
-                        continue;
-                    }
-
-                    // Verificação de duplicatas por similaridade
-                    const potentials = await getPotentialDuplicates(item.question);
-                    let isDuplicate = false;
-
-                    if (potentials.length > 0) {
-                        const dupCheck = await geminiIsDuplicate(item.question, potentials);
-                        isDuplicate = dupCheck.isDuplicate;
-                        if (isDuplicate) {
-                            console.log(`Duplicada detectada (Gemini): ${item.question} similar a ${dupCheck.similarTo || 'uma existente'}`);
+                    // Verificação e inserção em uma transação
+                    await prisma.$transaction(async (tx) => {
+                        const existingQuestion = await tx.tryviaQuestions.findFirst({
+                            where: { question: item.question, type: item.type },
+                        });
+                        if (existingQuestion) {
+                            console.log(`Duplicada detectada (verificação direta): ${item.question}`);
                             result.skipped++;
-                            continue;
+                            return;
                         }
-                    }
 
-                    const variations = correctVariationsField === 'correctAnswer'
-                        ? [item.correctAnswer]
-                        : item.correctAnswersVariations;
+                        // Verificação de duplicatas por similaridade
+                        const potentials = await getPotentialDuplicates(item.question);
+                        let isDuplicate = false;
 
-                    await prisma.tryviaQuestions.create({
-                        data: {
-                            question: item.question,
-                            correctAnswer: item.correctAnswer,
-                            correctAnswersVariation: variations,
-                            incorrectAnswers: item.incorrectAnswers,
-                            difficulty: item.difficulty,
-                            explanation: item.explanation,
-                            tags: item.tags,
-                            origin: "API",
-                            status: item.confianca >= 8 ? "APPROVED" : "PENDING"
+                        if (potentials.length > 0) {
+                            const dupCheck = await geminiIsDuplicate({ text: item.question, type: item.type }, potentials);
+                            isDuplicate = dupCheck.isDuplicate;
+                            if (isDuplicate) {
+                                console.log(`Duplicada detectada (Gemini): ${item.question} similar a ${dupCheck.similarTo || 'uma existente'}`);
+                                result.skipped++;
+                                return;
+                            }
                         }
+
+                        const variations = correctVariationsField === 'correctAnswer'
+                            ? [item.correctAnswer]
+                            : item.correctAnswersVariations;
+
+                        await tx.tryviaQuestions.create({
+                            data: {
+                                question: item.question,
+                                correctAnswer: item.correctAnswer,
+                                correctAnswersVariation: variations,
+                                incorrectAnswers: item.incorrectAnswers,
+                                difficulty: item.difficulty,
+                                explanation: item.explanation,
+                                tags: item.tags,
+                                correct: item.correct,
+                                origin: "API",
+                                type: item.type,
+                                status: item.confianca >= 8 ? "APPROVED" : "PENDING"
+                            }
+                        });
+                        result.saved++;
                     });
-                    result.saved++;
                 } catch (error) {
                     console.error('Erro ao processar/salvar pergunta:', error);
                     result.errors++;

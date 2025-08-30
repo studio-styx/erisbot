@@ -236,6 +236,7 @@ createCommand({
 
         switch(interaction.options.getSubcommand()) {
             case "start": {
+                if (!focused.value) return await interaction.respond([{ name: "Por favor escreva uma categoria", value: "none" }]);
                 const getCategories = async () => {
                     const raw = await redis.get(`tryvia:questions:categories`);
                     if (!raw) {

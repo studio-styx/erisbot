@@ -1,30 +1,30 @@
-import { redis } from "#database";
+import { prisma, redis } from "#database";
 import { icon, res } from "#functions";
 import { menus } from "#menus";
 import { settings } from "#settings";
 import { TryviaGame } from "#types/tryviaGames.js";
-import { brBuilder, createContainer, createSection, createSeparator } from "@magicyan/discord";
+import { brBuilder, createContainer, createEmbed, createSection, createSeparator } from "@magicyan/discord";
 import { ChannelType, DiscordAPIError, Message, OmitPartialGroupDMChannel, time } from "discord.js";
 
-const timeoutMap = new Map<string, NodeJS.Timeout>();
+export const timeoutMap = new Map<string, NodeJS.Timeout>();
 
 // Função para normalizar texto, removendo acentos e caracteres especiais
 function normalizeText(text: string): string {
     return text
+        .toLowerCase() // Mover para o início - converte TUDO para minúsculas primeiro
         .normalize("NFD")
         .replace(/[\u0300-\u036f]/g, "")
-        .replace(/[çÇ]/g, "c")
-        .replace(/[ãÃõÕôÔáÁàÀâÂäÄéÉèÈêÊëËíÍìÌîÎïÏóÓòÒöÖúÚùÙûÛüÜ]/g, (match) =>
-            ({ a: "a", e: "e", i: "i", o: "o", u: "u" }[match[0].toLowerCase()] || match)
+        .replace(/[ç]/g, "c") // Agora só precisa das minúsculas
+        .replace(/[ãõôáàâäéèêëíìîïóòöúùûü]/g, (match) =>
+            ({ a: "a", e: "e", i: "i", o: "o", u: "u" }[match] || match)
         )
         .replace(/[^a-z0-9\s]/g, "")
         .replace(/\s+/g, " ")
-        .trim()
-        .toLowerCase();
+        .trim();
 }
 
 // Mensagens organizadas por dificuldade e streak
-const messagesByDifficulty: Record<string, string[]> = {
+export const messagesByDifficulty: Record<string, string[]> = {
     GENERAL: [
         `${icon.Eris_happy} | Parabéns, você acertou a pergunta!`,
         `${icon.Eris_happy} | Incrível! Você acertou a pergunta!`,
@@ -79,7 +79,7 @@ const messagesByDifficulty: Record<string, string[]> = {
 };
 
 // Função auxiliar para enviar mensagem de intervalo
-async function sendIntervalMessage(
+export async function sendIntervalMessage(
     channel: OmitPartialGroupDMChannel<Message<boolean>>["channel"],
     game: TryviaGame,
     top1User: { displayAvatarURL?: () => string | null; avatarURL?: () => string | null }
@@ -114,11 +114,11 @@ async function sendIntervalMessage(
 }
 
 // Função auxiliar para enviar mensagem de fim de jogo
-async function sendGameOverMessage(
+export async function sendGameOverMessage(
     channel: OmitPartialGroupDMChannel<Message<boolean>>["channel"],
     game: TryviaGame,
     top1User: { displayAvatarURL?: () => string | null; avatarURL?: () => string | null }
-): Promise<void> {
+): Promise<Message> {
     const ranking = game.participants.sort((a, b) => b.points - a.points);
     const container = createContainer({
         accentColor: settings.colors.success,
@@ -139,7 +139,7 @@ async function sendGameOverMessage(
             }),
         ],
     });
-    await channel.send({ components: [container], flags: ["IsComponentsV2"] });
+    return await channel.send({ components: [container], flags: ["IsComponentsV2"] });
 }
 
 // Função para lidar com o timeout da pergunta
@@ -149,85 +149,88 @@ async function handleQuestionTimeout(
     questionMsg: Message,
     freshGame: TryviaGame
 ) {
-    console.log("20 segundos se passaram, verificando respostas", new Date().toLocaleString());
-    // Carregar game fresco do Redis
-    const rawTimeout = await redis.get(key);
-    if (!rawTimeout) {
-        timeoutMap.delete(key);
-        return;
-    }
-    const timeoutGame = JSON.parse(rawTimeout) as TryviaGame;
+    try {
+        // Carregar game fresco do Redis
+        const rawTimeout = await redis.get(key);
+        if (!rawTimeout) {
+            timeoutMap.delete(key);
+            return;
+        }
+        const timeoutGame = JSON.parse(rawTimeout) as TryviaGame;
 
-    // Verificar se ainda é a pergunta correta
-    if (timeoutGame.currentQuestion !== freshGame.currentQuestion) {
-        console.log("Pergunta não é mais a atual, ou seja foi respondida", new Date().toLocaleString());
-        timeoutMap.delete(key);
-        return;
-    }
+        // Verificar se ainda é a pergunta correta
+        if (timeoutGame.currentQuestion !== freshGame.currentQuestion) {
+            timeoutMap.delete(key);
+            return;
+        }
 
-    // Incrementar contador se não houve respostas (atividade zero)
-    if (!timeoutGame.hasResponse) {
-        console.log("Nenhuma resposta recebida", new Date().toLocaleString());
-        timeoutGame.consecutiveNoResponse = (timeoutGame.consecutiveNoResponse || 0) + 1;
-        console.log("Agora são", timeoutGame.consecutiveNoResponse, "sem resposta", new Date().toLocaleString());
-    } else {
-        console.log("Resposta recebida", new Date().toLocaleString());
-        timeoutGame.consecutiveNoResponse = 0;
-    }
+        // Incrementar contador se não houve respostas (atividade zero)
+        if (!timeoutGame.hasResponse) {
+            timeoutGame.consecutiveNoResponse = (timeoutGame.consecutiveNoResponse || 0) + 1;
+        } else {
+            timeoutGame.consecutiveNoResponse = 0;
+        }
 
-    // Resetar streaks
-    timeoutGame.participants.forEach((p) => (p.streak = 0));
-    timeoutGame.hasResponse = false;
+        // Resetar streaks
+        timeoutGame.participants.forEach((p) => (p.streak = 0));
+        timeoutGame.hasResponse = false;
 
-    // Salvar estado
-    await redis.set(key, JSON.stringify(timeoutGame));
+        // Salvar estado
+        await redis.set(key, JSON.stringify(timeoutGame));
 
-    // Enviar mensagem de no response
-    const questionMsgSended = await questionMsg.reply(res.warning("Ninguém respondeu a pergunta em 20 segundos! Streaks zerados."));
+        // Enviar mensagem de no response
+        const questionMsgSended = await questionMsg.reply(res.warning("Ninguém acertou ou respondeu a pergunta em 20 segundos! Streaks zerados.", {
+            embeds: [
+                createEmbed({
+                    description: `A resposta correta era: **${timeoutGame.questions[timeoutGame.currentQuestion].correctAnswer}**. \n **Explicação:** ${timeoutGame.questions[timeoutGame.currentQuestion].explanation}`,
+                    color: settings.colors.fuchsia
+                })
+            ]
+        }));
 
-    // Verificar se deve finalizar por 3 perguntas sem resposta
-    if (timeoutGame.consecutiveNoResponse >= 3) {
-        console.log("3 perguntas sem resposta", new Date().toLocaleString());
-        await redis.del(key);
-        console.log("Game deletado", new Date().toLocaleString());
-        timeoutMap.delete(key);
-        const finalTop1User = await msg.client.users
-            .fetch(timeoutGame.participants[0]?.id)
-            .catch(() => msg.client.user);
-        await sendGameOverMessage(msg.channel, timeoutGame, {
-            avatarURL: () => finalTop1User?.displayAvatarURL() || null,
-            displayAvatarURL: () => finalTop1User?.displayAvatarURL() || null,
-        });
-        await questionMsg.reply(res.warning("Ninguém respondeu a 3 perguntas consecutivas. Jogo finalizado!"));
-        console.log("Mensagem de ninguém respondeu a 3 perguntas consecutivas enviada com sucesso", new Date().toLocaleString());
-        await questionMsgSended.delete().catch(() => { });
-        console.log("Mensagem questionMsgSended deletada com sucesso", new Date().toLocaleString());
-        return;
-    }
+        // Verificar se deve finalizar por 3 perguntas sem resposta
+        if (timeoutGame.consecutiveNoResponse >= 3) {
+            await redis.del(key);
+            timeoutMap.delete(key);
+            const finalTop1User = await msg.client.users
+                .fetch(timeoutGame.participants[0]?.id)
+                .catch(() => msg.client.user);
+            await sendGameOverMessage(msg.channel, timeoutGame, {
+                avatarURL: () => finalTop1User?.displayAvatarURL() || null,
+                displayAvatarURL: () => finalTop1User?.displayAvatarURL() || null,
+            });
+            await questionMsg.reply(res.warning("Ninguém respondeu a 3 perguntas consecutivas. Jogo finalizado!"));
+            await questionMsgSended.delete().catch(() => { });
+            return;
+        }
 
-    // Verificar se é fim de jogo
-    if (timeoutGame.currentQuestion >= timeoutGame.questions.length - 1) {
-        await redis.del(key);
-        timeoutMap.delete(key);
+        // Verificar se é fim de jogo
+        if (timeoutGame.currentQuestion >= timeoutGame.questions.length - 1) {
+            await redis.del(key);
+            timeoutMap.delete(key);
+            questionMsg.delete().catch(() => { });
+            const finalTop1User = await msg.client.users
+                .fetch(timeoutGame.participants[0]?.id)
+                .catch(() => msg.client.user);
+            await sendGameOverMessage(msg.channel, timeoutGame, {
+                avatarURL: () => finalTop1User?.displayAvatarURL() || null,
+                displayAvatarURL: () => finalTop1User?.displayAvatarURL() || null,
+            });
+            return;
+        }
+
+        // Avançar para próxima pergunta
         questionMsg.delete().catch(() => { });
-        const finalTop1User = await msg.client.users
-            .fetch(timeoutGame.participants[0]?.id)
-            .catch(() => msg.client.user);
-        await sendGameOverMessage(msg.channel, timeoutGame, {
-            avatarURL: () => finalTop1User?.displayAvatarURL() || null,
-            displayAvatarURL: () => finalTop1User?.displayAvatarURL() || null,
-        });
-        return;
+        timeoutGame.currentQuestion++;
+        timeoutGame.hasResponse = false;
+        await redis.set(key, JSON.stringify(timeoutGame));
+
+        // Iniciar novo ciclo de intervalo e pergunta
+        await handleIntervalAndQuestion(msg, timeoutGame, key, questionMsgSended);
+    } catch (error: unknown) {
+        console.error("Erro ao lidar com timeout da pergunta:", error);
+        msg.channel.send(res.danger(`${icon.error} | Ocorreu um erro ao processar a próxima pergunta`))
     }
-
-    // Avançar para próxima pergunta
-    questionMsg.delete().catch(() => { });
-    timeoutGame.currentQuestion++;
-    timeoutGame.hasResponse = false;
-    await redis.set(key, JSON.stringify(timeoutGame));
-
-    // Iniciar novo ciclo de intervalo e pergunta
-    await handleIntervalAndQuestion(msg, timeoutGame, key, questionMsgSended);
 }
 
 // Função para enviar intervalo e configurar pergunta
@@ -246,7 +249,6 @@ async function handleIntervalAndQuestion(
 
     // Após 10 segundos, editar para pergunta
     const intervalTimeout = setTimeout(async () => {
-        console.log("10 segundos se passaram, enviando próxima pergunta", new Date().toLocaleString());
 
         // Carregar game fresco do Redis
         const rawInterval = await redis.get(key);
@@ -258,7 +260,6 @@ async function handleIntervalAndQuestion(
 
         // Verificar se ainda é a pergunta correta
         if (freshGame.currentQuestion !== game.currentQuestion) {
-            console.log("Pergunta não é mais a atual, ou seja foi respondida", new Date().toLocaleString());
             timeoutMap.delete(key);
             return;
         }
@@ -266,14 +267,11 @@ async function handleIntervalAndQuestion(
         let questionMsg: Message;
         try {
             await intervalMsg.edit(menus.tryviaGame.question(freshGame));
-            console.log("Mensagem de intervalo editada com sucesso", new Date().toLocaleString());
             questionMsg = intervalMsg;
         } catch (error: unknown) {
             if (error instanceof DiscordAPIError && error.code === 10008) {
                 questionMsg = await msg.channel.send(menus.tryviaGame.question(freshGame));
-                console.log("Mensagem de pergunta enviada com sucesso (intervalo deletado)", new Date().toLocaleString());
             } else {
-                console.error("Erro ao editar mensagem de intervalo:", error);
                 timeoutMap.delete(key);
                 return;
             }
@@ -285,8 +283,8 @@ async function handleIntervalAndQuestion(
         await redis.set(key, JSON.stringify(freshGame));
 
         // Set timeout for question response
-        const questionTimeout = setTimeout(() => {
-            handleQuestionTimeout(msg, key, questionMsg, freshGame);
+        const questionTimeout = setTimeout(async () => {
+            await handleQuestionTimeout(msg, key, questionMsg, freshGame);
         }, 1000 * 20);
         timeoutMap.set(key, questionTimeout);
     }, 1000 * 10);
@@ -328,20 +326,29 @@ export async function onResponseTryviaGame(msg: OmitPartialGroupDMChannel<Messag
                 correctAnswers: [],
                 incorrectAnswers: [],
             };
+            await prisma.guildMember.upsert({
+                where: {
+                    guildId_id: {
+                        id: msg.author.id,
+                        guildId: msg.guildId!,
+                    },
+                },
+                update: {
+                    tryviaGames: {
+                        increment: 1,
+                    },
+                },
+                create: {
+                    id: msg.author.id,
+                    guildId: msg.guildId!,
+                    tryviaGames: 1,
+                }
+            })
             game.participants.push(participant);
         }
 
-        // Se não for thread e não for participante, ignorar se errar
         if (!participant && !gotIt) return;
-
-        // Cancelar timeout anterior se alguém respondeu
-        const currentTimeout = timeoutMap.get(key);
-        if (currentTimeout) {
-            clearTimeout(currentTimeout);
-            timeoutMap.delete(key);
-        }
-
-        // Qualquer resposta (errada ou certa) marca atividade
+        // Se não for thread e não for participante, ignorar se errar
         game.hasResponse = true;
 
         if (!gotIt) {
@@ -349,6 +356,13 @@ export async function onResponseTryviaGame(msg: OmitPartialGroupDMChannel<Messag
             await msg.react("❌");
             await redis.set(key, JSON.stringify(game));
             return;
+        }
+
+        // Aqui: resposta correta! Cancelar timeout apenas agora
+        const currentTimeout = timeoutMap.get(key);
+        if (currentTimeout) {
+            clearTimeout(currentTimeout);
+            timeoutMap.delete(key);
         }
 
         // Resposta correta, reset counter
@@ -364,12 +378,53 @@ export async function onResponseTryviaGame(msg: OmitPartialGroupDMChannel<Messag
                 correctAnswers: [],
                 incorrectAnswers: [],
             };
+            await prisma.guildMember.upsert({
+                where: {
+                    guildId_id: {
+                        id: msg.author.id,
+                        guildId: msg.guildId!,
+                    },
+                },
+                update: {
+                    tryviaGames: {
+                        increment: 1,
+                    },
+                },
+                create: {
+                    id: msg.author.id,
+                    guildId: msg.guildId!,
+                    tryviaGames: 1,
+                }
+            })
             game.participants.push(participant);
         }
+
+        await prisma.guildMember.upsert({
+            where: {
+                guildId_id: {
+                    id: msg.author.id,
+                    guildId: msg.guildId!,
+                },
+            },
+            update: {
+                tryviaPoints: {
+                    increment: 1
+                }
+            },
+            create: {
+                tryviaPoints: 1,
+                id: msg.author.id,
+                guildId: msg.guildId!,
+            }
+        })
 
         participant.streak = (participant.streak ?? 0) + 1;
         participant.points += item.difficulty === "HARD" ? 3 : item.difficulty === "MEDIUM" ? 2 : 1;
         participant.correctAnswers.push(item);
+        game.participants.forEach((p) => {
+            if (p.id === msg.author.id) return;
+            p.streak = 0;
+        });
 
         const messagesVariation = [
             ...messagesByDifficulty.GENERAL,
@@ -403,7 +458,14 @@ export async function onResponseTryviaGame(msg: OmitPartialGroupDMChannel<Messag
                 ? `${randomMessage}\n${icon.investment_graph} **Streak:** ${participant.streak} acertos consecutivos!`
                 : randomMessage;
 
-        const msgSended = await msg.reply(res.success(finalMessage));
+        const msgSended = await msg.reply(res.success(finalMessage, {
+            embeds: [
+                createEmbed({
+                    description: `**Explicação:** ${item.explanation}`,
+                    color: settings.colors.fuchsia
+                })
+            ]
+        }));
 
         // Verificar se é fim de jogo
         if (game.currentQuestion >= game.questions.length - 1) {

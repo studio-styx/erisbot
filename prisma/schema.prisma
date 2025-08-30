@@ -33,6 +33,7 @@ model User {
   afkReasson           String?
   afkTime              DateTime?
   inventory     Inventory[]
+  guilds        GuildMember[]
 }
 
 model Items {
@@ -63,7 +64,7 @@ model Inventory {
 
 model TryviaQuestions {
   id        Int   @id   @default(autoincrement())
-  question  String  @unique
+  question  String
   difficulty  TryviaDifficulty
   type  TryviaTypes   @default(WRITEINCHAT)
   correct   Boolean?
@@ -76,6 +77,8 @@ model TryviaQuestions {
   updatedAt     DateTime  @default(now())
   status      TryviaStatus
   origin      TryviaOrigin
+
+  @@unique([question, type])
 }
 
 enum TryviaStatus {
@@ -217,8 +220,12 @@ model GuildMember {
   guildId String
 
   guild   GuildSettings @relation(fields: [guildId], references: [id], onDelete: Cascade)
+  user    User? @relation(fields: [id], references: [id], onDelete: Cascade)
 
   xp      Int @default(0)
+  tryviaPoints Int @default(0)
+  tryviaGames  Int @default(0)
+  tryviaWins   Int @default(0)
 
   @@id([guildId, id])
 }

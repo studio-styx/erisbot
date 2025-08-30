@@ -11,6 +11,8 @@ import { stocksMenu } from "./investment/stocks.js";
 import { userStocksMenu } from "./investment/userStocks.js";
 import { avaibleJobsMenu } from "./jobs/avaibleJobs.js";
 import { interviewMenu } from "./jobs/interview.js";
+import { rankingMenu } from "./leaderboard/ranking.js";
+import { startRankingMenu } from "./leaderboard/startRanking.js";
 import { ignoreTagMenu } from "./mail/ignoreTag.js";
 import { userMailsMenu } from "./mail/userMails.js";
 import { fishingMenu } from "./rp/fishing/fishing.js";
@@ -59,5 +61,9 @@ export const menus = {
     },
     tryviaGame: {
         question: questionMenu
+    },
+    leaderboard: {
+        startRanking: startRankingMenu,
+        ranking: rankingMenu
     }
 }

@@ -256,7 +256,10 @@ exports.Prisma.GuildSettingsScalarFieldEnum = {
 exports.Prisma.GuildMemberScalarFieldEnum = {
   id: 'id',
   guildId: 'guildId',
-  xp: 'xp'
+  xp: 'xp',
+  tryviaPoints: 'tryviaPoints',
+  tryviaGames: 'tryviaGames',
+  tryviaWins: 'tryviaWins'
 };
 
 exports.Prisma.MailsScalarFieldEnum = {

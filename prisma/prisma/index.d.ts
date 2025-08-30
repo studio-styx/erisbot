@@ -2195,6 +2195,7 @@ export namespace Prisma {
     sendedMails: number
     applications: number
     inventory: number
+    guilds: number
   }
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -2205,6 +2206,7 @@ export namespace Prisma {
     sendedMails?: boolean | UserCountOutputTypeCountSendedMailsArgs
     applications?: boolean | UserCountOutputTypeCountApplicationsArgs
     inventory?: boolean | UserCountOutputTypeCountInventoryArgs
+    guilds?: boolean | UserCountOutputTypeCountGuildsArgs
   }
 
   // Custom InputTypes
@@ -2265,6 +2267,13 @@ export namespace Prisma {
    */
   export type UserCountOutputTypeCountInventoryArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: InventoryWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountGuildsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: GuildMemberWhereInput
   }
 
 
@@ -2686,6 +2695,7 @@ export namespace Prisma {
     sendedMails?: boolean | User$sendedMailsArgs<ExtArgs>
     applications?: boolean | User$applicationsArgs<ExtArgs>
     inventory?: boolean | User$inventoryArgs<ExtArgs>
+    guilds?: boolean | User$guildsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -2740,6 +2750,7 @@ export namespace Prisma {
     sendedMails?: boolean | User$sendedMailsArgs<ExtArgs>
     applications?: boolean | User$applicationsArgs<ExtArgs>
     inventory?: boolean | User$inventoryArgs<ExtArgs>
+    guilds?: boolean | User$guildsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -2760,6 +2771,7 @@ export namespace Prisma {
       sendedMails: Prisma.$MailsPayload<ExtArgs>[]
       applications: Prisma.$ApplicationPayload<ExtArgs>[]
       inventory: Prisma.$InventoryPayload<ExtArgs>[]
+      guilds: Prisma.$GuildMemberPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -3174,6 +3186,7 @@ export namespace Prisma {
     sendedMails<T extends User$sendedMailsArgs<ExtArgs> = {}>(args?: Subset<T, User$sendedMailsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MailsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     applications<T extends User$applicationsArgs<ExtArgs> = {}>(args?: Subset<T, User$applicationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ApplicationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     inventory<T extends User$inventoryArgs<ExtArgs> = {}>(args?: Subset<T, User$inventoryArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$InventoryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    guilds<T extends User$guildsArgs<ExtArgs> = {}>(args?: Subset<T, User$guildsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$GuildMemberPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -3793,6 +3806,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: InventoryScalarFieldEnum | InventoryScalarFieldEnum[]
+  }
+
+  /**
+   * User.guilds
+   */
+  export type User$guildsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GuildMember
+     */
+    select?: GuildMemberSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the GuildMember
+     */
+    omit?: GuildMemberOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GuildMemberInclude<ExtArgs> | null
+    where?: GuildMemberWhereInput
+    orderBy?: GuildMemberOrderByWithRelationInput | GuildMemberOrderByWithRelationInput[]
+    cursor?: GuildMemberWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: GuildMemberScalarFieldEnum | GuildMemberScalarFieldEnum[]
   }
 
   /**
@@ -17299,56 +17336,86 @@ export namespace Prisma {
 
   export type GuildMemberAvgAggregateOutputType = {
     xp: number | null
+    tryviaPoints: number | null
+    tryviaGames: number | null
+    tryviaWins: number | null
   }
 
   export type GuildMemberSumAggregateOutputType = {
     xp: number | null
+    tryviaPoints: number | null
+    tryviaGames: number | null
+    tryviaWins: number | null
   }
 
   export type GuildMemberMinAggregateOutputType = {
     id: string | null
     guildId: string | null
     xp: number | null
+    tryviaPoints: number | null
+    tryviaGames: number | null
+    tryviaWins: number | null
   }
 
   export type GuildMemberMaxAggregateOutputType = {
     id: string | null
     guildId: string | null
     xp: number | null
+    tryviaPoints: number | null
+    tryviaGames: number | null
+    tryviaWins: number | null
   }
 
   export type GuildMemberCountAggregateOutputType = {
     id: number
     guildId: number
     xp: number
+    tryviaPoints: number
+    tryviaGames: number
+    tryviaWins: number
     _all: number
   }
 
 
   export type GuildMemberAvgAggregateInputType = {
     xp?: true
+    tryviaPoints?: true
+    tryviaGames?: true
+    tryviaWins?: true
   }
 
   export type GuildMemberSumAggregateInputType = {
     xp?: true
+    tryviaPoints?: true
+    tryviaGames?: true
+    tryviaWins?: true
   }
 
   export type GuildMemberMinAggregateInputType = {
     id?: true
     guildId?: true
     xp?: true
+    tryviaPoints?: true
+    tryviaGames?: true
+    tryviaWins?: true
   }
 
   export type GuildMemberMaxAggregateInputType = {
     id?: true
     guildId?: true
     xp?: true
+    tryviaPoints?: true
+    tryviaGames?: true
+    tryviaWins?: true
   }
 
   export type GuildMemberCountAggregateInputType = {
     id?: true
     guildId?: true
     xp?: true
+    tryviaPoints?: true
+    tryviaGames?: true
+    tryviaWins?: true
     _all?: true
   }
 
@@ -17442,6 +17509,9 @@ export namespace Prisma {
     id: string
     guildId: string
     xp: number
+    tryviaPoints: number
+    tryviaGames: number
+    tryviaWins: number
     _count: GuildMemberCountAggregateOutputType | null
     _avg: GuildMemberAvgAggregateOutputType | null
     _sum: GuildMemberSumAggregateOutputType | null
@@ -17467,49 +17537,71 @@ export namespace Prisma {
     id?: boolean
     guildId?: boolean
     xp?: boolean
+    tryviaPoints?: boolean
+    tryviaGames?: boolean
+    tryviaWins?: boolean
     guild?: boolean | GuildSettingsDefaultArgs<ExtArgs>
+    user?: boolean | GuildMember$userArgs<ExtArgs>
   }, ExtArgs["result"]["guildMember"]>
 
   export type GuildMemberSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     guildId?: boolean
     xp?: boolean
+    tryviaPoints?: boolean
+    tryviaGames?: boolean
+    tryviaWins?: boolean
     guild?: boolean | GuildSettingsDefaultArgs<ExtArgs>
+    user?: boolean | GuildMember$userArgs<ExtArgs>
   }, ExtArgs["result"]["guildMember"]>
 
   export type GuildMemberSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     guildId?: boolean
     xp?: boolean
+    tryviaPoints?: boolean
+    tryviaGames?: boolean
+    tryviaWins?: boolean
     guild?: boolean | GuildSettingsDefaultArgs<ExtArgs>
+    user?: boolean | GuildMember$userArgs<ExtArgs>
   }, ExtArgs["result"]["guildMember"]>
 
   export type GuildMemberSelectScalar = {
     id?: boolean
     guildId?: boolean
     xp?: boolean
+    tryviaPoints?: boolean
+    tryviaGames?: boolean
+    tryviaWins?: boolean
   }
 
-  export type GuildMemberOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "guildId" | "xp", ExtArgs["result"]["guildMember"]>
+  export type GuildMemberOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "guildId" | "xp" | "tryviaPoints" | "tryviaGames" | "tryviaWins", ExtArgs["result"]["guildMember"]>
   export type GuildMemberInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     guild?: boolean | GuildSettingsDefaultArgs<ExtArgs>
+    user?: boolean | GuildMember$userArgs<ExtArgs>
   }
   export type GuildMemberIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     guild?: boolean | GuildSettingsDefaultArgs<ExtArgs>
+    user?: boolean | GuildMember$userArgs<ExtArgs>
   }
   export type GuildMemberIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     guild?: boolean | GuildSettingsDefaultArgs<ExtArgs>
+    user?: boolean | GuildMember$userArgs<ExtArgs>
   }
 
   export type $GuildMemberPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "GuildMember"
     objects: {
       guild: Prisma.$GuildSettingsPayload<ExtArgs>
+      user: Prisma.$UserPayload<ExtArgs> | null
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
       guildId: string
       xp: number
+      tryviaPoints: number
+      tryviaGames: number
+      tryviaWins: number
     }, ExtArgs["result"]["guildMember"]>
     composites: {}
   }
@@ -17905,6 +17997,7 @@ export namespace Prisma {
   export interface Prisma__GuildMemberClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     guild<T extends GuildSettingsDefaultArgs<ExtArgs> = {}>(args?: Subset<T, GuildSettingsDefaultArgs<ExtArgs>>): Prisma__GuildSettingsClient<$Result.GetResult<Prisma.$GuildSettingsPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    user<T extends GuildMember$userArgs<ExtArgs> = {}>(args?: Subset<T, GuildMember$userArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -17937,6 +18030,9 @@ export namespace Prisma {
     readonly id: FieldRef<"GuildMember", 'String'>
     readonly guildId: FieldRef<"GuildMember", 'String'>
     readonly xp: FieldRef<"GuildMember", 'Int'>
+    readonly tryviaPoints: FieldRef<"GuildMember", 'Int'>
+    readonly tryviaGames: FieldRef<"GuildMember", 'Int'>
+    readonly tryviaWins: FieldRef<"GuildMember", 'Int'>
   }
     
 
@@ -18330,6 +18426,25 @@ export namespace Prisma {
      * Limit how many GuildMembers to delete.
      */
     limit?: number
+  }
+
+  /**
+   * GuildMember.user
+   */
+  export type GuildMember$userArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the User
+     */
+    select?: UserSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the User
+     */
+    omit?: UserOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    where?: UserWhereInput
   }
 
   /**
@@ -19662,7 +19777,10 @@ export namespace Prisma {
   export const GuildMemberScalarFieldEnum: {
     id: 'id',
     guildId: 'guildId',
-    xp: 'xp'
+    xp: 'xp',
+    tryviaPoints: 'tryviaPoints',
+    tryviaGames: 'tryviaGames',
+    tryviaWins: 'tryviaWins'
   };
 
   export type GuildMemberScalarFieldEnum = (typeof GuildMemberScalarFieldEnum)[keyof typeof GuildMemberScalarFieldEnum]
@@ -19906,6 +20024,7 @@ export namespace Prisma {
     sendedMails?: MailsListRelationFilter
     applications?: ApplicationListRelationFilter
     inventory?: InventoryListRelationFilter
+    guilds?: GuildMemberListRelationFilter
   }
 
   export type UserOrderByWithRelationInput = {
@@ -19927,6 +20046,7 @@ export namespace Prisma {
     sendedMails?: MailsOrderByRelationAggregateInput
     applications?: ApplicationOrderByRelationAggregateInput
     inventory?: InventoryOrderByRelationAggregateInput
+    guilds?: GuildMemberOrderByRelationAggregateInput
   }
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -19951,6 +20071,7 @@ export namespace Prisma {
     sendedMails?: MailsListRelationFilter
     applications?: ApplicationListRelationFilter
     inventory?: InventoryListRelationFilter
+    guilds?: GuildMemberListRelationFilter
   }, "id">
 
   export type UserOrderByWithAggregationInput = {
@@ -20164,10 +20285,11 @@ export namespace Prisma {
 
   export type TryviaQuestionsWhereUniqueInput = Prisma.AtLeast<{
     id?: number
-    question?: string
+    question_type?: TryviaQuestionsQuestionTypeCompoundUniqueInput
     AND?: TryviaQuestionsWhereInput | TryviaQuestionsWhereInput[]
     OR?: TryviaQuestionsWhereInput[]
     NOT?: TryviaQuestionsWhereInput | TryviaQuestionsWhereInput[]
+    question?: StringFilter<"TryviaQuestions"> | string
     difficulty?: EnumTryviaDifficultyFilter<"TryviaQuestions"> | $Enums.TryviaDifficulty
     type?: EnumTryviaTypesFilter<"TryviaQuestions"> | $Enums.TryviaTypes
     correct?: BoolNullableFilter<"TryviaQuestions"> | boolean | null
@@ -20180,7 +20302,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"TryviaQuestions"> | Date | string
     status?: EnumTryviaStatusFilter<"TryviaQuestions"> | $Enums.TryviaStatus
     origin?: EnumTryviaOriginFilter<"TryviaQuestions"> | $Enums.TryviaOrigin
-  }, "id" | "question">
+  }, "id" | "question_type">
 
   export type TryviaQuestionsOrderByWithAggregationInput = {
     id?: SortOrder
@@ -20811,14 +20933,22 @@ export namespace Prisma {
     id?: StringFilter<"GuildMember"> | string
     guildId?: StringFilter<"GuildMember"> | string
     xp?: IntFilter<"GuildMember"> | number
+    tryviaPoints?: IntFilter<"GuildMember"> | number
+    tryviaGames?: IntFilter<"GuildMember"> | number
+    tryviaWins?: IntFilter<"GuildMember"> | number
     guild?: XOR<GuildSettingsScalarRelationFilter, GuildSettingsWhereInput>
+    user?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
   }
 
   export type GuildMemberOrderByWithRelationInput = {
     id?: SortOrder
     guildId?: SortOrder
     xp?: SortOrder
+    tryviaPoints?: SortOrder
+    tryviaGames?: SortOrder
+    tryviaWins?: SortOrder
     guild?: GuildSettingsOrderByWithRelationInput
+    user?: UserOrderByWithRelationInput
   }
 
   export type GuildMemberWhereUniqueInput = Prisma.AtLeast<{
@@ -20829,13 +20959,20 @@ export namespace Prisma {
     id?: StringFilter<"GuildMember"> | string
     guildId?: StringFilter<"GuildMember"> | string
     xp?: IntFilter<"GuildMember"> | number
+    tryviaPoints?: IntFilter<"GuildMember"> | number
+    tryviaGames?: IntFilter<"GuildMember"> | number
+    tryviaWins?: IntFilter<"GuildMember"> | number
     guild?: XOR<GuildSettingsScalarRelationFilter, GuildSettingsWhereInput>
+    user?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
   }, "guildId_id">
 
   export type GuildMemberOrderByWithAggregationInput = {
     id?: SortOrder
     guildId?: SortOrder
     xp?: SortOrder
+    tryviaPoints?: SortOrder
+    tryviaGames?: SortOrder
+    tryviaWins?: SortOrder
     _count?: GuildMemberCountOrderByAggregateInput
     _avg?: GuildMemberAvgOrderByAggregateInput
     _max?: GuildMemberMaxOrderByAggregateInput
@@ -20850,6 +20987,9 @@ export namespace Prisma {
     id?: StringWithAggregatesFilter<"GuildMember"> | string
     guildId?: StringWithAggregatesFilter<"GuildMember"> | string
     xp?: IntWithAggregatesFilter<"GuildMember"> | number
+    tryviaPoints?: IntWithAggregatesFilter<"GuildMember"> | number
+    tryviaGames?: IntWithAggregatesFilter<"GuildMember"> | number
+    tryviaWins?: IntWithAggregatesFilter<"GuildMember"> | number
   }
 
   export type MailsWhereInput = {
@@ -20940,6 +21080,7 @@ export namespace Prisma {
     sendedMails?: MailsCreateNestedManyWithoutWhoSendUserInput
     applications?: ApplicationCreateNestedManyWithoutOwnerInput
     inventory?: InventoryCreateNestedManyWithoutUserInput
+    guilds?: GuildMemberCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateInput = {
@@ -20960,6 +21101,7 @@ export namespace Prisma {
     sendedMails?: MailsUncheckedCreateNestedManyWithoutWhoSendUserInput
     applications?: ApplicationUncheckedCreateNestedManyWithoutOwnerInput
     inventory?: InventoryUncheckedCreateNestedManyWithoutUserInput
+    guilds?: GuildMemberUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserUpdateInput = {
@@ -20980,6 +21122,7 @@ export namespace Prisma {
     sendedMails?: MailsUpdateManyWithoutWhoSendUserNestedInput
     applications?: ApplicationUpdateManyWithoutOwnerNestedInput
     inventory?: InventoryUpdateManyWithoutUserNestedInput
+    guilds?: GuildMemberUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
@@ -21000,6 +21143,7 @@ export namespace Prisma {
     sendedMails?: MailsUncheckedUpdateManyWithoutWhoSendUserNestedInput
     applications?: ApplicationUncheckedUpdateManyWithoutOwnerNestedInput
     inventory?: InventoryUncheckedUpdateManyWithoutUserNestedInput
+    guilds?: GuildMemberUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateManyInput = {
@@ -21869,44 +22013,64 @@ export namespace Prisma {
   }
 
   export type GuildMemberCreateInput = {
-    id: string
     xp?: number
+    tryviaPoints?: number
+    tryviaGames?: number
+    tryviaWins?: number
     guild: GuildSettingsCreateNestedOneWithoutMembersInput
+    user?: UserCreateNestedOneWithoutGuildsInput
   }
 
   export type GuildMemberUncheckedCreateInput = {
     id: string
     guildId: string
     xp?: number
+    tryviaPoints?: number
+    tryviaGames?: number
+    tryviaWins?: number
   }
 
   export type GuildMemberUpdateInput = {
-    id?: StringFieldUpdateOperationsInput | string
     xp?: IntFieldUpdateOperationsInput | number
+    tryviaPoints?: IntFieldUpdateOperationsInput | number
+    tryviaGames?: IntFieldUpdateOperationsInput | number
+    tryviaWins?: IntFieldUpdateOperationsInput | number
     guild?: GuildSettingsUpdateOneRequiredWithoutMembersNestedInput
+    user?: UserUpdateOneWithoutGuildsNestedInput
   }
 
   export type GuildMemberUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     guildId?: StringFieldUpdateOperationsInput | string
     xp?: IntFieldUpdateOperationsInput | number
+    tryviaPoints?: IntFieldUpdateOperationsInput | number
+    tryviaGames?: IntFieldUpdateOperationsInput | number
+    tryviaWins?: IntFieldUpdateOperationsInput | number
   }
 
   export type GuildMemberCreateManyInput = {
     id: string
     guildId: string
     xp?: number
+    tryviaPoints?: number
+    tryviaGames?: number
+    tryviaWins?: number
   }
 
   export type GuildMemberUpdateManyMutationInput = {
-    id?: StringFieldUpdateOperationsInput | string
     xp?: IntFieldUpdateOperationsInput | number
+    tryviaPoints?: IntFieldUpdateOperationsInput | number
+    tryviaGames?: IntFieldUpdateOperationsInput | number
+    tryviaWins?: IntFieldUpdateOperationsInput | number
   }
 
   export type GuildMemberUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     guildId?: StringFieldUpdateOperationsInput | string
     xp?: IntFieldUpdateOperationsInput | number
+    tryviaPoints?: IntFieldUpdateOperationsInput | number
+    tryviaGames?: IntFieldUpdateOperationsInput | number
+    tryviaWins?: IntFieldUpdateOperationsInput | number
   }
 
   export type MailsCreateInput = {
@@ -22125,6 +22289,12 @@ export namespace Prisma {
     none?: InventoryWhereInput
   }
 
+  export type GuildMemberListRelationFilter = {
+    every?: GuildMemberWhereInput
+    some?: GuildMemberWhereInput
+    none?: GuildMemberWhereInput
+  }
+
   export type SortOrderInput = {
     sort: SortOrder
     nulls?: NullsOrder
@@ -22151,6 +22321,10 @@ export namespace Prisma {
   }
 
   export type InventoryOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type GuildMemberOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -22595,6 +22769,11 @@ export namespace Prisma {
     not?: NestedEnumTryviaOriginFilter<$PrismaModel> | $Enums.TryviaOrigin
   }
 
+  export type TryviaQuestionsQuestionTypeCompoundUniqueInput = {
+    question: string
+    type: $Enums.TryviaTypes
+  }
+
   export type TryviaQuestionsCountOrderByAggregateInput = {
     id?: SortOrder
     question?: SortOrder
@@ -23024,16 +23203,6 @@ export namespace Prisma {
     amount?: SortOrder
   }
 
-  export type GuildMemberListRelationFilter = {
-    every?: GuildMemberWhereInput
-    some?: GuildMemberWhereInput
-    none?: GuildMemberWhereInput
-  }
-
-  export type GuildMemberOrderByRelationAggregateInput = {
-    _count?: SortOrder
-  }
-
   export type GuildSettingsCountOrderByAggregateInput = {
     id?: SortOrder
     chatBotChannels?: SortOrder
@@ -23083,6 +23252,11 @@ export namespace Prisma {
     isNot?: GuildSettingsWhereInput
   }
 
+  export type UserNullableScalarRelationFilter = {
+    is?: UserWhereInput | null
+    isNot?: UserWhereInput | null
+  }
+
   export type GuildMemberGuildIdIdCompoundUniqueInput = {
     guildId: string
     id: string
@@ -23092,26 +23266,41 @@ export namespace Prisma {
     id?: SortOrder
     guildId?: SortOrder
     xp?: SortOrder
+    tryviaPoints?: SortOrder
+    tryviaGames?: SortOrder
+    tryviaWins?: SortOrder
   }
 
   export type GuildMemberAvgOrderByAggregateInput = {
     xp?: SortOrder
+    tryviaPoints?: SortOrder
+    tryviaGames?: SortOrder
+    tryviaWins?: SortOrder
   }
 
   export type GuildMemberMaxOrderByAggregateInput = {
     id?: SortOrder
     guildId?: SortOrder
     xp?: SortOrder
+    tryviaPoints?: SortOrder
+    tryviaGames?: SortOrder
+    tryviaWins?: SortOrder
   }
 
   export type GuildMemberMinOrderByAggregateInput = {
     id?: SortOrder
     guildId?: SortOrder
     xp?: SortOrder
+    tryviaPoints?: SortOrder
+    tryviaGames?: SortOrder
+    tryviaWins?: SortOrder
   }
 
   export type GuildMemberSumOrderByAggregateInput = {
     xp?: SortOrder
+    tryviaPoints?: SortOrder
+    tryviaGames?: SortOrder
+    tryviaWins?: SortOrder
   }
 
   export type MailsCountOrderByAggregateInput = {
@@ -23209,6 +23398,13 @@ export namespace Prisma {
     connect?: InventoryWhereUniqueInput | InventoryWhereUniqueInput[]
   }
 
+  export type GuildMemberCreateNestedManyWithoutUserInput = {
+    create?: XOR<GuildMemberCreateWithoutUserInput, GuildMemberUncheckedCreateWithoutUserInput> | GuildMemberCreateWithoutUserInput[] | GuildMemberUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: GuildMemberCreateOrConnectWithoutUserInput | GuildMemberCreateOrConnectWithoutUserInput[]
+    createMany?: GuildMemberCreateManyUserInputEnvelope
+    connect?: GuildMemberWhereUniqueInput | GuildMemberWhereUniqueInput[]
+  }
+
   export type LogUncheckedCreateNestedManyWithoutUserInput = {
     create?: XOR<LogCreateWithoutUserInput, LogUncheckedCreateWithoutUserInput> | LogCreateWithoutUserInput[] | LogUncheckedCreateWithoutUserInput[]
     connectOrCreate?: LogCreateOrConnectWithoutUserInput | LogCreateOrConnectWithoutUserInput[]
@@ -23256,6 +23452,13 @@ export namespace Prisma {
     connectOrCreate?: InventoryCreateOrConnectWithoutUserInput | InventoryCreateOrConnectWithoutUserInput[]
     createMany?: InventoryCreateManyUserInputEnvelope
     connect?: InventoryWhereUniqueInput | InventoryWhereUniqueInput[]
+  }
+
+  export type GuildMemberUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<GuildMemberCreateWithoutUserInput, GuildMemberUncheckedCreateWithoutUserInput> | GuildMemberCreateWithoutUserInput[] | GuildMemberUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: GuildMemberCreateOrConnectWithoutUserInput | GuildMemberCreateOrConnectWithoutUserInput[]
+    createMany?: GuildMemberCreateManyUserInputEnvelope
+    connect?: GuildMemberWhereUniqueInput | GuildMemberWhereUniqueInput[]
   }
 
   export type StringFieldUpdateOperationsInput = {
@@ -23403,6 +23606,20 @@ export namespace Prisma {
     deleteMany?: InventoryScalarWhereInput | InventoryScalarWhereInput[]
   }
 
+  export type GuildMemberUpdateManyWithoutUserNestedInput = {
+    create?: XOR<GuildMemberCreateWithoutUserInput, GuildMemberUncheckedCreateWithoutUserInput> | GuildMemberCreateWithoutUserInput[] | GuildMemberUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: GuildMemberCreateOrConnectWithoutUserInput | GuildMemberCreateOrConnectWithoutUserInput[]
+    upsert?: GuildMemberUpsertWithWhereUniqueWithoutUserInput | GuildMemberUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: GuildMemberCreateManyUserInputEnvelope
+    set?: GuildMemberWhereUniqueInput | GuildMemberWhereUniqueInput[]
+    disconnect?: GuildMemberWhereUniqueInput | GuildMemberWhereUniqueInput[]
+    delete?: GuildMemberWhereUniqueInput | GuildMemberWhereUniqueInput[]
+    connect?: GuildMemberWhereUniqueInput | GuildMemberWhereUniqueInput[]
+    update?: GuildMemberUpdateWithWhereUniqueWithoutUserInput | GuildMemberUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: GuildMemberUpdateManyWithWhereWithoutUserInput | GuildMemberUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: GuildMemberScalarWhereInput | GuildMemberScalarWhereInput[]
+  }
+
   export type NullableIntFieldUpdateOperationsInput = {
     set?: number | null
     increment?: number
@@ -23507,6 +23724,20 @@ export namespace Prisma {
     update?: InventoryUpdateWithWhereUniqueWithoutUserInput | InventoryUpdateWithWhereUniqueWithoutUserInput[]
     updateMany?: InventoryUpdateManyWithWhereWithoutUserInput | InventoryUpdateManyWithWhereWithoutUserInput[]
     deleteMany?: InventoryScalarWhereInput | InventoryScalarWhereInput[]
+  }
+
+  export type GuildMemberUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<GuildMemberCreateWithoutUserInput, GuildMemberUncheckedCreateWithoutUserInput> | GuildMemberCreateWithoutUserInput[] | GuildMemberUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: GuildMemberCreateOrConnectWithoutUserInput | GuildMemberCreateOrConnectWithoutUserInput[]
+    upsert?: GuildMemberUpsertWithWhereUniqueWithoutUserInput | GuildMemberUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: GuildMemberCreateManyUserInputEnvelope
+    set?: GuildMemberWhereUniqueInput | GuildMemberWhereUniqueInput[]
+    disconnect?: GuildMemberWhereUniqueInput | GuildMemberWhereUniqueInput[]
+    delete?: GuildMemberWhereUniqueInput | GuildMemberWhereUniqueInput[]
+    connect?: GuildMemberWhereUniqueInput | GuildMemberWhereUniqueInput[]
+    update?: GuildMemberUpdateWithWhereUniqueWithoutUserInput | GuildMemberUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: GuildMemberUpdateManyWithWhereWithoutUserInput | GuildMemberUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: GuildMemberScalarWhereInput | GuildMemberScalarWhereInput[]
   }
 
   export type InventoryCreateNestedManyWithoutItemInput = {
@@ -24014,12 +24245,28 @@ export namespace Prisma {
     connect?: GuildSettingsWhereUniqueInput
   }
 
+  export type UserCreateNestedOneWithoutGuildsInput = {
+    create?: XOR<UserCreateWithoutGuildsInput, UserUncheckedCreateWithoutGuildsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutGuildsInput
+    connect?: UserWhereUniqueInput
+  }
+
   export type GuildSettingsUpdateOneRequiredWithoutMembersNestedInput = {
     create?: XOR<GuildSettingsCreateWithoutMembersInput, GuildSettingsUncheckedCreateWithoutMembersInput>
     connectOrCreate?: GuildSettingsCreateOrConnectWithoutMembersInput
     upsert?: GuildSettingsUpsertWithoutMembersInput
     connect?: GuildSettingsWhereUniqueInput
     update?: XOR<XOR<GuildSettingsUpdateToOneWithWhereWithoutMembersInput, GuildSettingsUpdateWithoutMembersInput>, GuildSettingsUncheckedUpdateWithoutMembersInput>
+  }
+
+  export type UserUpdateOneWithoutGuildsNestedInput = {
+    create?: XOR<UserCreateWithoutGuildsInput, UserUncheckedCreateWithoutGuildsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutGuildsInput
+    upsert?: UserUpsertWithoutGuildsInput
+    disconnect?: UserWhereInput | boolean
+    delete?: UserWhereInput | boolean
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutGuildsInput, UserUpdateWithoutGuildsInput>, UserUncheckedUpdateWithoutGuildsInput>
   }
 
   export type MailsCreatetagsInput = {
@@ -24645,6 +24892,32 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type GuildMemberCreateWithoutUserInput = {
+    xp?: number
+    tryviaPoints?: number
+    tryviaGames?: number
+    tryviaWins?: number
+    guild: GuildSettingsCreateNestedOneWithoutMembersInput
+  }
+
+  export type GuildMemberUncheckedCreateWithoutUserInput = {
+    guildId: string
+    xp?: number
+    tryviaPoints?: number
+    tryviaGames?: number
+    tryviaWins?: number
+  }
+
+  export type GuildMemberCreateOrConnectWithoutUserInput = {
+    where: GuildMemberWhereUniqueInput
+    create: XOR<GuildMemberCreateWithoutUserInput, GuildMemberUncheckedCreateWithoutUserInput>
+  }
+
+  export type GuildMemberCreateManyUserInputEnvelope = {
+    data: GuildMemberCreateManyUserInput | GuildMemberCreateManyUserInput[]
+    skipDuplicates?: boolean
+  }
+
   export type CompanyUpsertWithoutWorkersInput = {
     update: XOR<CompanyUpdateWithoutWorkersInput, CompanyUncheckedUpdateWithoutWorkersInput>
     create: XOR<CompanyCreateWithoutWorkersInput, CompanyUncheckedCreateWithoutWorkersInput>
@@ -24856,6 +25129,34 @@ export namespace Prisma {
     durability?: FloatNullableFilter<"Inventory"> | number | null
   }
 
+  export type GuildMemberUpsertWithWhereUniqueWithoutUserInput = {
+    where: GuildMemberWhereUniqueInput
+    update: XOR<GuildMemberUpdateWithoutUserInput, GuildMemberUncheckedUpdateWithoutUserInput>
+    create: XOR<GuildMemberCreateWithoutUserInput, GuildMemberUncheckedCreateWithoutUserInput>
+  }
+
+  export type GuildMemberUpdateWithWhereUniqueWithoutUserInput = {
+    where: GuildMemberWhereUniqueInput
+    data: XOR<GuildMemberUpdateWithoutUserInput, GuildMemberUncheckedUpdateWithoutUserInput>
+  }
+
+  export type GuildMemberUpdateManyWithWhereWithoutUserInput = {
+    where: GuildMemberScalarWhereInput
+    data: XOR<GuildMemberUpdateManyMutationInput, GuildMemberUncheckedUpdateManyWithoutUserInput>
+  }
+
+  export type GuildMemberScalarWhereInput = {
+    AND?: GuildMemberScalarWhereInput | GuildMemberScalarWhereInput[]
+    OR?: GuildMemberScalarWhereInput[]
+    NOT?: GuildMemberScalarWhereInput | GuildMemberScalarWhereInput[]
+    id?: StringFilter<"GuildMember"> | string
+    guildId?: StringFilter<"GuildMember"> | string
+    xp?: IntFilter<"GuildMember"> | number
+    tryviaPoints?: IntFilter<"GuildMember"> | number
+    tryviaGames?: IntFilter<"GuildMember"> | number
+    tryviaWins?: IntFilter<"GuildMember"> | number
+  }
+
   export type InventoryCreateWithoutItemInput = {
     amount: number
     createdAt?: Date | string
@@ -24915,6 +25216,7 @@ export namespace Prisma {
     mails?: MailsCreateNestedManyWithoutUserInput
     sendedMails?: MailsCreateNestedManyWithoutWhoSendUserInput
     applications?: ApplicationCreateNestedManyWithoutOwnerInput
+    guilds?: GuildMemberCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutInventoryInput = {
@@ -24934,6 +25236,7 @@ export namespace Prisma {
     mails?: MailsUncheckedCreateNestedManyWithoutUserInput
     sendedMails?: MailsUncheckedCreateNestedManyWithoutWhoSendUserInput
     applications?: ApplicationUncheckedCreateNestedManyWithoutOwnerInput
+    guilds?: GuildMemberUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutInventoryInput = {
@@ -24995,6 +25298,7 @@ export namespace Prisma {
     mails?: MailsUpdateManyWithoutUserNestedInput
     sendedMails?: MailsUpdateManyWithoutWhoSendUserNestedInput
     applications?: ApplicationUpdateManyWithoutOwnerNestedInput
+    guilds?: GuildMemberUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutInventoryInput = {
@@ -25014,6 +25318,7 @@ export namespace Prisma {
     mails?: MailsUncheckedUpdateManyWithoutUserNestedInput
     sendedMails?: MailsUncheckedUpdateManyWithoutWhoSendUserNestedInput
     applications?: ApplicationUncheckedUpdateManyWithoutOwnerNestedInput
+    guilds?: GuildMemberUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type ItemsUpsertWithoutInventoryInput = {
@@ -25065,6 +25370,7 @@ export namespace Prisma {
     mails?: MailsCreateNestedManyWithoutUserInput
     sendedMails?: MailsCreateNestedManyWithoutWhoSendUserInput
     inventory?: InventoryCreateNestedManyWithoutUserInput
+    guilds?: GuildMemberCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutApplicationsInput = {
@@ -25084,6 +25390,7 @@ export namespace Prisma {
     mails?: MailsUncheckedCreateNestedManyWithoutUserInput
     sendedMails?: MailsUncheckedCreateNestedManyWithoutWhoSendUserInput
     inventory?: InventoryUncheckedCreateNestedManyWithoutUserInput
+    guilds?: GuildMemberUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutApplicationsInput = {
@@ -25140,6 +25447,7 @@ export namespace Prisma {
     mails?: MailsUpdateManyWithoutUserNestedInput
     sendedMails?: MailsUpdateManyWithoutWhoSendUserNestedInput
     inventory?: InventoryUpdateManyWithoutUserNestedInput
+    guilds?: GuildMemberUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutApplicationsInput = {
@@ -25159,6 +25467,7 @@ export namespace Prisma {
     mails?: MailsUncheckedUpdateManyWithoutUserNestedInput
     sendedMails?: MailsUncheckedUpdateManyWithoutWhoSendUserNestedInput
     inventory?: InventoryUncheckedUpdateManyWithoutUserNestedInput
+    guilds?: GuildMemberUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type RequisitionUpsertWithWhereUniqueWithoutApplicationInput = {
@@ -25248,6 +25557,7 @@ export namespace Prisma {
     sendedMails?: MailsCreateNestedManyWithoutWhoSendUserInput
     applications?: ApplicationCreateNestedManyWithoutOwnerInput
     inventory?: InventoryCreateNestedManyWithoutUserInput
+    guilds?: GuildMemberCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutLogsInput = {
@@ -25267,6 +25577,7 @@ export namespace Prisma {
     sendedMails?: MailsUncheckedCreateNestedManyWithoutWhoSendUserInput
     applications?: ApplicationUncheckedCreateNestedManyWithoutOwnerInput
     inventory?: InventoryUncheckedCreateNestedManyWithoutUserInput
+    guilds?: GuildMemberUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutLogsInput = {
@@ -25302,6 +25613,7 @@ export namespace Prisma {
     sendedMails?: MailsUpdateManyWithoutWhoSendUserNestedInput
     applications?: ApplicationUpdateManyWithoutOwnerNestedInput
     inventory?: InventoryUpdateManyWithoutUserNestedInput
+    guilds?: GuildMemberUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutLogsInput = {
@@ -25321,6 +25633,7 @@ export namespace Prisma {
     sendedMails?: MailsUncheckedUpdateManyWithoutWhoSendUserNestedInput
     applications?: ApplicationUncheckedUpdateManyWithoutOwnerNestedInput
     inventory?: InventoryUncheckedUpdateManyWithoutUserNestedInput
+    guilds?: GuildMemberUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutCooldownsInput = {
@@ -25340,6 +25653,7 @@ export namespace Prisma {
     sendedMails?: MailsCreateNestedManyWithoutWhoSendUserInput
     applications?: ApplicationCreateNestedManyWithoutOwnerInput
     inventory?: InventoryCreateNestedManyWithoutUserInput
+    guilds?: GuildMemberCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutCooldownsInput = {
@@ -25359,6 +25673,7 @@ export namespace Prisma {
     sendedMails?: MailsUncheckedCreateNestedManyWithoutWhoSendUserInput
     applications?: ApplicationUncheckedCreateNestedManyWithoutOwnerInput
     inventory?: InventoryUncheckedCreateNestedManyWithoutUserInput
+    guilds?: GuildMemberUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutCooldownsInput = {
@@ -25394,6 +25709,7 @@ export namespace Prisma {
     sendedMails?: MailsUpdateManyWithoutWhoSendUserNestedInput
     applications?: ApplicationUpdateManyWithoutOwnerNestedInput
     inventory?: InventoryUpdateManyWithoutUserNestedInput
+    guilds?: GuildMemberUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutCooldownsInput = {
@@ -25413,6 +25729,7 @@ export namespace Prisma {
     sendedMails?: MailsUncheckedUpdateManyWithoutWhoSendUserNestedInput
     applications?: ApplicationUncheckedUpdateManyWithoutOwnerNestedInput
     inventory?: InventoryUncheckedUpdateManyWithoutUserNestedInput
+    guilds?: GuildMemberUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutCompanyInput = {
@@ -25432,6 +25749,7 @@ export namespace Prisma {
     sendedMails?: MailsCreateNestedManyWithoutWhoSendUserInput
     applications?: ApplicationCreateNestedManyWithoutOwnerInput
     inventory?: InventoryCreateNestedManyWithoutUserInput
+    guilds?: GuildMemberCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutCompanyInput = {
@@ -25451,6 +25769,7 @@ export namespace Prisma {
     sendedMails?: MailsUncheckedCreateNestedManyWithoutWhoSendUserInput
     applications?: ApplicationUncheckedCreateNestedManyWithoutOwnerInput
     inventory?: InventoryUncheckedCreateNestedManyWithoutUserInput
+    guilds?: GuildMemberUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutCompanyInput = {
@@ -25650,6 +25969,7 @@ export namespace Prisma {
     sendedMails?: MailsCreateNestedManyWithoutWhoSendUserInput
     applications?: ApplicationCreateNestedManyWithoutOwnerInput
     inventory?: InventoryCreateNestedManyWithoutUserInput
+    guilds?: GuildMemberCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutStocksInput = {
@@ -25669,6 +25989,7 @@ export namespace Prisma {
     sendedMails?: MailsUncheckedCreateNestedManyWithoutWhoSendUserInput
     applications?: ApplicationUncheckedCreateNestedManyWithoutOwnerInput
     inventory?: InventoryUncheckedCreateNestedManyWithoutUserInput
+    guilds?: GuildMemberUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutStocksInput = {
@@ -25728,6 +26049,7 @@ export namespace Prisma {
     sendedMails?: MailsUpdateManyWithoutWhoSendUserNestedInput
     applications?: ApplicationUpdateManyWithoutOwnerNestedInput
     inventory?: InventoryUpdateManyWithoutUserNestedInput
+    guilds?: GuildMemberUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutStocksInput = {
@@ -25747,6 +26069,7 @@ export namespace Prisma {
     sendedMails?: MailsUncheckedUpdateManyWithoutWhoSendUserNestedInput
     applications?: ApplicationUncheckedUpdateManyWithoutOwnerNestedInput
     inventory?: InventoryUncheckedUpdateManyWithoutUserNestedInput
+    guilds?: GuildMemberUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type StockUpsertWithoutHoldersInput = {
@@ -25780,13 +26103,19 @@ export namespace Prisma {
   }
 
   export type GuildMemberCreateWithoutGuildInput = {
-    id: string
     xp?: number
+    tryviaPoints?: number
+    tryviaGames?: number
+    tryviaWins?: number
+    user?: UserCreateNestedOneWithoutGuildsInput
   }
 
   export type GuildMemberUncheckedCreateWithoutGuildInput = {
     id: string
     xp?: number
+    tryviaPoints?: number
+    tryviaGames?: number
+    tryviaWins?: number
   }
 
   export type GuildMemberCreateOrConnectWithoutGuildInput = {
@@ -25813,15 +26142,6 @@ export namespace Prisma {
   export type GuildMemberUpdateManyWithWhereWithoutGuildInput = {
     where: GuildMemberScalarWhereInput
     data: XOR<GuildMemberUpdateManyMutationInput, GuildMemberUncheckedUpdateManyWithoutGuildInput>
-  }
-
-  export type GuildMemberScalarWhereInput = {
-    AND?: GuildMemberScalarWhereInput | GuildMemberScalarWhereInput[]
-    OR?: GuildMemberScalarWhereInput[]
-    NOT?: GuildMemberScalarWhereInput | GuildMemberScalarWhereInput[]
-    id?: StringFilter<"GuildMember"> | string
-    guildId?: StringFilter<"GuildMember"> | string
-    xp?: IntFilter<"GuildMember"> | number
   }
 
   export type GuildSettingsCreateWithoutMembersInput = {
@@ -25863,6 +26183,51 @@ export namespace Prisma {
   export type GuildSettingsCreateOrConnectWithoutMembersInput = {
     where: GuildSettingsWhereUniqueInput
     create: XOR<GuildSettingsCreateWithoutMembersInput, GuildSettingsUncheckedCreateWithoutMembersInput>
+  }
+
+  export type UserCreateWithoutGuildsInput = {
+    id: string
+    money?: Decimal | DecimalJsLike | number | string
+    bank?: Decimal | DecimalJsLike | number | string
+    xp?: number
+    mailsTagsIgnored?: UserCreatemailsTagsIgnoredInput | string[]
+    dmNotification?: boolean
+    token?: NullableJsonNullValueInput | InputJsonValue
+    afkReasson?: string | null
+    afkTime?: Date | string | null
+    company?: CompanyCreateNestedOneWithoutWorkersInput
+    logs?: LogCreateNestedManyWithoutUserInput
+    cooldowns?: CooldownCreateNestedManyWithoutUserInput
+    stocks?: StockHoldingCreateNestedManyWithoutUserInput
+    mails?: MailsCreateNestedManyWithoutUserInput
+    sendedMails?: MailsCreateNestedManyWithoutWhoSendUserInput
+    applications?: ApplicationCreateNestedManyWithoutOwnerInput
+    inventory?: InventoryCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutGuildsInput = {
+    id: string
+    money?: Decimal | DecimalJsLike | number | string
+    bank?: Decimal | DecimalJsLike | number | string
+    xp?: number
+    companyId?: number | null
+    mailsTagsIgnored?: UserCreatemailsTagsIgnoredInput | string[]
+    dmNotification?: boolean
+    token?: NullableJsonNullValueInput | InputJsonValue
+    afkReasson?: string | null
+    afkTime?: Date | string | null
+    logs?: LogUncheckedCreateNestedManyWithoutUserInput
+    cooldowns?: CooldownUncheckedCreateNestedManyWithoutUserInput
+    stocks?: StockHoldingUncheckedCreateNestedManyWithoutUserInput
+    mails?: MailsUncheckedCreateNestedManyWithoutUserInput
+    sendedMails?: MailsUncheckedCreateNestedManyWithoutWhoSendUserInput
+    applications?: ApplicationUncheckedCreateNestedManyWithoutOwnerInput
+    inventory?: InventoryUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutGuildsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutGuildsInput, UserUncheckedCreateWithoutGuildsInput>
   }
 
   export type GuildSettingsUpsertWithoutMembersInput = {
@@ -25912,6 +26277,57 @@ export namespace Prisma {
     levelGrant?: JsonNullValueInput | InputJsonValue
   }
 
+  export type UserUpsertWithoutGuildsInput = {
+    update: XOR<UserUpdateWithoutGuildsInput, UserUncheckedUpdateWithoutGuildsInput>
+    create: XOR<UserCreateWithoutGuildsInput, UserUncheckedCreateWithoutGuildsInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutGuildsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutGuildsInput, UserUncheckedUpdateWithoutGuildsInput>
+  }
+
+  export type UserUpdateWithoutGuildsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    money?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    bank?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    xp?: IntFieldUpdateOperationsInput | number
+    mailsTagsIgnored?: UserUpdatemailsTagsIgnoredInput | string[]
+    dmNotification?: BoolFieldUpdateOperationsInput | boolean
+    token?: NullableJsonNullValueInput | InputJsonValue
+    afkReasson?: NullableStringFieldUpdateOperationsInput | string | null
+    afkTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    company?: CompanyUpdateOneWithoutWorkersNestedInput
+    logs?: LogUpdateManyWithoutUserNestedInput
+    cooldowns?: CooldownUpdateManyWithoutUserNestedInput
+    stocks?: StockHoldingUpdateManyWithoutUserNestedInput
+    mails?: MailsUpdateManyWithoutUserNestedInput
+    sendedMails?: MailsUpdateManyWithoutWhoSendUserNestedInput
+    applications?: ApplicationUpdateManyWithoutOwnerNestedInput
+    inventory?: InventoryUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutGuildsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    money?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    bank?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    xp?: IntFieldUpdateOperationsInput | number
+    companyId?: NullableIntFieldUpdateOperationsInput | number | null
+    mailsTagsIgnored?: UserUpdatemailsTagsIgnoredInput | string[]
+    dmNotification?: BoolFieldUpdateOperationsInput | boolean
+    token?: NullableJsonNullValueInput | InputJsonValue
+    afkReasson?: NullableStringFieldUpdateOperationsInput | string | null
+    afkTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    logs?: LogUncheckedUpdateManyWithoutUserNestedInput
+    cooldowns?: CooldownUncheckedUpdateManyWithoutUserNestedInput
+    stocks?: StockHoldingUncheckedUpdateManyWithoutUserNestedInput
+    mails?: MailsUncheckedUpdateManyWithoutUserNestedInput
+    sendedMails?: MailsUncheckedUpdateManyWithoutWhoSendUserNestedInput
+    applications?: ApplicationUncheckedUpdateManyWithoutOwnerNestedInput
+    inventory?: InventoryUncheckedUpdateManyWithoutUserNestedInput
+  }
+
   export type UserCreateWithoutMailsInput = {
     id: string
     money?: Decimal | DecimalJsLike | number | string
@@ -25929,6 +26345,7 @@ export namespace Prisma {
     sendedMails?: MailsCreateNestedManyWithoutWhoSendUserInput
     applications?: ApplicationCreateNestedManyWithoutOwnerInput
     inventory?: InventoryCreateNestedManyWithoutUserInput
+    guilds?: GuildMemberCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutMailsInput = {
@@ -25948,6 +26365,7 @@ export namespace Prisma {
     sendedMails?: MailsUncheckedCreateNestedManyWithoutWhoSendUserInput
     applications?: ApplicationUncheckedCreateNestedManyWithoutOwnerInput
     inventory?: InventoryUncheckedCreateNestedManyWithoutUserInput
+    guilds?: GuildMemberUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutMailsInput = {
@@ -25972,6 +26390,7 @@ export namespace Prisma {
     mails?: MailsCreateNestedManyWithoutUserInput
     applications?: ApplicationCreateNestedManyWithoutOwnerInput
     inventory?: InventoryCreateNestedManyWithoutUserInput
+    guilds?: GuildMemberCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutSendedMailsInput = {
@@ -25991,6 +26410,7 @@ export namespace Prisma {
     mails?: MailsUncheckedCreateNestedManyWithoutUserInput
     applications?: ApplicationUncheckedCreateNestedManyWithoutOwnerInput
     inventory?: InventoryUncheckedCreateNestedManyWithoutUserInput
+    guilds?: GuildMemberUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutSendedMailsInput = {
@@ -26026,6 +26446,7 @@ export namespace Prisma {
     sendedMails?: MailsUpdateManyWithoutWhoSendUserNestedInput
     applications?: ApplicationUpdateManyWithoutOwnerNestedInput
     inventory?: InventoryUpdateManyWithoutUserNestedInput
+    guilds?: GuildMemberUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutMailsInput = {
@@ -26045,6 +26466,7 @@ export namespace Prisma {
     sendedMails?: MailsUncheckedUpdateManyWithoutWhoSendUserNestedInput
     applications?: ApplicationUncheckedUpdateManyWithoutOwnerNestedInput
     inventory?: InventoryUncheckedUpdateManyWithoutUserNestedInput
+    guilds?: GuildMemberUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserUpsertWithoutSendedMailsInput = {
@@ -26075,6 +26497,7 @@ export namespace Prisma {
     mails?: MailsUpdateManyWithoutUserNestedInput
     applications?: ApplicationUpdateManyWithoutOwnerNestedInput
     inventory?: InventoryUpdateManyWithoutUserNestedInput
+    guilds?: GuildMemberUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSendedMailsInput = {
@@ -26094,6 +26517,7 @@ export namespace Prisma {
     mails?: MailsUncheckedUpdateManyWithoutUserNestedInput
     applications?: ApplicationUncheckedUpdateManyWithoutOwnerNestedInput
     inventory?: InventoryUncheckedUpdateManyWithoutUserNestedInput
+    guilds?: GuildMemberUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type LogCreateManyUserInput = {
@@ -26148,6 +26572,14 @@ export namespace Prisma {
     createdAt?: Date | string
     expiresAt?: Date | string | null
     durability?: number | null
+  }
+
+  export type GuildMemberCreateManyUserInput = {
+    guildId: string
+    xp?: number
+    tryviaPoints?: number
+    tryviaGames?: number
+    tryviaWins?: number
   }
 
   export type LogUpdateWithoutUserInput = {
@@ -26309,6 +26741,30 @@ export namespace Prisma {
     durability?: NullableFloatFieldUpdateOperationsInput | number | null
   }
 
+  export type GuildMemberUpdateWithoutUserInput = {
+    xp?: IntFieldUpdateOperationsInput | number
+    tryviaPoints?: IntFieldUpdateOperationsInput | number
+    tryviaGames?: IntFieldUpdateOperationsInput | number
+    tryviaWins?: IntFieldUpdateOperationsInput | number
+    guild?: GuildSettingsUpdateOneRequiredWithoutMembersNestedInput
+  }
+
+  export type GuildMemberUncheckedUpdateWithoutUserInput = {
+    guildId?: StringFieldUpdateOperationsInput | string
+    xp?: IntFieldUpdateOperationsInput | number
+    tryviaPoints?: IntFieldUpdateOperationsInput | number
+    tryviaGames?: IntFieldUpdateOperationsInput | number
+    tryviaWins?: IntFieldUpdateOperationsInput | number
+  }
+
+  export type GuildMemberUncheckedUpdateManyWithoutUserInput = {
+    guildId?: StringFieldUpdateOperationsInput | string
+    xp?: IntFieldUpdateOperationsInput | number
+    tryviaPoints?: IntFieldUpdateOperationsInput | number
+    tryviaGames?: IntFieldUpdateOperationsInput | number
+    tryviaWins?: IntFieldUpdateOperationsInput | number
+  }
+
   export type InventoryCreateManyItemInput = {
     userId: string
     amount: number
@@ -26393,6 +26849,7 @@ export namespace Prisma {
     sendedMails?: MailsUpdateManyWithoutWhoSendUserNestedInput
     applications?: ApplicationUpdateManyWithoutOwnerNestedInput
     inventory?: InventoryUpdateManyWithoutUserNestedInput
+    guilds?: GuildMemberUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutCompanyInput = {
@@ -26412,6 +26869,7 @@ export namespace Prisma {
     sendedMails?: MailsUncheckedUpdateManyWithoutWhoSendUserNestedInput
     applications?: ApplicationUncheckedUpdateManyWithoutOwnerNestedInput
     inventory?: InventoryUncheckedUpdateManyWithoutUserNestedInput
+    guilds?: GuildMemberUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateManyWithoutCompanyInput = {
@@ -26475,21 +26933,33 @@ export namespace Prisma {
   export type GuildMemberCreateManyGuildInput = {
     id: string
     xp?: number
+    tryviaPoints?: number
+    tryviaGames?: number
+    tryviaWins?: number
   }
 
   export type GuildMemberUpdateWithoutGuildInput = {
-    id?: StringFieldUpdateOperationsInput | string
     xp?: IntFieldUpdateOperationsInput | number
+    tryviaPoints?: IntFieldUpdateOperationsInput | number
+    tryviaGames?: IntFieldUpdateOperationsInput | number
+    tryviaWins?: IntFieldUpdateOperationsInput | number
+    user?: UserUpdateOneWithoutGuildsNestedInput
   }
 
   export type GuildMemberUncheckedUpdateWithoutGuildInput = {
     id?: StringFieldUpdateOperationsInput | string
     xp?: IntFieldUpdateOperationsInput | number
+    tryviaPoints?: IntFieldUpdateOperationsInput | number
+    tryviaGames?: IntFieldUpdateOperationsInput | number
+    tryviaWins?: IntFieldUpdateOperationsInput | number
   }
 
   export type GuildMemberUncheckedUpdateManyWithoutGuildInput = {
     id?: StringFieldUpdateOperationsInput | string
     xp?: IntFieldUpdateOperationsInput | number
+    tryviaPoints?: IntFieldUpdateOperationsInput | number
+    tryviaGames?: IntFieldUpdateOperationsInput | number
+    tryviaWins?: IntFieldUpdateOperationsInput | number
   }
 
 

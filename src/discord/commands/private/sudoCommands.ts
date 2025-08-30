@@ -267,6 +267,7 @@ createCommand({
             }
             case "test": {
                 await interaction.deferReply()
+                await prisma.tryviaQuestions.deleteMany()
                 interaction.editReply("definido com sucesso")
                 return;
             }
