@@ -7,6 +7,7 @@ import { onMention } from "./onMention.js";
 import { MediaGalleryBuilder } from "discord.js";
 import { xpSystem } from "./chat/xpSystem.js";
 import { onAfkMentioned } from "./onAfkMentioned.js";
+import { onResponseTryviaGame } from "./tryvia/response.js";
 
 createEvent({
     name: "onMessage",
@@ -61,5 +62,6 @@ createEvent({
         chatBot(message)
         xpSystem(message)
         onAfkMentioned(message)
+        onResponseTryviaGame(message)
     }
 });

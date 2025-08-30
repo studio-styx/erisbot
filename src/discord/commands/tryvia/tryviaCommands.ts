@@ -140,6 +140,78 @@ createCommand({
                             }
                         }
                     ]
+                },
+                {
+                    name: "type",
+                    description: "question type",
+                    type: ApplicationCommandOptionType.String,
+                    nameLocalizations: {
+                        "pt-BR": "tipo",
+                        "en-US": "type",
+                        "es-ES": "tipo"
+                    },
+                    descriptionLocalizations: {
+                        "pt-BR": "tipo de pergunta",
+                        "en-US": "question type",
+                        "es-ES": "tipo de pregunta"
+                    },
+                    required: false,
+                    choices: [
+                        {
+                            name: "boolean",
+                            value: "boolean",
+                            nameLocalizations: {
+                                "pt-BR": "verdadeiro_falso",
+                                "en-US": "boolean",
+                                "es-ES": "verdadero_falso"
+                            }
+                        },
+                        {
+                            name: "multiple",
+                            value: "multiple",
+                            nameLocalizations: {
+                                "pt-BR": "multipla_escolha",
+                                "en-US": "multiple",
+                                "es-ES": "multipla_escolha"
+                            }
+                        },
+                        {
+                            name: "writeInChat",
+                            value: "writeInChat",
+                            nameLocalizations: {
+                                "pt-BR": "escrever_no_chat",
+                                "en-US": "writeInChat",
+                                "es-ES": "escribir_en_chat"
+                            }
+                        },
+                        {
+                            name: "boolean_multiple",
+                            value: "boolean_multiple",
+                            nameLocalizations: {
+                                "pt-BR": "verdadeiro_falso_multipla",
+                                "en-US": "boolean_multiple",
+                                "es-ES": "verdadero_falso_multipla"
+                            }
+                        },
+                        {
+                            name: "boolean_writeInChat",
+                            value: "boolean_writeInChat",
+                            nameLocalizations: {
+                                "pt-BR": "verdadeiro_falso_escrever_no_chat",
+                                "en-US": "boolean_writeInChat",
+                                "es-ES": "verdadero_falso_escribir_en_chat"
+                            }
+                        },
+                        {
+                            name: "multiple_writeInChat",
+                            value: "multiple_writeInChat",
+                            nameLocalizations: {
+                                "pt-BR": "multipla_escrever_no_chat",
+                                "en-US": "multiple_writeInChat",
+                                "es-ES": "multipla_escribir_en_chat"
+                            }
+                        }
+                    ]
                 }
             ]
         },

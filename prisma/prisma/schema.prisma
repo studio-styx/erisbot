@@ -64,6 +64,8 @@ model TryviaQuestions {
   id                      Int              @id @default(autoincrement())
   question                String           @unique
   difficulty              TryviaDifficulty
+  type                    TryviaTypes      @default(WRITEINCHAT)
+  correct                 Boolean?
   tags                    String[]
   correctAnswer           String
   correctAnswersVariation String[]         @default([])
@@ -79,6 +81,12 @@ enum TryviaStatus {
   APPROVED
   PENDING
   REJECTED
+}
+
+enum TryviaTypes {
+  BOOLEAN
+  MULTIPLE
+  WRITEINCHAT
 }
 
 enum TryviaOrigin {

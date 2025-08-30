@@ -1,7 +1,7 @@
 import { settings } from "#settings";
 import { TryviaGame } from "#types/tryviaGames.js";
-import { brBuilder, createContainer, createSeparator } from "@magicyan/discord";
-import { type InteractionReplyOptions } from "discord.js";
+import { brBuilder, createContainer, createRow, createSeparator } from "@magicyan/discord";
+import { ButtonBuilder, ButtonStyle, time, type InteractionReplyOptions } from "discord.js";
 
 export function questionMenu<R>(game: TryviaGame): R {
     const item = game.questions[game.currentQuestion];
@@ -26,6 +26,30 @@ export function questionMenu<R>(game: TryviaGame): R {
         const letter = String.fromCharCode(65 + index);
         return `${letter}. ${alt}`;
     }).join('\n');
+
+    const buttons: ButtonBuilder[] = [];
+
+    item.type === "MULTIPLE" && shuffledAlternatives.forEach((alt, index) => {
+        const letter = String.fromCharCode(65 + index);
+        buttons.push(new ButtonBuilder({
+            customId: `tryvia/game/multiple/${alt === item.correctAnswer}`,
+            label: letter,
+            style: ButtonStyle.Primary,
+        }))
+    })
+
+    item.type === "BOOLEAN" && buttons.push(
+        new ButtonBuilder({
+            customId: `tryvia/game/boolean/${item.correct! === true ? "correct" : "incorrect"}`,
+            label: "Verdadeiro",
+            style: ButtonStyle.Success,
+        }),
+        new ButtonBuilder({
+            customId: `tryvia/game/boolean/${item.correct! === false ? "correct" : "incorrect"}`,
+            label: "Verdadeiro",
+            style: ButtonStyle.Danger,
+        })
+    )
     
     const container = createContainer(settings.colors.azoxo,
         brBuilder(
@@ -36,14 +60,17 @@ export function questionMenu<R>(game: TryviaGame): R {
             "# Pergunta:",
             `## ${item.question}`,
             "",
-            "# Alternativas:",
-            alternativesText,
+            item.type === "MULTIPLE" && "# Alternativas:",
+            item.type === "MULTIPLE" && alternativesText,
+            item.type === "BOOLEAN" && "# Resonda com verdadeiro ou falso:",
+            item.type !== "WRITEINCHAT" && "Escreva no chat a resposta correta:",
             "",
             `-# **id:** ${item.id} | **dificuldade**: ${item.difficulty === "EASY" ? "Fácil" : item.difficulty === "MEDIUM" ? "Médio" : "Difícil"} | **tags:** ${item.tags.join(", ")}`
         ),
+        buttons.length > 0 && createRow(buttons),
         createSeparator(),
         brBuilder(
-            "Responda a pergunta escrevendo no chat"
+            `Todos tem 20 segundos para responder! expira ${time(new Date(Date.now() + 1000 * 20), "R")}`
         )
     );
 

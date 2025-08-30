@@ -149,9 +149,9 @@ export async function processApiQuestions(): Promise<PipelineResult> {
 
     try {
         const [tryviaApiResponse, tryviaOpenTdbResponse, theTriviaApiResponse] = await Promise.all([
-            tryviaApiRequest(20),
-            tryviaApiRequest(20),
-            theTriviaApiRequest(20)
+            tryviaApiRequest(12),
+            tryviaApiRequest(12),
+            theTriviaApiRequest(12)
         ]);
 
         interface GeminiFormattedItem {
@@ -164,6 +164,7 @@ export async function processApiQuestions(): Promise<PipelineResult> {
             explanation: string;
             confianca: number;
             justificativa: string;
+            type: "BOOLEAN" | "MULTIPLE" | "WRITEINCHAT";
         }
 
         const geminiRequisition = async (
@@ -185,6 +186,9 @@ export async function processApiQuestions(): Promise<PipelineResult> {
                 "6. Nunca use explicações fora do JSON.",
                 "7. Nunca use Markdown ou ```.",
                 "8. A saída DEVE ser JSON estritamente válido, apenas um array de objetos.",
+                "9. Se a pergunta for de escrever no chat, faça com que a resposta seja pequena e direta, com várias variações (não faça variações de letra maiuscula ou minuscula, nem de acentos, pois é tratada posteriormente)",
+                "10. Faça 2 variações da pergunta, colocando-as no array de objeto, ou seja, se vier o type \"boolean\" então vc deve fazer variação em multiple, e writeInChat, e assim por diante",
+                "11. Mesmo que a pergunta seja boolean, ou writeInChat vc DEVE retornar: incorrectAnswers, correctAnswersVariation e correctAnswer, vc pode retornar os array de string como objetos vazios, e o correctAnswer sempre deve ser a resposta correta",
                 "",
                 "Formato esperado de resposta:",
                 `
@@ -192,11 +196,13 @@ export async function processApiQuestions(): Promise<PipelineResult> {
                     {
                         "question": "texto traduzido da pergunta",
                         "correctAnswer": "resposta correta traduzida",
+                        "type": "BOOLEAN" | "MULTIPLE" | "WRITEINCHAT",
+                        "correct": "boolean |  null se não for pergunta de verdadeiro ou falso",
                         "correctAnswersVariations": ["variação 1", "variação 2"],
                         "incorrectAnswers": ["incorreta 1", "incorreta 2"],
-                        "tags": ["categoria1", "categoria2"],
-                        difficulty: "EASY" | "MEDIUM" | "HARD",
-                        explanation: "explicação do porquê a resposta está correta em poetuguês"
+                        "tags": ["categoria1 em português", "categoria2 em português"],
+                        "difficulty": "EASY" | "MEDIUM" | "HARD",
+                        "explanation": "explicação do porquê a resposta está correta em português"
                         "confianca": 0–10,
                         "justificativa": "frase curta explicando a nota"
                     }

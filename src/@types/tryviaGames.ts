@@ -7,6 +7,8 @@ export interface TryviaGame {
     owner: string;
     channel: string;
     participants: TryviaGameParticipants[]; // owner includes
+    hasResponse: boolean;
+    consecutiveNoResponse: number;
 }
 
 export interface TryviaGameParticipants {

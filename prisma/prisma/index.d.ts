@@ -102,6 +102,15 @@ export namespace $Enums {
 export type TryviaStatus = (typeof TryviaStatus)[keyof typeof TryviaStatus]
 
 
+export const TryviaTypes: {
+  BOOLEAN: 'BOOLEAN',
+  MULTIPLE: 'MULTIPLE',
+  WRITEINCHAT: 'WRITEINCHAT'
+};
+
+export type TryviaTypes = (typeof TryviaTypes)[keyof typeof TryviaTypes]
+
+
 export const TryviaOrigin: {
   USER: 'USER',
   API: 'API',
@@ -125,6 +134,10 @@ export type TryviaDifficulty = (typeof TryviaDifficulty)[keyof typeof TryviaDiff
 export type TryviaStatus = $Enums.TryviaStatus
 
 export const TryviaStatus: typeof $Enums.TryviaStatus
+
+export type TryviaTypes = $Enums.TryviaTypes
+
+export const TryviaTypes: typeof $Enums.TryviaTypes
 
 export type TryviaOrigin = $Enums.TryviaOrigin
 
@@ -6097,6 +6110,8 @@ export namespace Prisma {
     id: number | null
     question: string | null
     difficulty: $Enums.TryviaDifficulty | null
+    type: $Enums.TryviaTypes | null
+    correct: boolean | null
     correctAnswer: string | null
     explanation: string | null
     createdAt: Date | null
@@ -6109,6 +6124,8 @@ export namespace Prisma {
     id: number | null
     question: string | null
     difficulty: $Enums.TryviaDifficulty | null
+    type: $Enums.TryviaTypes | null
+    correct: boolean | null
     correctAnswer: string | null
     explanation: string | null
     createdAt: Date | null
@@ -6121,6 +6138,8 @@ export namespace Prisma {
     id: number
     question: number
     difficulty: number
+    type: number
+    correct: number
     tags: number
     correctAnswer: number
     correctAnswersVariation: number
@@ -6146,6 +6165,8 @@ export namespace Prisma {
     id?: true
     question?: true
     difficulty?: true
+    type?: true
+    correct?: true
     correctAnswer?: true
     explanation?: true
     createdAt?: true
@@ -6158,6 +6179,8 @@ export namespace Prisma {
     id?: true
     question?: true
     difficulty?: true
+    type?: true
+    correct?: true
     correctAnswer?: true
     explanation?: true
     createdAt?: true
@@ -6170,6 +6193,8 @@ export namespace Prisma {
     id?: true
     question?: true
     difficulty?: true
+    type?: true
+    correct?: true
     tags?: true
     correctAnswer?: true
     correctAnswersVariation?: true
@@ -6272,6 +6297,8 @@ export namespace Prisma {
     id: number
     question: string
     difficulty: $Enums.TryviaDifficulty
+    type: $Enums.TryviaTypes
+    correct: boolean | null
     tags: string[]
     correctAnswer: string
     correctAnswersVariation: string[]
@@ -6306,6 +6333,8 @@ export namespace Prisma {
     id?: boolean
     question?: boolean
     difficulty?: boolean
+    type?: boolean
+    correct?: boolean
     tags?: boolean
     correctAnswer?: boolean
     correctAnswersVariation?: boolean
@@ -6321,6 +6350,8 @@ export namespace Prisma {
     id?: boolean
     question?: boolean
     difficulty?: boolean
+    type?: boolean
+    correct?: boolean
     tags?: boolean
     correctAnswer?: boolean
     correctAnswersVariation?: boolean
@@ -6336,6 +6367,8 @@ export namespace Prisma {
     id?: boolean
     question?: boolean
     difficulty?: boolean
+    type?: boolean
+    correct?: boolean
     tags?: boolean
     correctAnswer?: boolean
     correctAnswersVariation?: boolean
@@ -6351,6 +6384,8 @@ export namespace Prisma {
     id?: boolean
     question?: boolean
     difficulty?: boolean
+    type?: boolean
+    correct?: boolean
     tags?: boolean
     correctAnswer?: boolean
     correctAnswersVariation?: boolean
@@ -6362,7 +6397,7 @@ export namespace Prisma {
     origin?: boolean
   }
 
-  export type TryviaQuestionsOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "question" | "difficulty" | "tags" | "correctAnswer" | "correctAnswersVariation" | "explanation" | "incorrectAnswers" | "createdAt" | "updatedAt" | "status" | "origin", ExtArgs["result"]["tryviaQuestions"]>
+  export type TryviaQuestionsOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "question" | "difficulty" | "type" | "correct" | "tags" | "correctAnswer" | "correctAnswersVariation" | "explanation" | "incorrectAnswers" | "createdAt" | "updatedAt" | "status" | "origin", ExtArgs["result"]["tryviaQuestions"]>
 
   export type $TryviaQuestionsPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "TryviaQuestions"
@@ -6371,6 +6406,8 @@ export namespace Prisma {
       id: number
       question: string
       difficulty: $Enums.TryviaDifficulty
+      type: $Enums.TryviaTypes
+      correct: boolean | null
       tags: string[]
       correctAnswer: string
       correctAnswersVariation: string[]
@@ -6806,6 +6843,8 @@ export namespace Prisma {
     readonly id: FieldRef<"TryviaQuestions", 'Int'>
     readonly question: FieldRef<"TryviaQuestions", 'String'>
     readonly difficulty: FieldRef<"TryviaQuestions", 'TryviaDifficulty'>
+    readonly type: FieldRef<"TryviaQuestions", 'TryviaTypes'>
+    readonly correct: FieldRef<"TryviaQuestions", 'Boolean'>
     readonly tags: FieldRef<"TryviaQuestions", 'String[]'>
     readonly correctAnswer: FieldRef<"TryviaQuestions", 'String'>
     readonly correctAnswersVariation: FieldRef<"TryviaQuestions", 'String[]'>
@@ -19494,6 +19533,8 @@ export namespace Prisma {
     id: 'id',
     question: 'question',
     difficulty: 'difficulty',
+    type: 'type',
+    correct: 'correct',
     tags: 'tags',
     correctAnswer: 'correctAnswer',
     correctAnswersVariation: 'correctAnswersVariation',
@@ -19799,6 +19840,20 @@ export namespace Prisma {
 
 
   /**
+   * Reference to a field of type 'TryviaTypes'
+   */
+  export type EnumTryviaTypesFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'TryviaTypes'>
+    
+
+
+  /**
+   * Reference to a field of type 'TryviaTypes[]'
+   */
+  export type ListEnumTryviaTypesFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'TryviaTypes[]'>
+    
+
+
+  /**
    * Reference to a field of type 'TryviaStatus'
    */
   export type EnumTryviaStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'TryviaStatus'>
@@ -20077,6 +20132,8 @@ export namespace Prisma {
     id?: IntFilter<"TryviaQuestions"> | number
     question?: StringFilter<"TryviaQuestions"> | string
     difficulty?: EnumTryviaDifficultyFilter<"TryviaQuestions"> | $Enums.TryviaDifficulty
+    type?: EnumTryviaTypesFilter<"TryviaQuestions"> | $Enums.TryviaTypes
+    correct?: BoolNullableFilter<"TryviaQuestions"> | boolean | null
     tags?: StringNullableListFilter<"TryviaQuestions">
     correctAnswer?: StringFilter<"TryviaQuestions"> | string
     correctAnswersVariation?: StringNullableListFilter<"TryviaQuestions">
@@ -20092,6 +20149,8 @@ export namespace Prisma {
     id?: SortOrder
     question?: SortOrder
     difficulty?: SortOrder
+    type?: SortOrder
+    correct?: SortOrderInput | SortOrder
     tags?: SortOrder
     correctAnswer?: SortOrder
     correctAnswersVariation?: SortOrder
@@ -20110,6 +20169,8 @@ export namespace Prisma {
     OR?: TryviaQuestionsWhereInput[]
     NOT?: TryviaQuestionsWhereInput | TryviaQuestionsWhereInput[]
     difficulty?: EnumTryviaDifficultyFilter<"TryviaQuestions"> | $Enums.TryviaDifficulty
+    type?: EnumTryviaTypesFilter<"TryviaQuestions"> | $Enums.TryviaTypes
+    correct?: BoolNullableFilter<"TryviaQuestions"> | boolean | null
     tags?: StringNullableListFilter<"TryviaQuestions">
     correctAnswer?: StringFilter<"TryviaQuestions"> | string
     correctAnswersVariation?: StringNullableListFilter<"TryviaQuestions">
@@ -20125,6 +20186,8 @@ export namespace Prisma {
     id?: SortOrder
     question?: SortOrder
     difficulty?: SortOrder
+    type?: SortOrder
+    correct?: SortOrderInput | SortOrder
     tags?: SortOrder
     correctAnswer?: SortOrder
     correctAnswersVariation?: SortOrder
@@ -20148,6 +20211,8 @@ export namespace Prisma {
     id?: IntWithAggregatesFilter<"TryviaQuestions"> | number
     question?: StringWithAggregatesFilter<"TryviaQuestions"> | string
     difficulty?: EnumTryviaDifficultyWithAggregatesFilter<"TryviaQuestions"> | $Enums.TryviaDifficulty
+    type?: EnumTryviaTypesWithAggregatesFilter<"TryviaQuestions"> | $Enums.TryviaTypes
+    correct?: BoolNullableWithAggregatesFilter<"TryviaQuestions"> | boolean | null
     tags?: StringNullableListFilter<"TryviaQuestions">
     correctAnswer?: StringWithAggregatesFilter<"TryviaQuestions"> | string
     correctAnswersVariation?: StringNullableListFilter<"TryviaQuestions">
@@ -21117,6 +21182,8 @@ export namespace Prisma {
   export type TryviaQuestionsCreateInput = {
     question: string
     difficulty: $Enums.TryviaDifficulty
+    type?: $Enums.TryviaTypes
+    correct?: boolean | null
     tags?: TryviaQuestionsCreatetagsInput | string[]
     correctAnswer: string
     correctAnswersVariation?: TryviaQuestionsCreatecorrectAnswersVariationInput | string[]
@@ -21132,6 +21199,8 @@ export namespace Prisma {
     id?: number
     question: string
     difficulty: $Enums.TryviaDifficulty
+    type?: $Enums.TryviaTypes
+    correct?: boolean | null
     tags?: TryviaQuestionsCreatetagsInput | string[]
     correctAnswer: string
     correctAnswersVariation?: TryviaQuestionsCreatecorrectAnswersVariationInput | string[]
@@ -21146,6 +21215,8 @@ export namespace Prisma {
   export type TryviaQuestionsUpdateInput = {
     question?: StringFieldUpdateOperationsInput | string
     difficulty?: EnumTryviaDifficultyFieldUpdateOperationsInput | $Enums.TryviaDifficulty
+    type?: EnumTryviaTypesFieldUpdateOperationsInput | $Enums.TryviaTypes
+    correct?: NullableBoolFieldUpdateOperationsInput | boolean | null
     tags?: TryviaQuestionsUpdatetagsInput | string[]
     correctAnswer?: StringFieldUpdateOperationsInput | string
     correctAnswersVariation?: TryviaQuestionsUpdatecorrectAnswersVariationInput | string[]
@@ -21161,6 +21232,8 @@ export namespace Prisma {
     id?: IntFieldUpdateOperationsInput | number
     question?: StringFieldUpdateOperationsInput | string
     difficulty?: EnumTryviaDifficultyFieldUpdateOperationsInput | $Enums.TryviaDifficulty
+    type?: EnumTryviaTypesFieldUpdateOperationsInput | $Enums.TryviaTypes
+    correct?: NullableBoolFieldUpdateOperationsInput | boolean | null
     tags?: TryviaQuestionsUpdatetagsInput | string[]
     correctAnswer?: StringFieldUpdateOperationsInput | string
     correctAnswersVariation?: TryviaQuestionsUpdatecorrectAnswersVariationInput | string[]
@@ -21176,6 +21249,8 @@ export namespace Prisma {
     id?: number
     question: string
     difficulty: $Enums.TryviaDifficulty
+    type?: $Enums.TryviaTypes
+    correct?: boolean | null
     tags?: TryviaQuestionsCreatetagsInput | string[]
     correctAnswer: string
     correctAnswersVariation?: TryviaQuestionsCreatecorrectAnswersVariationInput | string[]
@@ -21190,6 +21265,8 @@ export namespace Prisma {
   export type TryviaQuestionsUpdateManyMutationInput = {
     question?: StringFieldUpdateOperationsInput | string
     difficulty?: EnumTryviaDifficultyFieldUpdateOperationsInput | $Enums.TryviaDifficulty
+    type?: EnumTryviaTypesFieldUpdateOperationsInput | $Enums.TryviaTypes
+    correct?: NullableBoolFieldUpdateOperationsInput | boolean | null
     tags?: TryviaQuestionsUpdatetagsInput | string[]
     correctAnswer?: StringFieldUpdateOperationsInput | string
     correctAnswersVariation?: TryviaQuestionsUpdatecorrectAnswersVariationInput | string[]
@@ -21205,6 +21282,8 @@ export namespace Prisma {
     id?: IntFieldUpdateOperationsInput | number
     question?: StringFieldUpdateOperationsInput | string
     difficulty?: EnumTryviaDifficultyFieldUpdateOperationsInput | $Enums.TryviaDifficulty
+    type?: EnumTryviaTypesFieldUpdateOperationsInput | $Enums.TryviaTypes
+    correct?: NullableBoolFieldUpdateOperationsInput | boolean | null
     tags?: TryviaQuestionsUpdatetagsInput | string[]
     correctAnswer?: StringFieldUpdateOperationsInput | string
     correctAnswersVariation?: TryviaQuestionsUpdatecorrectAnswersVariationInput | string[]
@@ -22490,6 +22569,18 @@ export namespace Prisma {
     not?: NestedEnumTryviaDifficultyFilter<$PrismaModel> | $Enums.TryviaDifficulty
   }
 
+  export type EnumTryviaTypesFilter<$PrismaModel = never> = {
+    equals?: $Enums.TryviaTypes | EnumTryviaTypesFieldRefInput<$PrismaModel>
+    in?: $Enums.TryviaTypes[] | ListEnumTryviaTypesFieldRefInput<$PrismaModel>
+    notIn?: $Enums.TryviaTypes[] | ListEnumTryviaTypesFieldRefInput<$PrismaModel>
+    not?: NestedEnumTryviaTypesFilter<$PrismaModel> | $Enums.TryviaTypes
+  }
+
+  export type BoolNullableFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel> | null
+    not?: NestedBoolNullableFilter<$PrismaModel> | boolean | null
+  }
+
   export type EnumTryviaStatusFilter<$PrismaModel = never> = {
     equals?: $Enums.TryviaStatus | EnumTryviaStatusFieldRefInput<$PrismaModel>
     in?: $Enums.TryviaStatus[] | ListEnumTryviaStatusFieldRefInput<$PrismaModel>
@@ -22508,6 +22599,8 @@ export namespace Prisma {
     id?: SortOrder
     question?: SortOrder
     difficulty?: SortOrder
+    type?: SortOrder
+    correct?: SortOrder
     tags?: SortOrder
     correctAnswer?: SortOrder
     correctAnswersVariation?: SortOrder
@@ -22527,6 +22620,8 @@ export namespace Prisma {
     id?: SortOrder
     question?: SortOrder
     difficulty?: SortOrder
+    type?: SortOrder
+    correct?: SortOrder
     correctAnswer?: SortOrder
     explanation?: SortOrder
     createdAt?: SortOrder
@@ -22539,6 +22634,8 @@ export namespace Prisma {
     id?: SortOrder
     question?: SortOrder
     difficulty?: SortOrder
+    type?: SortOrder
+    correct?: SortOrder
     correctAnswer?: SortOrder
     explanation?: SortOrder
     createdAt?: SortOrder
@@ -22559,6 +22656,24 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumTryviaDifficultyFilter<$PrismaModel>
     _max?: NestedEnumTryviaDifficultyFilter<$PrismaModel>
+  }
+
+  export type EnumTryviaTypesWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.TryviaTypes | EnumTryviaTypesFieldRefInput<$PrismaModel>
+    in?: $Enums.TryviaTypes[] | ListEnumTryviaTypesFieldRefInput<$PrismaModel>
+    notIn?: $Enums.TryviaTypes[] | ListEnumTryviaTypesFieldRefInput<$PrismaModel>
+    not?: NestedEnumTryviaTypesWithAggregatesFilter<$PrismaModel> | $Enums.TryviaTypes
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumTryviaTypesFilter<$PrismaModel>
+    _max?: NestedEnumTryviaTypesFilter<$PrismaModel>
+  }
+
+  export type BoolNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel> | null
+    not?: NestedBoolNullableWithAggregatesFilter<$PrismaModel> | boolean | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedBoolNullableFilter<$PrismaModel>
+    _max?: NestedBoolNullableFilter<$PrismaModel>
   }
 
   export type EnumTryviaStatusWithAggregatesFilter<$PrismaModel = never> = {
@@ -23500,6 +23615,14 @@ export namespace Prisma {
     set?: $Enums.TryviaDifficulty
   }
 
+  export type EnumTryviaTypesFieldUpdateOperationsInput = {
+    set?: $Enums.TryviaTypes
+  }
+
+  export type NullableBoolFieldUpdateOperationsInput = {
+    set?: boolean | null
+  }
+
   export type TryviaQuestionsUpdatetagsInput = {
     set?: string[]
     push?: string | string[]
@@ -24249,6 +24372,18 @@ export namespace Prisma {
     not?: NestedEnumTryviaDifficultyFilter<$PrismaModel> | $Enums.TryviaDifficulty
   }
 
+  export type NestedEnumTryviaTypesFilter<$PrismaModel = never> = {
+    equals?: $Enums.TryviaTypes | EnumTryviaTypesFieldRefInput<$PrismaModel>
+    in?: $Enums.TryviaTypes[] | ListEnumTryviaTypesFieldRefInput<$PrismaModel>
+    notIn?: $Enums.TryviaTypes[] | ListEnumTryviaTypesFieldRefInput<$PrismaModel>
+    not?: NestedEnumTryviaTypesFilter<$PrismaModel> | $Enums.TryviaTypes
+  }
+
+  export type NestedBoolNullableFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel> | null
+    not?: NestedBoolNullableFilter<$PrismaModel> | boolean | null
+  }
+
   export type NestedEnumTryviaStatusFilter<$PrismaModel = never> = {
     equals?: $Enums.TryviaStatus | EnumTryviaStatusFieldRefInput<$PrismaModel>
     in?: $Enums.TryviaStatus[] | ListEnumTryviaStatusFieldRefInput<$PrismaModel>
@@ -24271,6 +24406,24 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumTryviaDifficultyFilter<$PrismaModel>
     _max?: NestedEnumTryviaDifficultyFilter<$PrismaModel>
+  }
+
+  export type NestedEnumTryviaTypesWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.TryviaTypes | EnumTryviaTypesFieldRefInput<$PrismaModel>
+    in?: $Enums.TryviaTypes[] | ListEnumTryviaTypesFieldRefInput<$PrismaModel>
+    notIn?: $Enums.TryviaTypes[] | ListEnumTryviaTypesFieldRefInput<$PrismaModel>
+    not?: NestedEnumTryviaTypesWithAggregatesFilter<$PrismaModel> | $Enums.TryviaTypes
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumTryviaTypesFilter<$PrismaModel>
+    _max?: NestedEnumTryviaTypesFilter<$PrismaModel>
+  }
+
+  export type NestedBoolNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel> | null
+    not?: NestedBoolNullableWithAggregatesFilter<$PrismaModel> | boolean | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedBoolNullableFilter<$PrismaModel>
+    _max?: NestedBoolNullableFilter<$PrismaModel>
   }
 
   export type NestedEnumTryviaStatusWithAggregatesFilter<$PrismaModel = never> = {

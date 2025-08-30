@@ -157,6 +157,8 @@ exports.Prisma.TryviaQuestionsScalarFieldEnum = {
   id: 'id',
   question: 'question',
   difficulty: 'difficulty',
+  type: 'type',
+  correct: 'correct',
   tags: 'tags',
   correctAnswer: 'correctAnswer',
   correctAnswersVariation: 'correctAnswersVariation',
@@ -300,6 +302,12 @@ exports.TryviaDifficulty = exports.$Enums.TryviaDifficulty = {
   EASY: 'EASY',
   MEDIUM: 'MEDIUM',
   HARD: 'HARD'
+};
+
+exports.TryviaTypes = exports.$Enums.TryviaTypes = {
+  BOOLEAN: 'BOOLEAN',
+  MULTIPLE: 'MULTIPLE',
+  WRITEINCHAT: 'WRITEINCHAT'
 };
 
 exports.TryviaStatus = exports.$Enums.TryviaStatus = {
