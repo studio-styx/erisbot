@@ -1,4 +1,4 @@
-import { redis } from "#database";
+import { prisma, redis } from "#database";
 import { icon, res } from "#functions";
 import { TryviaGame } from "#types/tryviaGames.js";
 import { ChatInputCommandInteraction, userMention } from "discord.js";
@@ -17,7 +17,7 @@ export async function closeTryviaGame(interaction: ChatInputCommandInteraction<"
         return;
     }
     const game = JSON.parse(haw) as TryviaGame;
-    const hasPerm = game.owner === interaction.user.id 
+    const hasPerm = game.owner === interaction.user.id
         || interaction.memberPermissions.has("ManageChannels")
         || interaction.memberPermissions.has("ManageGuild")
 
@@ -28,9 +28,33 @@ export async function closeTryviaGame(interaction: ChatInputCommandInteraction<"
 
     g.timeoutMap.delete(key);
     const top1User = await interaction.client.users.fetch(game.participants[0]?.id).catch(() => interaction.client.user);
+    if (game.participants.length > 2) {
+        await prisma.guildMember.upsert({
+            where: {
+                guildId_id: {
+                    id: top1User.id,
+                    guildId: interaction.guildId!,
+                },
+            },
+            update: {
+                tryviaWins: {
+                    increment: 1
+                }
+            },
+            create: {
+                tryviaWins: 1,
+                id: top1User.id,
+                guildId: interaction.guildId!,
+            }
+        })
+    }
+    
     const message = await g.sendGameOverMessage(interaction.channel, game, top1User);
     await redis.del(key);
     await interaction.editReply(res.success(`${icon.success} | Jogo fechado com sucesso!`))
     await message.reply(res.danger(`${icon.Eris_cry} | O usuário ${userMention(interaction.user.id)} fechou o jogo de trivia desse canal! Que pena, o jogo estava tão divertido...`))
+    if (game.participants.length < 3) {
+        message.reply(res.danger(`${icon.Eris_cry} | Infelizmente como tivemos menos de **3** participantes o ganhador não ganhou wins.`))
+    }
     return;
 }

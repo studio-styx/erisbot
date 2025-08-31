@@ -1,6 +1,8 @@
 import { createResponder, ResponderType } from "#base";
 import { prisma } from "#database";
+import { icon, res } from "#functions";
 import { menus } from "#menus";
+import { Collection, GuildMember } from "discord.js";
 
 createResponder({
     customId: "leaderboard/:locale",
@@ -23,13 +25,6 @@ createResponder({
             if (area === "guild") {
                 if (type === "stx") {
                     const ranking = await prisma.user.findMany({
-                        where: {
-                            guilds: {
-                                some: {
-                                    guildId: interaction.guildId!
-                                }
-                            }
-                        },
                         orderBy: [
                             {
                                 money: "desc"
@@ -42,23 +37,47 @@ createResponder({
                             id: true,
                             money: true,
                             bank: true
-                        }
-                    })
+                        },
+                        take: 100
+                    });
+
+                    if (ranking.length === 0) {
+                        interaction.followUp(res.danger(`${icon.error} | Não foi possível obter usuários para mostrar o ranking`));
+                        return;
+                    }
+
+                    // Obter IDs dos usuários
+                    const ids = ranking.map(user => user.id);
+                    let fetchedMembers: Collection<string, GuildMember>;
+                    try {
+                        // Buscar membros do servidor apenas para os IDs retornados
+                        fetchedMembers = await interaction.guild!.members.fetch({ user: ids, withPresences: false });
+                    } catch (error) {
+                        console.error(error);
+                        fetchedMembers = new Collection();
+                    }
 
                     const users = [];
 
                     for (const user of ranking) {
-                        let discordUser = interaction.guild?.members.cache.get(user.id);
-                        if (!discordUser) discordUser = await interaction.guild?.members.fetch(user.id);
+                        const member = fetchedMembers.get(user.id);
+                        if (!member) continue; // Pular se o usuário não está no servidor
+
                         users.push({
                             user: {
                                 id: user.id,
-                                name: discordUser?.displayName || "desconhecido",
-                                avatarUrl: discordUser?.displayAvatarURL() || discordUser.avatarURL() || interaction.client.user.displayAvatarURL()
+                                name: member.displayName || "desconhecido",
+                                avatarUrl: member.displayAvatarURL() || interaction.client.user.displayAvatarURL()
                             },
                             amount: user.money.add(user.bank).toNumber()
-                        })
+                        });
                     }
+
+                    if (users.length === 0) {
+                        interaction.followUp(res.danger(`${icon.error} | Não foi possível obter usuários para mostrar o ranking`));
+                        return;
+                    }
+
                     interaction.editReply(menus.leaderboard.ranking("Guild", type, users, interaction.user.id));
                     return;
                 } else {
@@ -74,22 +93,43 @@ createResponder({
                         select: {
                             id: true,
                             [type]: true
-                        }
-                    })
+                        },
+                        take: 100
+                    });
+
+                    if (ranking.length === 0) {
+                        interaction.followUp(res.danger(`${icon.error} | Não foi possível obter usuários para mostrar o ranking`));
+                        return;
+                    }
+
+                    const ids = ranking.map(gm => gm.id);
+                    let fetchedMembers: Collection<string, any>;
+                    try {
+                        fetchedMembers = await interaction.guild!.members.fetch({ user: ids });
+                    } catch (error) {
+                        console.error(error);
+                        fetchedMembers = new Collection();
+                    }
 
                     const users = [];
 
-                    for (const user of ranking) {
-                        let discordUser = interaction.guild?.members.cache.get(user.id);
-                        if (!discordUser) discordUser = await interaction.guild?.members.fetch(user.id);
+                    for (const gm of ranking) {
+                        const member = fetchedMembers.get(gm.id);
+                        if (!member) continue;
+
                         users.push({
                             user: {
-                                id: user.id,
-                                name: discordUser?.displayName || "desconhecido",
-                                avatarUrl: discordUser?.displayAvatarURL() || discordUser.avatarURL() || interaction.client.user.displayAvatarURL()
+                                id: gm.id,
+                                name: member.displayName || "desconhecido",
+                                avatarUrl: member.displayAvatarURL() || interaction.client.user.displayAvatarURL()
                             },
-                            amount: user[type]
-                        })
+                            amount: gm[type]
+                        });
+                    }
+
+                    if (users.length === 0) {
+                        interaction.followUp(res.danger(`${icon.error} | Não foi possível obter usuários para mostrar o ranking`));
+                        return;
                     }
 
                     interaction.editReply(menus.leaderboard.ranking("Guild", type, users, interaction.user.id));
@@ -110,23 +150,41 @@ createResponder({
                             id: true,
                             money: true,
                             bank: true
-                        }
-                    })
+                        },
+                        take: 100
+                    });
+
+                    if (ranking.length === 0) {
+                        interaction.followUp(res.danger(`${icon.error} | Não foi possível obter usuários para mostrar o ranking`));
+                        return;
+                    }
 
                     const users = [];
 
                     for (const user of ranking) {
-                        let discordUser = interaction.client.users.cache.get(user.id);
-                        if (!discordUser) discordUser = await interaction.client.users.fetch(user.id);
+                        let discordUser;
+                        try {
+                            discordUser = interaction.client.users.cache.get(user.id) || await interaction.client.users.fetch(user.id);
+                        } catch (error) {
+                            console.error(error);
+                            continue; // Pular se o usuário não existir mais
+                        }
+
                         users.push({
                             user: {
                                 id: user.id,
                                 name: discordUser?.displayName || "desconhecido",
-                                avatarUrl: discordUser?.displayAvatarURL() || discordUser.avatarURL() || interaction.client.user.displayAvatarURL(),
+                                avatarUrl: discordUser?.displayAvatarURL() || interaction.client.user.displayAvatarURL()
                             },
                             amount: user.money.add(user.bank).toNumber()
                         });
                     }
+
+                    if (users.length === 0) {
+                        interaction.followUp(res.danger(`${icon.error} | Não foi possível obter usuários para mostrar o ranking`));
+                        return;
+                    }
+
                     interaction.editReply(menus.leaderboard.ranking("Global", type, users, interaction.user.id));
                     return;
                 } else {
@@ -140,25 +198,42 @@ createResponder({
                             id: true,
                             guildId: true,
                             [type]: true
-                        }
-                    })
+                        },
+                        take: 100
+                    });
+
+                    if (ranking.length === 0) {
+                        interaction.followUp(res.danger(`${icon.error} | Não foi possível obter usuários para mostrar o ranking`));
+                        return;
+                    }
 
                     const users = [];
 
-                    for (const user of ranking) {
-                        let discordUser = interaction.client.users.cache.get(user.id);
-                        if (!discordUser) discordUser = await interaction.client.users.fetch(user.id);
+                    for (const gm of ranking) {
+                        let discordUser;
+                        try {
+                            discordUser = interaction.client.users.cache.get(gm.id) || await interaction.client.users.fetch(gm.id);
+                        } catch (error) {
+                            console.error(error);
+                            continue; // Pular se o usuário não existir mais
+                        }
+
                         users.push({
                             user: {
-                                id: user.id,
+                                id: gm.id,
                                 name: discordUser?.displayName || "desconhecido",
-                                avatarUrl: discordUser?.displayAvatarURL() || discordUser.avatarURL() || interaction.client.user.displayAvatarURL(),
+                                avatarUrl: discordUser?.displayAvatarURL() || interaction.client.user.displayAvatarURL()
                             },
-                            amount: user[type]
-                        })
+                            amount: gm[type]
+                        });
                     }
 
-                    interaction.editReply(menus.leaderboard.ranking("Global", type, users, interaction.user.id))
+                    if (users.length === 0) {
+                        interaction.followUp(res.danger(`${icon.error} | Não foi possível obter usuários para mostrar o ranking`));
+                        return;
+                    }
+
+                    interaction.editReply(menus.leaderboard.ranking("Global", type, users, interaction.user.id));
                     return;
                 }
             }

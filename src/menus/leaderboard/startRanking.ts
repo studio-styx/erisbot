@@ -20,7 +20,7 @@ export function startRankingMenu<R>(area: "Guild" | "Global" | null, type: "stx"
                     {
                         label: "Stx",
                         description: area === "Guild" ? "Veja os usuários mais ricos do servidor" : "Veja os usuários mais ricos do discord",
-                        value: `syx/${area?.toLowerCase()}`,
+                        value: `stx/${area?.toLowerCase()}`,
                         default: type === "stx"
                     },
                     {

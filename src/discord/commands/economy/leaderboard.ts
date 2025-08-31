@@ -1,5 +1,5 @@
 import { createCommand } from "#base";
-import { ApplicationCommandType } from "discord.js";
+import { ApplicationCommandOptionType, ApplicationCommandType } from "discord.js";
 import { economyLeaderboardCommand } from "./generalCommands/leaderboard.js";
 
 createCommand({
@@ -16,6 +16,14 @@ createCommand({
         "en-US": "check the leaderboard",
         "es-ES": "ver la clasificación",
     },
+    options: [
+        {
+            name: "ephemeral",
+            description: "only visible to you. default: (false)",
+            type: ApplicationCommandOptionType.Boolean,
+            required: false
+        }
+    ],
     async run(interaction) {
         await economyLeaderboardCommand(interaction)
     }

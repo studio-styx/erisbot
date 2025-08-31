@@ -1,19 +1,22 @@
 import { settings } from "#settings";
-import { brBuilder, createContainer, createRow, createSeparator } from "@magicyan/discord";
+import { brBuilder, createContainer, createRow, createSection, createSeparator } from "@magicyan/discord";
 import { ButtonBuilder, ButtonStyle, StringSelectMenuBuilder, type InteractionReplyOptions } from "discord.js";
 
 export function rankingMenu<R>(area: "Guild" | "Global", type: "stx" | "xp" | "tryviaGames" | "tryviaWins" | "tryviaPoints", ranking: { user: { id: string; name: string; avatarUrl: string; }; amount: number; }[], authorId: string, page: number = 0): R {
     const inicial = page * 10;
     const final = inicial + 10;
     
-    const rankingFormatted = ranking.slice(inicial, final).map((u, index) => `**${index + 1}. ${u.user.name} - ${u.amount}** ${u.user.id === authorId ? '**`(você)`**' : ''}`).join('\n');
+    const rankingFormatted = ranking.slice(inicial, final).map((u, index) => `**${index + 1}. ${u.user.name} - ${u.amount} ${type === "stx" ? "Stx" : type === "tryviaGames" ? "Jogos" : type === "tryviaWins" ? "Vitórias" : type === "tryviaPoints" ? "Pontos" : "Xp"}** ${u.user.id === authorId ? '**`(você)`**' : ''}`).join('\n');
     const container = createContainer(settings.colors.azoxo,
         brBuilder(
             `## Ranking ${area === "Guild" ? "local" : "global"}`,
             `-# Ranking de: ${type === "stx" ? "Stx" : type === "xp" ? "Xp" : type === "tryviaGames" ? "Jogos de trivia" : type === "tryviaWins" ? "Vitórias no trivia" : "Pontos no trivia"}`
         ),
         createSeparator(),
-        rankingFormatted,
+        createSection({
+            content: rankingFormatted,
+            thumbnail: ranking[0].user.avatarUrl
+        }),
         createSeparator(),
         createRow(
             new ButtonBuilder({
@@ -29,7 +32,6 @@ export function rankingMenu<R>(area: "Guild" | "Global", type: "stx" | "xp" | "t
                 style: ButtonStyle.Primary
             })
         ),
-        createSeparator(),
         createRow(
             new StringSelectMenuBuilder({
                 customId: "leaderboard/choice",
@@ -39,7 +41,7 @@ export function rankingMenu<R>(area: "Guild" | "Global", type: "stx" | "xp" | "t
                     {
                         label: "Stx",
                         description: area === "Guild" ? "Veja os usuários mais ricos do servidor" : "Veja os usuários mais ricos do discord",
-                        value: `syx/${area?.toLowerCase()}`,
+                        value: `stx/${area?.toLowerCase()}`,
                         default: type === "stx"
                     },
                     {

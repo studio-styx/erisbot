@@ -472,7 +472,30 @@ export async function onResponseTryviaGame(msg: OmitPartialGroupDMChannel<Messag
             await redis.del(key);
             timeoutMap.delete(key);
             const top1User = await msg.client.users.fetch(game.participants[0]?.id).catch(() => msg.client.user);
-            await sendGameOverMessage(msg.channel, game, top1User);
+            if (game.participants.length > 2) {
+                await prisma.guildMember.upsert({
+                    where: {
+                        guildId_id: {
+                            id: top1User.id,
+                            guildId: msg.guildId!,
+                        },
+                    },
+                    update: {
+                        tryviaWins: {
+                            increment: 1
+                        }
+                    },
+                    create: {
+                        tryviaWins: 1,
+                        id: top1User.id,
+                        guildId: msg.guildId!,
+                    }
+                })
+            }
+            const gameOverMessage = await sendGameOverMessage(msg.channel, game, top1User);
+            if (game.participants.length < 3) {
+                gameOverMessage.reply(res.danger(`${icon.Eris_cry} | Infelizmente como tivemos menos de **3** participantes o ganhador não ganhou wins.`))
+            }
             return;
         }
 

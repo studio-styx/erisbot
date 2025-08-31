@@ -147,7 +147,30 @@ createResponder({
             await redis.del(key);
             g.timeoutMap.delete(key);
             const top1User = await interaction.client.users.fetch(game.participants[0]?.id).catch(() => interaction.client.user);
-            await g.sendGameOverMessage(interaction["channel"]!, game, top1User);
+            if (game.participants.length > 2) {
+                await prisma.guildMember.upsert({
+                    where: {
+                        guildId_id: {
+                            id: top1User.id,
+                            guildId: interaction.guildId!,
+                        },
+                    },
+                    update: {
+                        tryviaWins: {
+                            increment: 1
+                        }
+                    },
+                    create: {
+                        tryviaWins: 1,
+                        id: top1User.id,
+                        guildId: interaction.guildId!,
+                    }
+                })
+            }
+            const gameOverMessage = await g.sendGameOverMessage(interaction.channel!, game, top1User);
+            if (game.participants.length < 3) {
+                gameOverMessage.reply(res.danger(`${icon.Eris_cry} | Infelizmente como tivemos menos de **3** participantes o ganhador não ganhou wins.`))
+            }
             return;
         }
 
