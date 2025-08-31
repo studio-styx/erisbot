@@ -1,7 +1,6 @@
-
 import { createCommand } from "#base";
 import { prisma } from "#database";
-import { stocksEventuals, res, icon } from "#functions";
+import { stocksEventuals, res, icon, processApiQuestions } from "#functions";
 import { menus } from "#menus";
 import { Mails } from "#prisma";
 import { settings } from "#settings";
@@ -107,6 +106,11 @@ createCommand({
         {
             name: "dashboard",
             description: "open the dev dashboard",
+            type: ApplicationCommandOptionType.Subcommand,
+        },
+        {
+            name: "force-pipeline",
+            description: "force pipeline",
             type: ApplicationCommandOptionType.Subcommand,
         }
     ],
@@ -248,17 +252,26 @@ createCommand({
                         })
                     }
                     for (const g of guildMember) {
+                        await tx.user.upsert({
+                            where: {
+                                id: g.id
+                            },
+                            update: {},
+                            create: {
+                                id: g.id
+                            }
+                        })
                         await tx.guildMember.create({
                             data: {
                                 id: g.id,
                                 guildId: g.guildId,
                                 xp: g.xp,
-                            }
-                        })
+                            },
+                        });
                     }
                 }, {
-                    timeout: 30000,
-                    maxWait: 30000
+                    timeout: 60000,
+                    maxWait: 60000
                 })
                 */
 
@@ -267,7 +280,34 @@ createCommand({
             }
             case "test": {
                 await interaction.deferReply()
-                await prisma.tryviaQuestions.deleteMany()
+                /*
+                const [application, company, guildMember, guildSettings, mails, stock, stockHistory, stockHolding, user] = await prisma.$transaction([
+                    prisma.application.findMany(),
+                    prisma.company.findMany(),
+                    prisma.guildMember.findMany(),
+                    prisma.guildSettings.findMany(),
+                    prisma.mails.findMany(),
+                    prisma.stock.findMany(),
+                    prisma.stockHistory.findMany(),
+                    prisma.stockHolding.findMany(),
+                    prisma.user.findMany(),
+                ])
+
+                await fs.writeFile(
+                    "database.json",
+                    JSON.stringify({
+                        application,
+                        company,
+                        guildMember,
+                        guildSettings,
+                        mails,
+                        stock,
+                        stockHistory,
+                        stockHolding,
+                        user,
+                    }, null, 2)
+                )
+                */
                 interaction.editReply("definido com sucesso")
                 return;
             }
@@ -277,6 +317,19 @@ createCommand({
                 await stocksEventuals();
 
                 interaction.editReply(res.success("Forced stock variation"));
+                return;
+            }
+            case "force-pipeline": {
+                await interaction.deferReply();
+
+                try {
+                    await interaction.editReply(res.warning(`${icon.waiting_white} | Reproduzindo...`))
+                    await processApiQuestions();
+                    await interaction.editReply(res.success(`${icon.success} | Reproduzido com sucesso!`))
+                } catch (error) {
+                    console.error(error);
+                    await interaction.editReply(res.danger(`${icon.error} | Um erro ocorreu ao tentar reproduzir: ${error}`))
+                }
                 return;
             }
             case "send-mail": {

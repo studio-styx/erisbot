@@ -423,16 +423,3 @@ export async function processApiQuestions(): Promise<PipelineResult> {
 
     return result;
 }
-
-// Executar imediatamente se necessário
-if (require.main === module) {
-    processApiQuestions()
-        .then(result => {
-            console.log('Processamento manual concluído:', result);
-            process.exit(0);
-        })
-        .catch(error => {
-            console.error('Erro no processamento manual:', error);
-            process.exit(1);
-        });
-}

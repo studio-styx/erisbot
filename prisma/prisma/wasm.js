@@ -133,26 +133,6 @@ exports.Prisma.UserScalarFieldEnum = {
   afkTime: 'afkTime'
 };
 
-exports.Prisma.ItemsScalarFieldEnum = {
-  id: 'id',
-  name: 'name',
-  type: 'type',
-  price: 'price',
-  details: 'details',
-  createdAt: 'createdAt',
-  rarity: 'rarity',
-  baseDurability: 'baseDurability'
-};
-
-exports.Prisma.InventoryScalarFieldEnum = {
-  userId: 'userId',
-  itemId: 'itemId',
-  amount: 'amount',
-  createdAt: 'createdAt',
-  expiresAt: 'expiresAt',
-  durability: 'durability'
-};
-
 exports.Prisma.TryviaQuestionsScalarFieldEnum = {
   id: 'id',
   question: 'question',
@@ -328,8 +308,6 @@ exports.TryviaOrigin = exports.$Enums.TryviaOrigin = {
 
 exports.Prisma.ModelName = {
   User: 'User',
-  Items: 'Items',
-  Inventory: 'Inventory',
   TryviaQuestions: 'TryviaQuestions',
   Application: 'Application',
   Requisition: 'Requisition',

@@ -3,7 +3,7 @@ import { env, settings } from "#settings";
 import { brBuilder, createRow } from "@magicyan/discord";
 import { EmbedBuilder, StringSelectMenuBuilder, type InteractionReplyOptions, Interaction } from "discord.js";
 
-export async function commandsMenu<R>(page: "economy" | "bot" | "user" | "moderation" | "utility", interaction: Interaction): Promise<R> {
+export async function commandsMenu<R>(page: "economy" | "bot" | "user" | "moderation" | "utility" | "fun", interaction: Interaction): Promise<R> {
     const embed = new EmbedBuilder({
         title: "Commands",
         color: parseInt(settings.colors.fuchsia.replace("#", ""), 16),
@@ -144,6 +144,20 @@ export async function commandsMenu<R>(page: "economy" | "bot" | "user" | "modera
             })
             break;
         }
+        case "fun": {
+            const [tryvia] = await Promise.all([
+                getCommandId(interaction, "tryvia")
+            ])
+
+            embed.addFields({
+                name: "",
+                value: brBuilder(
+                    `**</tryvia start:${tryvia}>** - Começar um jogo de trivia no canal atual`,
+                    `**</tryvia close:${tryvia}>** - Finaliza um jogo de trivia antecipadamente no canal \`(requer perms: gerenciar servidor ou gerenciar canais, ou ser o dono do jogo)\``,
+                )
+            })
+            break;
+        }
     }
 
     const components = [
@@ -156,7 +170,8 @@ export async function commandsMenu<R>(page: "economy" | "bot" | "user" | "modera
                     { label: "Bot", value: "bot", emoji: icon.bot, default: page === "bot" },
                     { label: "Usuário", value: "user", emoji: icon.investment_graph, default: page === "user" },
                     { label: "Moderação", value: "moderation", emoji: icon.security, default: page === "moderation" },
-                    { label: "Utilidades", value: "utility", emoji: icon.key, default: page === "utility" }
+                    { label: "Utilidades", value: "utility", emoji: icon.key, default: page === "utility" },
+                    { label: "Diversão", value: "fun", emoji: icon.key, default: page === "fun" }
                 ]
             })
         )

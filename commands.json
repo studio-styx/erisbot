@@ -220,5 +220,17 @@
         "description": "Remover seu afk",
         "siteAvaible": false,
         "category": "utility"
+    },
+    {
+        "name": "tryvia start",
+        "description": "Começa um jogo de trivia no canal",
+        "siteAvaible": false,
+        "category": "fun"
+    },
+    {
+        "name": "tryvia close",
+        "description": "Para o jogo de trivia",
+        "siteAvaible": false,
+        "category": "fun"
     }
 ]
