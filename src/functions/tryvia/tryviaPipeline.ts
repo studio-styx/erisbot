@@ -201,7 +201,7 @@ export async function processApiQuestions(): Promise<PipelineResult> {
                 "9. Para cada pergunta recebida, você DEVE criar três variações, cada uma com um tipo diferente: BOOLEAN, MULTIPLE e WRITEINCHAT.",
                 "   - Para BOOLEAN: reformule a pergunta para ser respondida com 'Verdadeiro' ou 'Falso'.",
                 "   - Para MULTIPLE: forneça 4 opções (1 correta, 3 incorretas).",
-                "   - Para WRITEINCHAT: a pergunta deve ser clara, direta e de resposta curta, pois o usuário NÃO verá opções. Evite perguntas difíceis para WRITEINCHAT.",
+                "   - Para WRITEINCHAT: a pergunta deve ser clara, direta e de resposta curta, pois o usuário NÃO verá opções. Evite perguntas difíceis para WRITEINCHAT. Por favor forneça MUITAS variações de resposta, não precisa fazer variação de letras maiusculas e minusculas, mas deve ter diversas variações, exemplo: qual a maior floresta tropical? variações: Floresta Amazônica, Amazonia, Floresta Amazonia (mesmo que floresta amazonia seja errado), etc.",
                 "10. Para cada variação, inclua: correctAnswer, correctAnswersVariations (se aplicável), incorrectAnswers (se aplicável), tags, difficulty, explanation, confianca e justificativa.",
                 "11. Mesmo que a pergunta original seja de um tipo específico, você DEVE criar as três variações (BOOLEAN, MULTIPLE, WRITEINCHAT).",
                 "12. O nivel de dificuldade é MUITO especifico, vc não deve retornar a dificuldade com letras minusuculas ou qualquer outro texto que não seja: (EASY, MEDIUM, HARD)",

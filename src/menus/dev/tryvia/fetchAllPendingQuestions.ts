@@ -8,7 +8,7 @@ export function fetchAllPendingQuestionsMenu<R>(questions: TryviaQuestions[], pa
         `## Todas Perguntas pendentes da Trivia (${questions.length})`
     ]
 
-    const maxPerPage = 8;
+    const maxPerPage = 6;
     const startIndex = page * maxPerPage;
     const endIndex = startIndex + maxPerPage;
     const pageQuestions = questions.slice(startIndex, endIndex);
@@ -23,6 +23,9 @@ export function fetchAllPendingQuestionsMenu<R>(questions: TryviaQuestions[], pa
                     `Status: **\`${q.status}\`**`,
                     `Dificuldade: **\`${q.difficulty}\`**`,
                     `Tags: [**\`${q.tags.join(", ")}\`**]`,
+                    `Variações: [**\`${q.correctAnswersVariation.join(", ")}\`**]`,
+                    `Respostas Incorretas: [**\`${q.incorrectAnswers.join(", ")}\`**]`,
+                    `Tipo: **\`${q.type}\`**`,
                 ),
                 button: new ButtonBuilder({
                     customId: `devMenu/tryvia/edit/${q.id}`,
@@ -44,13 +47,13 @@ export function fetchAllPendingQuestionsMenu<R>(questions: TryviaQuestions[], pa
     const rows = [
         createRow(
             new ButtonBuilder({
-                customId: `devMenu/tryvia/fetchAll/${page - 1}`,
+                customId: `devMenu/tryvia/fetchPending/${page - 1}`,
                 label: "Página Anterior",
                 style: ButtonStyle.Primary,
                 disabled: page <= 0
             }),
             new ButtonBuilder({
-                customId: `devMenu/tryvia/fetchAll/${page + 1}`,
+                customId: `devMenu/tryvia/fetchPending/${page + 1}`,
                 label: "Próxima Página",
                 style: ButtonStyle.Primary,
                 disabled: endIndex >= questions.length

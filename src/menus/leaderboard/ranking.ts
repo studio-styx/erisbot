@@ -6,7 +6,7 @@ export function rankingMenu<R>(area: "Guild" | "Global", type: "stx" | "xp" | "t
     const inicial = page * 10;
     const final = inicial + 10;
     
-    const rankingFormatted = ranking.slice(inicial, final).map((u, index) => `**${index + 1}. ${u.user.name} - ${u.amount} ${type === "stx" ? "Stx" : type === "tryviaGames" ? "Jogos" : type === "tryviaWins" ? "Vitórias" : type === "tryviaPoints" ? "Pontos" : "Xp"}** ${u.user.id === authorId ? '**`(você)`**' : ''}`).join('\n');
+    const rankingFormatted = ranking.slice(inicial, final).map((u, index) => `**${inicial + index + 1}. ${u.user.name} - ${u.amount} ${type === "stx" ? "Stx" : type === "tryviaGames" ? "Jogos" : type === "tryviaWins" ? "Vitórias" : type === "tryviaPoints" ? "Pontos" : "Xp"}**${u.user.id === authorId ? ' **`(você)`**' : ''}`).join('\n');
     const container = createContainer(settings.colors.azoxo,
         brBuilder(
             `## Ranking ${area === "Guild" ? "local" : "global"}`,

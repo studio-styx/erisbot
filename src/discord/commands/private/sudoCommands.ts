@@ -533,6 +533,7 @@ createCommand({
                         await prisma.$disconnect();
                     }
                 }
+                return;
             }
             case "dashboard": {
                 interaction.reply(menus.dev.dashboard())

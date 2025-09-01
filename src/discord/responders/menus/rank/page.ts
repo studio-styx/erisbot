@@ -15,8 +15,7 @@ createResponder({
         }
     },
     async run(interaction, { area, page, type }) {
-        const inicial = page * 10;
-        const final = inicial + 10;
+        await interaction.deferUpdate();
 
         if (area === "guild") {
             if (type === "stx") {
@@ -34,7 +33,7 @@ createResponder({
                         money: true,
                         bank: true
                     },
-                    take: final
+                    take: 100
                 });
 
                 if (ranking.length === 0) {
@@ -69,12 +68,14 @@ createResponder({
                     });
                 }
 
-                if (users.length === 0) {
+                const filteredUsers = users.filter(u => u.amount > 0);
+
+                if (filteredUsers.length === 0) {
                     interaction.followUp(res.danger(`${icon.error} | Não foi possível obter usuários para mostrar o ranking`));
                     return;
                 }
 
-                interaction.editReply(menus.leaderboard.ranking("Guild", type, users, interaction.user.id, page));
+                interaction.editReply(menus.leaderboard.ranking("Guild", type, filteredUsers, interaction.user.id, page));
                 return;
             } else {
                 const ranking = await prisma.guildMember.findMany({
@@ -90,7 +91,7 @@ createResponder({
                         id: true,
                         [type]: true
                     },
-                    take: final
+                    take: 100
                 });
 
                 if (ranking.length === 0) {
@@ -123,12 +124,14 @@ createResponder({
                     });
                 }
 
-                if (users.length === 0) {
+                const filteredUsers = users.filter(u => u.amount > 0);
+
+                if (filteredUsers.length === 0) {
                     interaction.followUp(res.danger(`${icon.error} | Não foi possível obter usuários para mostrar o ranking`));
                     return;
                 }
 
-                interaction.editReply(menus.leaderboard.ranking("Guild", type, users, interaction.user.id, page));
+                interaction.editReply(menus.leaderboard.ranking("Guild", type, filteredUsers, interaction.user.id, page));
                 return;
             }
         } else {
@@ -147,7 +150,7 @@ createResponder({
                         money: true,
                         bank: true
                     },
-                    take: final
+                    take: 100
                 });
 
                 if (ranking.length === 0) {
@@ -176,27 +179,30 @@ createResponder({
                     });
                 }
 
-                if (users.length === 0) {
+                const filteredUsers = users.filter(u => u.amount > 0);
+
+                if (filteredUsers.length === 0) {
                     interaction.followUp(res.danger(`${icon.error} | Não foi possível obter usuários para mostrar o ranking`));
                     return;
                 }
 
-                interaction.editReply(menus.leaderboard.ranking("Global", type, users, interaction.user.id, page));
+                interaction.editReply(menus.leaderboard.ranking("Global", type, filteredUsers, interaction.user.id, page));
                 return;
             } else {
-                const ranking = await prisma.guildMember.findMany({
-                    orderBy: [
-                        {
-                            [type]: "desc"
-                        }
-                    ],
-                    select: {
-                        id: true,
-                        guildId: true,
-                        [type]: true
-                    },
-                    take: final
-                });
+                // Define a interface para o resultado da query
+                interface RankingResult {
+                    id: string;
+                    total: number;
+                }
+
+                // Para tipos que não são "stx" no global
+                const ranking = await prisma.$queryRaw<RankingResult[]>`
+        SELECT id, SUM(${type}) as total
+        FROM "GuildMember"
+        GROUP BY id
+        ORDER BY total DESC
+        LIMIT 100
+    `;
 
                 if (ranking.length === 0) {
                     interaction.followUp(res.danger(`${icon.error} | Não foi possível obter usuários para mostrar o ranking`));
@@ -220,16 +226,18 @@ createResponder({
                             name: discordUser?.displayName || "desconhecido",
                             avatarUrl: discordUser?.displayAvatarURL() || interaction.client.user.displayAvatarURL()
                         },
-                        amount: gm[type]
+                        amount: gm.total
                     });
                 }
 
-                if (users.length === 0) {
-                    interaction.followUp(res.danger(`${icon.error} | Não foi possível obter usuários para mostrar o ranking`));
+                const filteredUsers = users.filter(u => u.amount > 0);
+
+                if (filteredUsers.length === 0) {
+                    interaction.followUp(res.danger(`${icon.error} | Não existe usuário com mais de 1 ${type}`));
                     return;
                 }
 
-                interaction.editReply(menus.leaderboard.ranking("Global", type, users, interaction.user.id, page));
+                interaction.editReply(menus.leaderboard.ranking("Global", type, filteredUsers, interaction.user.id, page));
                 return;
             }
         }
