@@ -74,11 +74,18 @@ export async function xpSystem(message: OmitPartialGroupDMChannel<Message<boolea
 
     if (XP <= 0) return;
 
-    const user = await prisma.guildMember.upsert({
-        where: { guildId_id: { id: message.author.id, guildId: message.guildId } },
-        create: { id: message.author.id, guildId: message.guildId, xp: XP },
-        update: { xp: { increment: XP } }
-    });
+    const [_, user] = await prisma.$transaction([
+        prisma.user.upsert({
+            where: { id: message.author.id },
+            update: {},
+            create: { id: message.author.id }
+        }),
+        prisma.guildMember.upsert({
+            where: { guildId_id: { id: message.author.id, guildId: message.guildId } },
+            create: { id: message.author.id, guildId: message.guildId, xp: XP },
+            update: { xp: { increment: XP } }
+        })
+    ])
 
     const oldXP = user.xp - XP;
 

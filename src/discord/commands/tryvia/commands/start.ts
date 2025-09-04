@@ -158,24 +158,40 @@ export async function startTryviaGame(interaction: ChatInputCommandInteraction<"
         consecutiveNoResponse: 0
     };
 
-    await prisma.guildMember.upsert({
-        where: {
-            guildId_id: {
+    await prisma.$transaction([
+        prisma.user.upsert({
+            where: {
+                id: interaction.user.id
+            },
+            update: {},
+            create: { id: interaction.user.id }
+        }),
+        prisma.guildSettings.upsert({
+            where: {
+                id: interaction.guild.id
+            },
+            update: {},
+            create: { id: interaction.guild.id }
+        }),
+        prisma.guildMember.upsert({
+            where: {
+                guildId_id: {
+                    id: interaction.user.id,
+                    guildId: interaction.guildId!,
+                },
+            },
+            update: {
+                tryviaGames: {
+                    increment: 1,
+                },
+            },
+            create: {
                 id: interaction.user.id,
                 guildId: interaction.guildId!,
-            },
-        },
-        update: {
-            tryviaGames: {
-                increment: 1,
-            },
-        },
-        create: {
-            id: interaction.user.id,
-            guildId: interaction.guildId!,
-            tryviaGames: 1,
-        }
-    })
+                tryviaGames: 1,
+            }
+        }),
+    ])
 
     await redis.setex(key, 60 * 30, JSON.stringify(object));
 

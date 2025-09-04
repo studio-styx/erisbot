@@ -295,11 +295,10 @@ async function handleIntervalAndQuestion(
 export async function onResponseTryviaGame(msg: OmitPartialGroupDMChannel<Message<boolean>>) {
     if (msg.author.bot) return;
     const key = `tryvia:game:${msg.channelId}`;
-
+    
+    const raw = await redis.get(key);
+    if (!raw) return;
     try {
-        const raw = await redis.get(key);
-        if (!raw) return;
-
         const game = JSON.parse(raw) as TryviaGame;
         const item = game.questions[game.currentQuestion];
         if (!item) {

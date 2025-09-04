@@ -4,10 +4,11 @@
 /discloud
 /deprecated
 /node_modules
-/prisma/prisma
+/prisma/prisma/
 /prisma/erishelper/
 /prisma/devzone/
 /database.json
+/prisma/certs
 
 # Files
 /.env

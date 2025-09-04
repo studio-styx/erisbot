@@ -136,10 +136,10 @@ export async function botInfoMenu<R>(page: 'main' | 'hardware' | 'software' | 'c
                     `### Curiosidades`,
                     `- Minha desenvolvedora é o **Studio Styx**, comandado por **BirdTool**`,
                     `- Sou um bot de código aberto e meu código fonte está disponível no [GitHub](https://github.com/studio-styx/erisbot)`,
-                    `- Uso o banco de dados PostgreSQL hospedado pela [Shard Cloud](https://shardcloud.app/)`,
-                    `- Uso o banco de dados em memória **Redis** hospedada pela [SquareCloud](https://squarecloud.app/)`,
+                    `- Uso o banco de dados PostgreSQL`,
+                    `- Uso o banco de dados em memória **Redis**`,
                     `- Sabia que era pra eu ter originalmente sido feita em Kotlin? é possivel ver meu código antigo nos primeiros commits do meu github`,
-                    `- Sou hospedada pela [SquareCloud!](https://squarecloud.app/)`,
+                    `- Sou completamente hospedada pela [SquareCloud!](https://squarecloud.app/)`,
                     `- Você pode utilizar minha versão **canary** no nosso servidor principal! acesse-o apertando no botão abaixo`,
                     "- O meu servidor é uma **botlist**! você que é dev pode estar adicionando sua aplicação ao nosso servidor",
                     `- Sabia que agora eu possuo um website? você pode acessar ele em: **https://erisbot.squareweb.app/**`

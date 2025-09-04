@@ -90,8 +90,18 @@ const isAfkUser = async (userId: string): Promise<{ afk: boolean; reason?: strin
 };
 
 // Verifica usuários mencionados com status AFK
-const mentionedAfkUsers = async (message: string): Promise<{ userId: string; reason: string; time: Date }[]> => {
+const mentionedAfkUsers = async (message: string, msg: OmitPartialGroupDMChannel<Message<boolean>>): Promise<{ userId: string; reason: string; time: Date }[]> => {
     const userMentions = message.match(/<@!?(\d{17,20})>/g);
+    try {
+        const messageReply = msg.reference?.messageId;
+        if (messageReply) {
+            const repliedMessage = await msg.channel.messages.fetch(messageReply);
+            const userId = repliedMessage.author.id;
+            userMentions?.push(userId);
+        }
+    } catch (error) {
+        console.error("Não foi possivel obter a referência da mensagem:", error);
+    }
     if (!userMentions) return [];
 
     const afkUsers: { userId: string; reason: string; time: Date }[] = [];
@@ -149,7 +159,7 @@ export async function onAfkMentioned(interaction: OmitPartialGroupDMChannel<Mess
     }
 
     // Verifica usuários mencionados
-    const afkUsers = await mentionedAfkUsers(interaction.content);
+    const afkUsers = await mentionedAfkUsers(interaction.content, interaction);
     if (afkUsers.length === 0) return;
 
     const embeds: EmbedPlusBuilder[] = [];

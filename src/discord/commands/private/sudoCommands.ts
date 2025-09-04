@@ -178,7 +178,7 @@ createCommand({
                 await interaction.deferReply();
                 /*
                 const raw = await fs.readFile("database.json", "utf-8")
-                const { company, user, stock, stockHolding, stockHistory, guildMember, guildSettings } = JSON.parse(raw);
+                const { company, user, stock, stockHolding, stockHistory, guildMember, guildSettings, tryviaQuestions } = JSON.parse(raw);
 
                 await prisma.$transaction([
                     prisma.log.deleteMany(),
@@ -187,6 +187,7 @@ createCommand({
                 ]);
 
                 await prisma.$transaction(async (tx) => {
+                    await interaction.editReply(res.warning(`${icon.waiting_white} | Migrando empresas...`));
                     // companias
                     for (const c of company) {
                         await tx.company.create({
@@ -200,7 +201,8 @@ createCommand({
                             }
                         })
                     }
-
+                    
+                    await interaction.editReply(res.warning(`${icon.waiting_white} | Migrando usuários...`));
                     // usuários
                     for (const u of user) {
                         await tx.user.create({
@@ -215,6 +217,7 @@ createCommand({
                         })
                     }
 
+                    await interaction.editReply(res.warning(`${icon.waiting_white} | Migrando ações...`));
                     // stocks
                     for (const s of stock) {
                         await tx.stock.create({
@@ -228,8 +231,8 @@ createCommand({
                         })
                     }
 
+                    await interaction.editReply(res.warning(`${icon.waiting_white} | Migrando configurações de servers...`));
                     // guilds
-
                     for (const g of guildSettings) {
                         await tx.guildSettings.create({
                             data: {
@@ -251,6 +254,7 @@ createCommand({
                             }
                         })
                     }
+                    await interaction.editReply(res.warning(`${icon.waiting_white} | Migrando membros...`));
                     for (const g of guildMember) {
                         await tx.user.upsert({
                             where: {
@@ -269,19 +273,39 @@ createCommand({
                             },
                         });
                     }
+
+                    await interaction.editReply(res.warning(`${icon.waiting_white} | Migrando questões de trivia...`));
+                    // tryvia questions
+                    await tx.tryviaQuestions.createMany({
+                        data: tryviaQuestions.map((q: TryviaQuestions) => ({
+                            question: q.question,
+                            correctAnswer: q.correctAnswer,
+                            difficulty: q.difficulty,
+                            type: q.type,
+                            correct: q.correct,
+                            tags: q.tags,
+                            correctAnswersVariation: q.correctAnswersVariation,
+                            explanation: q.explanation,
+                            incorrectAnswers: q.incorrectAnswers,
+                            createdAt: q.createdAt,
+                            updatedAt: q.updatedAt,
+                            status: q.status,
+                            origin: q.origin
+                        }))
+                    })
                 }, {
-                    timeout: 60000,
-                    maxWait: 60000
+                    timeout: 120000,
+                    maxWait: 120000
                 })
                 */
 
-                interaction.editReply("success")
+                interaction.editReply(res.success("Migração concluída"))
                 return;
             }
             case "test": {
                 await interaction.deferReply()
                 /*
-                const [application, company, guildMember, guildSettings, mails, stock, stockHistory, stockHolding, user] = await prisma.$transaction([
+                const [application, company, guildMember, guildSettings, mails, stock, stockHistory, stockHolding, user, tryviaQuestions] = await prisma.$transaction([
                     prisma.application.findMany(),
                     prisma.company.findMany(),
                     prisma.guildMember.findMany(),
@@ -291,6 +315,7 @@ createCommand({
                     prisma.stockHistory.findMany(),
                     prisma.stockHolding.findMany(),
                     prisma.user.findMany(),
+                    prisma.tryviaQuestions.findMany()
                 ])
 
                 await fs.writeFile(
@@ -305,9 +330,10 @@ createCommand({
                         stockHistory,
                         stockHolding,
                         user,
+                        tryviaQuestions
                     }, null, 2)
                 )
-                */
+                    */
                 interaction.editReply("definido com sucesso")
                 return;
             }
