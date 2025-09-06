@@ -64,6 +64,7 @@ export async function economyTransferCommand(interaction: ChatInputCommandIntera
             flags: ["IsComponentsV2"],
             components: [container]
         })
+        cooldown.set(interaction.user.id, new Date(Date.now() + 40 * 1000), { time: 40 * 1000 });
         return;
     }
 
@@ -101,6 +102,18 @@ export async function economyTransferCommand(interaction: ChatInputCommandIntera
         return;
     }
 
+    const transaction = await prisma.transaction.create({
+        data: {
+            amount: value,
+            userId: authorId,
+            targetId: targetId,
+            type: "USER",
+            guildId: interaction.guildId,
+            channelId: interaction.channelId,
+        },
+        select: { id: true }
+    })
+
     const embed = createEmbed({
         title: `Transferência`,
         description: brBuilder(
@@ -110,14 +123,19 @@ export async function economyTransferCommand(interaction: ChatInputCommandIntera
     });
     const row = createRow(
         new ButtonBuilder({
-            customId: `transfer/${authorId}/0/${targetId}/0/${value}`,
+            customId: `transfer/${authorId}/0/${targetId}/0/${value}/${transaction.id}`,
             emoji: icon.paid,
             label: "Confirmar ( 0/2 )",
             style: ButtonStyle.Success
         })
     )
 
-    interaction.editReply({ embeds: [embed], components: [row] });
-    cooldown.set(interaction.user.id, new Date(Date.now() + 60 * 1000), { time: 60 * 1000 });
+    const msg = await interaction.editReply({ embeds: [embed], components: [row] });
+    cooldown.set(interaction.user.id, new Date(Date.now() + 20 * 1000), { time: 20 * 1000 });
+
+    await prisma.transaction.update({
+        where: { id: transaction.id },
+        data: { messageId: msg.id }
+    })
     return;
 }

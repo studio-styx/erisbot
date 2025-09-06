@@ -99,7 +99,7 @@ createResponder({
                 ),
                 createSeparator(),
                 users.length > 0 ? brBuilder(
-                    `Uma transação foi iniciada com: ${users.length === 1 ? "1 usuário" : `${users.length} usuários`}, eles tem que aceitar as transações abaixo para receber o dinheiro.`,
+                    `Uma transação foi iniciada com: **${users.length === 1 ? "1 usuário" : `${users.length} usuários`}**, eles tem que aceitar as transações abaixo para receber o dinheiro.`,
                     "-# A transação não depende de todos os usuários para ser concluida, assim que o usuário aceitar sua transação ele receberá seu dinheiro."
                 ) : brBuilder(
                     `Nenhum usuário foi encontrado para iniciar a transação! ${icon.Eris_cry}`
@@ -124,6 +124,25 @@ createResponder({
         });
 
         for (const target of users) {
+            const [_, transaction] = await prisma.$transaction([
+                prisma.user.upsert({
+                    where: { id: target.id },
+                    create: { id: target.id },
+                    update: {}
+                }),
+                prisma.transaction.create({
+                    data: {
+                        userId: interaction.user.id,
+                        targetId: target.id,
+                        amount,
+                        guildId: interaction.guildId,
+                        channelId: interaction.channelId,
+                        type: "USER",
+                        status: "PENDING"
+                    },
+                    select: { id: true }
+                })
+            ])
             const embed = createEmbed({
                 title: `Transferência`,
                 description: brBuilder(
@@ -133,16 +152,21 @@ createResponder({
             });
             const row = createRow(
                 new ButtonBuilder({
-                    customId: `transfer/${interaction.user.id}/1/${target.id}/0/${amount}`,
+                    customId: `transfer/${interaction.user.id}/1/${target.id}/0/${transaction.id}`,
                     emoji: icon.paid,
                     label: "Confirmar ( 1/2 )",
                     style: ButtonStyle.Success
                 })
             )
 
-            await interaction.followUp({
+            const msg = await interaction.followUp({
                 embeds: [embed],
                 components: [row]
+            });
+
+            await prisma.transaction.update({
+                where: { id: transaction.id },
+                data: { messageId: msg.id }
             })
         }
     },

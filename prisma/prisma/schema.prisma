@@ -15,24 +15,26 @@ datasource db {
 }
 
 model User {
-  id               String         @id
-  money            Decimal        @default(0.0) @db.Decimal(12, 2)
-  bank             Decimal        @default(50.0) @db.Decimal(12, 2)
-  xp               Int            @default(0)
-  company          Company?       @relation(fields: [companyId], references: [id], onDelete: SetNull)
-  companyId        Int?
-  logs             Log[]
-  cooldowns        Cooldown[]
-  stocks           StockHolding[]
-  mails            Mails[]        @relation("ReceivedMails")
-  sendedMails      Mails[]        @relation("SentMails")
-  mailsTagsIgnored String[]       @default([])
-  dmNotification   Boolean        @default(false)
-  applications     Application[]
-  token            Json?
-  afkReasson       String?
-  afkTime          DateTime?
-  guilds           GuildMember[]
+  id                   String         @id
+  money                Decimal        @default(0.0) @db.Decimal(12, 2)
+  bank                 Decimal        @default(50.0) @db.Decimal(12, 2)
+  xp                   Int            @default(0)
+  company              Company?       @relation(fields: [companyId], references: [id], onDelete: SetNull)
+  companyId            Int?
+  logs                 Log[]
+  cooldowns            Cooldown[]
+  stocks               StockHolding[]
+  mails                Mails[]        @relation("ReceivedMails")
+  sendedMails          Mails[]        @relation("SentMails")
+  mailsTagsIgnored     String[]       @default([])
+  dmNotification       Boolean        @default(false)
+  applications         Application[]
+  token                Json?
+  afkReasson           String?
+  afkTime              DateTime?
+  guilds               GuildMember[]
+  ransactionsSent      Transaction[]  @relation("UserTransactions")
+  transactionsReceived Transaction[]  @relation("TargetTransactions")
 }
 
 model TryviaQuestions {
@@ -105,6 +107,52 @@ model Log {
   level     Int      @default(0)
   type      String   @default("info")
   tags      String[] @default([])
+}
+
+model Transaction {
+  id Int @id @default(autoincrement())
+
+  userId String
+  user   User   @relation("UserTransactions", fields: [userId], references: [id])
+
+  targetId String?
+  target   User?   @relation("TargetTransactions", fields: [targetId], references: [id])
+
+  amount   Float
+  quitType TransactionQuitType?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt()
+
+  guildId String?
+  guild   GuildSettings? @relation(fields: [guildId], references: [id], onDelete: Cascade)
+
+  channelId String?
+  messageId String?
+
+  reason String?
+  type   TransactionType   @default(USER)
+  status TransactionStatus @default(PENDING)
+}
+
+enum TransactionType {
+  API
+  USER
+  ADMIN
+  BUY
+  SELL
+}
+
+enum TransactionQuitType {
+  SUB
+  SUM
+}
+
+enum TransactionStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  EXPIRED
 }
 
 model Cooldown {
@@ -185,7 +233,8 @@ model GuildSettings {
 
   levelGrant Json @default("[]")
 
-  members GuildMember[]
+  members      GuildMember[]
+  transactions Transaction[]
 }
 
 model GuildMember {

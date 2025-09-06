@@ -9,7 +9,7 @@ import { ButtonBuilder, ButtonStyle, userMention } from "discord.js";
 const trys = new Store<number>()
 
 createResponder({
-    customId: "transfer/:authorId/:authorAccepted/:targetId/:targetAccepted/:value",
+    customId: "transfer/:authorId/:authorAccepted/:targetId/:targetAccepted//:transactionId",
     types: [ResponderType.Button], cache: "cached",
     parse(params) {
         return {
@@ -17,10 +17,10 @@ createResponder({
             authorAccepted: params.authorAccepted === "1",
             targetId: params.targetId,
             targetAccepted: params.targetAccepted === "1",
-            value: Number(params.value)
+            transactionId: Number(params.transactionId)
         }
     },
-    async run(interaction, { authorId, authorAccepted, targetId, targetAccepted, value }) {
+    async run(interaction, { authorId, authorAccepted, targetId, targetAccepted, transactionId }) {
         const { user } = interaction;
 
         if (user.id !== authorId && user.id !== targetId) {
@@ -79,6 +79,10 @@ createResponder({
         if (newAuthorAccepted && newTargetAccepted) {
             await interaction.deferUpdate();
 
+            const transaction = await prisma.transaction.findUniqueOrThrow({
+                where: { id: transactionId },
+            });
+
             try {
                 // Primeiro, executa a transação para atualizar os saldos
                 const { newAuthor, newTarget } = await prisma.$transaction<{
@@ -90,29 +94,46 @@ createResponder({
                         select: { money: true }
                     });
 
-                    if (author.money.toNumber() < value) {
+                    if (author.money.toNumber() < transaction.amount) {
                         await interaction.followUp(
                             res.danger(`${icon.denied} | Saldo insuficiente!`)
                         );
                         throw new Error('Saldo insuficiente');
                     }
 
+                    if (transaction.status !== "PENDING") {
+                        if (transaction.status === "EXPIRED") {
+                            await interaction.followUp(
+                                res.danger(`${icon.Eris_cry} | Você demorou demais para aceitar essa transação, por isso ela foi fechada!`)
+                            )
+                            throw new Error('Essa transação foi expirada!');
+                        }
+                        await interaction.followUp(
+                            res.danger(`${icon.denied} | Essa transação já foi concluída!`)
+                        );
+                        throw new Error('Essa transação já foi concluída');
+                    }
+
                     const [updatedAuthor, updatedTarget] = await Promise.all([
                         tx.user.update({
                             where: { id: authorId },
-                            data: { money: { decrement: value } },
+                            data: { money: { decrement: transaction.amount } },
                             select: { money: true }
                         }),
                         tx.user.upsert({
                             where: { id: targetId },
                             create: {
                                 id: targetId,
-                                money: value + 50,
+                                money: transaction.amount + 50,
                             },
                             update: {
-                                money: { increment: value },
+                                money: { increment: transaction.amount },
                             },
                             select: { money: true }
+                        }),
+                        tx.transaction.update({
+                            where: { id: transactionId },
+                            data: { status: "APPROVED" },
                         })
                     ]);
 
@@ -121,14 +142,14 @@ createResponder({
 
                 await Promise.all([
                     registerLog({
-                        message: `Deu **${value} stx** para: ${userMention(targetId)}`,
+                        message: `Deu **${transaction.amount} stx** para: ${userMention(targetId)}`,
                         level: 6,
                         type: "info",
                         user: authorId,
                         tags: ["transfer", "transaction", "economy", "sub"]
                     }),
                     registerLog({
-                        message: `Recebeu **${value} stx** de: ${userMention(authorId)}`,
+                        message: `Recebeu **${transaction.amount} stx** de: ${userMention(authorId)}`,
                         level: 6,
                         type: "info",
                         user: targetId,
@@ -141,7 +162,7 @@ createResponder({
 
                 const embed = createEmbed({
                     title: `${icon.Eris_happy} Transferência concluída`,
-                    description: `${userMention(authorId)} Enviou **${value}** stx para ${userMention(targetId)}!`,
+                    description: `${userMention(authorId)} Enviou **${transaction.amount}** stx para ${userMention(targetId)}!`,
                     fields: [
                         {
                             name: `Saldo de ${authorUser?.displayName}`,
@@ -167,7 +188,7 @@ createResponder({
         }
 
         // Atualiza o botão com os novos valores
-        const newCustomId = `transfer/${authorId}/${newAuthorAccepted ? "1" : "0"}/${targetId}/${newTargetAccepted ? "1" : "0"}/${value}`;
+        const newCustomId = `transfer/${authorId}/${newAuthorAccepted ? "1" : "0"}/${targetId}/${newTargetAccepted ? "1" : "0"}/${transactionId}`;
         const acceptedCount = (newAuthorAccepted ? 1 : 0) + (newTargetAccepted ? 1 : 0);
 
         const row = createRow(

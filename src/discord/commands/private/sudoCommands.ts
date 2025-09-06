@@ -178,7 +178,7 @@ createCommand({
                 await interaction.deferReply();
                 /*
                 const raw = await fs.readFile("database.json", "utf-8")
-                const { company, user, stock, stockHolding, stockHistory, guildMember, guildSettings, tryviaQuestions } = JSON.parse(raw);
+                const { company, user, stock, stockHolding, stockHistory, guildMember, guildSettings, tryviaQuestions, application } = JSON.parse(raw);
 
                 await prisma.$transaction([
                     prisma.log.deleteMany(),
@@ -293,6 +293,12 @@ createCommand({
                             origin: q.origin
                         }))
                     })
+
+                    await interaction.editReply(res.warning(`${icon.waiting_white} | migrando aplicações...`));
+                    // applications
+                    await tx.application.createMany({
+                        data: application
+                    })
                 }, {
                     timeout: 120000,
                     maxWait: 120000
@@ -304,6 +310,7 @@ createCommand({
             }
             case "test": {
                 await interaction.deferReply()
+                
                 /*
                 const [application, company, guildMember, guildSettings, mails, stock, stockHistory, stockHolding, user, tryviaQuestions] = await prisma.$transaction([
                     prisma.application.findMany(),

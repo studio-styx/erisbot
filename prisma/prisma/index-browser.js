@@ -174,6 +174,22 @@ exports.Prisma.LogScalarFieldEnum = {
   tags: 'tags'
 };
 
+exports.Prisma.TransactionScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  targetId: 'targetId',
+  amount: 'amount',
+  quitType: 'quitType',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  guildId: 'guildId',
+  channelId: 'channelId',
+  messageId: 'messageId',
+  reason: 'reason',
+  type: 'type',
+  status: 'status'
+};
+
 exports.Prisma.CooldownScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
@@ -306,12 +322,33 @@ exports.TryviaOrigin = exports.$Enums.TryviaOrigin = {
   ADMIN: 'ADMIN'
 };
 
+exports.TransactionQuitType = exports.$Enums.TransactionQuitType = {
+  SUB: 'SUB',
+  SUM: 'SUM'
+};
+
+exports.TransactionType = exports.$Enums.TransactionType = {
+  API: 'API',
+  USER: 'USER',
+  ADMIN: 'ADMIN',
+  BUY: 'BUY',
+  SELL: 'SELL'
+};
+
+exports.TransactionStatus = exports.$Enums.TransactionStatus = {
+  PENDING: 'PENDING',
+  APPROVED: 'APPROVED',
+  REJECTED: 'REJECTED',
+  EXPIRED: 'EXPIRED'
+};
+
 exports.Prisma.ModelName = {
   User: 'User',
   TryviaQuestions: 'TryviaQuestions',
   Application: 'Application',
   Requisition: 'Requisition',
   Log: 'Log',
+  Transaction: 'Transaction',
   Cooldown: 'Cooldown',
   Company: 'Company',
   Stock: 'Stock',

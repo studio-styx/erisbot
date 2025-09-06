@@ -39,6 +39,11 @@ export type Requisition = $Result.DefaultSelection<Prisma.$RequisitionPayload>
  */
 export type Log = $Result.DefaultSelection<Prisma.$LogPayload>
 /**
+ * Model Transaction
+ * 
+ */
+export type Transaction = $Result.DefaultSelection<Prisma.$TransactionPayload>
+/**
  * Model Cooldown
  * 
  */
@@ -119,6 +124,35 @@ export const TryviaDifficulty: {
 
 export type TryviaDifficulty = (typeof TryviaDifficulty)[keyof typeof TryviaDifficulty]
 
+
+export const TransactionType: {
+  API: 'API',
+  USER: 'USER',
+  ADMIN: 'ADMIN',
+  BUY: 'BUY',
+  SELL: 'SELL'
+};
+
+export type TransactionType = (typeof TransactionType)[keyof typeof TransactionType]
+
+
+export const TransactionQuitType: {
+  SUB: 'SUB',
+  SUM: 'SUM'
+};
+
+export type TransactionQuitType = (typeof TransactionQuitType)[keyof typeof TransactionQuitType]
+
+
+export const TransactionStatus: {
+  PENDING: 'PENDING',
+  APPROVED: 'APPROVED',
+  REJECTED: 'REJECTED',
+  EXPIRED: 'EXPIRED'
+};
+
+export type TransactionStatus = (typeof TransactionStatus)[keyof typeof TransactionStatus]
+
 }
 
 export type TryviaStatus = $Enums.TryviaStatus
@@ -136,6 +170,18 @@ export const TryviaOrigin: typeof $Enums.TryviaOrigin
 export type TryviaDifficulty = $Enums.TryviaDifficulty
 
 export const TryviaDifficulty: typeof $Enums.TryviaDifficulty
+
+export type TransactionType = $Enums.TransactionType
+
+export const TransactionType: typeof $Enums.TransactionType
+
+export type TransactionQuitType = $Enums.TransactionQuitType
+
+export const TransactionQuitType: typeof $Enums.TransactionQuitType
+
+export type TransactionStatus = $Enums.TransactionStatus
+
+export const TransactionStatus: typeof $Enums.TransactionStatus
 
 /**
  * ##  Prisma Client ʲˢ
@@ -304,6 +350,16 @@ export class PrismaClient<
     * ```
     */
   get log(): Prisma.LogDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.transaction`: Exposes CRUD operations for the **Transaction** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Transactions
+    * const transactions = await prisma.transaction.findMany()
+    * ```
+    */
+  get transaction(): Prisma.TransactionDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.cooldown`: Exposes CRUD operations for the **Cooldown** model.
@@ -829,6 +885,7 @@ export namespace Prisma {
     Application: 'Application',
     Requisition: 'Requisition',
     Log: 'Log',
+    Transaction: 'Transaction',
     Cooldown: 'Cooldown',
     Company: 'Company',
     Stock: 'Stock',
@@ -855,7 +912,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "tryviaQuestions" | "application" | "requisition" | "log" | "cooldown" | "company" | "stock" | "stockHistory" | "stockHolding" | "guildSettings" | "guildMember" | "mails"
+      modelProps: "user" | "tryviaQuestions" | "application" | "requisition" | "log" | "transaction" | "cooldown" | "company" | "stock" | "stockHistory" | "stockHolding" | "guildSettings" | "guildMember" | "mails"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1226,6 +1283,80 @@ export namespace Prisma {
           count: {
             args: Prisma.LogCountArgs<ExtArgs>
             result: $Utils.Optional<LogCountAggregateOutputType> | number
+          }
+        }
+      }
+      Transaction: {
+        payload: Prisma.$TransactionPayload<ExtArgs>
+        fields: Prisma.TransactionFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.TransactionFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TransactionPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.TransactionFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TransactionPayload>
+          }
+          findFirst: {
+            args: Prisma.TransactionFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TransactionPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.TransactionFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TransactionPayload>
+          }
+          findMany: {
+            args: Prisma.TransactionFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TransactionPayload>[]
+          }
+          create: {
+            args: Prisma.TransactionCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TransactionPayload>
+          }
+          createMany: {
+            args: Prisma.TransactionCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.TransactionCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TransactionPayload>[]
+          }
+          delete: {
+            args: Prisma.TransactionDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TransactionPayload>
+          }
+          update: {
+            args: Prisma.TransactionUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TransactionPayload>
+          }
+          deleteMany: {
+            args: Prisma.TransactionDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.TransactionUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.TransactionUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TransactionPayload>[]
+          }
+          upsert: {
+            args: Prisma.TransactionUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TransactionPayload>
+          }
+          aggregate: {
+            args: Prisma.TransactionAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateTransaction>
+          }
+          groupBy: {
+            args: Prisma.TransactionGroupByArgs<ExtArgs>
+            result: $Utils.Optional<TransactionGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.TransactionCountArgs<ExtArgs>
+            result: $Utils.Optional<TransactionCountAggregateOutputType> | number
           }
         }
       }
@@ -1918,6 +2049,7 @@ export namespace Prisma {
     application?: ApplicationOmit
     requisition?: RequisitionOmit
     log?: LogOmit
+    transaction?: TransactionOmit
     cooldown?: CooldownOmit
     company?: CompanyOmit
     stock?: StockOmit
@@ -2013,6 +2145,8 @@ export namespace Prisma {
     sendedMails: number
     applications: number
     guilds: number
+    ransactionsSent: number
+    transactionsReceived: number
   }
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -2023,6 +2157,8 @@ export namespace Prisma {
     sendedMails?: boolean | UserCountOutputTypeCountSendedMailsArgs
     applications?: boolean | UserCountOutputTypeCountApplicationsArgs
     guilds?: boolean | UserCountOutputTypeCountGuildsArgs
+    ransactionsSent?: boolean | UserCountOutputTypeCountRansactionsSentArgs
+    transactionsReceived?: boolean | UserCountOutputTypeCountTransactionsReceivedArgs
   }
 
   // Custom InputTypes
@@ -2083,6 +2219,20 @@ export namespace Prisma {
    */
   export type UserCountOutputTypeCountGuildsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: GuildMemberWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountRansactionsSentArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: TransactionWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountTransactionsReceivedArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: TransactionWhereInput
   }
 
 
@@ -2194,10 +2344,12 @@ export namespace Prisma {
 
   export type GuildSettingsCountOutputType = {
     members: number
+    transactions: number
   }
 
   export type GuildSettingsCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     members?: boolean | GuildSettingsCountOutputTypeCountMembersArgs
+    transactions?: boolean | GuildSettingsCountOutputTypeCountTransactionsArgs
   }
 
   // Custom InputTypes
@@ -2216,6 +2368,13 @@ export namespace Prisma {
    */
   export type GuildSettingsCountOutputTypeCountMembersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: GuildMemberWhereInput
+  }
+
+  /**
+   * GuildSettingsCountOutputType without action
+   */
+  export type GuildSettingsCountOutputTypeCountTransactionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: TransactionWhereInput
   }
 
 
@@ -2473,6 +2632,8 @@ export namespace Prisma {
     sendedMails?: boolean | User$sendedMailsArgs<ExtArgs>
     applications?: boolean | User$applicationsArgs<ExtArgs>
     guilds?: boolean | User$guildsArgs<ExtArgs>
+    ransactionsSent?: boolean | User$ransactionsSentArgs<ExtArgs>
+    transactionsReceived?: boolean | User$transactionsReceivedArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -2527,6 +2688,8 @@ export namespace Prisma {
     sendedMails?: boolean | User$sendedMailsArgs<ExtArgs>
     applications?: boolean | User$applicationsArgs<ExtArgs>
     guilds?: boolean | User$guildsArgs<ExtArgs>
+    ransactionsSent?: boolean | User$ransactionsSentArgs<ExtArgs>
+    transactionsReceived?: boolean | User$transactionsReceivedArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -2547,6 +2710,8 @@ export namespace Prisma {
       sendedMails: Prisma.$MailsPayload<ExtArgs>[]
       applications: Prisma.$ApplicationPayload<ExtArgs>[]
       guilds: Prisma.$GuildMemberPayload<ExtArgs>[]
+      ransactionsSent: Prisma.$TransactionPayload<ExtArgs>[]
+      transactionsReceived: Prisma.$TransactionPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -2961,6 +3126,8 @@ export namespace Prisma {
     sendedMails<T extends User$sendedMailsArgs<ExtArgs> = {}>(args?: Subset<T, User$sendedMailsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MailsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     applications<T extends User$applicationsArgs<ExtArgs> = {}>(args?: Subset<T, User$applicationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ApplicationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     guilds<T extends User$guildsArgs<ExtArgs> = {}>(args?: Subset<T, User$guildsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$GuildMemberPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    ransactionsSent<T extends User$ransactionsSentArgs<ExtArgs> = {}>(args?: Subset<T, User$ransactionsSentArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TransactionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    transactionsReceived<T extends User$transactionsReceivedArgs<ExtArgs> = {}>(args?: Subset<T, User$transactionsReceivedArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TransactionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -3580,6 +3747,54 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: GuildMemberScalarFieldEnum | GuildMemberScalarFieldEnum[]
+  }
+
+  /**
+   * User.ransactionsSent
+   */
+  export type User$ransactionsSentArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Transaction
+     */
+    select?: TransactionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Transaction
+     */
+    omit?: TransactionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TransactionInclude<ExtArgs> | null
+    where?: TransactionWhereInput
+    orderBy?: TransactionOrderByWithRelationInput | TransactionOrderByWithRelationInput[]
+    cursor?: TransactionWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: TransactionScalarFieldEnum | TransactionScalarFieldEnum[]
+  }
+
+  /**
+   * User.transactionsReceived
+   */
+  export type User$transactionsReceivedArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Transaction
+     */
+    select?: TransactionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Transaction
+     */
+    omit?: TransactionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TransactionInclude<ExtArgs> | null
+    where?: TransactionWhereInput
+    orderBy?: TransactionOrderByWithRelationInput | TransactionOrderByWithRelationInput[]
+    cursor?: TransactionWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: TransactionScalarFieldEnum | TransactionScalarFieldEnum[]
   }
 
   /**
@@ -8038,6 +8253,1260 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: LogInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model Transaction
+   */
+
+  export type AggregateTransaction = {
+    _count: TransactionCountAggregateOutputType | null
+    _avg: TransactionAvgAggregateOutputType | null
+    _sum: TransactionSumAggregateOutputType | null
+    _min: TransactionMinAggregateOutputType | null
+    _max: TransactionMaxAggregateOutputType | null
+  }
+
+  export type TransactionAvgAggregateOutputType = {
+    id: number | null
+    amount: number | null
+  }
+
+  export type TransactionSumAggregateOutputType = {
+    id: number | null
+    amount: number | null
+  }
+
+  export type TransactionMinAggregateOutputType = {
+    id: number | null
+    userId: string | null
+    targetId: string | null
+    amount: number | null
+    quitType: $Enums.TransactionQuitType | null
+    createdAt: Date | null
+    updatedAt: Date | null
+    guildId: string | null
+    channelId: string | null
+    messageId: string | null
+    reason: string | null
+    type: $Enums.TransactionType | null
+    status: $Enums.TransactionStatus | null
+  }
+
+  export type TransactionMaxAggregateOutputType = {
+    id: number | null
+    userId: string | null
+    targetId: string | null
+    amount: number | null
+    quitType: $Enums.TransactionQuitType | null
+    createdAt: Date | null
+    updatedAt: Date | null
+    guildId: string | null
+    channelId: string | null
+    messageId: string | null
+    reason: string | null
+    type: $Enums.TransactionType | null
+    status: $Enums.TransactionStatus | null
+  }
+
+  export type TransactionCountAggregateOutputType = {
+    id: number
+    userId: number
+    targetId: number
+    amount: number
+    quitType: number
+    createdAt: number
+    updatedAt: number
+    guildId: number
+    channelId: number
+    messageId: number
+    reason: number
+    type: number
+    status: number
+    _all: number
+  }
+
+
+  export type TransactionAvgAggregateInputType = {
+    id?: true
+    amount?: true
+  }
+
+  export type TransactionSumAggregateInputType = {
+    id?: true
+    amount?: true
+  }
+
+  export type TransactionMinAggregateInputType = {
+    id?: true
+    userId?: true
+    targetId?: true
+    amount?: true
+    quitType?: true
+    createdAt?: true
+    updatedAt?: true
+    guildId?: true
+    channelId?: true
+    messageId?: true
+    reason?: true
+    type?: true
+    status?: true
+  }
+
+  export type TransactionMaxAggregateInputType = {
+    id?: true
+    userId?: true
+    targetId?: true
+    amount?: true
+    quitType?: true
+    createdAt?: true
+    updatedAt?: true
+    guildId?: true
+    channelId?: true
+    messageId?: true
+    reason?: true
+    type?: true
+    status?: true
+  }
+
+  export type TransactionCountAggregateInputType = {
+    id?: true
+    userId?: true
+    targetId?: true
+    amount?: true
+    quitType?: true
+    createdAt?: true
+    updatedAt?: true
+    guildId?: true
+    channelId?: true
+    messageId?: true
+    reason?: true
+    type?: true
+    status?: true
+    _all?: true
+  }
+
+  export type TransactionAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Transaction to aggregate.
+     */
+    where?: TransactionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Transactions to fetch.
+     */
+    orderBy?: TransactionOrderByWithRelationInput | TransactionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: TransactionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Transactions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Transactions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned Transactions
+    **/
+    _count?: true | TransactionCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: TransactionAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: TransactionSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: TransactionMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: TransactionMaxAggregateInputType
+  }
+
+  export type GetTransactionAggregateType<T extends TransactionAggregateArgs> = {
+        [P in keyof T & keyof AggregateTransaction]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateTransaction[P]>
+      : GetScalarType<T[P], AggregateTransaction[P]>
+  }
+
+
+
+
+  export type TransactionGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: TransactionWhereInput
+    orderBy?: TransactionOrderByWithAggregationInput | TransactionOrderByWithAggregationInput[]
+    by: TransactionScalarFieldEnum[] | TransactionScalarFieldEnum
+    having?: TransactionScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: TransactionCountAggregateInputType | true
+    _avg?: TransactionAvgAggregateInputType
+    _sum?: TransactionSumAggregateInputType
+    _min?: TransactionMinAggregateInputType
+    _max?: TransactionMaxAggregateInputType
+  }
+
+  export type TransactionGroupByOutputType = {
+    id: number
+    userId: string
+    targetId: string | null
+    amount: number
+    quitType: $Enums.TransactionQuitType | null
+    createdAt: Date
+    updatedAt: Date
+    guildId: string | null
+    channelId: string | null
+    messageId: string | null
+    reason: string | null
+    type: $Enums.TransactionType
+    status: $Enums.TransactionStatus
+    _count: TransactionCountAggregateOutputType | null
+    _avg: TransactionAvgAggregateOutputType | null
+    _sum: TransactionSumAggregateOutputType | null
+    _min: TransactionMinAggregateOutputType | null
+    _max: TransactionMaxAggregateOutputType | null
+  }
+
+  type GetTransactionGroupByPayload<T extends TransactionGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<TransactionGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof TransactionGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], TransactionGroupByOutputType[P]>
+            : GetScalarType<T[P], TransactionGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type TransactionSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    targetId?: boolean
+    amount?: boolean
+    quitType?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    guildId?: boolean
+    channelId?: boolean
+    messageId?: boolean
+    reason?: boolean
+    type?: boolean
+    status?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    target?: boolean | Transaction$targetArgs<ExtArgs>
+    guild?: boolean | Transaction$guildArgs<ExtArgs>
+  }, ExtArgs["result"]["transaction"]>
+
+  export type TransactionSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    targetId?: boolean
+    amount?: boolean
+    quitType?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    guildId?: boolean
+    channelId?: boolean
+    messageId?: boolean
+    reason?: boolean
+    type?: boolean
+    status?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    target?: boolean | Transaction$targetArgs<ExtArgs>
+    guild?: boolean | Transaction$guildArgs<ExtArgs>
+  }, ExtArgs["result"]["transaction"]>
+
+  export type TransactionSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    targetId?: boolean
+    amount?: boolean
+    quitType?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    guildId?: boolean
+    channelId?: boolean
+    messageId?: boolean
+    reason?: boolean
+    type?: boolean
+    status?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    target?: boolean | Transaction$targetArgs<ExtArgs>
+    guild?: boolean | Transaction$guildArgs<ExtArgs>
+  }, ExtArgs["result"]["transaction"]>
+
+  export type TransactionSelectScalar = {
+    id?: boolean
+    userId?: boolean
+    targetId?: boolean
+    amount?: boolean
+    quitType?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    guildId?: boolean
+    channelId?: boolean
+    messageId?: boolean
+    reason?: boolean
+    type?: boolean
+    status?: boolean
+  }
+
+  export type TransactionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "targetId" | "amount" | "quitType" | "createdAt" | "updatedAt" | "guildId" | "channelId" | "messageId" | "reason" | "type" | "status", ExtArgs["result"]["transaction"]>
+  export type TransactionInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    target?: boolean | Transaction$targetArgs<ExtArgs>
+    guild?: boolean | Transaction$guildArgs<ExtArgs>
+  }
+  export type TransactionIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    target?: boolean | Transaction$targetArgs<ExtArgs>
+    guild?: boolean | Transaction$guildArgs<ExtArgs>
+  }
+  export type TransactionIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    target?: boolean | Transaction$targetArgs<ExtArgs>
+    guild?: boolean | Transaction$guildArgs<ExtArgs>
+  }
+
+  export type $TransactionPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "Transaction"
+    objects: {
+      user: Prisma.$UserPayload<ExtArgs>
+      target: Prisma.$UserPayload<ExtArgs> | null
+      guild: Prisma.$GuildSettingsPayload<ExtArgs> | null
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: number
+      userId: string
+      targetId: string | null
+      amount: number
+      quitType: $Enums.TransactionQuitType | null
+      createdAt: Date
+      updatedAt: Date
+      guildId: string | null
+      channelId: string | null
+      messageId: string | null
+      reason: string | null
+      type: $Enums.TransactionType
+      status: $Enums.TransactionStatus
+    }, ExtArgs["result"]["transaction"]>
+    composites: {}
+  }
+
+  type TransactionGetPayload<S extends boolean | null | undefined | TransactionDefaultArgs> = $Result.GetResult<Prisma.$TransactionPayload, S>
+
+  type TransactionCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<TransactionFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: TransactionCountAggregateInputType | true
+    }
+
+  export interface TransactionDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Transaction'], meta: { name: 'Transaction' } }
+    /**
+     * Find zero or one Transaction that matches the filter.
+     * @param {TransactionFindUniqueArgs} args - Arguments to find a Transaction
+     * @example
+     * // Get one Transaction
+     * const transaction = await prisma.transaction.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends TransactionFindUniqueArgs>(args: SelectSubset<T, TransactionFindUniqueArgs<ExtArgs>>): Prisma__TransactionClient<$Result.GetResult<Prisma.$TransactionPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one Transaction that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {TransactionFindUniqueOrThrowArgs} args - Arguments to find a Transaction
+     * @example
+     * // Get one Transaction
+     * const transaction = await prisma.transaction.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends TransactionFindUniqueOrThrowArgs>(args: SelectSubset<T, TransactionFindUniqueOrThrowArgs<ExtArgs>>): Prisma__TransactionClient<$Result.GetResult<Prisma.$TransactionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Transaction that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TransactionFindFirstArgs} args - Arguments to find a Transaction
+     * @example
+     * // Get one Transaction
+     * const transaction = await prisma.transaction.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends TransactionFindFirstArgs>(args?: SelectSubset<T, TransactionFindFirstArgs<ExtArgs>>): Prisma__TransactionClient<$Result.GetResult<Prisma.$TransactionPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Transaction that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TransactionFindFirstOrThrowArgs} args - Arguments to find a Transaction
+     * @example
+     * // Get one Transaction
+     * const transaction = await prisma.transaction.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends TransactionFindFirstOrThrowArgs>(args?: SelectSubset<T, TransactionFindFirstOrThrowArgs<ExtArgs>>): Prisma__TransactionClient<$Result.GetResult<Prisma.$TransactionPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more Transactions that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TransactionFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Transactions
+     * const transactions = await prisma.transaction.findMany()
+     * 
+     * // Get first 10 Transactions
+     * const transactions = await prisma.transaction.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const transactionWithIdOnly = await prisma.transaction.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends TransactionFindManyArgs>(args?: SelectSubset<T, TransactionFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TransactionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a Transaction.
+     * @param {TransactionCreateArgs} args - Arguments to create a Transaction.
+     * @example
+     * // Create one Transaction
+     * const Transaction = await prisma.transaction.create({
+     *   data: {
+     *     // ... data to create a Transaction
+     *   }
+     * })
+     * 
+     */
+    create<T extends TransactionCreateArgs>(args: SelectSubset<T, TransactionCreateArgs<ExtArgs>>): Prisma__TransactionClient<$Result.GetResult<Prisma.$TransactionPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many Transactions.
+     * @param {TransactionCreateManyArgs} args - Arguments to create many Transactions.
+     * @example
+     * // Create many Transactions
+     * const transaction = await prisma.transaction.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends TransactionCreateManyArgs>(args?: SelectSubset<T, TransactionCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many Transactions and returns the data saved in the database.
+     * @param {TransactionCreateManyAndReturnArgs} args - Arguments to create many Transactions.
+     * @example
+     * // Create many Transactions
+     * const transaction = await prisma.transaction.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many Transactions and only return the `id`
+     * const transactionWithIdOnly = await prisma.transaction.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends TransactionCreateManyAndReturnArgs>(args?: SelectSubset<T, TransactionCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TransactionPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a Transaction.
+     * @param {TransactionDeleteArgs} args - Arguments to delete one Transaction.
+     * @example
+     * // Delete one Transaction
+     * const Transaction = await prisma.transaction.delete({
+     *   where: {
+     *     // ... filter to delete one Transaction
+     *   }
+     * })
+     * 
+     */
+    delete<T extends TransactionDeleteArgs>(args: SelectSubset<T, TransactionDeleteArgs<ExtArgs>>): Prisma__TransactionClient<$Result.GetResult<Prisma.$TransactionPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one Transaction.
+     * @param {TransactionUpdateArgs} args - Arguments to update one Transaction.
+     * @example
+     * // Update one Transaction
+     * const transaction = await prisma.transaction.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends TransactionUpdateArgs>(args: SelectSubset<T, TransactionUpdateArgs<ExtArgs>>): Prisma__TransactionClient<$Result.GetResult<Prisma.$TransactionPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more Transactions.
+     * @param {TransactionDeleteManyArgs} args - Arguments to filter Transactions to delete.
+     * @example
+     * // Delete a few Transactions
+     * const { count } = await prisma.transaction.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends TransactionDeleteManyArgs>(args?: SelectSubset<T, TransactionDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Transactions.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TransactionUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Transactions
+     * const transaction = await prisma.transaction.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends TransactionUpdateManyArgs>(args: SelectSubset<T, TransactionUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Transactions and returns the data updated in the database.
+     * @param {TransactionUpdateManyAndReturnArgs} args - Arguments to update many Transactions.
+     * @example
+     * // Update many Transactions
+     * const transaction = await prisma.transaction.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more Transactions and only return the `id`
+     * const transactionWithIdOnly = await prisma.transaction.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends TransactionUpdateManyAndReturnArgs>(args: SelectSubset<T, TransactionUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TransactionPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one Transaction.
+     * @param {TransactionUpsertArgs} args - Arguments to update or create a Transaction.
+     * @example
+     * // Update or create a Transaction
+     * const transaction = await prisma.transaction.upsert({
+     *   create: {
+     *     // ... data to create a Transaction
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Transaction we want to update
+     *   }
+     * })
+     */
+    upsert<T extends TransactionUpsertArgs>(args: SelectSubset<T, TransactionUpsertArgs<ExtArgs>>): Prisma__TransactionClient<$Result.GetResult<Prisma.$TransactionPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of Transactions.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TransactionCountArgs} args - Arguments to filter Transactions to count.
+     * @example
+     * // Count the number of Transactions
+     * const count = await prisma.transaction.count({
+     *   where: {
+     *     // ... the filter for the Transactions we want to count
+     *   }
+     * })
+    **/
+    count<T extends TransactionCountArgs>(
+      args?: Subset<T, TransactionCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], TransactionCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Transaction.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TransactionAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends TransactionAggregateArgs>(args: Subset<T, TransactionAggregateArgs>): Prisma.PrismaPromise<GetTransactionAggregateType<T>>
+
+    /**
+     * Group by Transaction.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TransactionGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends TransactionGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: TransactionGroupByArgs['orderBy'] }
+        : { orderBy?: TransactionGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, TransactionGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetTransactionGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the Transaction model
+   */
+  readonly fields: TransactionFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for Transaction.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__TransactionClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    target<T extends Transaction$targetArgs<ExtArgs> = {}>(args?: Subset<T, Transaction$targetArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    guild<T extends Transaction$guildArgs<ExtArgs> = {}>(args?: Subset<T, Transaction$guildArgs<ExtArgs>>): Prisma__GuildSettingsClient<$Result.GetResult<Prisma.$GuildSettingsPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the Transaction model
+   */
+  interface TransactionFieldRefs {
+    readonly id: FieldRef<"Transaction", 'Int'>
+    readonly userId: FieldRef<"Transaction", 'String'>
+    readonly targetId: FieldRef<"Transaction", 'String'>
+    readonly amount: FieldRef<"Transaction", 'Float'>
+    readonly quitType: FieldRef<"Transaction", 'TransactionQuitType'>
+    readonly createdAt: FieldRef<"Transaction", 'DateTime'>
+    readonly updatedAt: FieldRef<"Transaction", 'DateTime'>
+    readonly guildId: FieldRef<"Transaction", 'String'>
+    readonly channelId: FieldRef<"Transaction", 'String'>
+    readonly messageId: FieldRef<"Transaction", 'String'>
+    readonly reason: FieldRef<"Transaction", 'String'>
+    readonly type: FieldRef<"Transaction", 'TransactionType'>
+    readonly status: FieldRef<"Transaction", 'TransactionStatus'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * Transaction findUnique
+   */
+  export type TransactionFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Transaction
+     */
+    select?: TransactionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Transaction
+     */
+    omit?: TransactionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TransactionInclude<ExtArgs> | null
+    /**
+     * Filter, which Transaction to fetch.
+     */
+    where: TransactionWhereUniqueInput
+  }
+
+  /**
+   * Transaction findUniqueOrThrow
+   */
+  export type TransactionFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Transaction
+     */
+    select?: TransactionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Transaction
+     */
+    omit?: TransactionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TransactionInclude<ExtArgs> | null
+    /**
+     * Filter, which Transaction to fetch.
+     */
+    where: TransactionWhereUniqueInput
+  }
+
+  /**
+   * Transaction findFirst
+   */
+  export type TransactionFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Transaction
+     */
+    select?: TransactionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Transaction
+     */
+    omit?: TransactionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TransactionInclude<ExtArgs> | null
+    /**
+     * Filter, which Transaction to fetch.
+     */
+    where?: TransactionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Transactions to fetch.
+     */
+    orderBy?: TransactionOrderByWithRelationInput | TransactionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Transactions.
+     */
+    cursor?: TransactionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Transactions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Transactions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Transactions.
+     */
+    distinct?: TransactionScalarFieldEnum | TransactionScalarFieldEnum[]
+  }
+
+  /**
+   * Transaction findFirstOrThrow
+   */
+  export type TransactionFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Transaction
+     */
+    select?: TransactionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Transaction
+     */
+    omit?: TransactionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TransactionInclude<ExtArgs> | null
+    /**
+     * Filter, which Transaction to fetch.
+     */
+    where?: TransactionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Transactions to fetch.
+     */
+    orderBy?: TransactionOrderByWithRelationInput | TransactionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Transactions.
+     */
+    cursor?: TransactionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Transactions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Transactions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Transactions.
+     */
+    distinct?: TransactionScalarFieldEnum | TransactionScalarFieldEnum[]
+  }
+
+  /**
+   * Transaction findMany
+   */
+  export type TransactionFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Transaction
+     */
+    select?: TransactionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Transaction
+     */
+    omit?: TransactionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TransactionInclude<ExtArgs> | null
+    /**
+     * Filter, which Transactions to fetch.
+     */
+    where?: TransactionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Transactions to fetch.
+     */
+    orderBy?: TransactionOrderByWithRelationInput | TransactionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing Transactions.
+     */
+    cursor?: TransactionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Transactions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Transactions.
+     */
+    skip?: number
+    distinct?: TransactionScalarFieldEnum | TransactionScalarFieldEnum[]
+  }
+
+  /**
+   * Transaction create
+   */
+  export type TransactionCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Transaction
+     */
+    select?: TransactionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Transaction
+     */
+    omit?: TransactionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TransactionInclude<ExtArgs> | null
+    /**
+     * The data needed to create a Transaction.
+     */
+    data: XOR<TransactionCreateInput, TransactionUncheckedCreateInput>
+  }
+
+  /**
+   * Transaction createMany
+   */
+  export type TransactionCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many Transactions.
+     */
+    data: TransactionCreateManyInput | TransactionCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * Transaction createManyAndReturn
+   */
+  export type TransactionCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Transaction
+     */
+    select?: TransactionSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Transaction
+     */
+    omit?: TransactionOmit<ExtArgs> | null
+    /**
+     * The data used to create many Transactions.
+     */
+    data: TransactionCreateManyInput | TransactionCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TransactionIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * Transaction update
+   */
+  export type TransactionUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Transaction
+     */
+    select?: TransactionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Transaction
+     */
+    omit?: TransactionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TransactionInclude<ExtArgs> | null
+    /**
+     * The data needed to update a Transaction.
+     */
+    data: XOR<TransactionUpdateInput, TransactionUncheckedUpdateInput>
+    /**
+     * Choose, which Transaction to update.
+     */
+    where: TransactionWhereUniqueInput
+  }
+
+  /**
+   * Transaction updateMany
+   */
+  export type TransactionUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update Transactions.
+     */
+    data: XOR<TransactionUpdateManyMutationInput, TransactionUncheckedUpdateManyInput>
+    /**
+     * Filter which Transactions to update
+     */
+    where?: TransactionWhereInput
+    /**
+     * Limit how many Transactions to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * Transaction updateManyAndReturn
+   */
+  export type TransactionUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Transaction
+     */
+    select?: TransactionSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Transaction
+     */
+    omit?: TransactionOmit<ExtArgs> | null
+    /**
+     * The data used to update Transactions.
+     */
+    data: XOR<TransactionUpdateManyMutationInput, TransactionUncheckedUpdateManyInput>
+    /**
+     * Filter which Transactions to update
+     */
+    where?: TransactionWhereInput
+    /**
+     * Limit how many Transactions to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TransactionIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * Transaction upsert
+   */
+  export type TransactionUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Transaction
+     */
+    select?: TransactionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Transaction
+     */
+    omit?: TransactionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TransactionInclude<ExtArgs> | null
+    /**
+     * The filter to search for the Transaction to update in case it exists.
+     */
+    where: TransactionWhereUniqueInput
+    /**
+     * In case the Transaction found by the `where` argument doesn't exist, create a new Transaction with this data.
+     */
+    create: XOR<TransactionCreateInput, TransactionUncheckedCreateInput>
+    /**
+     * In case the Transaction was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<TransactionUpdateInput, TransactionUncheckedUpdateInput>
+  }
+
+  /**
+   * Transaction delete
+   */
+  export type TransactionDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Transaction
+     */
+    select?: TransactionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Transaction
+     */
+    omit?: TransactionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TransactionInclude<ExtArgs> | null
+    /**
+     * Filter which Transaction to delete.
+     */
+    where: TransactionWhereUniqueInput
+  }
+
+  /**
+   * Transaction deleteMany
+   */
+  export type TransactionDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Transactions to delete
+     */
+    where?: TransactionWhereInput
+    /**
+     * Limit how many Transactions to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * Transaction.target
+   */
+  export type Transaction$targetArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the User
+     */
+    select?: UserSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the User
+     */
+    omit?: UserOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    where?: UserWhereInput
+  }
+
+  /**
+   * Transaction.guild
+   */
+  export type Transaction$guildArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GuildSettings
+     */
+    select?: GuildSettingsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the GuildSettings
+     */
+    omit?: GuildSettingsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GuildSettingsInclude<ExtArgs> | null
+    where?: GuildSettingsWhereInput
+  }
+
+  /**
+   * Transaction without action
+   */
+  export type TransactionDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Transaction
+     */
+    select?: TransactionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Transaction
+     */
+    omit?: TransactionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TransactionInclude<ExtArgs> | null
   }
 
 
@@ -13845,6 +15314,7 @@ export namespace Prisma {
     warnLevelUp?: boolean
     levelGrant?: boolean
     members?: boolean | GuildSettings$membersArgs<ExtArgs>
+    transactions?: boolean | GuildSettings$transactionsArgs<ExtArgs>
     _count?: boolean | GuildSettingsCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["guildSettings"]>
 
@@ -13905,6 +15375,7 @@ export namespace Prisma {
   export type GuildSettingsOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "chatBotChannels" | "chatBotEnabled" | "channelsCommandDisabled" | "channelsCommandDisabledIsHabilited" | "channelsCommandEnabled" | "channelsCommandEnabledIsHabilited" | "xpSystemEnabled" | "difficulty" | "rolesXpBonus" | "rolesNotWinXp" | "channelsXpBonus" | "channelsNotWinXp" | "warnLevelUp" | "levelGrant", ExtArgs["result"]["guildSettings"]>
   export type GuildSettingsInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     members?: boolean | GuildSettings$membersArgs<ExtArgs>
+    transactions?: boolean | GuildSettings$transactionsArgs<ExtArgs>
     _count?: boolean | GuildSettingsCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type GuildSettingsIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -13914,6 +15385,7 @@ export namespace Prisma {
     name: "GuildSettings"
     objects: {
       members: Prisma.$GuildMemberPayload<ExtArgs>[]
+      transactions: Prisma.$TransactionPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -14326,6 +15798,7 @@ export namespace Prisma {
   export interface Prisma__GuildSettingsClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     members<T extends GuildSettings$membersArgs<ExtArgs> = {}>(args?: Subset<T, GuildSettings$membersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$GuildMemberPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    transactions<T extends GuildSettings$transactionsArgs<ExtArgs> = {}>(args?: Subset<T, GuildSettings$transactionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TransactionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -14779,6 +16252,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: GuildMemberScalarFieldEnum | GuildMemberScalarFieldEnum[]
+  }
+
+  /**
+   * GuildSettings.transactions
+   */
+  export type GuildSettings$transactionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Transaction
+     */
+    select?: TransactionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Transaction
+     */
+    omit?: TransactionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TransactionInclude<ExtArgs> | null
+    where?: TransactionWhereInput
+    orderBy?: TransactionOrderByWithRelationInput | TransactionOrderByWithRelationInput[]
+    cursor?: TransactionWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: TransactionScalarFieldEnum | TransactionScalarFieldEnum[]
   }
 
   /**
@@ -17149,6 +18646,25 @@ export namespace Prisma {
   export type LogScalarFieldEnum = (typeof LogScalarFieldEnum)[keyof typeof LogScalarFieldEnum]
 
 
+  export const TransactionScalarFieldEnum: {
+    id: 'id',
+    userId: 'userId',
+    targetId: 'targetId',
+    amount: 'amount',
+    quitType: 'quitType',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt',
+    guildId: 'guildId',
+    channelId: 'channelId',
+    messageId: 'messageId',
+    reason: 'reason',
+    type: 'type',
+    status: 'status'
+  };
+
+  export type TransactionScalarFieldEnum = (typeof TransactionScalarFieldEnum)[keyof typeof TransactionScalarFieldEnum]
+
+
   export const CooldownScalarFieldEnum: {
     id: 'id',
     userId: 'userId',
@@ -17449,6 +18965,48 @@ export namespace Prisma {
    */
   export type ListFloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float[]'>
     
+
+
+  /**
+   * Reference to a field of type 'TransactionQuitType'
+   */
+  export type EnumTransactionQuitTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'TransactionQuitType'>
+    
+
+
+  /**
+   * Reference to a field of type 'TransactionQuitType[]'
+   */
+  export type ListEnumTransactionQuitTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'TransactionQuitType[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'TransactionType'
+   */
+  export type EnumTransactionTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'TransactionType'>
+    
+
+
+  /**
+   * Reference to a field of type 'TransactionType[]'
+   */
+  export type ListEnumTransactionTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'TransactionType[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'TransactionStatus'
+   */
+  export type EnumTransactionStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'TransactionStatus'>
+    
+
+
+  /**
+   * Reference to a field of type 'TransactionStatus[]'
+   */
+  export type ListEnumTransactionStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'TransactionStatus[]'>
+    
   /**
    * Deep Input Types
    */
@@ -17476,6 +19034,8 @@ export namespace Prisma {
     sendedMails?: MailsListRelationFilter
     applications?: ApplicationListRelationFilter
     guilds?: GuildMemberListRelationFilter
+    ransactionsSent?: TransactionListRelationFilter
+    transactionsReceived?: TransactionListRelationFilter
   }
 
   export type UserOrderByWithRelationInput = {
@@ -17497,6 +19057,8 @@ export namespace Prisma {
     sendedMails?: MailsOrderByRelationAggregateInput
     applications?: ApplicationOrderByRelationAggregateInput
     guilds?: GuildMemberOrderByRelationAggregateInput
+    ransactionsSent?: TransactionOrderByRelationAggregateInput
+    transactionsReceived?: TransactionOrderByRelationAggregateInput
   }
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -17521,6 +19083,8 @@ export namespace Prisma {
     sendedMails?: MailsListRelationFilter
     applications?: ApplicationListRelationFilter
     guilds?: GuildMemberListRelationFilter
+    ransactionsSent?: TransactionListRelationFilter
+    transactionsReceived?: TransactionListRelationFilter
   }, "id">
 
   export type UserOrderByWithAggregationInput = {
@@ -17829,6 +19393,109 @@ export namespace Prisma {
     level?: IntWithAggregatesFilter<"Log"> | number
     type?: StringWithAggregatesFilter<"Log"> | string
     tags?: StringNullableListFilter<"Log">
+  }
+
+  export type TransactionWhereInput = {
+    AND?: TransactionWhereInput | TransactionWhereInput[]
+    OR?: TransactionWhereInput[]
+    NOT?: TransactionWhereInput | TransactionWhereInput[]
+    id?: IntFilter<"Transaction"> | number
+    userId?: StringFilter<"Transaction"> | string
+    targetId?: StringNullableFilter<"Transaction"> | string | null
+    amount?: FloatFilter<"Transaction"> | number
+    quitType?: EnumTransactionQuitTypeNullableFilter<"Transaction"> | $Enums.TransactionQuitType | null
+    createdAt?: DateTimeFilter<"Transaction"> | Date | string
+    updatedAt?: DateTimeFilter<"Transaction"> | Date | string
+    guildId?: StringNullableFilter<"Transaction"> | string | null
+    channelId?: StringNullableFilter<"Transaction"> | string | null
+    messageId?: StringNullableFilter<"Transaction"> | string | null
+    reason?: StringNullableFilter<"Transaction"> | string | null
+    type?: EnumTransactionTypeFilter<"Transaction"> | $Enums.TransactionType
+    status?: EnumTransactionStatusFilter<"Transaction"> | $Enums.TransactionStatus
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+    target?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
+    guild?: XOR<GuildSettingsNullableScalarRelationFilter, GuildSettingsWhereInput> | null
+  }
+
+  export type TransactionOrderByWithRelationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    targetId?: SortOrderInput | SortOrder
+    amount?: SortOrder
+    quitType?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    guildId?: SortOrderInput | SortOrder
+    channelId?: SortOrderInput | SortOrder
+    messageId?: SortOrderInput | SortOrder
+    reason?: SortOrderInput | SortOrder
+    type?: SortOrder
+    status?: SortOrder
+    user?: UserOrderByWithRelationInput
+    target?: UserOrderByWithRelationInput
+    guild?: GuildSettingsOrderByWithRelationInput
+  }
+
+  export type TransactionWhereUniqueInput = Prisma.AtLeast<{
+    id?: number
+    AND?: TransactionWhereInput | TransactionWhereInput[]
+    OR?: TransactionWhereInput[]
+    NOT?: TransactionWhereInput | TransactionWhereInput[]
+    userId?: StringFilter<"Transaction"> | string
+    targetId?: StringNullableFilter<"Transaction"> | string | null
+    amount?: FloatFilter<"Transaction"> | number
+    quitType?: EnumTransactionQuitTypeNullableFilter<"Transaction"> | $Enums.TransactionQuitType | null
+    createdAt?: DateTimeFilter<"Transaction"> | Date | string
+    updatedAt?: DateTimeFilter<"Transaction"> | Date | string
+    guildId?: StringNullableFilter<"Transaction"> | string | null
+    channelId?: StringNullableFilter<"Transaction"> | string | null
+    messageId?: StringNullableFilter<"Transaction"> | string | null
+    reason?: StringNullableFilter<"Transaction"> | string | null
+    type?: EnumTransactionTypeFilter<"Transaction"> | $Enums.TransactionType
+    status?: EnumTransactionStatusFilter<"Transaction"> | $Enums.TransactionStatus
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+    target?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
+    guild?: XOR<GuildSettingsNullableScalarRelationFilter, GuildSettingsWhereInput> | null
+  }, "id">
+
+  export type TransactionOrderByWithAggregationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    targetId?: SortOrderInput | SortOrder
+    amount?: SortOrder
+    quitType?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    guildId?: SortOrderInput | SortOrder
+    channelId?: SortOrderInput | SortOrder
+    messageId?: SortOrderInput | SortOrder
+    reason?: SortOrderInput | SortOrder
+    type?: SortOrder
+    status?: SortOrder
+    _count?: TransactionCountOrderByAggregateInput
+    _avg?: TransactionAvgOrderByAggregateInput
+    _max?: TransactionMaxOrderByAggregateInput
+    _min?: TransactionMinOrderByAggregateInput
+    _sum?: TransactionSumOrderByAggregateInput
+  }
+
+  export type TransactionScalarWhereWithAggregatesInput = {
+    AND?: TransactionScalarWhereWithAggregatesInput | TransactionScalarWhereWithAggregatesInput[]
+    OR?: TransactionScalarWhereWithAggregatesInput[]
+    NOT?: TransactionScalarWhereWithAggregatesInput | TransactionScalarWhereWithAggregatesInput[]
+    id?: IntWithAggregatesFilter<"Transaction"> | number
+    userId?: StringWithAggregatesFilter<"Transaction"> | string
+    targetId?: StringNullableWithAggregatesFilter<"Transaction"> | string | null
+    amount?: FloatWithAggregatesFilter<"Transaction"> | number
+    quitType?: EnumTransactionQuitTypeNullableWithAggregatesFilter<"Transaction"> | $Enums.TransactionQuitType | null
+    createdAt?: DateTimeWithAggregatesFilter<"Transaction"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"Transaction"> | Date | string
+    guildId?: StringNullableWithAggregatesFilter<"Transaction"> | string | null
+    channelId?: StringNullableWithAggregatesFilter<"Transaction"> | string | null
+    messageId?: StringNullableWithAggregatesFilter<"Transaction"> | string | null
+    reason?: StringNullableWithAggregatesFilter<"Transaction"> | string | null
+    type?: EnumTransactionTypeWithAggregatesFilter<"Transaction"> | $Enums.TransactionType
+    status?: EnumTransactionStatusWithAggregatesFilter<"Transaction"> | $Enums.TransactionStatus
   }
 
   export type CooldownWhereInput = {
@@ -18150,6 +19817,7 @@ export namespace Prisma {
     warnLevelUp?: JsonFilter<"GuildSettings">
     levelGrant?: JsonFilter<"GuildSettings">
     members?: GuildMemberListRelationFilter
+    transactions?: TransactionListRelationFilter
   }
 
   export type GuildSettingsOrderByWithRelationInput = {
@@ -18169,6 +19837,7 @@ export namespace Prisma {
     warnLevelUp?: SortOrder
     levelGrant?: SortOrder
     members?: GuildMemberOrderByRelationAggregateInput
+    transactions?: TransactionOrderByRelationAggregateInput
   }
 
   export type GuildSettingsWhereUniqueInput = Prisma.AtLeast<{
@@ -18191,6 +19860,7 @@ export namespace Prisma {
     warnLevelUp?: JsonFilter<"GuildSettings">
     levelGrant?: JsonFilter<"GuildSettings">
     members?: GuildMemberListRelationFilter
+    transactions?: TransactionListRelationFilter
   }, "id">
 
   export type GuildSettingsOrderByWithAggregationInput = {
@@ -18391,6 +20061,8 @@ export namespace Prisma {
     sendedMails?: MailsCreateNestedManyWithoutWhoSendUserInput
     applications?: ApplicationCreateNestedManyWithoutOwnerInput
     guilds?: GuildMemberCreateNestedManyWithoutUserInput
+    ransactionsSent?: TransactionCreateNestedManyWithoutUserInput
+    transactionsReceived?: TransactionCreateNestedManyWithoutTargetInput
   }
 
   export type UserUncheckedCreateInput = {
@@ -18411,6 +20083,8 @@ export namespace Prisma {
     sendedMails?: MailsUncheckedCreateNestedManyWithoutWhoSendUserInput
     applications?: ApplicationUncheckedCreateNestedManyWithoutOwnerInput
     guilds?: GuildMemberUncheckedCreateNestedManyWithoutUserInput
+    ransactionsSent?: TransactionUncheckedCreateNestedManyWithoutUserInput
+    transactionsReceived?: TransactionUncheckedCreateNestedManyWithoutTargetInput
   }
 
   export type UserUpdateInput = {
@@ -18431,6 +20105,8 @@ export namespace Prisma {
     sendedMails?: MailsUpdateManyWithoutWhoSendUserNestedInput
     applications?: ApplicationUpdateManyWithoutOwnerNestedInput
     guilds?: GuildMemberUpdateManyWithoutUserNestedInput
+    ransactionsSent?: TransactionUpdateManyWithoutUserNestedInput
+    transactionsReceived?: TransactionUpdateManyWithoutTargetNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
@@ -18451,6 +20127,8 @@ export namespace Prisma {
     sendedMails?: MailsUncheckedUpdateManyWithoutWhoSendUserNestedInput
     applications?: ApplicationUncheckedUpdateManyWithoutOwnerNestedInput
     guilds?: GuildMemberUncheckedUpdateManyWithoutUserNestedInput
+    ransactionsSent?: TransactionUncheckedUpdateManyWithoutUserNestedInput
+    transactionsReceived?: TransactionUncheckedUpdateManyWithoutTargetNestedInput
   }
 
   export type UserCreateManyInput = {
@@ -18770,6 +20448,112 @@ export namespace Prisma {
     tags?: LogUpdatetagsInput | string[]
   }
 
+  export type TransactionCreateInput = {
+    amount: number
+    quitType?: $Enums.TransactionQuitType | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    channelId?: string | null
+    messageId?: string | null
+    reason?: string | null
+    type?: $Enums.TransactionType
+    status?: $Enums.TransactionStatus
+    user: UserCreateNestedOneWithoutRansactionsSentInput
+    target?: UserCreateNestedOneWithoutTransactionsReceivedInput
+    guild?: GuildSettingsCreateNestedOneWithoutTransactionsInput
+  }
+
+  export type TransactionUncheckedCreateInput = {
+    id?: number
+    userId: string
+    targetId?: string | null
+    amount: number
+    quitType?: $Enums.TransactionQuitType | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    guildId?: string | null
+    channelId?: string | null
+    messageId?: string | null
+    reason?: string | null
+    type?: $Enums.TransactionType
+    status?: $Enums.TransactionStatus
+  }
+
+  export type TransactionUpdateInput = {
+    amount?: FloatFieldUpdateOperationsInput | number
+    quitType?: NullableEnumTransactionQuitTypeFieldUpdateOperationsInput | $Enums.TransactionQuitType | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    channelId?: NullableStringFieldUpdateOperationsInput | string | null
+    messageId?: NullableStringFieldUpdateOperationsInput | string | null
+    reason?: NullableStringFieldUpdateOperationsInput | string | null
+    type?: EnumTransactionTypeFieldUpdateOperationsInput | $Enums.TransactionType
+    status?: EnumTransactionStatusFieldUpdateOperationsInput | $Enums.TransactionStatus
+    user?: UserUpdateOneRequiredWithoutRansactionsSentNestedInput
+    target?: UserUpdateOneWithoutTransactionsReceivedNestedInput
+    guild?: GuildSettingsUpdateOneWithoutTransactionsNestedInput
+  }
+
+  export type TransactionUncheckedUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    userId?: StringFieldUpdateOperationsInput | string
+    targetId?: NullableStringFieldUpdateOperationsInput | string | null
+    amount?: FloatFieldUpdateOperationsInput | number
+    quitType?: NullableEnumTransactionQuitTypeFieldUpdateOperationsInput | $Enums.TransactionQuitType | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    guildId?: NullableStringFieldUpdateOperationsInput | string | null
+    channelId?: NullableStringFieldUpdateOperationsInput | string | null
+    messageId?: NullableStringFieldUpdateOperationsInput | string | null
+    reason?: NullableStringFieldUpdateOperationsInput | string | null
+    type?: EnumTransactionTypeFieldUpdateOperationsInput | $Enums.TransactionType
+    status?: EnumTransactionStatusFieldUpdateOperationsInput | $Enums.TransactionStatus
+  }
+
+  export type TransactionCreateManyInput = {
+    id?: number
+    userId: string
+    targetId?: string | null
+    amount: number
+    quitType?: $Enums.TransactionQuitType | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    guildId?: string | null
+    channelId?: string | null
+    messageId?: string | null
+    reason?: string | null
+    type?: $Enums.TransactionType
+    status?: $Enums.TransactionStatus
+  }
+
+  export type TransactionUpdateManyMutationInput = {
+    amount?: FloatFieldUpdateOperationsInput | number
+    quitType?: NullableEnumTransactionQuitTypeFieldUpdateOperationsInput | $Enums.TransactionQuitType | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    channelId?: NullableStringFieldUpdateOperationsInput | string | null
+    messageId?: NullableStringFieldUpdateOperationsInput | string | null
+    reason?: NullableStringFieldUpdateOperationsInput | string | null
+    type?: EnumTransactionTypeFieldUpdateOperationsInput | $Enums.TransactionType
+    status?: EnumTransactionStatusFieldUpdateOperationsInput | $Enums.TransactionStatus
+  }
+
+  export type TransactionUncheckedUpdateManyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    userId?: StringFieldUpdateOperationsInput | string
+    targetId?: NullableStringFieldUpdateOperationsInput | string | null
+    amount?: FloatFieldUpdateOperationsInput | number
+    quitType?: NullableEnumTransactionQuitTypeFieldUpdateOperationsInput | $Enums.TransactionQuitType | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    guildId?: NullableStringFieldUpdateOperationsInput | string | null
+    channelId?: NullableStringFieldUpdateOperationsInput | string | null
+    messageId?: NullableStringFieldUpdateOperationsInput | string | null
+    reason?: NullableStringFieldUpdateOperationsInput | string | null
+    type?: EnumTransactionTypeFieldUpdateOperationsInput | $Enums.TransactionType
+    status?: EnumTransactionStatusFieldUpdateOperationsInput | $Enums.TransactionStatus
+  }
+
   export type CooldownCreateInput = {
     name: string
     timestamp?: Date | string
@@ -19067,6 +20851,7 @@ export namespace Prisma {
     warnLevelUp?: JsonNullValueInput | InputJsonValue
     levelGrant?: JsonNullValueInput | InputJsonValue
     members?: GuildMemberCreateNestedManyWithoutGuildInput
+    transactions?: TransactionCreateNestedManyWithoutGuildInput
   }
 
   export type GuildSettingsUncheckedCreateInput = {
@@ -19086,6 +20871,7 @@ export namespace Prisma {
     warnLevelUp?: JsonNullValueInput | InputJsonValue
     levelGrant?: JsonNullValueInput | InputJsonValue
     members?: GuildMemberUncheckedCreateNestedManyWithoutGuildInput
+    transactions?: TransactionUncheckedCreateNestedManyWithoutGuildInput
   }
 
   export type GuildSettingsUpdateInput = {
@@ -19105,6 +20891,7 @@ export namespace Prisma {
     warnLevelUp?: JsonNullValueInput | InputJsonValue
     levelGrant?: JsonNullValueInput | InputJsonValue
     members?: GuildMemberUpdateManyWithoutGuildNestedInput
+    transactions?: TransactionUpdateManyWithoutGuildNestedInput
   }
 
   export type GuildSettingsUncheckedUpdateInput = {
@@ -19124,6 +20911,7 @@ export namespace Prisma {
     warnLevelUp?: JsonNullValueInput | InputJsonValue
     levelGrant?: JsonNullValueInput | InputJsonValue
     members?: GuildMemberUncheckedUpdateManyWithoutGuildNestedInput
+    transactions?: TransactionUncheckedUpdateManyWithoutGuildNestedInput
   }
 
   export type GuildSettingsCreateManyInput = {
@@ -19457,6 +21245,12 @@ export namespace Prisma {
     none?: GuildMemberWhereInput
   }
 
+  export type TransactionListRelationFilter = {
+    every?: TransactionWhereInput
+    some?: TransactionWhereInput
+    none?: TransactionWhereInput
+  }
+
   export type SortOrderInput = {
     sort: SortOrder
     nulls?: NullsOrder
@@ -19483,6 +21277,10 @@ export namespace Prisma {
   }
 
   export type GuildMemberOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type TransactionOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -19947,6 +21745,152 @@ export namespace Prisma {
     level?: SortOrder
   }
 
+  export type FloatFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel>
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatFilter<$PrismaModel> | number
+  }
+
+  export type EnumTransactionQuitTypeNullableFilter<$PrismaModel = never> = {
+    equals?: $Enums.TransactionQuitType | EnumTransactionQuitTypeFieldRefInput<$PrismaModel> | null
+    in?: $Enums.TransactionQuitType[] | ListEnumTransactionQuitTypeFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.TransactionQuitType[] | ListEnumTransactionQuitTypeFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumTransactionQuitTypeNullableFilter<$PrismaModel> | $Enums.TransactionQuitType | null
+  }
+
+  export type EnumTransactionTypeFilter<$PrismaModel = never> = {
+    equals?: $Enums.TransactionType | EnumTransactionTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.TransactionType[] | ListEnumTransactionTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.TransactionType[] | ListEnumTransactionTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumTransactionTypeFilter<$PrismaModel> | $Enums.TransactionType
+  }
+
+  export type EnumTransactionStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.TransactionStatus | EnumTransactionStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.TransactionStatus[] | ListEnumTransactionStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.TransactionStatus[] | ListEnumTransactionStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumTransactionStatusFilter<$PrismaModel> | $Enums.TransactionStatus
+  }
+
+  export type UserNullableScalarRelationFilter = {
+    is?: UserWhereInput | null
+    isNot?: UserWhereInput | null
+  }
+
+  export type GuildSettingsNullableScalarRelationFilter = {
+    is?: GuildSettingsWhereInput | null
+    isNot?: GuildSettingsWhereInput | null
+  }
+
+  export type TransactionCountOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    targetId?: SortOrder
+    amount?: SortOrder
+    quitType?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    guildId?: SortOrder
+    channelId?: SortOrder
+    messageId?: SortOrder
+    reason?: SortOrder
+    type?: SortOrder
+    status?: SortOrder
+  }
+
+  export type TransactionAvgOrderByAggregateInput = {
+    id?: SortOrder
+    amount?: SortOrder
+  }
+
+  export type TransactionMaxOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    targetId?: SortOrder
+    amount?: SortOrder
+    quitType?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    guildId?: SortOrder
+    channelId?: SortOrder
+    messageId?: SortOrder
+    reason?: SortOrder
+    type?: SortOrder
+    status?: SortOrder
+  }
+
+  export type TransactionMinOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    targetId?: SortOrder
+    amount?: SortOrder
+    quitType?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    guildId?: SortOrder
+    channelId?: SortOrder
+    messageId?: SortOrder
+    reason?: SortOrder
+    type?: SortOrder
+    status?: SortOrder
+  }
+
+  export type TransactionSumOrderByAggregateInput = {
+    id?: SortOrder
+    amount?: SortOrder
+  }
+
+  export type FloatWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel>
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatWithAggregatesFilter<$PrismaModel> | number
+    _count?: NestedIntFilter<$PrismaModel>
+    _avg?: NestedFloatFilter<$PrismaModel>
+    _sum?: NestedFloatFilter<$PrismaModel>
+    _min?: NestedFloatFilter<$PrismaModel>
+    _max?: NestedFloatFilter<$PrismaModel>
+  }
+
+  export type EnumTransactionQuitTypeNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.TransactionQuitType | EnumTransactionQuitTypeFieldRefInput<$PrismaModel> | null
+    in?: $Enums.TransactionQuitType[] | ListEnumTransactionQuitTypeFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.TransactionQuitType[] | ListEnumTransactionQuitTypeFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumTransactionQuitTypeNullableWithAggregatesFilter<$PrismaModel> | $Enums.TransactionQuitType | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedEnumTransactionQuitTypeNullableFilter<$PrismaModel>
+    _max?: NestedEnumTransactionQuitTypeNullableFilter<$PrismaModel>
+  }
+
+  export type EnumTransactionTypeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.TransactionType | EnumTransactionTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.TransactionType[] | ListEnumTransactionTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.TransactionType[] | ListEnumTransactionTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumTransactionTypeWithAggregatesFilter<$PrismaModel> | $Enums.TransactionType
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumTransactionTypeFilter<$PrismaModel>
+    _max?: NestedEnumTransactionTypeFilter<$PrismaModel>
+  }
+
+  export type EnumTransactionStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.TransactionStatus | EnumTransactionStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.TransactionStatus[] | ListEnumTransactionStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.TransactionStatus[] | ListEnumTransactionStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumTransactionStatusWithAggregatesFilter<$PrismaModel> | $Enums.TransactionStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumTransactionStatusFilter<$PrismaModel>
+    _max?: NestedEnumTransactionStatusFilter<$PrismaModel>
+  }
+
   export type CooldownUserIdNameCompoundUniqueInput = {
     userId: string
     name: string
@@ -20213,17 +22157,6 @@ export namespace Prisma {
     amount?: SortOrder
   }
 
-  export type FloatFilter<$PrismaModel = never> = {
-    equals?: number | FloatFieldRefInput<$PrismaModel>
-    in?: number[] | ListFloatFieldRefInput<$PrismaModel>
-    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel>
-    lt?: number | FloatFieldRefInput<$PrismaModel>
-    lte?: number | FloatFieldRefInput<$PrismaModel>
-    gt?: number | FloatFieldRefInput<$PrismaModel>
-    gte?: number | FloatFieldRefInput<$PrismaModel>
-    not?: NestedFloatFilter<$PrismaModel> | number
-  }
-
   export type GuildSettingsCountOrderByAggregateInput = {
     id?: SortOrder
     chatBotChannels?: SortOrder
@@ -20268,30 +22201,9 @@ export namespace Prisma {
     difficulty?: SortOrder
   }
 
-  export type FloatWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: number | FloatFieldRefInput<$PrismaModel>
-    in?: number[] | ListFloatFieldRefInput<$PrismaModel>
-    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel>
-    lt?: number | FloatFieldRefInput<$PrismaModel>
-    lte?: number | FloatFieldRefInput<$PrismaModel>
-    gt?: number | FloatFieldRefInput<$PrismaModel>
-    gte?: number | FloatFieldRefInput<$PrismaModel>
-    not?: NestedFloatWithAggregatesFilter<$PrismaModel> | number
-    _count?: NestedIntFilter<$PrismaModel>
-    _avg?: NestedFloatFilter<$PrismaModel>
-    _sum?: NestedFloatFilter<$PrismaModel>
-    _min?: NestedFloatFilter<$PrismaModel>
-    _max?: NestedFloatFilter<$PrismaModel>
-  }
-
   export type GuildSettingsScalarRelationFilter = {
     is?: GuildSettingsWhereInput
     isNot?: GuildSettingsWhereInput
-  }
-
-  export type UserNullableScalarRelationFilter = {
-    is?: UserWhereInput | null
-    isNot?: UserWhereInput | null
   }
 
   export type GuildMemberGuildIdIdCompoundUniqueInput = {
@@ -20435,6 +22347,20 @@ export namespace Prisma {
     connect?: GuildMemberWhereUniqueInput | GuildMemberWhereUniqueInput[]
   }
 
+  export type TransactionCreateNestedManyWithoutUserInput = {
+    create?: XOR<TransactionCreateWithoutUserInput, TransactionUncheckedCreateWithoutUserInput> | TransactionCreateWithoutUserInput[] | TransactionUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: TransactionCreateOrConnectWithoutUserInput | TransactionCreateOrConnectWithoutUserInput[]
+    createMany?: TransactionCreateManyUserInputEnvelope
+    connect?: TransactionWhereUniqueInput | TransactionWhereUniqueInput[]
+  }
+
+  export type TransactionCreateNestedManyWithoutTargetInput = {
+    create?: XOR<TransactionCreateWithoutTargetInput, TransactionUncheckedCreateWithoutTargetInput> | TransactionCreateWithoutTargetInput[] | TransactionUncheckedCreateWithoutTargetInput[]
+    connectOrCreate?: TransactionCreateOrConnectWithoutTargetInput | TransactionCreateOrConnectWithoutTargetInput[]
+    createMany?: TransactionCreateManyTargetInputEnvelope
+    connect?: TransactionWhereUniqueInput | TransactionWhereUniqueInput[]
+  }
+
   export type LogUncheckedCreateNestedManyWithoutUserInput = {
     create?: XOR<LogCreateWithoutUserInput, LogUncheckedCreateWithoutUserInput> | LogCreateWithoutUserInput[] | LogUncheckedCreateWithoutUserInput[]
     connectOrCreate?: LogCreateOrConnectWithoutUserInput | LogCreateOrConnectWithoutUserInput[]
@@ -20482,6 +22408,20 @@ export namespace Prisma {
     connectOrCreate?: GuildMemberCreateOrConnectWithoutUserInput | GuildMemberCreateOrConnectWithoutUserInput[]
     createMany?: GuildMemberCreateManyUserInputEnvelope
     connect?: GuildMemberWhereUniqueInput | GuildMemberWhereUniqueInput[]
+  }
+
+  export type TransactionUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<TransactionCreateWithoutUserInput, TransactionUncheckedCreateWithoutUserInput> | TransactionCreateWithoutUserInput[] | TransactionUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: TransactionCreateOrConnectWithoutUserInput | TransactionCreateOrConnectWithoutUserInput[]
+    createMany?: TransactionCreateManyUserInputEnvelope
+    connect?: TransactionWhereUniqueInput | TransactionWhereUniqueInput[]
+  }
+
+  export type TransactionUncheckedCreateNestedManyWithoutTargetInput = {
+    create?: XOR<TransactionCreateWithoutTargetInput, TransactionUncheckedCreateWithoutTargetInput> | TransactionCreateWithoutTargetInput[] | TransactionUncheckedCreateWithoutTargetInput[]
+    connectOrCreate?: TransactionCreateOrConnectWithoutTargetInput | TransactionCreateOrConnectWithoutTargetInput[]
+    createMany?: TransactionCreateManyTargetInputEnvelope
+    connect?: TransactionWhereUniqueInput | TransactionWhereUniqueInput[]
   }
 
   export type StringFieldUpdateOperationsInput = {
@@ -20629,6 +22569,34 @@ export namespace Prisma {
     deleteMany?: GuildMemberScalarWhereInput | GuildMemberScalarWhereInput[]
   }
 
+  export type TransactionUpdateManyWithoutUserNestedInput = {
+    create?: XOR<TransactionCreateWithoutUserInput, TransactionUncheckedCreateWithoutUserInput> | TransactionCreateWithoutUserInput[] | TransactionUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: TransactionCreateOrConnectWithoutUserInput | TransactionCreateOrConnectWithoutUserInput[]
+    upsert?: TransactionUpsertWithWhereUniqueWithoutUserInput | TransactionUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: TransactionCreateManyUserInputEnvelope
+    set?: TransactionWhereUniqueInput | TransactionWhereUniqueInput[]
+    disconnect?: TransactionWhereUniqueInput | TransactionWhereUniqueInput[]
+    delete?: TransactionWhereUniqueInput | TransactionWhereUniqueInput[]
+    connect?: TransactionWhereUniqueInput | TransactionWhereUniqueInput[]
+    update?: TransactionUpdateWithWhereUniqueWithoutUserInput | TransactionUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: TransactionUpdateManyWithWhereWithoutUserInput | TransactionUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: TransactionScalarWhereInput | TransactionScalarWhereInput[]
+  }
+
+  export type TransactionUpdateManyWithoutTargetNestedInput = {
+    create?: XOR<TransactionCreateWithoutTargetInput, TransactionUncheckedCreateWithoutTargetInput> | TransactionCreateWithoutTargetInput[] | TransactionUncheckedCreateWithoutTargetInput[]
+    connectOrCreate?: TransactionCreateOrConnectWithoutTargetInput | TransactionCreateOrConnectWithoutTargetInput[]
+    upsert?: TransactionUpsertWithWhereUniqueWithoutTargetInput | TransactionUpsertWithWhereUniqueWithoutTargetInput[]
+    createMany?: TransactionCreateManyTargetInputEnvelope
+    set?: TransactionWhereUniqueInput | TransactionWhereUniqueInput[]
+    disconnect?: TransactionWhereUniqueInput | TransactionWhereUniqueInput[]
+    delete?: TransactionWhereUniqueInput | TransactionWhereUniqueInput[]
+    connect?: TransactionWhereUniqueInput | TransactionWhereUniqueInput[]
+    update?: TransactionUpdateWithWhereUniqueWithoutTargetInput | TransactionUpdateWithWhereUniqueWithoutTargetInput[]
+    updateMany?: TransactionUpdateManyWithWhereWithoutTargetInput | TransactionUpdateManyWithWhereWithoutTargetInput[]
+    deleteMany?: TransactionScalarWhereInput | TransactionScalarWhereInput[]
+  }
+
   export type NullableIntFieldUpdateOperationsInput = {
     set?: number | null
     increment?: number
@@ -20733,6 +22701,34 @@ export namespace Prisma {
     update?: GuildMemberUpdateWithWhereUniqueWithoutUserInput | GuildMemberUpdateWithWhereUniqueWithoutUserInput[]
     updateMany?: GuildMemberUpdateManyWithWhereWithoutUserInput | GuildMemberUpdateManyWithWhereWithoutUserInput[]
     deleteMany?: GuildMemberScalarWhereInput | GuildMemberScalarWhereInput[]
+  }
+
+  export type TransactionUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<TransactionCreateWithoutUserInput, TransactionUncheckedCreateWithoutUserInput> | TransactionCreateWithoutUserInput[] | TransactionUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: TransactionCreateOrConnectWithoutUserInput | TransactionCreateOrConnectWithoutUserInput[]
+    upsert?: TransactionUpsertWithWhereUniqueWithoutUserInput | TransactionUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: TransactionCreateManyUserInputEnvelope
+    set?: TransactionWhereUniqueInput | TransactionWhereUniqueInput[]
+    disconnect?: TransactionWhereUniqueInput | TransactionWhereUniqueInput[]
+    delete?: TransactionWhereUniqueInput | TransactionWhereUniqueInput[]
+    connect?: TransactionWhereUniqueInput | TransactionWhereUniqueInput[]
+    update?: TransactionUpdateWithWhereUniqueWithoutUserInput | TransactionUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: TransactionUpdateManyWithWhereWithoutUserInput | TransactionUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: TransactionScalarWhereInput | TransactionScalarWhereInput[]
+  }
+
+  export type TransactionUncheckedUpdateManyWithoutTargetNestedInput = {
+    create?: XOR<TransactionCreateWithoutTargetInput, TransactionUncheckedCreateWithoutTargetInput> | TransactionCreateWithoutTargetInput[] | TransactionUncheckedCreateWithoutTargetInput[]
+    connectOrCreate?: TransactionCreateOrConnectWithoutTargetInput | TransactionCreateOrConnectWithoutTargetInput[]
+    upsert?: TransactionUpsertWithWhereUniqueWithoutTargetInput | TransactionUpsertWithWhereUniqueWithoutTargetInput[]
+    createMany?: TransactionCreateManyTargetInputEnvelope
+    set?: TransactionWhereUniqueInput | TransactionWhereUniqueInput[]
+    disconnect?: TransactionWhereUniqueInput | TransactionWhereUniqueInput[]
+    delete?: TransactionWhereUniqueInput | TransactionWhereUniqueInput[]
+    connect?: TransactionWhereUniqueInput | TransactionWhereUniqueInput[]
+    update?: TransactionUpdateWithWhereUniqueWithoutTargetInput | TransactionUpdateWithWhereUniqueWithoutTargetInput[]
+    updateMany?: TransactionUpdateManyWithWhereWithoutTargetInput | TransactionUpdateManyWithWhereWithoutTargetInput[]
+    deleteMany?: TransactionScalarWhereInput | TransactionScalarWhereInput[]
   }
 
   export type TryviaQuestionsCreatetagsInput = {
@@ -20877,6 +22873,72 @@ export namespace Prisma {
     upsert?: UserUpsertWithoutLogsInput
     connect?: UserWhereUniqueInput
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutLogsInput, UserUpdateWithoutLogsInput>, UserUncheckedUpdateWithoutLogsInput>
+  }
+
+  export type UserCreateNestedOneWithoutRansactionsSentInput = {
+    create?: XOR<UserCreateWithoutRansactionsSentInput, UserUncheckedCreateWithoutRansactionsSentInput>
+    connectOrCreate?: UserCreateOrConnectWithoutRansactionsSentInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type UserCreateNestedOneWithoutTransactionsReceivedInput = {
+    create?: XOR<UserCreateWithoutTransactionsReceivedInput, UserUncheckedCreateWithoutTransactionsReceivedInput>
+    connectOrCreate?: UserCreateOrConnectWithoutTransactionsReceivedInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type GuildSettingsCreateNestedOneWithoutTransactionsInput = {
+    create?: XOR<GuildSettingsCreateWithoutTransactionsInput, GuildSettingsUncheckedCreateWithoutTransactionsInput>
+    connectOrCreate?: GuildSettingsCreateOrConnectWithoutTransactionsInput
+    connect?: GuildSettingsWhereUniqueInput
+  }
+
+  export type FloatFieldUpdateOperationsInput = {
+    set?: number
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
+  }
+
+  export type NullableEnumTransactionQuitTypeFieldUpdateOperationsInput = {
+    set?: $Enums.TransactionQuitType | null
+  }
+
+  export type EnumTransactionTypeFieldUpdateOperationsInput = {
+    set?: $Enums.TransactionType
+  }
+
+  export type EnumTransactionStatusFieldUpdateOperationsInput = {
+    set?: $Enums.TransactionStatus
+  }
+
+  export type UserUpdateOneRequiredWithoutRansactionsSentNestedInput = {
+    create?: XOR<UserCreateWithoutRansactionsSentInput, UserUncheckedCreateWithoutRansactionsSentInput>
+    connectOrCreate?: UserCreateOrConnectWithoutRansactionsSentInput
+    upsert?: UserUpsertWithoutRansactionsSentInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutRansactionsSentInput, UserUpdateWithoutRansactionsSentInput>, UserUncheckedUpdateWithoutRansactionsSentInput>
+  }
+
+  export type UserUpdateOneWithoutTransactionsReceivedNestedInput = {
+    create?: XOR<UserCreateWithoutTransactionsReceivedInput, UserUncheckedCreateWithoutTransactionsReceivedInput>
+    connectOrCreate?: UserCreateOrConnectWithoutTransactionsReceivedInput
+    upsert?: UserUpsertWithoutTransactionsReceivedInput
+    disconnect?: UserWhereInput | boolean
+    delete?: UserWhereInput | boolean
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutTransactionsReceivedInput, UserUpdateWithoutTransactionsReceivedInput>, UserUncheckedUpdateWithoutTransactionsReceivedInput>
+  }
+
+  export type GuildSettingsUpdateOneWithoutTransactionsNestedInput = {
+    create?: XOR<GuildSettingsCreateWithoutTransactionsInput, GuildSettingsUncheckedCreateWithoutTransactionsInput>
+    connectOrCreate?: GuildSettingsCreateOrConnectWithoutTransactionsInput
+    upsert?: GuildSettingsUpsertWithoutTransactionsInput
+    disconnect?: GuildSettingsWhereInput | boolean
+    delete?: GuildSettingsWhereInput | boolean
+    connect?: GuildSettingsWhereUniqueInput
+    update?: XOR<XOR<GuildSettingsUpdateToOneWithWhereWithoutTransactionsInput, GuildSettingsUpdateWithoutTransactionsInput>, GuildSettingsUncheckedUpdateWithoutTransactionsInput>
   }
 
   export type UserCreateNestedOneWithoutCooldownsInput = {
@@ -21088,11 +23150,25 @@ export namespace Prisma {
     connect?: GuildMemberWhereUniqueInput | GuildMemberWhereUniqueInput[]
   }
 
+  export type TransactionCreateNestedManyWithoutGuildInput = {
+    create?: XOR<TransactionCreateWithoutGuildInput, TransactionUncheckedCreateWithoutGuildInput> | TransactionCreateWithoutGuildInput[] | TransactionUncheckedCreateWithoutGuildInput[]
+    connectOrCreate?: TransactionCreateOrConnectWithoutGuildInput | TransactionCreateOrConnectWithoutGuildInput[]
+    createMany?: TransactionCreateManyGuildInputEnvelope
+    connect?: TransactionWhereUniqueInput | TransactionWhereUniqueInput[]
+  }
+
   export type GuildMemberUncheckedCreateNestedManyWithoutGuildInput = {
     create?: XOR<GuildMemberCreateWithoutGuildInput, GuildMemberUncheckedCreateWithoutGuildInput> | GuildMemberCreateWithoutGuildInput[] | GuildMemberUncheckedCreateWithoutGuildInput[]
     connectOrCreate?: GuildMemberCreateOrConnectWithoutGuildInput | GuildMemberCreateOrConnectWithoutGuildInput[]
     createMany?: GuildMemberCreateManyGuildInputEnvelope
     connect?: GuildMemberWhereUniqueInput | GuildMemberWhereUniqueInput[]
+  }
+
+  export type TransactionUncheckedCreateNestedManyWithoutGuildInput = {
+    create?: XOR<TransactionCreateWithoutGuildInput, TransactionUncheckedCreateWithoutGuildInput> | TransactionCreateWithoutGuildInput[] | TransactionUncheckedCreateWithoutGuildInput[]
+    connectOrCreate?: TransactionCreateOrConnectWithoutGuildInput | TransactionCreateOrConnectWithoutGuildInput[]
+    createMany?: TransactionCreateManyGuildInputEnvelope
+    connect?: TransactionWhereUniqueInput | TransactionWhereUniqueInput[]
   }
 
   export type GuildSettingsUpdatechatBotChannelsInput = {
@@ -21108,14 +23184,6 @@ export namespace Prisma {
   export type GuildSettingsUpdatechannelsCommandEnabledInput = {
     set?: string[]
     push?: string | string[]
-  }
-
-  export type FloatFieldUpdateOperationsInput = {
-    set?: number
-    increment?: number
-    decrement?: number
-    multiply?: number
-    divide?: number
   }
 
   export type GuildSettingsUpdaterolesNotWinXpInput = {
@@ -21142,6 +23210,20 @@ export namespace Prisma {
     deleteMany?: GuildMemberScalarWhereInput | GuildMemberScalarWhereInput[]
   }
 
+  export type TransactionUpdateManyWithoutGuildNestedInput = {
+    create?: XOR<TransactionCreateWithoutGuildInput, TransactionUncheckedCreateWithoutGuildInput> | TransactionCreateWithoutGuildInput[] | TransactionUncheckedCreateWithoutGuildInput[]
+    connectOrCreate?: TransactionCreateOrConnectWithoutGuildInput | TransactionCreateOrConnectWithoutGuildInput[]
+    upsert?: TransactionUpsertWithWhereUniqueWithoutGuildInput | TransactionUpsertWithWhereUniqueWithoutGuildInput[]
+    createMany?: TransactionCreateManyGuildInputEnvelope
+    set?: TransactionWhereUniqueInput | TransactionWhereUniqueInput[]
+    disconnect?: TransactionWhereUniqueInput | TransactionWhereUniqueInput[]
+    delete?: TransactionWhereUniqueInput | TransactionWhereUniqueInput[]
+    connect?: TransactionWhereUniqueInput | TransactionWhereUniqueInput[]
+    update?: TransactionUpdateWithWhereUniqueWithoutGuildInput | TransactionUpdateWithWhereUniqueWithoutGuildInput[]
+    updateMany?: TransactionUpdateManyWithWhereWithoutGuildInput | TransactionUpdateManyWithWhereWithoutGuildInput[]
+    deleteMany?: TransactionScalarWhereInput | TransactionScalarWhereInput[]
+  }
+
   export type GuildMemberUncheckedUpdateManyWithoutGuildNestedInput = {
     create?: XOR<GuildMemberCreateWithoutGuildInput, GuildMemberUncheckedCreateWithoutGuildInput> | GuildMemberCreateWithoutGuildInput[] | GuildMemberUncheckedCreateWithoutGuildInput[]
     connectOrCreate?: GuildMemberCreateOrConnectWithoutGuildInput | GuildMemberCreateOrConnectWithoutGuildInput[]
@@ -21154,6 +23236,20 @@ export namespace Prisma {
     update?: GuildMemberUpdateWithWhereUniqueWithoutGuildInput | GuildMemberUpdateWithWhereUniqueWithoutGuildInput[]
     updateMany?: GuildMemberUpdateManyWithWhereWithoutGuildInput | GuildMemberUpdateManyWithWhereWithoutGuildInput[]
     deleteMany?: GuildMemberScalarWhereInput | GuildMemberScalarWhereInput[]
+  }
+
+  export type TransactionUncheckedUpdateManyWithoutGuildNestedInput = {
+    create?: XOR<TransactionCreateWithoutGuildInput, TransactionUncheckedCreateWithoutGuildInput> | TransactionCreateWithoutGuildInput[] | TransactionUncheckedCreateWithoutGuildInput[]
+    connectOrCreate?: TransactionCreateOrConnectWithoutGuildInput | TransactionCreateOrConnectWithoutGuildInput[]
+    upsert?: TransactionUpsertWithWhereUniqueWithoutGuildInput | TransactionUpsertWithWhereUniqueWithoutGuildInput[]
+    createMany?: TransactionCreateManyGuildInputEnvelope
+    set?: TransactionWhereUniqueInput | TransactionWhereUniqueInput[]
+    disconnect?: TransactionWhereUniqueInput | TransactionWhereUniqueInput[]
+    delete?: TransactionWhereUniqueInput | TransactionWhereUniqueInput[]
+    connect?: TransactionWhereUniqueInput | TransactionWhereUniqueInput[]
+    update?: TransactionUpdateWithWhereUniqueWithoutGuildInput | TransactionUpdateWithWhereUniqueWithoutGuildInput[]
+    updateMany?: TransactionUpdateManyWithWhereWithoutGuildInput | TransactionUpdateManyWithWhereWithoutGuildInput[]
+    deleteMany?: TransactionScalarWhereInput | TransactionScalarWhereInput[]
   }
 
   export type GuildSettingsCreateNestedOneWithoutMembersInput = {
@@ -21554,6 +23650,73 @@ export namespace Prisma {
     _min?: NestedEnumTryviaOriginFilter<$PrismaModel>
     _max?: NestedEnumTryviaOriginFilter<$PrismaModel>
   }
+
+  export type NestedEnumTransactionQuitTypeNullableFilter<$PrismaModel = never> = {
+    equals?: $Enums.TransactionQuitType | EnumTransactionQuitTypeFieldRefInput<$PrismaModel> | null
+    in?: $Enums.TransactionQuitType[] | ListEnumTransactionQuitTypeFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.TransactionQuitType[] | ListEnumTransactionQuitTypeFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumTransactionQuitTypeNullableFilter<$PrismaModel> | $Enums.TransactionQuitType | null
+  }
+
+  export type NestedEnumTransactionTypeFilter<$PrismaModel = never> = {
+    equals?: $Enums.TransactionType | EnumTransactionTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.TransactionType[] | ListEnumTransactionTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.TransactionType[] | ListEnumTransactionTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumTransactionTypeFilter<$PrismaModel> | $Enums.TransactionType
+  }
+
+  export type NestedEnumTransactionStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.TransactionStatus | EnumTransactionStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.TransactionStatus[] | ListEnumTransactionStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.TransactionStatus[] | ListEnumTransactionStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumTransactionStatusFilter<$PrismaModel> | $Enums.TransactionStatus
+  }
+
+  export type NestedFloatWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel>
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatWithAggregatesFilter<$PrismaModel> | number
+    _count?: NestedIntFilter<$PrismaModel>
+    _avg?: NestedFloatFilter<$PrismaModel>
+    _sum?: NestedFloatFilter<$PrismaModel>
+    _min?: NestedFloatFilter<$PrismaModel>
+    _max?: NestedFloatFilter<$PrismaModel>
+  }
+
+  export type NestedEnumTransactionQuitTypeNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.TransactionQuitType | EnumTransactionQuitTypeFieldRefInput<$PrismaModel> | null
+    in?: $Enums.TransactionQuitType[] | ListEnumTransactionQuitTypeFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.TransactionQuitType[] | ListEnumTransactionQuitTypeFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumTransactionQuitTypeNullableWithAggregatesFilter<$PrismaModel> | $Enums.TransactionQuitType | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedEnumTransactionQuitTypeNullableFilter<$PrismaModel>
+    _max?: NestedEnumTransactionQuitTypeNullableFilter<$PrismaModel>
+  }
+
+  export type NestedEnumTransactionTypeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.TransactionType | EnumTransactionTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.TransactionType[] | ListEnumTransactionTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.TransactionType[] | ListEnumTransactionTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumTransactionTypeWithAggregatesFilter<$PrismaModel> | $Enums.TransactionType
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumTransactionTypeFilter<$PrismaModel>
+    _max?: NestedEnumTransactionTypeFilter<$PrismaModel>
+  }
+
+  export type NestedEnumTransactionStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.TransactionStatus | EnumTransactionStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.TransactionStatus[] | ListEnumTransactionStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.TransactionStatus[] | ListEnumTransactionStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumTransactionStatusWithAggregatesFilter<$PrismaModel> | $Enums.TransactionStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumTransactionStatusFilter<$PrismaModel>
+    _max?: NestedEnumTransactionStatusFilter<$PrismaModel>
+  }
   export type NestedJsonFilter<$PrismaModel = never> =
     | PatchUndefined<
         Either<Required<NestedJsonFilterBase<$PrismaModel>>, Exclude<keyof Required<NestedJsonFilterBase<$PrismaModel>>, 'path'>>,
@@ -21576,22 +23739,6 @@ export namespace Prisma {
     gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
     gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
     not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
-  }
-
-  export type NestedFloatWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: number | FloatFieldRefInput<$PrismaModel>
-    in?: number[] | ListFloatFieldRefInput<$PrismaModel>
-    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel>
-    lt?: number | FloatFieldRefInput<$PrismaModel>
-    lte?: number | FloatFieldRefInput<$PrismaModel>
-    gt?: number | FloatFieldRefInput<$PrismaModel>
-    gte?: number | FloatFieldRefInput<$PrismaModel>
-    not?: NestedFloatWithAggregatesFilter<$PrismaModel> | number
-    _count?: NestedIntFilter<$PrismaModel>
-    _avg?: NestedFloatFilter<$PrismaModel>
-    _sum?: NestedFloatFilter<$PrismaModel>
-    _min?: NestedFloatFilter<$PrismaModel>
-    _max?: NestedFloatFilter<$PrismaModel>
   }
 
   export type CompanyCreateWithoutWorkersInput = {
@@ -21790,6 +23937,84 @@ export namespace Prisma {
 
   export type GuildMemberCreateManyUserInputEnvelope = {
     data: GuildMemberCreateManyUserInput | GuildMemberCreateManyUserInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type TransactionCreateWithoutUserInput = {
+    amount: number
+    quitType?: $Enums.TransactionQuitType | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    channelId?: string | null
+    messageId?: string | null
+    reason?: string | null
+    type?: $Enums.TransactionType
+    status?: $Enums.TransactionStatus
+    target?: UserCreateNestedOneWithoutTransactionsReceivedInput
+    guild?: GuildSettingsCreateNestedOneWithoutTransactionsInput
+  }
+
+  export type TransactionUncheckedCreateWithoutUserInput = {
+    id?: number
+    targetId?: string | null
+    amount: number
+    quitType?: $Enums.TransactionQuitType | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    guildId?: string | null
+    channelId?: string | null
+    messageId?: string | null
+    reason?: string | null
+    type?: $Enums.TransactionType
+    status?: $Enums.TransactionStatus
+  }
+
+  export type TransactionCreateOrConnectWithoutUserInput = {
+    where: TransactionWhereUniqueInput
+    create: XOR<TransactionCreateWithoutUserInput, TransactionUncheckedCreateWithoutUserInput>
+  }
+
+  export type TransactionCreateManyUserInputEnvelope = {
+    data: TransactionCreateManyUserInput | TransactionCreateManyUserInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type TransactionCreateWithoutTargetInput = {
+    amount: number
+    quitType?: $Enums.TransactionQuitType | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    channelId?: string | null
+    messageId?: string | null
+    reason?: string | null
+    type?: $Enums.TransactionType
+    status?: $Enums.TransactionStatus
+    user: UserCreateNestedOneWithoutRansactionsSentInput
+    guild?: GuildSettingsCreateNestedOneWithoutTransactionsInput
+  }
+
+  export type TransactionUncheckedCreateWithoutTargetInput = {
+    id?: number
+    userId: string
+    amount: number
+    quitType?: $Enums.TransactionQuitType | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    guildId?: string | null
+    channelId?: string | null
+    messageId?: string | null
+    reason?: string | null
+    type?: $Enums.TransactionType
+    status?: $Enums.TransactionStatus
+  }
+
+  export type TransactionCreateOrConnectWithoutTargetInput = {
+    where: TransactionWhereUniqueInput
+    create: XOR<TransactionCreateWithoutTargetInput, TransactionUncheckedCreateWithoutTargetInput>
+  }
+
+  export type TransactionCreateManyTargetInputEnvelope = {
+    data: TransactionCreateManyTargetInput | TransactionCreateManyTargetInput[]
     skipDuplicates?: boolean
   }
 
@@ -22004,6 +24229,57 @@ export namespace Prisma {
     tryviaWins?: IntFilter<"GuildMember"> | number
   }
 
+  export type TransactionUpsertWithWhereUniqueWithoutUserInput = {
+    where: TransactionWhereUniqueInput
+    update: XOR<TransactionUpdateWithoutUserInput, TransactionUncheckedUpdateWithoutUserInput>
+    create: XOR<TransactionCreateWithoutUserInput, TransactionUncheckedCreateWithoutUserInput>
+  }
+
+  export type TransactionUpdateWithWhereUniqueWithoutUserInput = {
+    where: TransactionWhereUniqueInput
+    data: XOR<TransactionUpdateWithoutUserInput, TransactionUncheckedUpdateWithoutUserInput>
+  }
+
+  export type TransactionUpdateManyWithWhereWithoutUserInput = {
+    where: TransactionScalarWhereInput
+    data: XOR<TransactionUpdateManyMutationInput, TransactionUncheckedUpdateManyWithoutUserInput>
+  }
+
+  export type TransactionScalarWhereInput = {
+    AND?: TransactionScalarWhereInput | TransactionScalarWhereInput[]
+    OR?: TransactionScalarWhereInput[]
+    NOT?: TransactionScalarWhereInput | TransactionScalarWhereInput[]
+    id?: IntFilter<"Transaction"> | number
+    userId?: StringFilter<"Transaction"> | string
+    targetId?: StringNullableFilter<"Transaction"> | string | null
+    amount?: FloatFilter<"Transaction"> | number
+    quitType?: EnumTransactionQuitTypeNullableFilter<"Transaction"> | $Enums.TransactionQuitType | null
+    createdAt?: DateTimeFilter<"Transaction"> | Date | string
+    updatedAt?: DateTimeFilter<"Transaction"> | Date | string
+    guildId?: StringNullableFilter<"Transaction"> | string | null
+    channelId?: StringNullableFilter<"Transaction"> | string | null
+    messageId?: StringNullableFilter<"Transaction"> | string | null
+    reason?: StringNullableFilter<"Transaction"> | string | null
+    type?: EnumTransactionTypeFilter<"Transaction"> | $Enums.TransactionType
+    status?: EnumTransactionStatusFilter<"Transaction"> | $Enums.TransactionStatus
+  }
+
+  export type TransactionUpsertWithWhereUniqueWithoutTargetInput = {
+    where: TransactionWhereUniqueInput
+    update: XOR<TransactionUpdateWithoutTargetInput, TransactionUncheckedUpdateWithoutTargetInput>
+    create: XOR<TransactionCreateWithoutTargetInput, TransactionUncheckedCreateWithoutTargetInput>
+  }
+
+  export type TransactionUpdateWithWhereUniqueWithoutTargetInput = {
+    where: TransactionWhereUniqueInput
+    data: XOR<TransactionUpdateWithoutTargetInput, TransactionUncheckedUpdateWithoutTargetInput>
+  }
+
+  export type TransactionUpdateManyWithWhereWithoutTargetInput = {
+    where: TransactionScalarWhereInput
+    data: XOR<TransactionUpdateManyMutationInput, TransactionUncheckedUpdateManyWithoutTargetInput>
+  }
+
   export type UserCreateWithoutApplicationsInput = {
     id: string
     money?: Decimal | DecimalJsLike | number | string
@@ -22021,6 +24297,8 @@ export namespace Prisma {
     mails?: MailsCreateNestedManyWithoutUserInput
     sendedMails?: MailsCreateNestedManyWithoutWhoSendUserInput
     guilds?: GuildMemberCreateNestedManyWithoutUserInput
+    ransactionsSent?: TransactionCreateNestedManyWithoutUserInput
+    transactionsReceived?: TransactionCreateNestedManyWithoutTargetInput
   }
 
   export type UserUncheckedCreateWithoutApplicationsInput = {
@@ -22040,6 +24318,8 @@ export namespace Prisma {
     mails?: MailsUncheckedCreateNestedManyWithoutUserInput
     sendedMails?: MailsUncheckedCreateNestedManyWithoutWhoSendUserInput
     guilds?: GuildMemberUncheckedCreateNestedManyWithoutUserInput
+    ransactionsSent?: TransactionUncheckedCreateNestedManyWithoutUserInput
+    transactionsReceived?: TransactionUncheckedCreateNestedManyWithoutTargetInput
   }
 
   export type UserCreateOrConnectWithoutApplicationsInput = {
@@ -22096,6 +24376,8 @@ export namespace Prisma {
     mails?: MailsUpdateManyWithoutUserNestedInput
     sendedMails?: MailsUpdateManyWithoutWhoSendUserNestedInput
     guilds?: GuildMemberUpdateManyWithoutUserNestedInput
+    ransactionsSent?: TransactionUpdateManyWithoutUserNestedInput
+    transactionsReceived?: TransactionUpdateManyWithoutTargetNestedInput
   }
 
   export type UserUncheckedUpdateWithoutApplicationsInput = {
@@ -22115,6 +24397,8 @@ export namespace Prisma {
     mails?: MailsUncheckedUpdateManyWithoutUserNestedInput
     sendedMails?: MailsUncheckedUpdateManyWithoutWhoSendUserNestedInput
     guilds?: GuildMemberUncheckedUpdateManyWithoutUserNestedInput
+    ransactionsSent?: TransactionUncheckedUpdateManyWithoutUserNestedInput
+    transactionsReceived?: TransactionUncheckedUpdateManyWithoutTargetNestedInput
   }
 
   export type RequisitionUpsertWithWhereUniqueWithoutApplicationInput = {
@@ -22204,6 +24488,8 @@ export namespace Prisma {
     sendedMails?: MailsCreateNestedManyWithoutWhoSendUserInput
     applications?: ApplicationCreateNestedManyWithoutOwnerInput
     guilds?: GuildMemberCreateNestedManyWithoutUserInput
+    ransactionsSent?: TransactionCreateNestedManyWithoutUserInput
+    transactionsReceived?: TransactionCreateNestedManyWithoutTargetInput
   }
 
   export type UserUncheckedCreateWithoutLogsInput = {
@@ -22223,6 +24509,8 @@ export namespace Prisma {
     sendedMails?: MailsUncheckedCreateNestedManyWithoutWhoSendUserInput
     applications?: ApplicationUncheckedCreateNestedManyWithoutOwnerInput
     guilds?: GuildMemberUncheckedCreateNestedManyWithoutUserInput
+    ransactionsSent?: TransactionUncheckedCreateNestedManyWithoutUserInput
+    transactionsReceived?: TransactionUncheckedCreateNestedManyWithoutTargetInput
   }
 
   export type UserCreateOrConnectWithoutLogsInput = {
@@ -22258,6 +24546,8 @@ export namespace Prisma {
     sendedMails?: MailsUpdateManyWithoutWhoSendUserNestedInput
     applications?: ApplicationUpdateManyWithoutOwnerNestedInput
     guilds?: GuildMemberUpdateManyWithoutUserNestedInput
+    ransactionsSent?: TransactionUpdateManyWithoutUserNestedInput
+    transactionsReceived?: TransactionUpdateManyWithoutTargetNestedInput
   }
 
   export type UserUncheckedUpdateWithoutLogsInput = {
@@ -22277,6 +24567,300 @@ export namespace Prisma {
     sendedMails?: MailsUncheckedUpdateManyWithoutWhoSendUserNestedInput
     applications?: ApplicationUncheckedUpdateManyWithoutOwnerNestedInput
     guilds?: GuildMemberUncheckedUpdateManyWithoutUserNestedInput
+    ransactionsSent?: TransactionUncheckedUpdateManyWithoutUserNestedInput
+    transactionsReceived?: TransactionUncheckedUpdateManyWithoutTargetNestedInput
+  }
+
+  export type UserCreateWithoutRansactionsSentInput = {
+    id: string
+    money?: Decimal | DecimalJsLike | number | string
+    bank?: Decimal | DecimalJsLike | number | string
+    xp?: number
+    mailsTagsIgnored?: UserCreatemailsTagsIgnoredInput | string[]
+    dmNotification?: boolean
+    token?: NullableJsonNullValueInput | InputJsonValue
+    afkReasson?: string | null
+    afkTime?: Date | string | null
+    company?: CompanyCreateNestedOneWithoutWorkersInput
+    logs?: LogCreateNestedManyWithoutUserInput
+    cooldowns?: CooldownCreateNestedManyWithoutUserInput
+    stocks?: StockHoldingCreateNestedManyWithoutUserInput
+    mails?: MailsCreateNestedManyWithoutUserInput
+    sendedMails?: MailsCreateNestedManyWithoutWhoSendUserInput
+    applications?: ApplicationCreateNestedManyWithoutOwnerInput
+    guilds?: GuildMemberCreateNestedManyWithoutUserInput
+    transactionsReceived?: TransactionCreateNestedManyWithoutTargetInput
+  }
+
+  export type UserUncheckedCreateWithoutRansactionsSentInput = {
+    id: string
+    money?: Decimal | DecimalJsLike | number | string
+    bank?: Decimal | DecimalJsLike | number | string
+    xp?: number
+    companyId?: number | null
+    mailsTagsIgnored?: UserCreatemailsTagsIgnoredInput | string[]
+    dmNotification?: boolean
+    token?: NullableJsonNullValueInput | InputJsonValue
+    afkReasson?: string | null
+    afkTime?: Date | string | null
+    logs?: LogUncheckedCreateNestedManyWithoutUserInput
+    cooldowns?: CooldownUncheckedCreateNestedManyWithoutUserInput
+    stocks?: StockHoldingUncheckedCreateNestedManyWithoutUserInput
+    mails?: MailsUncheckedCreateNestedManyWithoutUserInput
+    sendedMails?: MailsUncheckedCreateNestedManyWithoutWhoSendUserInput
+    applications?: ApplicationUncheckedCreateNestedManyWithoutOwnerInput
+    guilds?: GuildMemberUncheckedCreateNestedManyWithoutUserInput
+    transactionsReceived?: TransactionUncheckedCreateNestedManyWithoutTargetInput
+  }
+
+  export type UserCreateOrConnectWithoutRansactionsSentInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutRansactionsSentInput, UserUncheckedCreateWithoutRansactionsSentInput>
+  }
+
+  export type UserCreateWithoutTransactionsReceivedInput = {
+    id: string
+    money?: Decimal | DecimalJsLike | number | string
+    bank?: Decimal | DecimalJsLike | number | string
+    xp?: number
+    mailsTagsIgnored?: UserCreatemailsTagsIgnoredInput | string[]
+    dmNotification?: boolean
+    token?: NullableJsonNullValueInput | InputJsonValue
+    afkReasson?: string | null
+    afkTime?: Date | string | null
+    company?: CompanyCreateNestedOneWithoutWorkersInput
+    logs?: LogCreateNestedManyWithoutUserInput
+    cooldowns?: CooldownCreateNestedManyWithoutUserInput
+    stocks?: StockHoldingCreateNestedManyWithoutUserInput
+    mails?: MailsCreateNestedManyWithoutUserInput
+    sendedMails?: MailsCreateNestedManyWithoutWhoSendUserInput
+    applications?: ApplicationCreateNestedManyWithoutOwnerInput
+    guilds?: GuildMemberCreateNestedManyWithoutUserInput
+    ransactionsSent?: TransactionCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutTransactionsReceivedInput = {
+    id: string
+    money?: Decimal | DecimalJsLike | number | string
+    bank?: Decimal | DecimalJsLike | number | string
+    xp?: number
+    companyId?: number | null
+    mailsTagsIgnored?: UserCreatemailsTagsIgnoredInput | string[]
+    dmNotification?: boolean
+    token?: NullableJsonNullValueInput | InputJsonValue
+    afkReasson?: string | null
+    afkTime?: Date | string | null
+    logs?: LogUncheckedCreateNestedManyWithoutUserInput
+    cooldowns?: CooldownUncheckedCreateNestedManyWithoutUserInput
+    stocks?: StockHoldingUncheckedCreateNestedManyWithoutUserInput
+    mails?: MailsUncheckedCreateNestedManyWithoutUserInput
+    sendedMails?: MailsUncheckedCreateNestedManyWithoutWhoSendUserInput
+    applications?: ApplicationUncheckedCreateNestedManyWithoutOwnerInput
+    guilds?: GuildMemberUncheckedCreateNestedManyWithoutUserInput
+    ransactionsSent?: TransactionUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutTransactionsReceivedInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutTransactionsReceivedInput, UserUncheckedCreateWithoutTransactionsReceivedInput>
+  }
+
+  export type GuildSettingsCreateWithoutTransactionsInput = {
+    id: string
+    chatBotChannels?: GuildSettingsCreatechatBotChannelsInput | string[]
+    chatBotEnabled?: boolean
+    channelsCommandDisabled?: GuildSettingsCreatechannelsCommandDisabledInput | string[]
+    channelsCommandDisabledIsHabilited?: boolean
+    channelsCommandEnabled?: GuildSettingsCreatechannelsCommandEnabledInput | string[]
+    channelsCommandEnabledIsHabilited?: boolean
+    xpSystemEnabled?: boolean
+    difficulty?: number
+    rolesXpBonus?: JsonNullValueInput | InputJsonValue
+    rolesNotWinXp?: GuildSettingsCreaterolesNotWinXpInput | string[]
+    channelsXpBonus?: JsonNullValueInput | InputJsonValue
+    channelsNotWinXp?: GuildSettingsCreatechannelsNotWinXpInput | string[]
+    warnLevelUp?: JsonNullValueInput | InputJsonValue
+    levelGrant?: JsonNullValueInput | InputJsonValue
+    members?: GuildMemberCreateNestedManyWithoutGuildInput
+  }
+
+  export type GuildSettingsUncheckedCreateWithoutTransactionsInput = {
+    id: string
+    chatBotChannels?: GuildSettingsCreatechatBotChannelsInput | string[]
+    chatBotEnabled?: boolean
+    channelsCommandDisabled?: GuildSettingsCreatechannelsCommandDisabledInput | string[]
+    channelsCommandDisabledIsHabilited?: boolean
+    channelsCommandEnabled?: GuildSettingsCreatechannelsCommandEnabledInput | string[]
+    channelsCommandEnabledIsHabilited?: boolean
+    xpSystemEnabled?: boolean
+    difficulty?: number
+    rolesXpBonus?: JsonNullValueInput | InputJsonValue
+    rolesNotWinXp?: GuildSettingsCreaterolesNotWinXpInput | string[]
+    channelsXpBonus?: JsonNullValueInput | InputJsonValue
+    channelsNotWinXp?: GuildSettingsCreatechannelsNotWinXpInput | string[]
+    warnLevelUp?: JsonNullValueInput | InputJsonValue
+    levelGrant?: JsonNullValueInput | InputJsonValue
+    members?: GuildMemberUncheckedCreateNestedManyWithoutGuildInput
+  }
+
+  export type GuildSettingsCreateOrConnectWithoutTransactionsInput = {
+    where: GuildSettingsWhereUniqueInput
+    create: XOR<GuildSettingsCreateWithoutTransactionsInput, GuildSettingsUncheckedCreateWithoutTransactionsInput>
+  }
+
+  export type UserUpsertWithoutRansactionsSentInput = {
+    update: XOR<UserUpdateWithoutRansactionsSentInput, UserUncheckedUpdateWithoutRansactionsSentInput>
+    create: XOR<UserCreateWithoutRansactionsSentInput, UserUncheckedCreateWithoutRansactionsSentInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutRansactionsSentInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutRansactionsSentInput, UserUncheckedUpdateWithoutRansactionsSentInput>
+  }
+
+  export type UserUpdateWithoutRansactionsSentInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    money?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    bank?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    xp?: IntFieldUpdateOperationsInput | number
+    mailsTagsIgnored?: UserUpdatemailsTagsIgnoredInput | string[]
+    dmNotification?: BoolFieldUpdateOperationsInput | boolean
+    token?: NullableJsonNullValueInput | InputJsonValue
+    afkReasson?: NullableStringFieldUpdateOperationsInput | string | null
+    afkTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    company?: CompanyUpdateOneWithoutWorkersNestedInput
+    logs?: LogUpdateManyWithoutUserNestedInput
+    cooldowns?: CooldownUpdateManyWithoutUserNestedInput
+    stocks?: StockHoldingUpdateManyWithoutUserNestedInput
+    mails?: MailsUpdateManyWithoutUserNestedInput
+    sendedMails?: MailsUpdateManyWithoutWhoSendUserNestedInput
+    applications?: ApplicationUpdateManyWithoutOwnerNestedInput
+    guilds?: GuildMemberUpdateManyWithoutUserNestedInput
+    transactionsReceived?: TransactionUpdateManyWithoutTargetNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutRansactionsSentInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    money?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    bank?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    xp?: IntFieldUpdateOperationsInput | number
+    companyId?: NullableIntFieldUpdateOperationsInput | number | null
+    mailsTagsIgnored?: UserUpdatemailsTagsIgnoredInput | string[]
+    dmNotification?: BoolFieldUpdateOperationsInput | boolean
+    token?: NullableJsonNullValueInput | InputJsonValue
+    afkReasson?: NullableStringFieldUpdateOperationsInput | string | null
+    afkTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    logs?: LogUncheckedUpdateManyWithoutUserNestedInput
+    cooldowns?: CooldownUncheckedUpdateManyWithoutUserNestedInput
+    stocks?: StockHoldingUncheckedUpdateManyWithoutUserNestedInput
+    mails?: MailsUncheckedUpdateManyWithoutUserNestedInput
+    sendedMails?: MailsUncheckedUpdateManyWithoutWhoSendUserNestedInput
+    applications?: ApplicationUncheckedUpdateManyWithoutOwnerNestedInput
+    guilds?: GuildMemberUncheckedUpdateManyWithoutUserNestedInput
+    transactionsReceived?: TransactionUncheckedUpdateManyWithoutTargetNestedInput
+  }
+
+  export type UserUpsertWithoutTransactionsReceivedInput = {
+    update: XOR<UserUpdateWithoutTransactionsReceivedInput, UserUncheckedUpdateWithoutTransactionsReceivedInput>
+    create: XOR<UserCreateWithoutTransactionsReceivedInput, UserUncheckedCreateWithoutTransactionsReceivedInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutTransactionsReceivedInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutTransactionsReceivedInput, UserUncheckedUpdateWithoutTransactionsReceivedInput>
+  }
+
+  export type UserUpdateWithoutTransactionsReceivedInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    money?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    bank?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    xp?: IntFieldUpdateOperationsInput | number
+    mailsTagsIgnored?: UserUpdatemailsTagsIgnoredInput | string[]
+    dmNotification?: BoolFieldUpdateOperationsInput | boolean
+    token?: NullableJsonNullValueInput | InputJsonValue
+    afkReasson?: NullableStringFieldUpdateOperationsInput | string | null
+    afkTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    company?: CompanyUpdateOneWithoutWorkersNestedInput
+    logs?: LogUpdateManyWithoutUserNestedInput
+    cooldowns?: CooldownUpdateManyWithoutUserNestedInput
+    stocks?: StockHoldingUpdateManyWithoutUserNestedInput
+    mails?: MailsUpdateManyWithoutUserNestedInput
+    sendedMails?: MailsUpdateManyWithoutWhoSendUserNestedInput
+    applications?: ApplicationUpdateManyWithoutOwnerNestedInput
+    guilds?: GuildMemberUpdateManyWithoutUserNestedInput
+    ransactionsSent?: TransactionUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutTransactionsReceivedInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    money?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    bank?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    xp?: IntFieldUpdateOperationsInput | number
+    companyId?: NullableIntFieldUpdateOperationsInput | number | null
+    mailsTagsIgnored?: UserUpdatemailsTagsIgnoredInput | string[]
+    dmNotification?: BoolFieldUpdateOperationsInput | boolean
+    token?: NullableJsonNullValueInput | InputJsonValue
+    afkReasson?: NullableStringFieldUpdateOperationsInput | string | null
+    afkTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    logs?: LogUncheckedUpdateManyWithoutUserNestedInput
+    cooldowns?: CooldownUncheckedUpdateManyWithoutUserNestedInput
+    stocks?: StockHoldingUncheckedUpdateManyWithoutUserNestedInput
+    mails?: MailsUncheckedUpdateManyWithoutUserNestedInput
+    sendedMails?: MailsUncheckedUpdateManyWithoutWhoSendUserNestedInput
+    applications?: ApplicationUncheckedUpdateManyWithoutOwnerNestedInput
+    guilds?: GuildMemberUncheckedUpdateManyWithoutUserNestedInput
+    ransactionsSent?: TransactionUncheckedUpdateManyWithoutUserNestedInput
+  }
+
+  export type GuildSettingsUpsertWithoutTransactionsInput = {
+    update: XOR<GuildSettingsUpdateWithoutTransactionsInput, GuildSettingsUncheckedUpdateWithoutTransactionsInput>
+    create: XOR<GuildSettingsCreateWithoutTransactionsInput, GuildSettingsUncheckedCreateWithoutTransactionsInput>
+    where?: GuildSettingsWhereInput
+  }
+
+  export type GuildSettingsUpdateToOneWithWhereWithoutTransactionsInput = {
+    where?: GuildSettingsWhereInput
+    data: XOR<GuildSettingsUpdateWithoutTransactionsInput, GuildSettingsUncheckedUpdateWithoutTransactionsInput>
+  }
+
+  export type GuildSettingsUpdateWithoutTransactionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    chatBotChannels?: GuildSettingsUpdatechatBotChannelsInput | string[]
+    chatBotEnabled?: BoolFieldUpdateOperationsInput | boolean
+    channelsCommandDisabled?: GuildSettingsUpdatechannelsCommandDisabledInput | string[]
+    channelsCommandDisabledIsHabilited?: BoolFieldUpdateOperationsInput | boolean
+    channelsCommandEnabled?: GuildSettingsUpdatechannelsCommandEnabledInput | string[]
+    channelsCommandEnabledIsHabilited?: BoolFieldUpdateOperationsInput | boolean
+    xpSystemEnabled?: BoolFieldUpdateOperationsInput | boolean
+    difficulty?: FloatFieldUpdateOperationsInput | number
+    rolesXpBonus?: JsonNullValueInput | InputJsonValue
+    rolesNotWinXp?: GuildSettingsUpdaterolesNotWinXpInput | string[]
+    channelsXpBonus?: JsonNullValueInput | InputJsonValue
+    channelsNotWinXp?: GuildSettingsUpdatechannelsNotWinXpInput | string[]
+    warnLevelUp?: JsonNullValueInput | InputJsonValue
+    levelGrant?: JsonNullValueInput | InputJsonValue
+    members?: GuildMemberUpdateManyWithoutGuildNestedInput
+  }
+
+  export type GuildSettingsUncheckedUpdateWithoutTransactionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    chatBotChannels?: GuildSettingsUpdatechatBotChannelsInput | string[]
+    chatBotEnabled?: BoolFieldUpdateOperationsInput | boolean
+    channelsCommandDisabled?: GuildSettingsUpdatechannelsCommandDisabledInput | string[]
+    channelsCommandDisabledIsHabilited?: BoolFieldUpdateOperationsInput | boolean
+    channelsCommandEnabled?: GuildSettingsUpdatechannelsCommandEnabledInput | string[]
+    channelsCommandEnabledIsHabilited?: BoolFieldUpdateOperationsInput | boolean
+    xpSystemEnabled?: BoolFieldUpdateOperationsInput | boolean
+    difficulty?: FloatFieldUpdateOperationsInput | number
+    rolesXpBonus?: JsonNullValueInput | InputJsonValue
+    rolesNotWinXp?: GuildSettingsUpdaterolesNotWinXpInput | string[]
+    channelsXpBonus?: JsonNullValueInput | InputJsonValue
+    channelsNotWinXp?: GuildSettingsUpdatechannelsNotWinXpInput | string[]
+    warnLevelUp?: JsonNullValueInput | InputJsonValue
+    levelGrant?: JsonNullValueInput | InputJsonValue
+    members?: GuildMemberUncheckedUpdateManyWithoutGuildNestedInput
   }
 
   export type UserCreateWithoutCooldownsInput = {
@@ -22296,6 +24880,8 @@ export namespace Prisma {
     sendedMails?: MailsCreateNestedManyWithoutWhoSendUserInput
     applications?: ApplicationCreateNestedManyWithoutOwnerInput
     guilds?: GuildMemberCreateNestedManyWithoutUserInput
+    ransactionsSent?: TransactionCreateNestedManyWithoutUserInput
+    transactionsReceived?: TransactionCreateNestedManyWithoutTargetInput
   }
 
   export type UserUncheckedCreateWithoutCooldownsInput = {
@@ -22315,6 +24901,8 @@ export namespace Prisma {
     sendedMails?: MailsUncheckedCreateNestedManyWithoutWhoSendUserInput
     applications?: ApplicationUncheckedCreateNestedManyWithoutOwnerInput
     guilds?: GuildMemberUncheckedCreateNestedManyWithoutUserInput
+    ransactionsSent?: TransactionUncheckedCreateNestedManyWithoutUserInput
+    transactionsReceived?: TransactionUncheckedCreateNestedManyWithoutTargetInput
   }
 
   export type UserCreateOrConnectWithoutCooldownsInput = {
@@ -22350,6 +24938,8 @@ export namespace Prisma {
     sendedMails?: MailsUpdateManyWithoutWhoSendUserNestedInput
     applications?: ApplicationUpdateManyWithoutOwnerNestedInput
     guilds?: GuildMemberUpdateManyWithoutUserNestedInput
+    ransactionsSent?: TransactionUpdateManyWithoutUserNestedInput
+    transactionsReceived?: TransactionUpdateManyWithoutTargetNestedInput
   }
 
   export type UserUncheckedUpdateWithoutCooldownsInput = {
@@ -22369,6 +24959,8 @@ export namespace Prisma {
     sendedMails?: MailsUncheckedUpdateManyWithoutWhoSendUserNestedInput
     applications?: ApplicationUncheckedUpdateManyWithoutOwnerNestedInput
     guilds?: GuildMemberUncheckedUpdateManyWithoutUserNestedInput
+    ransactionsSent?: TransactionUncheckedUpdateManyWithoutUserNestedInput
+    transactionsReceived?: TransactionUncheckedUpdateManyWithoutTargetNestedInput
   }
 
   export type UserCreateWithoutCompanyInput = {
@@ -22388,6 +24980,8 @@ export namespace Prisma {
     sendedMails?: MailsCreateNestedManyWithoutWhoSendUserInput
     applications?: ApplicationCreateNestedManyWithoutOwnerInput
     guilds?: GuildMemberCreateNestedManyWithoutUserInput
+    ransactionsSent?: TransactionCreateNestedManyWithoutUserInput
+    transactionsReceived?: TransactionCreateNestedManyWithoutTargetInput
   }
 
   export type UserUncheckedCreateWithoutCompanyInput = {
@@ -22407,6 +25001,8 @@ export namespace Prisma {
     sendedMails?: MailsUncheckedCreateNestedManyWithoutWhoSendUserInput
     applications?: ApplicationUncheckedCreateNestedManyWithoutOwnerInput
     guilds?: GuildMemberUncheckedCreateNestedManyWithoutUserInput
+    ransactionsSent?: TransactionUncheckedCreateNestedManyWithoutUserInput
+    transactionsReceived?: TransactionUncheckedCreateNestedManyWithoutTargetInput
   }
 
   export type UserCreateOrConnectWithoutCompanyInput = {
@@ -22606,6 +25202,8 @@ export namespace Prisma {
     sendedMails?: MailsCreateNestedManyWithoutWhoSendUserInput
     applications?: ApplicationCreateNestedManyWithoutOwnerInput
     guilds?: GuildMemberCreateNestedManyWithoutUserInput
+    ransactionsSent?: TransactionCreateNestedManyWithoutUserInput
+    transactionsReceived?: TransactionCreateNestedManyWithoutTargetInput
   }
 
   export type UserUncheckedCreateWithoutStocksInput = {
@@ -22625,6 +25223,8 @@ export namespace Prisma {
     sendedMails?: MailsUncheckedCreateNestedManyWithoutWhoSendUserInput
     applications?: ApplicationUncheckedCreateNestedManyWithoutOwnerInput
     guilds?: GuildMemberUncheckedCreateNestedManyWithoutUserInput
+    ransactionsSent?: TransactionUncheckedCreateNestedManyWithoutUserInput
+    transactionsReceived?: TransactionUncheckedCreateNestedManyWithoutTargetInput
   }
 
   export type UserCreateOrConnectWithoutStocksInput = {
@@ -22684,6 +25284,8 @@ export namespace Prisma {
     sendedMails?: MailsUpdateManyWithoutWhoSendUserNestedInput
     applications?: ApplicationUpdateManyWithoutOwnerNestedInput
     guilds?: GuildMemberUpdateManyWithoutUserNestedInput
+    ransactionsSent?: TransactionUpdateManyWithoutUserNestedInput
+    transactionsReceived?: TransactionUpdateManyWithoutTargetNestedInput
   }
 
   export type UserUncheckedUpdateWithoutStocksInput = {
@@ -22703,6 +25305,8 @@ export namespace Prisma {
     sendedMails?: MailsUncheckedUpdateManyWithoutWhoSendUserNestedInput
     applications?: ApplicationUncheckedUpdateManyWithoutOwnerNestedInput
     guilds?: GuildMemberUncheckedUpdateManyWithoutUserNestedInput
+    ransactionsSent?: TransactionUncheckedUpdateManyWithoutUserNestedInput
+    transactionsReceived?: TransactionUncheckedUpdateManyWithoutTargetNestedInput
   }
 
   export type StockUpsertWithoutHoldersInput = {
@@ -22761,6 +25365,45 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type TransactionCreateWithoutGuildInput = {
+    amount: number
+    quitType?: $Enums.TransactionQuitType | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    channelId?: string | null
+    messageId?: string | null
+    reason?: string | null
+    type?: $Enums.TransactionType
+    status?: $Enums.TransactionStatus
+    user: UserCreateNestedOneWithoutRansactionsSentInput
+    target?: UserCreateNestedOneWithoutTransactionsReceivedInput
+  }
+
+  export type TransactionUncheckedCreateWithoutGuildInput = {
+    id?: number
+    userId: string
+    targetId?: string | null
+    amount: number
+    quitType?: $Enums.TransactionQuitType | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    channelId?: string | null
+    messageId?: string | null
+    reason?: string | null
+    type?: $Enums.TransactionType
+    status?: $Enums.TransactionStatus
+  }
+
+  export type TransactionCreateOrConnectWithoutGuildInput = {
+    where: TransactionWhereUniqueInput
+    create: XOR<TransactionCreateWithoutGuildInput, TransactionUncheckedCreateWithoutGuildInput>
+  }
+
+  export type TransactionCreateManyGuildInputEnvelope = {
+    data: TransactionCreateManyGuildInput | TransactionCreateManyGuildInput[]
+    skipDuplicates?: boolean
+  }
+
   export type GuildMemberUpsertWithWhereUniqueWithoutGuildInput = {
     where: GuildMemberWhereUniqueInput
     update: XOR<GuildMemberUpdateWithoutGuildInput, GuildMemberUncheckedUpdateWithoutGuildInput>
@@ -22775,6 +25418,22 @@ export namespace Prisma {
   export type GuildMemberUpdateManyWithWhereWithoutGuildInput = {
     where: GuildMemberScalarWhereInput
     data: XOR<GuildMemberUpdateManyMutationInput, GuildMemberUncheckedUpdateManyWithoutGuildInput>
+  }
+
+  export type TransactionUpsertWithWhereUniqueWithoutGuildInput = {
+    where: TransactionWhereUniqueInput
+    update: XOR<TransactionUpdateWithoutGuildInput, TransactionUncheckedUpdateWithoutGuildInput>
+    create: XOR<TransactionCreateWithoutGuildInput, TransactionUncheckedCreateWithoutGuildInput>
+  }
+
+  export type TransactionUpdateWithWhereUniqueWithoutGuildInput = {
+    where: TransactionWhereUniqueInput
+    data: XOR<TransactionUpdateWithoutGuildInput, TransactionUncheckedUpdateWithoutGuildInput>
+  }
+
+  export type TransactionUpdateManyWithWhereWithoutGuildInput = {
+    where: TransactionScalarWhereInput
+    data: XOR<TransactionUpdateManyMutationInput, TransactionUncheckedUpdateManyWithoutGuildInput>
   }
 
   export type GuildSettingsCreateWithoutMembersInput = {
@@ -22793,6 +25452,7 @@ export namespace Prisma {
     channelsNotWinXp?: GuildSettingsCreatechannelsNotWinXpInput | string[]
     warnLevelUp?: JsonNullValueInput | InputJsonValue
     levelGrant?: JsonNullValueInput | InputJsonValue
+    transactions?: TransactionCreateNestedManyWithoutGuildInput
   }
 
   export type GuildSettingsUncheckedCreateWithoutMembersInput = {
@@ -22811,6 +25471,7 @@ export namespace Prisma {
     channelsNotWinXp?: GuildSettingsCreatechannelsNotWinXpInput | string[]
     warnLevelUp?: JsonNullValueInput | InputJsonValue
     levelGrant?: JsonNullValueInput | InputJsonValue
+    transactions?: TransactionUncheckedCreateNestedManyWithoutGuildInput
   }
 
   export type GuildSettingsCreateOrConnectWithoutMembersInput = {
@@ -22835,6 +25496,8 @@ export namespace Prisma {
     mails?: MailsCreateNestedManyWithoutUserInput
     sendedMails?: MailsCreateNestedManyWithoutWhoSendUserInput
     applications?: ApplicationCreateNestedManyWithoutOwnerInput
+    ransactionsSent?: TransactionCreateNestedManyWithoutUserInput
+    transactionsReceived?: TransactionCreateNestedManyWithoutTargetInput
   }
 
   export type UserUncheckedCreateWithoutGuildsInput = {
@@ -22854,6 +25517,8 @@ export namespace Prisma {
     mails?: MailsUncheckedCreateNestedManyWithoutUserInput
     sendedMails?: MailsUncheckedCreateNestedManyWithoutWhoSendUserInput
     applications?: ApplicationUncheckedCreateNestedManyWithoutOwnerInput
+    ransactionsSent?: TransactionUncheckedCreateNestedManyWithoutUserInput
+    transactionsReceived?: TransactionUncheckedCreateNestedManyWithoutTargetInput
   }
 
   export type UserCreateOrConnectWithoutGuildsInput = {
@@ -22888,6 +25553,7 @@ export namespace Prisma {
     channelsNotWinXp?: GuildSettingsUpdatechannelsNotWinXpInput | string[]
     warnLevelUp?: JsonNullValueInput | InputJsonValue
     levelGrant?: JsonNullValueInput | InputJsonValue
+    transactions?: TransactionUpdateManyWithoutGuildNestedInput
   }
 
   export type GuildSettingsUncheckedUpdateWithoutMembersInput = {
@@ -22906,6 +25572,7 @@ export namespace Prisma {
     channelsNotWinXp?: GuildSettingsUpdatechannelsNotWinXpInput | string[]
     warnLevelUp?: JsonNullValueInput | InputJsonValue
     levelGrant?: JsonNullValueInput | InputJsonValue
+    transactions?: TransactionUncheckedUpdateManyWithoutGuildNestedInput
   }
 
   export type UserUpsertWithoutGuildsInput = {
@@ -22936,6 +25603,8 @@ export namespace Prisma {
     mails?: MailsUpdateManyWithoutUserNestedInput
     sendedMails?: MailsUpdateManyWithoutWhoSendUserNestedInput
     applications?: ApplicationUpdateManyWithoutOwnerNestedInput
+    ransactionsSent?: TransactionUpdateManyWithoutUserNestedInput
+    transactionsReceived?: TransactionUpdateManyWithoutTargetNestedInput
   }
 
   export type UserUncheckedUpdateWithoutGuildsInput = {
@@ -22955,6 +25624,8 @@ export namespace Prisma {
     mails?: MailsUncheckedUpdateManyWithoutUserNestedInput
     sendedMails?: MailsUncheckedUpdateManyWithoutWhoSendUserNestedInput
     applications?: ApplicationUncheckedUpdateManyWithoutOwnerNestedInput
+    ransactionsSent?: TransactionUncheckedUpdateManyWithoutUserNestedInput
+    transactionsReceived?: TransactionUncheckedUpdateManyWithoutTargetNestedInput
   }
 
   export type UserCreateWithoutMailsInput = {
@@ -22974,6 +25645,8 @@ export namespace Prisma {
     sendedMails?: MailsCreateNestedManyWithoutWhoSendUserInput
     applications?: ApplicationCreateNestedManyWithoutOwnerInput
     guilds?: GuildMemberCreateNestedManyWithoutUserInput
+    ransactionsSent?: TransactionCreateNestedManyWithoutUserInput
+    transactionsReceived?: TransactionCreateNestedManyWithoutTargetInput
   }
 
   export type UserUncheckedCreateWithoutMailsInput = {
@@ -22993,6 +25666,8 @@ export namespace Prisma {
     sendedMails?: MailsUncheckedCreateNestedManyWithoutWhoSendUserInput
     applications?: ApplicationUncheckedCreateNestedManyWithoutOwnerInput
     guilds?: GuildMemberUncheckedCreateNestedManyWithoutUserInput
+    ransactionsSent?: TransactionUncheckedCreateNestedManyWithoutUserInput
+    transactionsReceived?: TransactionUncheckedCreateNestedManyWithoutTargetInput
   }
 
   export type UserCreateOrConnectWithoutMailsInput = {
@@ -23017,6 +25692,8 @@ export namespace Prisma {
     mails?: MailsCreateNestedManyWithoutUserInput
     applications?: ApplicationCreateNestedManyWithoutOwnerInput
     guilds?: GuildMemberCreateNestedManyWithoutUserInput
+    ransactionsSent?: TransactionCreateNestedManyWithoutUserInput
+    transactionsReceived?: TransactionCreateNestedManyWithoutTargetInput
   }
 
   export type UserUncheckedCreateWithoutSendedMailsInput = {
@@ -23036,6 +25713,8 @@ export namespace Prisma {
     mails?: MailsUncheckedCreateNestedManyWithoutUserInput
     applications?: ApplicationUncheckedCreateNestedManyWithoutOwnerInput
     guilds?: GuildMemberUncheckedCreateNestedManyWithoutUserInput
+    ransactionsSent?: TransactionUncheckedCreateNestedManyWithoutUserInput
+    transactionsReceived?: TransactionUncheckedCreateNestedManyWithoutTargetInput
   }
 
   export type UserCreateOrConnectWithoutSendedMailsInput = {
@@ -23071,6 +25750,8 @@ export namespace Prisma {
     sendedMails?: MailsUpdateManyWithoutWhoSendUserNestedInput
     applications?: ApplicationUpdateManyWithoutOwnerNestedInput
     guilds?: GuildMemberUpdateManyWithoutUserNestedInput
+    ransactionsSent?: TransactionUpdateManyWithoutUserNestedInput
+    transactionsReceived?: TransactionUpdateManyWithoutTargetNestedInput
   }
 
   export type UserUncheckedUpdateWithoutMailsInput = {
@@ -23090,6 +25771,8 @@ export namespace Prisma {
     sendedMails?: MailsUncheckedUpdateManyWithoutWhoSendUserNestedInput
     applications?: ApplicationUncheckedUpdateManyWithoutOwnerNestedInput
     guilds?: GuildMemberUncheckedUpdateManyWithoutUserNestedInput
+    ransactionsSent?: TransactionUncheckedUpdateManyWithoutUserNestedInput
+    transactionsReceived?: TransactionUncheckedUpdateManyWithoutTargetNestedInput
   }
 
   export type UserUpsertWithoutSendedMailsInput = {
@@ -23120,6 +25803,8 @@ export namespace Prisma {
     mails?: MailsUpdateManyWithoutUserNestedInput
     applications?: ApplicationUpdateManyWithoutOwnerNestedInput
     guilds?: GuildMemberUpdateManyWithoutUserNestedInput
+    ransactionsSent?: TransactionUpdateManyWithoutUserNestedInput
+    transactionsReceived?: TransactionUpdateManyWithoutTargetNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSendedMailsInput = {
@@ -23139,6 +25824,8 @@ export namespace Prisma {
     mails?: MailsUncheckedUpdateManyWithoutUserNestedInput
     applications?: ApplicationUncheckedUpdateManyWithoutOwnerNestedInput
     guilds?: GuildMemberUncheckedUpdateManyWithoutUserNestedInput
+    ransactionsSent?: TransactionUncheckedUpdateManyWithoutUserNestedInput
+    transactionsReceived?: TransactionUncheckedUpdateManyWithoutTargetNestedInput
   }
 
   export type LogCreateManyUserInput = {
@@ -23193,6 +25880,36 @@ export namespace Prisma {
     tryviaPoints?: number
     tryviaGames?: number
     tryviaWins?: number
+  }
+
+  export type TransactionCreateManyUserInput = {
+    id?: number
+    targetId?: string | null
+    amount: number
+    quitType?: $Enums.TransactionQuitType | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    guildId?: string | null
+    channelId?: string | null
+    messageId?: string | null
+    reason?: string | null
+    type?: $Enums.TransactionType
+    status?: $Enums.TransactionStatus
+  }
+
+  export type TransactionCreateManyTargetInput = {
+    id?: number
+    userId: string
+    amount: number
+    quitType?: $Enums.TransactionQuitType | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    guildId?: string | null
+    channelId?: string | null
+    messageId?: string | null
+    reason?: string | null
+    type?: $Enums.TransactionType
+    status?: $Enums.TransactionStatus
   }
 
   export type LogUpdateWithoutUserInput = {
@@ -23354,6 +26071,94 @@ export namespace Prisma {
     tryviaWins?: IntFieldUpdateOperationsInput | number
   }
 
+  export type TransactionUpdateWithoutUserInput = {
+    amount?: FloatFieldUpdateOperationsInput | number
+    quitType?: NullableEnumTransactionQuitTypeFieldUpdateOperationsInput | $Enums.TransactionQuitType | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    channelId?: NullableStringFieldUpdateOperationsInput | string | null
+    messageId?: NullableStringFieldUpdateOperationsInput | string | null
+    reason?: NullableStringFieldUpdateOperationsInput | string | null
+    type?: EnumTransactionTypeFieldUpdateOperationsInput | $Enums.TransactionType
+    status?: EnumTransactionStatusFieldUpdateOperationsInput | $Enums.TransactionStatus
+    target?: UserUpdateOneWithoutTransactionsReceivedNestedInput
+    guild?: GuildSettingsUpdateOneWithoutTransactionsNestedInput
+  }
+
+  export type TransactionUncheckedUpdateWithoutUserInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    targetId?: NullableStringFieldUpdateOperationsInput | string | null
+    amount?: FloatFieldUpdateOperationsInput | number
+    quitType?: NullableEnumTransactionQuitTypeFieldUpdateOperationsInput | $Enums.TransactionQuitType | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    guildId?: NullableStringFieldUpdateOperationsInput | string | null
+    channelId?: NullableStringFieldUpdateOperationsInput | string | null
+    messageId?: NullableStringFieldUpdateOperationsInput | string | null
+    reason?: NullableStringFieldUpdateOperationsInput | string | null
+    type?: EnumTransactionTypeFieldUpdateOperationsInput | $Enums.TransactionType
+    status?: EnumTransactionStatusFieldUpdateOperationsInput | $Enums.TransactionStatus
+  }
+
+  export type TransactionUncheckedUpdateManyWithoutUserInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    targetId?: NullableStringFieldUpdateOperationsInput | string | null
+    amount?: FloatFieldUpdateOperationsInput | number
+    quitType?: NullableEnumTransactionQuitTypeFieldUpdateOperationsInput | $Enums.TransactionQuitType | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    guildId?: NullableStringFieldUpdateOperationsInput | string | null
+    channelId?: NullableStringFieldUpdateOperationsInput | string | null
+    messageId?: NullableStringFieldUpdateOperationsInput | string | null
+    reason?: NullableStringFieldUpdateOperationsInput | string | null
+    type?: EnumTransactionTypeFieldUpdateOperationsInput | $Enums.TransactionType
+    status?: EnumTransactionStatusFieldUpdateOperationsInput | $Enums.TransactionStatus
+  }
+
+  export type TransactionUpdateWithoutTargetInput = {
+    amount?: FloatFieldUpdateOperationsInput | number
+    quitType?: NullableEnumTransactionQuitTypeFieldUpdateOperationsInput | $Enums.TransactionQuitType | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    channelId?: NullableStringFieldUpdateOperationsInput | string | null
+    messageId?: NullableStringFieldUpdateOperationsInput | string | null
+    reason?: NullableStringFieldUpdateOperationsInput | string | null
+    type?: EnumTransactionTypeFieldUpdateOperationsInput | $Enums.TransactionType
+    status?: EnumTransactionStatusFieldUpdateOperationsInput | $Enums.TransactionStatus
+    user?: UserUpdateOneRequiredWithoutRansactionsSentNestedInput
+    guild?: GuildSettingsUpdateOneWithoutTransactionsNestedInput
+  }
+
+  export type TransactionUncheckedUpdateWithoutTargetInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    userId?: StringFieldUpdateOperationsInput | string
+    amount?: FloatFieldUpdateOperationsInput | number
+    quitType?: NullableEnumTransactionQuitTypeFieldUpdateOperationsInput | $Enums.TransactionQuitType | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    guildId?: NullableStringFieldUpdateOperationsInput | string | null
+    channelId?: NullableStringFieldUpdateOperationsInput | string | null
+    messageId?: NullableStringFieldUpdateOperationsInput | string | null
+    reason?: NullableStringFieldUpdateOperationsInput | string | null
+    type?: EnumTransactionTypeFieldUpdateOperationsInput | $Enums.TransactionType
+    status?: EnumTransactionStatusFieldUpdateOperationsInput | $Enums.TransactionStatus
+  }
+
+  export type TransactionUncheckedUpdateManyWithoutTargetInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    userId?: StringFieldUpdateOperationsInput | string
+    amount?: FloatFieldUpdateOperationsInput | number
+    quitType?: NullableEnumTransactionQuitTypeFieldUpdateOperationsInput | $Enums.TransactionQuitType | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    guildId?: NullableStringFieldUpdateOperationsInput | string | null
+    channelId?: NullableStringFieldUpdateOperationsInput | string | null
+    messageId?: NullableStringFieldUpdateOperationsInput | string | null
+    reason?: NullableStringFieldUpdateOperationsInput | string | null
+    type?: EnumTransactionTypeFieldUpdateOperationsInput | $Enums.TransactionType
+    status?: EnumTransactionStatusFieldUpdateOperationsInput | $Enums.TransactionStatus
+  }
+
   export type RequisitionCreateManyApplicationInput = {
     id?: number
     createdAt?: Date | string
@@ -23406,6 +26211,8 @@ export namespace Prisma {
     sendedMails?: MailsUpdateManyWithoutWhoSendUserNestedInput
     applications?: ApplicationUpdateManyWithoutOwnerNestedInput
     guilds?: GuildMemberUpdateManyWithoutUserNestedInput
+    ransactionsSent?: TransactionUpdateManyWithoutUserNestedInput
+    transactionsReceived?: TransactionUpdateManyWithoutTargetNestedInput
   }
 
   export type UserUncheckedUpdateWithoutCompanyInput = {
@@ -23425,6 +26232,8 @@ export namespace Prisma {
     sendedMails?: MailsUncheckedUpdateManyWithoutWhoSendUserNestedInput
     applications?: ApplicationUncheckedUpdateManyWithoutOwnerNestedInput
     guilds?: GuildMemberUncheckedUpdateManyWithoutUserNestedInput
+    ransactionsSent?: TransactionUncheckedUpdateManyWithoutUserNestedInput
+    transactionsReceived?: TransactionUncheckedUpdateManyWithoutTargetNestedInput
   }
 
   export type UserUncheckedUpdateManyWithoutCompanyInput = {
@@ -23493,6 +26302,21 @@ export namespace Prisma {
     tryviaWins?: number
   }
 
+  export type TransactionCreateManyGuildInput = {
+    id?: number
+    userId: string
+    targetId?: string | null
+    amount: number
+    quitType?: $Enums.TransactionQuitType | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    channelId?: string | null
+    messageId?: string | null
+    reason?: string | null
+    type?: $Enums.TransactionType
+    status?: $Enums.TransactionStatus
+  }
+
   export type GuildMemberUpdateWithoutGuildInput = {
     xp?: IntFieldUpdateOperationsInput | number
     tryviaPoints?: IntFieldUpdateOperationsInput | number
@@ -23515,6 +26339,50 @@ export namespace Prisma {
     tryviaPoints?: IntFieldUpdateOperationsInput | number
     tryviaGames?: IntFieldUpdateOperationsInput | number
     tryviaWins?: IntFieldUpdateOperationsInput | number
+  }
+
+  export type TransactionUpdateWithoutGuildInput = {
+    amount?: FloatFieldUpdateOperationsInput | number
+    quitType?: NullableEnumTransactionQuitTypeFieldUpdateOperationsInput | $Enums.TransactionQuitType | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    channelId?: NullableStringFieldUpdateOperationsInput | string | null
+    messageId?: NullableStringFieldUpdateOperationsInput | string | null
+    reason?: NullableStringFieldUpdateOperationsInput | string | null
+    type?: EnumTransactionTypeFieldUpdateOperationsInput | $Enums.TransactionType
+    status?: EnumTransactionStatusFieldUpdateOperationsInput | $Enums.TransactionStatus
+    user?: UserUpdateOneRequiredWithoutRansactionsSentNestedInput
+    target?: UserUpdateOneWithoutTransactionsReceivedNestedInput
+  }
+
+  export type TransactionUncheckedUpdateWithoutGuildInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    userId?: StringFieldUpdateOperationsInput | string
+    targetId?: NullableStringFieldUpdateOperationsInput | string | null
+    amount?: FloatFieldUpdateOperationsInput | number
+    quitType?: NullableEnumTransactionQuitTypeFieldUpdateOperationsInput | $Enums.TransactionQuitType | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    channelId?: NullableStringFieldUpdateOperationsInput | string | null
+    messageId?: NullableStringFieldUpdateOperationsInput | string | null
+    reason?: NullableStringFieldUpdateOperationsInput | string | null
+    type?: EnumTransactionTypeFieldUpdateOperationsInput | $Enums.TransactionType
+    status?: EnumTransactionStatusFieldUpdateOperationsInput | $Enums.TransactionStatus
+  }
+
+  export type TransactionUncheckedUpdateManyWithoutGuildInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    userId?: StringFieldUpdateOperationsInput | string
+    targetId?: NullableStringFieldUpdateOperationsInput | string | null
+    amount?: FloatFieldUpdateOperationsInput | number
+    quitType?: NullableEnumTransactionQuitTypeFieldUpdateOperationsInput | $Enums.TransactionQuitType | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    channelId?: NullableStringFieldUpdateOperationsInput | string | null
+    messageId?: NullableStringFieldUpdateOperationsInput | string | null
+    reason?: NullableStringFieldUpdateOperationsInput | string | null
+    type?: EnumTransactionTypeFieldUpdateOperationsInput | $Enums.TransactionType
+    status?: EnumTransactionStatusFieldUpdateOperationsInput | $Enums.TransactionStatus
   }
 
 

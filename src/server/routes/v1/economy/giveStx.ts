@@ -37,6 +37,11 @@ export default async function giveStx(app: FastifyInstance, client: Client<true>
         if (appMoney < amount) return reply.status(StatusCodes.BAD_REQUEST).send({ message: "Not enough money", success: false });
 
         await prisma.$transaction([
+            prisma.user.upsert({
+                where: { id: application.data.id },
+                update: {},
+                create: { id: application.data.id }
+            }),
             prisma.application.update({
                 where: { token: application.tokenHash },
                 data: { money: { decrement: amount } }
@@ -53,6 +58,18 @@ export default async function giveStx(app: FastifyInstance, client: Client<true>
                     type: "info",
                     userId: memberId,
                     tags: ["economy", "transfer", "receive", "api", "transaction"]
+                }
+            }),
+            prisma.transaction.create({
+                data: {
+                    amount,
+                    channelId,
+                    guildId,
+                    reason,
+                    status: "APPROVED",
+                    type: "API",
+                    userId: application.data.id,
+                    targetId: memberId
                 }
             })
         ])

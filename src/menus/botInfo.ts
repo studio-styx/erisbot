@@ -61,7 +61,7 @@ export async function botInfoMenu<R>(page: 'main' | 'hardware' | 'software' | 'c
             const erisRamUsePercent = Math.round((erisRamUse / containerRamLimit) * 100);
 
             components.push(
-                `# Olá ${user.username.replace(/([\\_*~`|>])/g, '\\$1')}, veja minhas informações abaixo! ${icon.Eris_happy_left}`,
+                `# Olá ${user.displayName.replace(/([\\_*~`|>])/g, '\\$1')}, veja minhas informações abaixo! ${icon.Eris_happy_left}`,
                 brBuilder(
                     `### ⚙️ Informações de uso`,
                     `> **Uso de memória do sistema:** ${formatBytes(memory.used)} — ${memory.percent}%`,
@@ -116,7 +116,7 @@ export async function botInfoMenu<R>(page: 'main' | 'hardware' | 'software' | 'c
             }
 
             components.push(
-                `# Olá ${user.username.replace(/([\\_*~`|>])/g, '\\$1')}, veja minhas informações abaixo! ${icon.Eris_happy_left}`,
+                `# Olá ${user.displayName.replace(/([\\_*~`|>])/g, '\\$1')}, veja minhas informações abaixo! ${icon.Eris_happy_left}`,
                 brBuilder(
                     `### 🧠 Informações teóricas`,
                     `> **Versão do ${runtime.name}:** ${runtime.version}`,
@@ -131,7 +131,7 @@ export async function botInfoMenu<R>(page: 'main' | 'hardware' | 'software' | 'c
         }
         case "curiosities": {
             components.push(
-                `# Olá ${user.username.replace(/([\\_*~`|>])/g, '\\$1')}, veja minhas informações abaixo! ${icon.Eris_happy_left}`,
+                `# Olá ${user.displayName.replace(/([\\_*~`|>])/g, '\\$1')}, veja minhas informações abaixo! ${icon.Eris_happy_left}`,
                 brBuilder(
                     `### Curiosidades`,
                     `- Minha desenvolvedora é o **Studio Styx**, comandado por **BirdTool**`,
@@ -139,7 +139,7 @@ export async function botInfoMenu<R>(page: 'main' | 'hardware' | 'software' | 'c
                     `- Uso o banco de dados PostgreSQL`,
                     `- Uso o banco de dados em memória **Redis**`,
                     `- Sabia que era pra eu ter originalmente sido feita em Kotlin? é possivel ver meu código antigo nos primeiros commits do meu github`,
-                    `- Sou completamente hospedada pela [SquareCloud!](https://squarecloud.app/)`,
+                    `- Sou completamente hospedada pela **[SquareCloud!](https://squarecloud.app/)**`,
                     `- Você pode utilizar minha versão **canary** no nosso servidor principal! acesse-o apertando no botão abaixo`,
                     "- O meu servidor é uma **botlist**! você que é dev pode estar adicionando sua aplicação ao nosso servidor",
                     `- Sabia que agora eu possuo um website? você pode acessar ele em: **https://erisbot.squareweb.app/**`
@@ -152,7 +152,7 @@ export async function botInfoMenu<R>(page: 'main' | 'hardware' | 'software' | 'c
                 createSection({
                     thumbnail: erisInfo.avatarURL()!,
                     content: brBuilder(
-                        `# Olá ${user.username.replace(/([\\_*~`|>])/g, '\\$1')}, veja minhas informações abaixo! ${icon.Eris_happy_left}`,
+                        `# Olá ${user.displayName.replace(/([\\_*~`|>])/g, '\\$1')}, veja minhas informações abaixo! ${icon.Eris_happy_left}`,
                         "Sou uma bot de discord focada em economia e rpg, tenho vários recursos avançados, como entrevistas para emprego, investimentos e apostas!",
                         "Minha desenvolvedora é o **Studio Styx**, comandado por **BirdTool**",
                         "Meu site é **https://erisbot.squareweb.app/**",

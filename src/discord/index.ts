@@ -1,6 +1,6 @@
 import { Store, setupCreators } from "#base";
 import { prisma } from "#database";
-import { defaultServerSettings, getCommandId, getServerSettings, icon, res } from "#functions";
+import { defaultServerSettings, getCommandId, getServerSettings, icon, res, resv2 } from "#functions";
 import { channelMention, Interaction, time } from "discord.js";
 
 const cooldown = new Store<Date>();
@@ -17,7 +17,15 @@ export const { createCommand, createEvent, createResponder } = setupCreators({
             const errorMessage = `**${icon.error} | An error occurred while executing the command: \`${error instanceof Error ? error.message : "Unknown error"}\`**`;
 
             if (interaction.deferred) {
-                interaction.editReply(res.danger(errorMessage));
+                try {
+                    interaction.editReply(res.danger(errorMessage));
+                } catch (_) {
+                    try {
+                        interaction.editReply(resv2.danger(errorMessage));
+                    } catch (_) {
+                        interaction.followUp(res.danger(errorMessage))
+                    }
+                }
             } else if (!interaction.replied) {
                 interaction.reply(res.danger(errorMessage));
             }

@@ -93,7 +93,27 @@ export default async function takeStx(app: FastifyInstance, client: Client<true>
                     content: userMention(memberId),
                     thumbnail: { url: member.displayAvatarURL() }
                 }))
-                await redis.setex(`tx:${memberId}:${application.data.id}`, 60, JSON.stringify({ expiresAt: Date.now() + 1000 * 61, confirm: null, amount }))
+                
+                await prisma.user.upsert({
+                    where: { id: application.data.id },
+                    update: {},
+                    create: { id: application.data.id }
+                })
+                const [_, transaction] = await Promise.all([
+                    redis.setex(`tx:${memberId}:${application.data.id}`, 60, JSON.stringify({ expiresAt: Date.now() + 1000 * 61, confirm: null, amount })),
+                    prisma.transaction.create({
+                        data: {
+                            amount,
+                            channelId,
+                            guildId,
+                            reason,
+                            status: "PENDING",
+                            type: "API",
+                            userId: application.data.id,
+                            targetId: memberId
+                        }
+                    })
+                ])
 
                 function waitForConfirmation(key: string, timeout = 62_000): Promise<"confirmed" | "canceled" | "expired"> {
                     return new Promise(async (resolve) => {
@@ -126,36 +146,53 @@ export default async function takeStx(app: FastifyInstance, client: Client<true>
                 const result = await waitForConfirmation(`tx:${memberId}:${application.data.id}`);
                 switch (result) {
                     case "confirmed":
-                        await redis.del(`tx:${memberId}:${application.data.id}`);
-                        await registerLog({
-                            message: `Transação confirmada com a aplicação: ${userMention(application.data.id)}`,
-                            level: 7,
-                            type: "info",
-                            user: memberId,
-                            tags: ["economy", "transfer", "sum", "api", "transaction"]
-                        })
+                        await Promise.all([
+                            redis.del(`tx:${memberId}:${application.data.id}`),
+                            registerLog({
+                                message: `Transação confirmada com a aplicação: ${userMention(application.data.id)}`,
+                                level: 7,
+                                type: "info",
+                                user: memberId,
+                                tags: ["economy", "transfer", "sum", "api", "transaction"]
+                            }),
+                            prisma.transaction.update({
+                                where: { id: transaction.id },
+                                data: { status: "APPROVED" }
+                            })
+                        ])
                         return reply.status(StatusCodes.OK).send({ message: `Success to take ${amount} from ${member.displayName}` });
                     case "canceled":
-                        await redis.del(`tx:${memberId}:${application.data.id}`);
-                        await
+                        await Promise.all([
+                            redis.del(`tx:${memberId}:${application.data.id}`),
                             registerLog({
                                 message: `Transação cancelada com a aplicação: ${userMention(application.data.id)}`,
                                 level: 7,
                                 type: "info",
                                 user: memberId,
                                 tags: ["economy", "transfer", "cancel", "api", "transaction"]
+                            }),
+                            prisma.transaction.update({
+                                where: { id: transaction.id },
+                                data: { status: "REJECTED" }
                             })
+                        ])
                         return reply.status(StatusCodes.UNPROCESSABLE_ENTITY).send({ message: `User canceled the transaction` });
                     case "expired":
-                        msg.edit(res.danger(`${icon.error} | Transação expirada, você demorou demais para responder`, { components: [makeRow(true)] }))
-                        await redis.del(`tx:${memberId}:${application.data.id}`);
-                        await registerLog({
-                            message: `Transação expirada com a aplicação: ${userMention(application.data.id)}`,
-                            level: 7,
-                            type: "info",
-                            user: memberId,
-                            tags: ["economy", "transfer", "timeout", "api", "transaction"]
-                        })
+                        await Promise.all([
+                            msg.edit(res.danger(`${icon.error} | Transação expirada, você demorou demais para responder`, { components: [makeRow(true)] })),
+                            redis.del(`tx:${memberId}:${application.data.id}`),
+                            registerLog({
+                                message: `Transação expirada com a aplicação: ${userMention(application.data.id)}`,
+                                level: 7,
+                                type: "info",
+                                user: memberId,
+                                tags: ["economy", "transfer", "timeout", "api", "transaction"]
+                            }),
+                            prisma.transaction.update({
+                                where: { id: transaction.id },
+                                data: { status: "EXPIRED" }
+                            })
+                        ])
                         return reply.status(StatusCodes.REQUEST_TIMEOUT).send({ message: "User does not response" });
                 }
             } else {
