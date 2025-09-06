@@ -2,8 +2,8 @@ import { Store } from "#base";
 import { prisma } from "#database";
 import { res, icon } from "#functions";
 import { settings } from "#settings";
-import { createEmbed, brBuilder, createRow } from "@magicyan/discord";
-import { ButtonBuilder, ButtonStyle, ChatInputCommandInteraction, time, userMention } from "discord.js";
+import { createEmbed, brBuilder, createRow, createContainer, createSeparator } from "@magicyan/discord";
+import { ButtonBuilder, ButtonStyle, ChatInputCommandInteraction, time, userMention, UserSelectMenuBuilder } from "discord.js";
 
 const cooldown = new Store<Date>();
 
@@ -17,8 +17,55 @@ export async function economyTransferCommand(interaction: ChatInputCommandIntera
 
     const { options } = interaction
 
-    const user = options.getUser("user", true);
+    const user = options.getUser("user");
     let value = options.getNumber("amount", true);
+
+    if (!user) {
+        await interaction.deferReply();
+
+        const author = await prisma.user.findUnique({ where: { id: interaction.user.id } })
+
+        if (!author) {
+            interaction.editReply(res.danger(`${icon.denied} | Ei! por quê você não tenta usar outros comandos? sua primeira vez aqui e já quer dar dinheiro pros outros! ${icon.Eris_Angry_left}`));
+            return;
+        }
+
+        if (value > author.money.toNumber()) {
+            value = author.money.toNumber();
+        }
+
+        if (value < 15) {
+            interaction.editReply(res.danger(`${icon.denied} | Parece que você não tem dinheiro suficiente para realizar essa transação. ${icon.Eris_cry_left}`));
+            return;
+        }
+        const container = createContainer(settings.colors.bravery, [
+            brBuilder(
+                `## Transação`
+            ),
+            createSeparator(),
+            brBuilder(
+                "Você não mencionou nenhum usuário para fazer a transação, por isso você pode escolher 1 ou mais usuários para transferir stx de maneira rápida e fácil!",
+                "",
+                "Os usuários escolhidos tem que aceitar a transação, o máximo de usuários para a transação é **10**, para evitar abusos, mas **atenção**: você precisa ter a quantidade de stx que irá distribuir pra cada usuário, ou seja, se vc quer distribuir 50 stx para 4 usuários, então você precisa ter 50 vezes 4 stx que é: 200",
+                "",
+                `Se o limite de usuários for menor que 10, significa que você não tem o dinheiro necessário para transferir **${value}** para 10 usuários`,
+                "",
+                "Por favor escolha os usuários para distribuir os seus stx!"
+            ),
+            new UserSelectMenuBuilder({
+                customId: `manyTransfer/${interaction.user.id}/${value}`,
+                minValues: 1,
+                maxValues: Math.min(10, Math.floor(author.money.toNumber() / value)),
+                placeholder: "Usuários a transferir o dinheiro",
+            })
+        ])
+
+        interaction.editReply({
+            flags: ["IsComponentsV2"],
+            components: [container]
+        })
+        return;
+    }
 
     if (user.id === interaction.user.id) {
         interaction.reply(res.fuchsia(`**${icon.denied_pink} | Ei! por quê você está tentando dar dinheiro pra você mesmo? se for pra dá dinheiro dá pra mim!**`));

@@ -137,9 +137,16 @@ createCommand({
             },
             options:[
                 {
+                    name: "amount",
+                    description: "value to transfer",
+                    type: ApplicationCommandOptionType.Number,
+                    minValue: 15,
+                    required: true,
+                },
+                {
                     name: "user",
                     description: "user to transfer money",
-                    required: true,
+                    required: false,
                     type: ApplicationCommandOptionType.User,
                     nameLocalizations: {
                         "pt-BR": "usuário",
@@ -152,13 +159,6 @@ createCommand({
                         "es-ES": "usuario para transferir dinero",
                     }
                 },
-                {
-                    name: "amount",
-                    description: "value to transfer",
-                    type: ApplicationCommandOptionType.Number,
-                    minValue: 15,
-                    required: true,
-                }
             ]
         }
     ],

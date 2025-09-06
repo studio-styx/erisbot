@@ -11,6 +11,15 @@ const trys = new Store<number>()
 createResponder({
     customId: "transfer/:authorId/:authorAccepted/:targetId/:targetAccepted/:value",
     types: [ResponderType.Button], cache: "cached",
+    parse(params) {
+        return {
+            authorId: params.authorId,
+            authorAccepted: params.authorAccepted === "1",
+            targetId: params.targetId,
+            targetAccepted: params.targetAccepted === "1",
+            value: Number(params.value)
+        }
+    },
     async run(interaction, { authorId, authorAccepted, targetId, targetAccepted, value }) {
         const { user } = interaction;
 
@@ -42,7 +51,7 @@ createResponder({
                 }
 
                 interaction.reply(res.danger(`${icon.denied} | ${messages[Math.floor(Math.random() * messages.length)]}`));
-                trys.set(user.id, tries + 1, { time: 1000 * 2 });   
+                trys.set(user.id, tries + 1, { time: 1000 * 2 });
                 return;
             }
             const messages: string[] = [
@@ -54,31 +63,24 @@ createResponder({
             trys.set(user.id, 1, { time: 1000 * 2 });
             return;
         }
-        
-        let targetAcceptedBoolean = targetAccepted === "1";
-        let authorAcceptedBoolean = authorAccepted === "1";
 
-        if (user.id === authorId && authorAcceptedBoolean) {
-            interaction.reply(res.danger(`${icon.denied} | Você já aceitou a transferência! aguarde o recebedor aceitar!`));
-            return;
+        // Corrigindo a lógica de toggle
+        let newAuthorAccepted = authorAccepted;
+        let newTargetAccepted = targetAccepted;
+
+        if (user.id === authorId) {
+            newAuthorAccepted = !authorAccepted;
+        }
+        if (user.id === targetId) {
+            newTargetAccepted = !targetAccepted;
         }
 
-        if (user.id === targetId && targetAcceptedBoolean) {
-            interaction.reply(res.danger(`${icon.denied} | Você já aceitou a transferência! aguarde o pagador aceitar!`));
-            return;
-        }
-
-        if (user.id === authorId) authorAcceptedBoolean = true;
-        if (user.id === targetId) targetAcceptedBoolean = true;
-
-        interface UserWithMoney {
-            money: Prisma.Decimal;
-        }
-
-        if (authorAcceptedBoolean && targetAcceptedBoolean) {
+        // Se ambos aceitaram, processa a transação
+        if (newAuthorAccepted && newTargetAccepted) {
             await interaction.deferUpdate();
 
             try {
+                // Primeiro, executa a transação para atualizar os saldos
                 const { newAuthor, newTarget } = await prisma.$transaction<{
                     newAuthor: UserWithMoney;
                     newTarget: UserWithMoney;
@@ -88,7 +90,7 @@ createResponder({
                         select: { money: true }
                     });
 
-                    if (author.money.toNumber() < Number(value)) {
+                    if (author.money.toNumber() < value) {
                         await interaction.followUp(
                             res.danger(`${icon.denied} | Saldo insuficiente!`)
                         );
@@ -98,55 +100,58 @@ createResponder({
                     const [updatedAuthor, updatedTarget] = await Promise.all([
                         tx.user.update({
                             where: { id: authorId },
-                            data: { money: { decrement: Number(value) } },
+                            data: { money: { decrement: value } },
                             select: { money: true }
                         }),
                         tx.user.upsert({
                             where: { id: targetId },
                             create: {
                                 id: targetId,
-                                money: Number(value) + 50,
+                                money: value + 50,
                             },
                             update: {
-                                money: { increment: Number(value) },
+                                money: { increment: value },
                             },
                             select: { money: true }
-                        }),
-                        registerLog({
-                            message: `Deu **${value} stx** para: ${userMention(targetId)}`,
-                            level: 6,
-                            type: "info",
-                            user: authorId,
-                            tags: ["transfer", "transaction", "economy", "sub"]
-                        }),
-                        registerLog({
-                            message: `Recebeu **${value} stx** de: ${userMention(authorId)}`,
-                            level: 6,
-                            type: "info",
-                            user: targetId,
-                            tags: ["transfer", "transaction", "economy", "sum"]
                         })
                     ]);
-                
+
                     return { newAuthor: updatedAuthor, newTarget: updatedTarget };
                 });
 
+                await Promise.all([
+                    registerLog({
+                        message: `Deu **${value} stx** para: ${userMention(targetId)}`,
+                        level: 6,
+                        type: "info",
+                        user: authorId,
+                        tags: ["transfer", "transaction", "economy", "sub"]
+                    }),
+                    registerLog({
+                        message: `Recebeu **${value} stx** de: ${userMention(authorId)}`,
+                        level: 6,
+                        type: "info",
+                        user: targetId,
+                        tags: ["transfer", "transaction", "economy", "sum"]
+                    })
+                ]);
+
                 const targetUser = interaction.client.users.cache.get(targetId);
                 const authorUser = interaction.user.id === authorId ? interaction.user : interaction.client.users.cache.get(authorId);
-                
+
                 const embed = createEmbed({
-                    title: `${icon.money} Transferência concluída`,
+                    title: `${icon.Eris_happy} Transferência concluída`,
                     description: `${userMention(authorId)} Enviou **${value}** stx para ${userMention(targetId)}!`,
                     fields: [
-                        { 
+                        {
                             name: `Saldo de ${authorUser?.displayName}`,
                             value: newAuthor.money.toString(),
-                            inline: true 
+                            inline: true
                         },
-                        { 
+                        {
                             name: `Saldo de ${targetUser?.displayName}`,
                             value: newTarget.money.toString(),
-                            inline: true 
+                            inline: true
                         }
                     ],
                     color: settings.colors.success
@@ -161,14 +166,16 @@ createResponder({
             return;
         }
 
-        const newCustomId = `transfer/${authorId}/${authorAcceptedBoolean ? "1" : "0"}/${targetId}/${targetAcceptedBoolean ? "1" : "0"}/${value}`;
+        // Atualiza o botão com os novos valores
+        const newCustomId = `transfer/${authorId}/${newAuthorAccepted ? "1" : "0"}/${targetId}/${newTargetAccepted ? "1" : "0"}/${value}`;
+        const acceptedCount = (newAuthorAccepted ? 1 : 0) + (newTargetAccepted ? 1 : 0);
 
         const row = createRow(
             new ButtonBuilder({
                 customId: newCustomId,
-                label: "Confirmar ( 1/2 )",
+                label: `Confirmar ( ${acceptedCount}/2 )`,
                 style: ButtonStyle.Success,
-                disabled: (authorAcceptedBoolean && targetAcceptedBoolean),
+                disabled: (newAuthorAccepted && newTargetAccepted),
                 emoji: icon.paid
             })
         )
@@ -177,3 +184,7 @@ createResponder({
         return;
     },
 });
+
+interface UserWithMoney {
+    money: Prisma.Decimal;
+}
