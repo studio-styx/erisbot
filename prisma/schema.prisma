@@ -15,28 +15,28 @@ datasource db {
 }
 
 model User {
-  id        String         @id
-  money     Decimal        @default(0.0) @db.Decimal(12, 2)
-  bank      Decimal        @default(50.0) @db.Decimal(12, 2)
-  xp        Int            @default(0)
-  company   Company?       @relation(fields: [companyId], references: [id], onDelete: SetNull)
-  companyId Int?
-  logs      Log[]
-  cooldowns Cooldown[]
-  stocks    StockHolding[]
-  mails         Mails[] @relation("ReceivedMails")
-  sendedMails   Mails[] @relation("SentMails")
-  mailsTagsIgnored String[] @default([])
-  dmNotification Boolean @default(false)
-  applications Application[]
-  token        Json?
-  afkReasson           String?
-  afkTime              DateTime?
-  guilds        GuildMember[]
-  ransactionsSent  Transaction[]  @relation("UserTransactions")
+  id                 String         @id
+  money              Decimal        @default(0.0) @db.Decimal(12, 2)
+  bank               Decimal        @default(50.0) @db.Decimal(12, 2)
+  xp                 Int            @default(0)
+  company            Company?       @relation(fields: [companyId], references: [id], onDelete: SetNull)
+  companyId          Int?
+  logs               Log[]
+  cooldowns          Cooldown[]
+  stocks             StockHolding[]
+  mails              Mails[]        @relation("ReceivedMails")
+  sendedMails        Mails[]        @relation("SentMails")
+  mailsTagsIgnored   String[]       @default([])
+  dmNotification     Boolean        @default(false)
+  applications       Application[]
+  token              Json?
+  afkReasson         String?
+  afkTime            DateTime?
+  guilds             GuildMember[]
+  transactionsSent   Transaction[]  @relation("UserTransactions")
   transactionsReceived Transaction[] @relation("TargetTransactions")
+  giveaways          UserGiveaway[]
 }
-
 
 model TryviaQuestions {
   id        Int   @id   @default(autoincrement())
@@ -231,11 +231,12 @@ model GuildSettings {
   channelsNotWinXp               String[] @default([])
 
   warnLevelUp                    Json     @default("{}")
-
   levelGrant                     Json     @default("[]")
   
   members                        GuildMember[]
   transactions                   Transaction[]
+  giveaways                      Giveaway[]
+  connectedGiveaways             GuildGiveaway[]
 }
 
 model GuildMember {
@@ -267,4 +268,62 @@ model Mails {
   whoSendUser  User     @relation("SentMails", fields: [whoSendId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
+}
+
+model Giveaway {
+  id              Int      @id @default(autoincrement())
+  localId         Int
+  guildId         String
+  channelId       String
+  messageId       String   @unique
+
+  title           String
+  description     String?
+  blackListRoles  String[]
+  blackListMembers String[]
+  onlyRoles       String[]
+  rolesMultipleEntry Json?
+  serverStayRequired  String[]
+  xpRequired        Int?
+  messagesRequired  Int?
+  messagesInChannelRequired Json?
+  messagesInGuidsRequired   Json?
+
+  participants    UserGiveaway[]
+  guild           GuildSettings @relation(fields: [guildId], references: [id], onDelete: Cascade)
+  connectedGuilds GuildGiveaway[]
+
+  winnersIds      String[]
+
+  expiresAt       DateTime
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt()
+
+  @@unique([guildId, localId])
+}
+
+model UserGiveaway {
+  id         Int       @id @default(autoincrement())
+  userId     String
+  giveawayId Int
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  giveaway   Giveaway  @relation(fields: [giveawayId], references: [id], onDelete: Cascade)
+  createdAt  DateTime  @default(now())
+
+  @@unique([userId, giveawayId])
+}
+
+model GuildGiveaway {
+  id            Int         @id @default(autoincrement())
+  guildId       String
+  channelId     String
+  messageId     String      @unique
+  giveawayId    Int
+
+  guild     GuildSettings   @relation(fields: [guildId], references: [id], onDelete: Cascade)
+  giveaway   Giveaway       @relation(fields: [giveawayId], references: [id], onDelete: Cascade)
+
+  createdAt  DateTime   @default(now())
+
+  @@unique([guildId, giveawayId])
 }

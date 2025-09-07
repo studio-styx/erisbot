@@ -268,6 +268,45 @@ exports.Prisma.MailsScalarFieldEnum = {
   createdAt: 'createdAt'
 };
 
+exports.Prisma.GiveawayScalarFieldEnum = {
+  id: 'id',
+  localId: 'localId',
+  guildId: 'guildId',
+  channelId: 'channelId',
+  messageId: 'messageId',
+  title: 'title',
+  description: 'description',
+  blackListRoles: 'blackListRoles',
+  blackListMembers: 'blackListMembers',
+  onlyRoles: 'onlyRoles',
+  rolesMultipleEntry: 'rolesMultipleEntry',
+  serverStayRequired: 'serverStayRequired',
+  xpRequired: 'xpRequired',
+  messagesRequired: 'messagesRequired',
+  messagesInChannelRequired: 'messagesInChannelRequired',
+  messagesInGuidsRequired: 'messagesInGuidsRequired',
+  winnersIds: 'winnersIds',
+  expiresAt: 'expiresAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.UserGiveawayScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  giveawayId: 'giveawayId',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.GuildGiveawayScalarFieldEnum = {
+  id: 'id',
+  guildId: 'guildId',
+  channelId: 'channelId',
+  messageId: 'messageId',
+  giveawayId: 'giveawayId',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -356,7 +395,10 @@ exports.Prisma.ModelName = {
   StockHolding: 'StockHolding',
   GuildSettings: 'GuildSettings',
   GuildMember: 'GuildMember',
-  Mails: 'Mails'
+  Mails: 'Mails',
+  Giveaway: 'Giveaway',
+  UserGiveaway: 'UserGiveaway',
+  GuildGiveaway: 'GuildGiveaway'
 };
 
 /**

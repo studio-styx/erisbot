@@ -12,7 +12,7 @@ export const { createCommand, createEvent, createResponder } = setupCreators({
             interaction.reply(res.danger(`${icon.error} | Command not found!`));
         },
         onError(error, interaction) {
-            console.error(error);
+            console.error(`Error in: ${interaction.guild?.name || "Guild not found"} used by user: ${interaction.user.displayName}. error:`, error);
 
             const errorMessage = `**${icon.error} | An error occurred while executing the command: \`${error instanceof Error ? error.message : "Unknown error"}\`**`;
 
@@ -90,12 +90,20 @@ export const { createCommand, createEvent, createResponder } = setupCreators({
             interaction.reply(res.danger(`${icon.error} | Responder not found!`, { flags: ["Ephemeral"] }));
         },
         onError(error, interaction) {
-            console.error(error);
+            console.error(`Error in: ${interaction.guild?.name || "Guild not found"} used by user: ${interaction.user.displayName}. error:`, error);
 
             const errorMessage = `**${icon.error} | An error occurred while executing the responder: \`${error instanceof Error? error.message : "Unknown error"}\`**`;
 
             if (interaction.deferred) {
-                interaction.editReply(res.danger(errorMessage));
+                try {
+                    interaction.editReply(res.danger(errorMessage));
+                } catch (_) {
+                    try {
+                        interaction.editReply(resv2.danger(errorMessage));
+                    } catch (_) {
+                        interaction.followUp(res.danger(errorMessage))
+                    }
+                }
             } else if (!interaction.replied) {
                 interaction.reply(res.danger(errorMessage));
             }

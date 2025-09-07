@@ -1,6 +1,6 @@
 import { createEvent } from "#base";
 import { prisma } from "#database";
-import { icon, res, setAllServerSettings, tryviaPipeline } from "#functions";
+import { icon, res, setAllServerSettings } from "#functions";
 import { createRow } from "@magicyan/discord";
 import { ButtonBuilder, ButtonStyle } from "discord.js";
 
@@ -32,7 +32,6 @@ createEvent({
     event: "ready",
     async run(client) {
         await setAllServerSettings(client);
-        tryviaPipeline();
         setInterval(async () => {
             const expiredTransactions = await setExpiredTransactions();
             for (const transaction of expiredTransactions) {

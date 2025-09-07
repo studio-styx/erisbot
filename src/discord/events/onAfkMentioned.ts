@@ -91,21 +91,29 @@ const isAfkUser = async (userId: string): Promise<{ afk: boolean; reason?: strin
 
 // Verifica usuários mencionados com status AFK
 const mentionedAfkUsers = async (message: string, msg: OmitPartialGroupDMChannel<Message<boolean>>): Promise<{ userId: string; reason: string; time: Date }[]> => {
-    const userMentions = message.match(/<@!?(\d{17,20})>/g);
+    const userMentions = message.match(/<@!?(\d{17,20})>/g) || [];
+    const mentionedUserIds: Set<string> = new Set();
+
+    // Extrair IDs das menções existentes
+    userMentions.forEach(mention => {
+        const userId = mention.replace(/<@!?(\d{17,20})>/, '$1');
+        mentionedUserIds.add(userId);
+    });
+
     try {
         const messageReply = msg.reference?.messageId;
         if (messageReply) {
             const repliedMessage = await msg.channel.messages.fetch(messageReply);
-            const userId = repliedMessage.author.id;
-            userMentions?.push(userId);
+            const repliedUserId = repliedMessage.author.id;
+
+            mentionedUserIds.add(repliedUserId);
         }
     } catch (error) {
-        console.error("Não foi possivel obter a referência da mensagem:", error);
+        console.error("Não foi possível obter a referência da mensagem:", error);
     }
-    if (!userMentions) return [];
 
     const afkUsers: { userId: string; reason: string; time: Date }[] = [];
-    const uniqueUserIds = new Set(userMentions.map(mention => mention.replace(/<@!?/, '').replace('>', '')));
+    const uniqueUserIds = Array.from(mentionedUserIds)
 
     for (const userId of uniqueUserIds) {
         const afkRedis = await getRedisAfk(userId);

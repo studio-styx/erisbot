@@ -84,7 +84,7 @@ export async function economyDailyCommand(interaction: ChatInputCommandInteracti
         return;
     }
 
-    const dailyValue = Math.floor(Math.random() * 51);
+    const dailyValue = Math.max(5, Math.floor(Math.random() * 51));
 
     const willEnd = new Date(now.getTime() + 24 * 60 * 60 * 1000);
 

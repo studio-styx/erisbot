@@ -528,7 +528,7 @@ createCommand({
                         // Validação para operações Prisma
                         const prismaOperations = [
                             "findUnique", "findMany", "create", "update",
-                            "delete", "upsert", "findFirst", "count"
+                            "delete", "upsert", "findFirst", "count", "deleteMany", "createMany", "updateMany", "updateManyAndReturn"
                         ];
                         const hasValidOperation = prismaOperations.some(op => code.includes(`.${op}(`));
                         if (!hasValidOperation) {

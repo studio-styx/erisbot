@@ -83,6 +83,21 @@ export type GuildMember = $Result.DefaultSelection<Prisma.$GuildMemberPayload>
  * 
  */
 export type Mails = $Result.DefaultSelection<Prisma.$MailsPayload>
+/**
+ * Model Giveaway
+ * 
+ */
+export type Giveaway = $Result.DefaultSelection<Prisma.$GiveawayPayload>
+/**
+ * Model UserGiveaway
+ * 
+ */
+export type UserGiveaway = $Result.DefaultSelection<Prisma.$UserGiveawayPayload>
+/**
+ * Model GuildGiveaway
+ * 
+ */
+export type GuildGiveaway = $Result.DefaultSelection<Prisma.$GuildGiveawayPayload>
 
 /**
  * Enums
@@ -440,6 +455,36 @@ export class PrismaClient<
     * ```
     */
   get mails(): Prisma.MailsDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.giveaway`: Exposes CRUD operations for the **Giveaway** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Giveaways
+    * const giveaways = await prisma.giveaway.findMany()
+    * ```
+    */
+  get giveaway(): Prisma.GiveawayDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.userGiveaway`: Exposes CRUD operations for the **UserGiveaway** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more UserGiveaways
+    * const userGiveaways = await prisma.userGiveaway.findMany()
+    * ```
+    */
+  get userGiveaway(): Prisma.UserGiveawayDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.guildGiveaway`: Exposes CRUD operations for the **GuildGiveaway** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more GuildGiveaways
+    * const guildGiveaways = await prisma.guildGiveaway.findMany()
+    * ```
+    */
+  get guildGiveaway(): Prisma.GuildGiveawayDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -893,7 +938,10 @@ export namespace Prisma {
     StockHolding: 'StockHolding',
     GuildSettings: 'GuildSettings',
     GuildMember: 'GuildMember',
-    Mails: 'Mails'
+    Mails: 'Mails',
+    Giveaway: 'Giveaway',
+    UserGiveaway: 'UserGiveaway',
+    GuildGiveaway: 'GuildGiveaway'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -912,7 +960,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "tryviaQuestions" | "application" | "requisition" | "log" | "transaction" | "cooldown" | "company" | "stock" | "stockHistory" | "stockHolding" | "guildSettings" | "guildMember" | "mails"
+      modelProps: "user" | "tryviaQuestions" | "application" | "requisition" | "log" | "transaction" | "cooldown" | "company" | "stock" | "stockHistory" | "stockHolding" | "guildSettings" | "guildMember" | "mails" | "giveaway" | "userGiveaway" | "guildGiveaway"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1952,6 +2000,228 @@ export namespace Prisma {
           }
         }
       }
+      Giveaway: {
+        payload: Prisma.$GiveawayPayload<ExtArgs>
+        fields: Prisma.GiveawayFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.GiveawayFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GiveawayPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.GiveawayFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GiveawayPayload>
+          }
+          findFirst: {
+            args: Prisma.GiveawayFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GiveawayPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.GiveawayFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GiveawayPayload>
+          }
+          findMany: {
+            args: Prisma.GiveawayFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GiveawayPayload>[]
+          }
+          create: {
+            args: Prisma.GiveawayCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GiveawayPayload>
+          }
+          createMany: {
+            args: Prisma.GiveawayCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.GiveawayCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GiveawayPayload>[]
+          }
+          delete: {
+            args: Prisma.GiveawayDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GiveawayPayload>
+          }
+          update: {
+            args: Prisma.GiveawayUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GiveawayPayload>
+          }
+          deleteMany: {
+            args: Prisma.GiveawayDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.GiveawayUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.GiveawayUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GiveawayPayload>[]
+          }
+          upsert: {
+            args: Prisma.GiveawayUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GiveawayPayload>
+          }
+          aggregate: {
+            args: Prisma.GiveawayAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateGiveaway>
+          }
+          groupBy: {
+            args: Prisma.GiveawayGroupByArgs<ExtArgs>
+            result: $Utils.Optional<GiveawayGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.GiveawayCountArgs<ExtArgs>
+            result: $Utils.Optional<GiveawayCountAggregateOutputType> | number
+          }
+        }
+      }
+      UserGiveaway: {
+        payload: Prisma.$UserGiveawayPayload<ExtArgs>
+        fields: Prisma.UserGiveawayFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.UserGiveawayFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UserGiveawayPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.UserGiveawayFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UserGiveawayPayload>
+          }
+          findFirst: {
+            args: Prisma.UserGiveawayFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UserGiveawayPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.UserGiveawayFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UserGiveawayPayload>
+          }
+          findMany: {
+            args: Prisma.UserGiveawayFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UserGiveawayPayload>[]
+          }
+          create: {
+            args: Prisma.UserGiveawayCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UserGiveawayPayload>
+          }
+          createMany: {
+            args: Prisma.UserGiveawayCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.UserGiveawayCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UserGiveawayPayload>[]
+          }
+          delete: {
+            args: Prisma.UserGiveawayDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UserGiveawayPayload>
+          }
+          update: {
+            args: Prisma.UserGiveawayUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UserGiveawayPayload>
+          }
+          deleteMany: {
+            args: Prisma.UserGiveawayDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.UserGiveawayUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.UserGiveawayUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UserGiveawayPayload>[]
+          }
+          upsert: {
+            args: Prisma.UserGiveawayUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UserGiveawayPayload>
+          }
+          aggregate: {
+            args: Prisma.UserGiveawayAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateUserGiveaway>
+          }
+          groupBy: {
+            args: Prisma.UserGiveawayGroupByArgs<ExtArgs>
+            result: $Utils.Optional<UserGiveawayGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.UserGiveawayCountArgs<ExtArgs>
+            result: $Utils.Optional<UserGiveawayCountAggregateOutputType> | number
+          }
+        }
+      }
+      GuildGiveaway: {
+        payload: Prisma.$GuildGiveawayPayload<ExtArgs>
+        fields: Prisma.GuildGiveawayFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.GuildGiveawayFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GuildGiveawayPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.GuildGiveawayFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GuildGiveawayPayload>
+          }
+          findFirst: {
+            args: Prisma.GuildGiveawayFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GuildGiveawayPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.GuildGiveawayFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GuildGiveawayPayload>
+          }
+          findMany: {
+            args: Prisma.GuildGiveawayFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GuildGiveawayPayload>[]
+          }
+          create: {
+            args: Prisma.GuildGiveawayCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GuildGiveawayPayload>
+          }
+          createMany: {
+            args: Prisma.GuildGiveawayCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.GuildGiveawayCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GuildGiveawayPayload>[]
+          }
+          delete: {
+            args: Prisma.GuildGiveawayDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GuildGiveawayPayload>
+          }
+          update: {
+            args: Prisma.GuildGiveawayUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GuildGiveawayPayload>
+          }
+          deleteMany: {
+            args: Prisma.GuildGiveawayDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.GuildGiveawayUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.GuildGiveawayUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GuildGiveawayPayload>[]
+          }
+          upsert: {
+            args: Prisma.GuildGiveawayUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GuildGiveawayPayload>
+          }
+          aggregate: {
+            args: Prisma.GuildGiveawayAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateGuildGiveaway>
+          }
+          groupBy: {
+            args: Prisma.GuildGiveawayGroupByArgs<ExtArgs>
+            result: $Utils.Optional<GuildGiveawayGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.GuildGiveawayCountArgs<ExtArgs>
+            result: $Utils.Optional<GuildGiveawayCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -2058,6 +2328,9 @@ export namespace Prisma {
     guildSettings?: GuildSettingsOmit
     guildMember?: GuildMemberOmit
     mails?: MailsOmit
+    giveaway?: GiveawayOmit
+    userGiveaway?: UserGiveawayOmit
+    guildGiveaway?: GuildGiveawayOmit
   }
 
   /* Types for Logging */
@@ -2145,8 +2418,9 @@ export namespace Prisma {
     sendedMails: number
     applications: number
     guilds: number
-    ransactionsSent: number
+    transactionsSent: number
     transactionsReceived: number
+    giveaways: number
   }
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -2157,8 +2431,9 @@ export namespace Prisma {
     sendedMails?: boolean | UserCountOutputTypeCountSendedMailsArgs
     applications?: boolean | UserCountOutputTypeCountApplicationsArgs
     guilds?: boolean | UserCountOutputTypeCountGuildsArgs
-    ransactionsSent?: boolean | UserCountOutputTypeCountRansactionsSentArgs
+    transactionsSent?: boolean | UserCountOutputTypeCountTransactionsSentArgs
     transactionsReceived?: boolean | UserCountOutputTypeCountTransactionsReceivedArgs
+    giveaways?: boolean | UserCountOutputTypeCountGiveawaysArgs
   }
 
   // Custom InputTypes
@@ -2224,7 +2499,7 @@ export namespace Prisma {
   /**
    * UserCountOutputType without action
    */
-  export type UserCountOutputTypeCountRansactionsSentArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type UserCountOutputTypeCountTransactionsSentArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: TransactionWhereInput
   }
 
@@ -2233,6 +2508,13 @@ export namespace Prisma {
    */
   export type UserCountOutputTypeCountTransactionsReceivedArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: TransactionWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountGiveawaysArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: UserGiveawayWhereInput
   }
 
 
@@ -2345,11 +2627,15 @@ export namespace Prisma {
   export type GuildSettingsCountOutputType = {
     members: number
     transactions: number
+    giveaways: number
+    connectedGiveaways: number
   }
 
   export type GuildSettingsCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     members?: boolean | GuildSettingsCountOutputTypeCountMembersArgs
     transactions?: boolean | GuildSettingsCountOutputTypeCountTransactionsArgs
+    giveaways?: boolean | GuildSettingsCountOutputTypeCountGiveawaysArgs
+    connectedGiveaways?: boolean | GuildSettingsCountOutputTypeCountConnectedGiveawaysArgs
   }
 
   // Custom InputTypes
@@ -2375,6 +2661,60 @@ export namespace Prisma {
    */
   export type GuildSettingsCountOutputTypeCountTransactionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: TransactionWhereInput
+  }
+
+  /**
+   * GuildSettingsCountOutputType without action
+   */
+  export type GuildSettingsCountOutputTypeCountGiveawaysArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: GiveawayWhereInput
+  }
+
+  /**
+   * GuildSettingsCountOutputType without action
+   */
+  export type GuildSettingsCountOutputTypeCountConnectedGiveawaysArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: GuildGiveawayWhereInput
+  }
+
+
+  /**
+   * Count Type GiveawayCountOutputType
+   */
+
+  export type GiveawayCountOutputType = {
+    participants: number
+    connectedGuilds: number
+  }
+
+  export type GiveawayCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    participants?: boolean | GiveawayCountOutputTypeCountParticipantsArgs
+    connectedGuilds?: boolean | GiveawayCountOutputTypeCountConnectedGuildsArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * GiveawayCountOutputType without action
+   */
+  export type GiveawayCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GiveawayCountOutputType
+     */
+    select?: GiveawayCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * GiveawayCountOutputType without action
+   */
+  export type GiveawayCountOutputTypeCountParticipantsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: UserGiveawayWhereInput
+  }
+
+  /**
+   * GiveawayCountOutputType without action
+   */
+  export type GiveawayCountOutputTypeCountConnectedGuildsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: GuildGiveawayWhereInput
   }
 
 
@@ -2632,8 +2972,9 @@ export namespace Prisma {
     sendedMails?: boolean | User$sendedMailsArgs<ExtArgs>
     applications?: boolean | User$applicationsArgs<ExtArgs>
     guilds?: boolean | User$guildsArgs<ExtArgs>
-    ransactionsSent?: boolean | User$ransactionsSentArgs<ExtArgs>
+    transactionsSent?: boolean | User$transactionsSentArgs<ExtArgs>
     transactionsReceived?: boolean | User$transactionsReceivedArgs<ExtArgs>
+    giveaways?: boolean | User$giveawaysArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -2688,8 +3029,9 @@ export namespace Prisma {
     sendedMails?: boolean | User$sendedMailsArgs<ExtArgs>
     applications?: boolean | User$applicationsArgs<ExtArgs>
     guilds?: boolean | User$guildsArgs<ExtArgs>
-    ransactionsSent?: boolean | User$ransactionsSentArgs<ExtArgs>
+    transactionsSent?: boolean | User$transactionsSentArgs<ExtArgs>
     transactionsReceived?: boolean | User$transactionsReceivedArgs<ExtArgs>
+    giveaways?: boolean | User$giveawaysArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -2710,8 +3052,9 @@ export namespace Prisma {
       sendedMails: Prisma.$MailsPayload<ExtArgs>[]
       applications: Prisma.$ApplicationPayload<ExtArgs>[]
       guilds: Prisma.$GuildMemberPayload<ExtArgs>[]
-      ransactionsSent: Prisma.$TransactionPayload<ExtArgs>[]
+      transactionsSent: Prisma.$TransactionPayload<ExtArgs>[]
       transactionsReceived: Prisma.$TransactionPayload<ExtArgs>[]
+      giveaways: Prisma.$UserGiveawayPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -3126,8 +3469,9 @@ export namespace Prisma {
     sendedMails<T extends User$sendedMailsArgs<ExtArgs> = {}>(args?: Subset<T, User$sendedMailsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MailsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     applications<T extends User$applicationsArgs<ExtArgs> = {}>(args?: Subset<T, User$applicationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ApplicationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     guilds<T extends User$guildsArgs<ExtArgs> = {}>(args?: Subset<T, User$guildsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$GuildMemberPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-    ransactionsSent<T extends User$ransactionsSentArgs<ExtArgs> = {}>(args?: Subset<T, User$ransactionsSentArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TransactionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    transactionsSent<T extends User$transactionsSentArgs<ExtArgs> = {}>(args?: Subset<T, User$transactionsSentArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TransactionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     transactionsReceived<T extends User$transactionsReceivedArgs<ExtArgs> = {}>(args?: Subset<T, User$transactionsReceivedArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TransactionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    giveaways<T extends User$giveawaysArgs<ExtArgs> = {}>(args?: Subset<T, User$giveawaysArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserGiveawayPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -3750,9 +4094,9 @@ export namespace Prisma {
   }
 
   /**
-   * User.ransactionsSent
+   * User.transactionsSent
    */
-  export type User$ransactionsSentArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type User$transactionsSentArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Transaction
      */
@@ -3795,6 +4139,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: TransactionScalarFieldEnum | TransactionScalarFieldEnum[]
+  }
+
+  /**
+   * User.giveaways
+   */
+  export type User$giveawaysArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserGiveaway
+     */
+    select?: UserGiveawaySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the UserGiveaway
+     */
+    omit?: UserGiveawayOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserGiveawayInclude<ExtArgs> | null
+    where?: UserGiveawayWhereInput
+    orderBy?: UserGiveawayOrderByWithRelationInput | UserGiveawayOrderByWithRelationInput[]
+    cursor?: UserGiveawayWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: UserGiveawayScalarFieldEnum | UserGiveawayScalarFieldEnum[]
   }
 
   /**
@@ -15315,6 +15683,8 @@ export namespace Prisma {
     levelGrant?: boolean
     members?: boolean | GuildSettings$membersArgs<ExtArgs>
     transactions?: boolean | GuildSettings$transactionsArgs<ExtArgs>
+    giveaways?: boolean | GuildSettings$giveawaysArgs<ExtArgs>
+    connectedGiveaways?: boolean | GuildSettings$connectedGiveawaysArgs<ExtArgs>
     _count?: boolean | GuildSettingsCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["guildSettings"]>
 
@@ -15376,6 +15746,8 @@ export namespace Prisma {
   export type GuildSettingsInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     members?: boolean | GuildSettings$membersArgs<ExtArgs>
     transactions?: boolean | GuildSettings$transactionsArgs<ExtArgs>
+    giveaways?: boolean | GuildSettings$giveawaysArgs<ExtArgs>
+    connectedGiveaways?: boolean | GuildSettings$connectedGiveawaysArgs<ExtArgs>
     _count?: boolean | GuildSettingsCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type GuildSettingsIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -15386,6 +15758,8 @@ export namespace Prisma {
     objects: {
       members: Prisma.$GuildMemberPayload<ExtArgs>[]
       transactions: Prisma.$TransactionPayload<ExtArgs>[]
+      giveaways: Prisma.$GiveawayPayload<ExtArgs>[]
+      connectedGiveaways: Prisma.$GuildGiveawayPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -15799,6 +16173,8 @@ export namespace Prisma {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     members<T extends GuildSettings$membersArgs<ExtArgs> = {}>(args?: Subset<T, GuildSettings$membersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$GuildMemberPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     transactions<T extends GuildSettings$transactionsArgs<ExtArgs> = {}>(args?: Subset<T, GuildSettings$transactionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TransactionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    giveaways<T extends GuildSettings$giveawaysArgs<ExtArgs> = {}>(args?: Subset<T, GuildSettings$giveawaysArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$GiveawayPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    connectedGiveaways<T extends GuildSettings$connectedGiveawaysArgs<ExtArgs> = {}>(args?: Subset<T, GuildSettings$connectedGiveawaysArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$GuildGiveawayPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -16276,6 +16652,54 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: TransactionScalarFieldEnum | TransactionScalarFieldEnum[]
+  }
+
+  /**
+   * GuildSettings.giveaways
+   */
+  export type GuildSettings$giveawaysArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Giveaway
+     */
+    select?: GiveawaySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Giveaway
+     */
+    omit?: GiveawayOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GiveawayInclude<ExtArgs> | null
+    where?: GiveawayWhereInput
+    orderBy?: GiveawayOrderByWithRelationInput | GiveawayOrderByWithRelationInput[]
+    cursor?: GiveawayWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: GiveawayScalarFieldEnum | GiveawayScalarFieldEnum[]
+  }
+
+  /**
+   * GuildSettings.connectedGiveaways
+   */
+  export type GuildSettings$connectedGiveawaysArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GuildGiveaway
+     */
+    select?: GuildGiveawaySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the GuildGiveaway
+     */
+    omit?: GuildGiveawayOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GuildGiveawayInclude<ExtArgs> | null
+    where?: GuildGiveawayWhereInput
+    orderBy?: GuildGiveawayOrderByWithRelationInput | GuildGiveawayOrderByWithRelationInput[]
+    cursor?: GuildGiveawayWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: GuildGiveawayScalarFieldEnum | GuildGiveawayScalarFieldEnum[]
   }
 
   /**
@@ -18564,6 +18988,3539 @@ export namespace Prisma {
 
 
   /**
+   * Model Giveaway
+   */
+
+  export type AggregateGiveaway = {
+    _count: GiveawayCountAggregateOutputType | null
+    _avg: GiveawayAvgAggregateOutputType | null
+    _sum: GiveawaySumAggregateOutputType | null
+    _min: GiveawayMinAggregateOutputType | null
+    _max: GiveawayMaxAggregateOutputType | null
+  }
+
+  export type GiveawayAvgAggregateOutputType = {
+    id: number | null
+    localId: number | null
+    xpRequired: number | null
+    messagesRequired: number | null
+  }
+
+  export type GiveawaySumAggregateOutputType = {
+    id: number | null
+    localId: number | null
+    xpRequired: number | null
+    messagesRequired: number | null
+  }
+
+  export type GiveawayMinAggregateOutputType = {
+    id: number | null
+    localId: number | null
+    guildId: string | null
+    channelId: string | null
+    messageId: string | null
+    title: string | null
+    description: string | null
+    xpRequired: number | null
+    messagesRequired: number | null
+    expiresAt: Date | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type GiveawayMaxAggregateOutputType = {
+    id: number | null
+    localId: number | null
+    guildId: string | null
+    channelId: string | null
+    messageId: string | null
+    title: string | null
+    description: string | null
+    xpRequired: number | null
+    messagesRequired: number | null
+    expiresAt: Date | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type GiveawayCountAggregateOutputType = {
+    id: number
+    localId: number
+    guildId: number
+    channelId: number
+    messageId: number
+    title: number
+    description: number
+    blackListRoles: number
+    blackListMembers: number
+    onlyRoles: number
+    rolesMultipleEntry: number
+    serverStayRequired: number
+    xpRequired: number
+    messagesRequired: number
+    messagesInChannelRequired: number
+    messagesInGuidsRequired: number
+    winnersIds: number
+    expiresAt: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type GiveawayAvgAggregateInputType = {
+    id?: true
+    localId?: true
+    xpRequired?: true
+    messagesRequired?: true
+  }
+
+  export type GiveawaySumAggregateInputType = {
+    id?: true
+    localId?: true
+    xpRequired?: true
+    messagesRequired?: true
+  }
+
+  export type GiveawayMinAggregateInputType = {
+    id?: true
+    localId?: true
+    guildId?: true
+    channelId?: true
+    messageId?: true
+    title?: true
+    description?: true
+    xpRequired?: true
+    messagesRequired?: true
+    expiresAt?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type GiveawayMaxAggregateInputType = {
+    id?: true
+    localId?: true
+    guildId?: true
+    channelId?: true
+    messageId?: true
+    title?: true
+    description?: true
+    xpRequired?: true
+    messagesRequired?: true
+    expiresAt?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type GiveawayCountAggregateInputType = {
+    id?: true
+    localId?: true
+    guildId?: true
+    channelId?: true
+    messageId?: true
+    title?: true
+    description?: true
+    blackListRoles?: true
+    blackListMembers?: true
+    onlyRoles?: true
+    rolesMultipleEntry?: true
+    serverStayRequired?: true
+    xpRequired?: true
+    messagesRequired?: true
+    messagesInChannelRequired?: true
+    messagesInGuidsRequired?: true
+    winnersIds?: true
+    expiresAt?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type GiveawayAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Giveaway to aggregate.
+     */
+    where?: GiveawayWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Giveaways to fetch.
+     */
+    orderBy?: GiveawayOrderByWithRelationInput | GiveawayOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: GiveawayWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Giveaways from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Giveaways.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned Giveaways
+    **/
+    _count?: true | GiveawayCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: GiveawayAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: GiveawaySumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: GiveawayMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: GiveawayMaxAggregateInputType
+  }
+
+  export type GetGiveawayAggregateType<T extends GiveawayAggregateArgs> = {
+        [P in keyof T & keyof AggregateGiveaway]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateGiveaway[P]>
+      : GetScalarType<T[P], AggregateGiveaway[P]>
+  }
+
+
+
+
+  export type GiveawayGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: GiveawayWhereInput
+    orderBy?: GiveawayOrderByWithAggregationInput | GiveawayOrderByWithAggregationInput[]
+    by: GiveawayScalarFieldEnum[] | GiveawayScalarFieldEnum
+    having?: GiveawayScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: GiveawayCountAggregateInputType | true
+    _avg?: GiveawayAvgAggregateInputType
+    _sum?: GiveawaySumAggregateInputType
+    _min?: GiveawayMinAggregateInputType
+    _max?: GiveawayMaxAggregateInputType
+  }
+
+  export type GiveawayGroupByOutputType = {
+    id: number
+    localId: number
+    guildId: string
+    channelId: string
+    messageId: string
+    title: string
+    description: string | null
+    blackListRoles: string[]
+    blackListMembers: string[]
+    onlyRoles: string[]
+    rolesMultipleEntry: JsonValue | null
+    serverStayRequired: string[]
+    xpRequired: number | null
+    messagesRequired: number | null
+    messagesInChannelRequired: JsonValue | null
+    messagesInGuidsRequired: JsonValue | null
+    winnersIds: string[]
+    expiresAt: Date
+    createdAt: Date
+    updatedAt: Date
+    _count: GiveawayCountAggregateOutputType | null
+    _avg: GiveawayAvgAggregateOutputType | null
+    _sum: GiveawaySumAggregateOutputType | null
+    _min: GiveawayMinAggregateOutputType | null
+    _max: GiveawayMaxAggregateOutputType | null
+  }
+
+  type GetGiveawayGroupByPayload<T extends GiveawayGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<GiveawayGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof GiveawayGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], GiveawayGroupByOutputType[P]>
+            : GetScalarType<T[P], GiveawayGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type GiveawaySelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    localId?: boolean
+    guildId?: boolean
+    channelId?: boolean
+    messageId?: boolean
+    title?: boolean
+    description?: boolean
+    blackListRoles?: boolean
+    blackListMembers?: boolean
+    onlyRoles?: boolean
+    rolesMultipleEntry?: boolean
+    serverStayRequired?: boolean
+    xpRequired?: boolean
+    messagesRequired?: boolean
+    messagesInChannelRequired?: boolean
+    messagesInGuidsRequired?: boolean
+    winnersIds?: boolean
+    expiresAt?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    participants?: boolean | Giveaway$participantsArgs<ExtArgs>
+    guild?: boolean | GuildSettingsDefaultArgs<ExtArgs>
+    connectedGuilds?: boolean | Giveaway$connectedGuildsArgs<ExtArgs>
+    _count?: boolean | GiveawayCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["giveaway"]>
+
+  export type GiveawaySelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    localId?: boolean
+    guildId?: boolean
+    channelId?: boolean
+    messageId?: boolean
+    title?: boolean
+    description?: boolean
+    blackListRoles?: boolean
+    blackListMembers?: boolean
+    onlyRoles?: boolean
+    rolesMultipleEntry?: boolean
+    serverStayRequired?: boolean
+    xpRequired?: boolean
+    messagesRequired?: boolean
+    messagesInChannelRequired?: boolean
+    messagesInGuidsRequired?: boolean
+    winnersIds?: boolean
+    expiresAt?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    guild?: boolean | GuildSettingsDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["giveaway"]>
+
+  export type GiveawaySelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    localId?: boolean
+    guildId?: boolean
+    channelId?: boolean
+    messageId?: boolean
+    title?: boolean
+    description?: boolean
+    blackListRoles?: boolean
+    blackListMembers?: boolean
+    onlyRoles?: boolean
+    rolesMultipleEntry?: boolean
+    serverStayRequired?: boolean
+    xpRequired?: boolean
+    messagesRequired?: boolean
+    messagesInChannelRequired?: boolean
+    messagesInGuidsRequired?: boolean
+    winnersIds?: boolean
+    expiresAt?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    guild?: boolean | GuildSettingsDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["giveaway"]>
+
+  export type GiveawaySelectScalar = {
+    id?: boolean
+    localId?: boolean
+    guildId?: boolean
+    channelId?: boolean
+    messageId?: boolean
+    title?: boolean
+    description?: boolean
+    blackListRoles?: boolean
+    blackListMembers?: boolean
+    onlyRoles?: boolean
+    rolesMultipleEntry?: boolean
+    serverStayRequired?: boolean
+    xpRequired?: boolean
+    messagesRequired?: boolean
+    messagesInChannelRequired?: boolean
+    messagesInGuidsRequired?: boolean
+    winnersIds?: boolean
+    expiresAt?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type GiveawayOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "localId" | "guildId" | "channelId" | "messageId" | "title" | "description" | "blackListRoles" | "blackListMembers" | "onlyRoles" | "rolesMultipleEntry" | "serverStayRequired" | "xpRequired" | "messagesRequired" | "messagesInChannelRequired" | "messagesInGuidsRequired" | "winnersIds" | "expiresAt" | "createdAt" | "updatedAt", ExtArgs["result"]["giveaway"]>
+  export type GiveawayInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    participants?: boolean | Giveaway$participantsArgs<ExtArgs>
+    guild?: boolean | GuildSettingsDefaultArgs<ExtArgs>
+    connectedGuilds?: boolean | Giveaway$connectedGuildsArgs<ExtArgs>
+    _count?: boolean | GiveawayCountOutputTypeDefaultArgs<ExtArgs>
+  }
+  export type GiveawayIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    guild?: boolean | GuildSettingsDefaultArgs<ExtArgs>
+  }
+  export type GiveawayIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    guild?: boolean | GuildSettingsDefaultArgs<ExtArgs>
+  }
+
+  export type $GiveawayPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "Giveaway"
+    objects: {
+      participants: Prisma.$UserGiveawayPayload<ExtArgs>[]
+      guild: Prisma.$GuildSettingsPayload<ExtArgs>
+      connectedGuilds: Prisma.$GuildGiveawayPayload<ExtArgs>[]
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: number
+      localId: number
+      guildId: string
+      channelId: string
+      messageId: string
+      title: string
+      description: string | null
+      blackListRoles: string[]
+      blackListMembers: string[]
+      onlyRoles: string[]
+      rolesMultipleEntry: Prisma.JsonValue | null
+      serverStayRequired: string[]
+      xpRequired: number | null
+      messagesRequired: number | null
+      messagesInChannelRequired: Prisma.JsonValue | null
+      messagesInGuidsRequired: Prisma.JsonValue | null
+      winnersIds: string[]
+      expiresAt: Date
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["giveaway"]>
+    composites: {}
+  }
+
+  type GiveawayGetPayload<S extends boolean | null | undefined | GiveawayDefaultArgs> = $Result.GetResult<Prisma.$GiveawayPayload, S>
+
+  type GiveawayCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<GiveawayFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: GiveawayCountAggregateInputType | true
+    }
+
+  export interface GiveawayDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Giveaway'], meta: { name: 'Giveaway' } }
+    /**
+     * Find zero or one Giveaway that matches the filter.
+     * @param {GiveawayFindUniqueArgs} args - Arguments to find a Giveaway
+     * @example
+     * // Get one Giveaway
+     * const giveaway = await prisma.giveaway.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends GiveawayFindUniqueArgs>(args: SelectSubset<T, GiveawayFindUniqueArgs<ExtArgs>>): Prisma__GiveawayClient<$Result.GetResult<Prisma.$GiveawayPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one Giveaway that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {GiveawayFindUniqueOrThrowArgs} args - Arguments to find a Giveaway
+     * @example
+     * // Get one Giveaway
+     * const giveaway = await prisma.giveaway.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends GiveawayFindUniqueOrThrowArgs>(args: SelectSubset<T, GiveawayFindUniqueOrThrowArgs<ExtArgs>>): Prisma__GiveawayClient<$Result.GetResult<Prisma.$GiveawayPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Giveaway that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {GiveawayFindFirstArgs} args - Arguments to find a Giveaway
+     * @example
+     * // Get one Giveaway
+     * const giveaway = await prisma.giveaway.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends GiveawayFindFirstArgs>(args?: SelectSubset<T, GiveawayFindFirstArgs<ExtArgs>>): Prisma__GiveawayClient<$Result.GetResult<Prisma.$GiveawayPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Giveaway that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {GiveawayFindFirstOrThrowArgs} args - Arguments to find a Giveaway
+     * @example
+     * // Get one Giveaway
+     * const giveaway = await prisma.giveaway.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends GiveawayFindFirstOrThrowArgs>(args?: SelectSubset<T, GiveawayFindFirstOrThrowArgs<ExtArgs>>): Prisma__GiveawayClient<$Result.GetResult<Prisma.$GiveawayPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more Giveaways that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {GiveawayFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Giveaways
+     * const giveaways = await prisma.giveaway.findMany()
+     * 
+     * // Get first 10 Giveaways
+     * const giveaways = await prisma.giveaway.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const giveawayWithIdOnly = await prisma.giveaway.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends GiveawayFindManyArgs>(args?: SelectSubset<T, GiveawayFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$GiveawayPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a Giveaway.
+     * @param {GiveawayCreateArgs} args - Arguments to create a Giveaway.
+     * @example
+     * // Create one Giveaway
+     * const Giveaway = await prisma.giveaway.create({
+     *   data: {
+     *     // ... data to create a Giveaway
+     *   }
+     * })
+     * 
+     */
+    create<T extends GiveawayCreateArgs>(args: SelectSubset<T, GiveawayCreateArgs<ExtArgs>>): Prisma__GiveawayClient<$Result.GetResult<Prisma.$GiveawayPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many Giveaways.
+     * @param {GiveawayCreateManyArgs} args - Arguments to create many Giveaways.
+     * @example
+     * // Create many Giveaways
+     * const giveaway = await prisma.giveaway.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends GiveawayCreateManyArgs>(args?: SelectSubset<T, GiveawayCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many Giveaways and returns the data saved in the database.
+     * @param {GiveawayCreateManyAndReturnArgs} args - Arguments to create many Giveaways.
+     * @example
+     * // Create many Giveaways
+     * const giveaway = await prisma.giveaway.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many Giveaways and only return the `id`
+     * const giveawayWithIdOnly = await prisma.giveaway.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends GiveawayCreateManyAndReturnArgs>(args?: SelectSubset<T, GiveawayCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$GiveawayPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a Giveaway.
+     * @param {GiveawayDeleteArgs} args - Arguments to delete one Giveaway.
+     * @example
+     * // Delete one Giveaway
+     * const Giveaway = await prisma.giveaway.delete({
+     *   where: {
+     *     // ... filter to delete one Giveaway
+     *   }
+     * })
+     * 
+     */
+    delete<T extends GiveawayDeleteArgs>(args: SelectSubset<T, GiveawayDeleteArgs<ExtArgs>>): Prisma__GiveawayClient<$Result.GetResult<Prisma.$GiveawayPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one Giveaway.
+     * @param {GiveawayUpdateArgs} args - Arguments to update one Giveaway.
+     * @example
+     * // Update one Giveaway
+     * const giveaway = await prisma.giveaway.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends GiveawayUpdateArgs>(args: SelectSubset<T, GiveawayUpdateArgs<ExtArgs>>): Prisma__GiveawayClient<$Result.GetResult<Prisma.$GiveawayPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more Giveaways.
+     * @param {GiveawayDeleteManyArgs} args - Arguments to filter Giveaways to delete.
+     * @example
+     * // Delete a few Giveaways
+     * const { count } = await prisma.giveaway.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends GiveawayDeleteManyArgs>(args?: SelectSubset<T, GiveawayDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Giveaways.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {GiveawayUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Giveaways
+     * const giveaway = await prisma.giveaway.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends GiveawayUpdateManyArgs>(args: SelectSubset<T, GiveawayUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Giveaways and returns the data updated in the database.
+     * @param {GiveawayUpdateManyAndReturnArgs} args - Arguments to update many Giveaways.
+     * @example
+     * // Update many Giveaways
+     * const giveaway = await prisma.giveaway.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more Giveaways and only return the `id`
+     * const giveawayWithIdOnly = await prisma.giveaway.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends GiveawayUpdateManyAndReturnArgs>(args: SelectSubset<T, GiveawayUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$GiveawayPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one Giveaway.
+     * @param {GiveawayUpsertArgs} args - Arguments to update or create a Giveaway.
+     * @example
+     * // Update or create a Giveaway
+     * const giveaway = await prisma.giveaway.upsert({
+     *   create: {
+     *     // ... data to create a Giveaway
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Giveaway we want to update
+     *   }
+     * })
+     */
+    upsert<T extends GiveawayUpsertArgs>(args: SelectSubset<T, GiveawayUpsertArgs<ExtArgs>>): Prisma__GiveawayClient<$Result.GetResult<Prisma.$GiveawayPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of Giveaways.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {GiveawayCountArgs} args - Arguments to filter Giveaways to count.
+     * @example
+     * // Count the number of Giveaways
+     * const count = await prisma.giveaway.count({
+     *   where: {
+     *     // ... the filter for the Giveaways we want to count
+     *   }
+     * })
+    **/
+    count<T extends GiveawayCountArgs>(
+      args?: Subset<T, GiveawayCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], GiveawayCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Giveaway.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {GiveawayAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends GiveawayAggregateArgs>(args: Subset<T, GiveawayAggregateArgs>): Prisma.PrismaPromise<GetGiveawayAggregateType<T>>
+
+    /**
+     * Group by Giveaway.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {GiveawayGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends GiveawayGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: GiveawayGroupByArgs['orderBy'] }
+        : { orderBy?: GiveawayGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, GiveawayGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetGiveawayGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the Giveaway model
+   */
+  readonly fields: GiveawayFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for Giveaway.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__GiveawayClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    participants<T extends Giveaway$participantsArgs<ExtArgs> = {}>(args?: Subset<T, Giveaway$participantsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserGiveawayPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    guild<T extends GuildSettingsDefaultArgs<ExtArgs> = {}>(args?: Subset<T, GuildSettingsDefaultArgs<ExtArgs>>): Prisma__GuildSettingsClient<$Result.GetResult<Prisma.$GuildSettingsPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    connectedGuilds<T extends Giveaway$connectedGuildsArgs<ExtArgs> = {}>(args?: Subset<T, Giveaway$connectedGuildsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$GuildGiveawayPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the Giveaway model
+   */
+  interface GiveawayFieldRefs {
+    readonly id: FieldRef<"Giveaway", 'Int'>
+    readonly localId: FieldRef<"Giveaway", 'Int'>
+    readonly guildId: FieldRef<"Giveaway", 'String'>
+    readonly channelId: FieldRef<"Giveaway", 'String'>
+    readonly messageId: FieldRef<"Giveaway", 'String'>
+    readonly title: FieldRef<"Giveaway", 'String'>
+    readonly description: FieldRef<"Giveaway", 'String'>
+    readonly blackListRoles: FieldRef<"Giveaway", 'String[]'>
+    readonly blackListMembers: FieldRef<"Giveaway", 'String[]'>
+    readonly onlyRoles: FieldRef<"Giveaway", 'String[]'>
+    readonly rolesMultipleEntry: FieldRef<"Giveaway", 'Json'>
+    readonly serverStayRequired: FieldRef<"Giveaway", 'String[]'>
+    readonly xpRequired: FieldRef<"Giveaway", 'Int'>
+    readonly messagesRequired: FieldRef<"Giveaway", 'Int'>
+    readonly messagesInChannelRequired: FieldRef<"Giveaway", 'Json'>
+    readonly messagesInGuidsRequired: FieldRef<"Giveaway", 'Json'>
+    readonly winnersIds: FieldRef<"Giveaway", 'String[]'>
+    readonly expiresAt: FieldRef<"Giveaway", 'DateTime'>
+    readonly createdAt: FieldRef<"Giveaway", 'DateTime'>
+    readonly updatedAt: FieldRef<"Giveaway", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * Giveaway findUnique
+   */
+  export type GiveawayFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Giveaway
+     */
+    select?: GiveawaySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Giveaway
+     */
+    omit?: GiveawayOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GiveawayInclude<ExtArgs> | null
+    /**
+     * Filter, which Giveaway to fetch.
+     */
+    where: GiveawayWhereUniqueInput
+  }
+
+  /**
+   * Giveaway findUniqueOrThrow
+   */
+  export type GiveawayFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Giveaway
+     */
+    select?: GiveawaySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Giveaway
+     */
+    omit?: GiveawayOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GiveawayInclude<ExtArgs> | null
+    /**
+     * Filter, which Giveaway to fetch.
+     */
+    where: GiveawayWhereUniqueInput
+  }
+
+  /**
+   * Giveaway findFirst
+   */
+  export type GiveawayFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Giveaway
+     */
+    select?: GiveawaySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Giveaway
+     */
+    omit?: GiveawayOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GiveawayInclude<ExtArgs> | null
+    /**
+     * Filter, which Giveaway to fetch.
+     */
+    where?: GiveawayWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Giveaways to fetch.
+     */
+    orderBy?: GiveawayOrderByWithRelationInput | GiveawayOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Giveaways.
+     */
+    cursor?: GiveawayWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Giveaways from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Giveaways.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Giveaways.
+     */
+    distinct?: GiveawayScalarFieldEnum | GiveawayScalarFieldEnum[]
+  }
+
+  /**
+   * Giveaway findFirstOrThrow
+   */
+  export type GiveawayFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Giveaway
+     */
+    select?: GiveawaySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Giveaway
+     */
+    omit?: GiveawayOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GiveawayInclude<ExtArgs> | null
+    /**
+     * Filter, which Giveaway to fetch.
+     */
+    where?: GiveawayWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Giveaways to fetch.
+     */
+    orderBy?: GiveawayOrderByWithRelationInput | GiveawayOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Giveaways.
+     */
+    cursor?: GiveawayWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Giveaways from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Giveaways.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Giveaways.
+     */
+    distinct?: GiveawayScalarFieldEnum | GiveawayScalarFieldEnum[]
+  }
+
+  /**
+   * Giveaway findMany
+   */
+  export type GiveawayFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Giveaway
+     */
+    select?: GiveawaySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Giveaway
+     */
+    omit?: GiveawayOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GiveawayInclude<ExtArgs> | null
+    /**
+     * Filter, which Giveaways to fetch.
+     */
+    where?: GiveawayWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Giveaways to fetch.
+     */
+    orderBy?: GiveawayOrderByWithRelationInput | GiveawayOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing Giveaways.
+     */
+    cursor?: GiveawayWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Giveaways from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Giveaways.
+     */
+    skip?: number
+    distinct?: GiveawayScalarFieldEnum | GiveawayScalarFieldEnum[]
+  }
+
+  /**
+   * Giveaway create
+   */
+  export type GiveawayCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Giveaway
+     */
+    select?: GiveawaySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Giveaway
+     */
+    omit?: GiveawayOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GiveawayInclude<ExtArgs> | null
+    /**
+     * The data needed to create a Giveaway.
+     */
+    data: XOR<GiveawayCreateInput, GiveawayUncheckedCreateInput>
+  }
+
+  /**
+   * Giveaway createMany
+   */
+  export type GiveawayCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many Giveaways.
+     */
+    data: GiveawayCreateManyInput | GiveawayCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * Giveaway createManyAndReturn
+   */
+  export type GiveawayCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Giveaway
+     */
+    select?: GiveawaySelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Giveaway
+     */
+    omit?: GiveawayOmit<ExtArgs> | null
+    /**
+     * The data used to create many Giveaways.
+     */
+    data: GiveawayCreateManyInput | GiveawayCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GiveawayIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * Giveaway update
+   */
+  export type GiveawayUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Giveaway
+     */
+    select?: GiveawaySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Giveaway
+     */
+    omit?: GiveawayOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GiveawayInclude<ExtArgs> | null
+    /**
+     * The data needed to update a Giveaway.
+     */
+    data: XOR<GiveawayUpdateInput, GiveawayUncheckedUpdateInput>
+    /**
+     * Choose, which Giveaway to update.
+     */
+    where: GiveawayWhereUniqueInput
+  }
+
+  /**
+   * Giveaway updateMany
+   */
+  export type GiveawayUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update Giveaways.
+     */
+    data: XOR<GiveawayUpdateManyMutationInput, GiveawayUncheckedUpdateManyInput>
+    /**
+     * Filter which Giveaways to update
+     */
+    where?: GiveawayWhereInput
+    /**
+     * Limit how many Giveaways to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * Giveaway updateManyAndReturn
+   */
+  export type GiveawayUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Giveaway
+     */
+    select?: GiveawaySelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Giveaway
+     */
+    omit?: GiveawayOmit<ExtArgs> | null
+    /**
+     * The data used to update Giveaways.
+     */
+    data: XOR<GiveawayUpdateManyMutationInput, GiveawayUncheckedUpdateManyInput>
+    /**
+     * Filter which Giveaways to update
+     */
+    where?: GiveawayWhereInput
+    /**
+     * Limit how many Giveaways to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GiveawayIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * Giveaway upsert
+   */
+  export type GiveawayUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Giveaway
+     */
+    select?: GiveawaySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Giveaway
+     */
+    omit?: GiveawayOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GiveawayInclude<ExtArgs> | null
+    /**
+     * The filter to search for the Giveaway to update in case it exists.
+     */
+    where: GiveawayWhereUniqueInput
+    /**
+     * In case the Giveaway found by the `where` argument doesn't exist, create a new Giveaway with this data.
+     */
+    create: XOR<GiveawayCreateInput, GiveawayUncheckedCreateInput>
+    /**
+     * In case the Giveaway was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<GiveawayUpdateInput, GiveawayUncheckedUpdateInput>
+  }
+
+  /**
+   * Giveaway delete
+   */
+  export type GiveawayDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Giveaway
+     */
+    select?: GiveawaySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Giveaway
+     */
+    omit?: GiveawayOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GiveawayInclude<ExtArgs> | null
+    /**
+     * Filter which Giveaway to delete.
+     */
+    where: GiveawayWhereUniqueInput
+  }
+
+  /**
+   * Giveaway deleteMany
+   */
+  export type GiveawayDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Giveaways to delete
+     */
+    where?: GiveawayWhereInput
+    /**
+     * Limit how many Giveaways to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * Giveaway.participants
+   */
+  export type Giveaway$participantsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserGiveaway
+     */
+    select?: UserGiveawaySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the UserGiveaway
+     */
+    omit?: UserGiveawayOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserGiveawayInclude<ExtArgs> | null
+    where?: UserGiveawayWhereInput
+    orderBy?: UserGiveawayOrderByWithRelationInput | UserGiveawayOrderByWithRelationInput[]
+    cursor?: UserGiveawayWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: UserGiveawayScalarFieldEnum | UserGiveawayScalarFieldEnum[]
+  }
+
+  /**
+   * Giveaway.connectedGuilds
+   */
+  export type Giveaway$connectedGuildsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GuildGiveaway
+     */
+    select?: GuildGiveawaySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the GuildGiveaway
+     */
+    omit?: GuildGiveawayOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GuildGiveawayInclude<ExtArgs> | null
+    where?: GuildGiveawayWhereInput
+    orderBy?: GuildGiveawayOrderByWithRelationInput | GuildGiveawayOrderByWithRelationInput[]
+    cursor?: GuildGiveawayWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: GuildGiveawayScalarFieldEnum | GuildGiveawayScalarFieldEnum[]
+  }
+
+  /**
+   * Giveaway without action
+   */
+  export type GiveawayDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Giveaway
+     */
+    select?: GiveawaySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Giveaway
+     */
+    omit?: GiveawayOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GiveawayInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model UserGiveaway
+   */
+
+  export type AggregateUserGiveaway = {
+    _count: UserGiveawayCountAggregateOutputType | null
+    _avg: UserGiveawayAvgAggregateOutputType | null
+    _sum: UserGiveawaySumAggregateOutputType | null
+    _min: UserGiveawayMinAggregateOutputType | null
+    _max: UserGiveawayMaxAggregateOutputType | null
+  }
+
+  export type UserGiveawayAvgAggregateOutputType = {
+    id: number | null
+    giveawayId: number | null
+  }
+
+  export type UserGiveawaySumAggregateOutputType = {
+    id: number | null
+    giveawayId: number | null
+  }
+
+  export type UserGiveawayMinAggregateOutputType = {
+    id: number | null
+    userId: string | null
+    giveawayId: number | null
+    createdAt: Date | null
+  }
+
+  export type UserGiveawayMaxAggregateOutputType = {
+    id: number | null
+    userId: string | null
+    giveawayId: number | null
+    createdAt: Date | null
+  }
+
+  export type UserGiveawayCountAggregateOutputType = {
+    id: number
+    userId: number
+    giveawayId: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type UserGiveawayAvgAggregateInputType = {
+    id?: true
+    giveawayId?: true
+  }
+
+  export type UserGiveawaySumAggregateInputType = {
+    id?: true
+    giveawayId?: true
+  }
+
+  export type UserGiveawayMinAggregateInputType = {
+    id?: true
+    userId?: true
+    giveawayId?: true
+    createdAt?: true
+  }
+
+  export type UserGiveawayMaxAggregateInputType = {
+    id?: true
+    userId?: true
+    giveawayId?: true
+    createdAt?: true
+  }
+
+  export type UserGiveawayCountAggregateInputType = {
+    id?: true
+    userId?: true
+    giveawayId?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type UserGiveawayAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which UserGiveaway to aggregate.
+     */
+    where?: UserGiveawayWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of UserGiveaways to fetch.
+     */
+    orderBy?: UserGiveawayOrderByWithRelationInput | UserGiveawayOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: UserGiveawayWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` UserGiveaways from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` UserGiveaways.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned UserGiveaways
+    **/
+    _count?: true | UserGiveawayCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: UserGiveawayAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: UserGiveawaySumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: UserGiveawayMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: UserGiveawayMaxAggregateInputType
+  }
+
+  export type GetUserGiveawayAggregateType<T extends UserGiveawayAggregateArgs> = {
+        [P in keyof T & keyof AggregateUserGiveaway]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateUserGiveaway[P]>
+      : GetScalarType<T[P], AggregateUserGiveaway[P]>
+  }
+
+
+
+
+  export type UserGiveawayGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: UserGiveawayWhereInput
+    orderBy?: UserGiveawayOrderByWithAggregationInput | UserGiveawayOrderByWithAggregationInput[]
+    by: UserGiveawayScalarFieldEnum[] | UserGiveawayScalarFieldEnum
+    having?: UserGiveawayScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: UserGiveawayCountAggregateInputType | true
+    _avg?: UserGiveawayAvgAggregateInputType
+    _sum?: UserGiveawaySumAggregateInputType
+    _min?: UserGiveawayMinAggregateInputType
+    _max?: UserGiveawayMaxAggregateInputType
+  }
+
+  export type UserGiveawayGroupByOutputType = {
+    id: number
+    userId: string
+    giveawayId: number
+    createdAt: Date
+    _count: UserGiveawayCountAggregateOutputType | null
+    _avg: UserGiveawayAvgAggregateOutputType | null
+    _sum: UserGiveawaySumAggregateOutputType | null
+    _min: UserGiveawayMinAggregateOutputType | null
+    _max: UserGiveawayMaxAggregateOutputType | null
+  }
+
+  type GetUserGiveawayGroupByPayload<T extends UserGiveawayGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<UserGiveawayGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof UserGiveawayGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], UserGiveawayGroupByOutputType[P]>
+            : GetScalarType<T[P], UserGiveawayGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type UserGiveawaySelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    giveawayId?: boolean
+    createdAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    giveaway?: boolean | GiveawayDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["userGiveaway"]>
+
+  export type UserGiveawaySelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    giveawayId?: boolean
+    createdAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    giveaway?: boolean | GiveawayDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["userGiveaway"]>
+
+  export type UserGiveawaySelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    giveawayId?: boolean
+    createdAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    giveaway?: boolean | GiveawayDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["userGiveaway"]>
+
+  export type UserGiveawaySelectScalar = {
+    id?: boolean
+    userId?: boolean
+    giveawayId?: boolean
+    createdAt?: boolean
+  }
+
+  export type UserGiveawayOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "giveawayId" | "createdAt", ExtArgs["result"]["userGiveaway"]>
+  export type UserGiveawayInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    giveaway?: boolean | GiveawayDefaultArgs<ExtArgs>
+  }
+  export type UserGiveawayIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    giveaway?: boolean | GiveawayDefaultArgs<ExtArgs>
+  }
+  export type UserGiveawayIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    giveaway?: boolean | GiveawayDefaultArgs<ExtArgs>
+  }
+
+  export type $UserGiveawayPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "UserGiveaway"
+    objects: {
+      user: Prisma.$UserPayload<ExtArgs>
+      giveaway: Prisma.$GiveawayPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: number
+      userId: string
+      giveawayId: number
+      createdAt: Date
+    }, ExtArgs["result"]["userGiveaway"]>
+    composites: {}
+  }
+
+  type UserGiveawayGetPayload<S extends boolean | null | undefined | UserGiveawayDefaultArgs> = $Result.GetResult<Prisma.$UserGiveawayPayload, S>
+
+  type UserGiveawayCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<UserGiveawayFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: UserGiveawayCountAggregateInputType | true
+    }
+
+  export interface UserGiveawayDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['UserGiveaway'], meta: { name: 'UserGiveaway' } }
+    /**
+     * Find zero or one UserGiveaway that matches the filter.
+     * @param {UserGiveawayFindUniqueArgs} args - Arguments to find a UserGiveaway
+     * @example
+     * // Get one UserGiveaway
+     * const userGiveaway = await prisma.userGiveaway.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends UserGiveawayFindUniqueArgs>(args: SelectSubset<T, UserGiveawayFindUniqueArgs<ExtArgs>>): Prisma__UserGiveawayClient<$Result.GetResult<Prisma.$UserGiveawayPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one UserGiveaway that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {UserGiveawayFindUniqueOrThrowArgs} args - Arguments to find a UserGiveaway
+     * @example
+     * // Get one UserGiveaway
+     * const userGiveaway = await prisma.userGiveaway.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends UserGiveawayFindUniqueOrThrowArgs>(args: SelectSubset<T, UserGiveawayFindUniqueOrThrowArgs<ExtArgs>>): Prisma__UserGiveawayClient<$Result.GetResult<Prisma.$UserGiveawayPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first UserGiveaway that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {UserGiveawayFindFirstArgs} args - Arguments to find a UserGiveaway
+     * @example
+     * // Get one UserGiveaway
+     * const userGiveaway = await prisma.userGiveaway.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends UserGiveawayFindFirstArgs>(args?: SelectSubset<T, UserGiveawayFindFirstArgs<ExtArgs>>): Prisma__UserGiveawayClient<$Result.GetResult<Prisma.$UserGiveawayPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first UserGiveaway that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {UserGiveawayFindFirstOrThrowArgs} args - Arguments to find a UserGiveaway
+     * @example
+     * // Get one UserGiveaway
+     * const userGiveaway = await prisma.userGiveaway.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends UserGiveawayFindFirstOrThrowArgs>(args?: SelectSubset<T, UserGiveawayFindFirstOrThrowArgs<ExtArgs>>): Prisma__UserGiveawayClient<$Result.GetResult<Prisma.$UserGiveawayPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more UserGiveaways that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {UserGiveawayFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all UserGiveaways
+     * const userGiveaways = await prisma.userGiveaway.findMany()
+     * 
+     * // Get first 10 UserGiveaways
+     * const userGiveaways = await prisma.userGiveaway.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const userGiveawayWithIdOnly = await prisma.userGiveaway.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends UserGiveawayFindManyArgs>(args?: SelectSubset<T, UserGiveawayFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserGiveawayPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a UserGiveaway.
+     * @param {UserGiveawayCreateArgs} args - Arguments to create a UserGiveaway.
+     * @example
+     * // Create one UserGiveaway
+     * const UserGiveaway = await prisma.userGiveaway.create({
+     *   data: {
+     *     // ... data to create a UserGiveaway
+     *   }
+     * })
+     * 
+     */
+    create<T extends UserGiveawayCreateArgs>(args: SelectSubset<T, UserGiveawayCreateArgs<ExtArgs>>): Prisma__UserGiveawayClient<$Result.GetResult<Prisma.$UserGiveawayPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many UserGiveaways.
+     * @param {UserGiveawayCreateManyArgs} args - Arguments to create many UserGiveaways.
+     * @example
+     * // Create many UserGiveaways
+     * const userGiveaway = await prisma.userGiveaway.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends UserGiveawayCreateManyArgs>(args?: SelectSubset<T, UserGiveawayCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many UserGiveaways and returns the data saved in the database.
+     * @param {UserGiveawayCreateManyAndReturnArgs} args - Arguments to create many UserGiveaways.
+     * @example
+     * // Create many UserGiveaways
+     * const userGiveaway = await prisma.userGiveaway.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many UserGiveaways and only return the `id`
+     * const userGiveawayWithIdOnly = await prisma.userGiveaway.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends UserGiveawayCreateManyAndReturnArgs>(args?: SelectSubset<T, UserGiveawayCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserGiveawayPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a UserGiveaway.
+     * @param {UserGiveawayDeleteArgs} args - Arguments to delete one UserGiveaway.
+     * @example
+     * // Delete one UserGiveaway
+     * const UserGiveaway = await prisma.userGiveaway.delete({
+     *   where: {
+     *     // ... filter to delete one UserGiveaway
+     *   }
+     * })
+     * 
+     */
+    delete<T extends UserGiveawayDeleteArgs>(args: SelectSubset<T, UserGiveawayDeleteArgs<ExtArgs>>): Prisma__UserGiveawayClient<$Result.GetResult<Prisma.$UserGiveawayPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one UserGiveaway.
+     * @param {UserGiveawayUpdateArgs} args - Arguments to update one UserGiveaway.
+     * @example
+     * // Update one UserGiveaway
+     * const userGiveaway = await prisma.userGiveaway.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends UserGiveawayUpdateArgs>(args: SelectSubset<T, UserGiveawayUpdateArgs<ExtArgs>>): Prisma__UserGiveawayClient<$Result.GetResult<Prisma.$UserGiveawayPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more UserGiveaways.
+     * @param {UserGiveawayDeleteManyArgs} args - Arguments to filter UserGiveaways to delete.
+     * @example
+     * // Delete a few UserGiveaways
+     * const { count } = await prisma.userGiveaway.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends UserGiveawayDeleteManyArgs>(args?: SelectSubset<T, UserGiveawayDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more UserGiveaways.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {UserGiveawayUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many UserGiveaways
+     * const userGiveaway = await prisma.userGiveaway.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends UserGiveawayUpdateManyArgs>(args: SelectSubset<T, UserGiveawayUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more UserGiveaways and returns the data updated in the database.
+     * @param {UserGiveawayUpdateManyAndReturnArgs} args - Arguments to update many UserGiveaways.
+     * @example
+     * // Update many UserGiveaways
+     * const userGiveaway = await prisma.userGiveaway.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more UserGiveaways and only return the `id`
+     * const userGiveawayWithIdOnly = await prisma.userGiveaway.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends UserGiveawayUpdateManyAndReturnArgs>(args: SelectSubset<T, UserGiveawayUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserGiveawayPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one UserGiveaway.
+     * @param {UserGiveawayUpsertArgs} args - Arguments to update or create a UserGiveaway.
+     * @example
+     * // Update or create a UserGiveaway
+     * const userGiveaway = await prisma.userGiveaway.upsert({
+     *   create: {
+     *     // ... data to create a UserGiveaway
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the UserGiveaway we want to update
+     *   }
+     * })
+     */
+    upsert<T extends UserGiveawayUpsertArgs>(args: SelectSubset<T, UserGiveawayUpsertArgs<ExtArgs>>): Prisma__UserGiveawayClient<$Result.GetResult<Prisma.$UserGiveawayPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of UserGiveaways.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {UserGiveawayCountArgs} args - Arguments to filter UserGiveaways to count.
+     * @example
+     * // Count the number of UserGiveaways
+     * const count = await prisma.userGiveaway.count({
+     *   where: {
+     *     // ... the filter for the UserGiveaways we want to count
+     *   }
+     * })
+    **/
+    count<T extends UserGiveawayCountArgs>(
+      args?: Subset<T, UserGiveawayCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], UserGiveawayCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a UserGiveaway.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {UserGiveawayAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends UserGiveawayAggregateArgs>(args: Subset<T, UserGiveawayAggregateArgs>): Prisma.PrismaPromise<GetUserGiveawayAggregateType<T>>
+
+    /**
+     * Group by UserGiveaway.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {UserGiveawayGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends UserGiveawayGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: UserGiveawayGroupByArgs['orderBy'] }
+        : { orderBy?: UserGiveawayGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, UserGiveawayGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetUserGiveawayGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the UserGiveaway model
+   */
+  readonly fields: UserGiveawayFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for UserGiveaway.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__UserGiveawayClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    giveaway<T extends GiveawayDefaultArgs<ExtArgs> = {}>(args?: Subset<T, GiveawayDefaultArgs<ExtArgs>>): Prisma__GiveawayClient<$Result.GetResult<Prisma.$GiveawayPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the UserGiveaway model
+   */
+  interface UserGiveawayFieldRefs {
+    readonly id: FieldRef<"UserGiveaway", 'Int'>
+    readonly userId: FieldRef<"UserGiveaway", 'String'>
+    readonly giveawayId: FieldRef<"UserGiveaway", 'Int'>
+    readonly createdAt: FieldRef<"UserGiveaway", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * UserGiveaway findUnique
+   */
+  export type UserGiveawayFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserGiveaway
+     */
+    select?: UserGiveawaySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the UserGiveaway
+     */
+    omit?: UserGiveawayOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserGiveawayInclude<ExtArgs> | null
+    /**
+     * Filter, which UserGiveaway to fetch.
+     */
+    where: UserGiveawayWhereUniqueInput
+  }
+
+  /**
+   * UserGiveaway findUniqueOrThrow
+   */
+  export type UserGiveawayFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserGiveaway
+     */
+    select?: UserGiveawaySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the UserGiveaway
+     */
+    omit?: UserGiveawayOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserGiveawayInclude<ExtArgs> | null
+    /**
+     * Filter, which UserGiveaway to fetch.
+     */
+    where: UserGiveawayWhereUniqueInput
+  }
+
+  /**
+   * UserGiveaway findFirst
+   */
+  export type UserGiveawayFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserGiveaway
+     */
+    select?: UserGiveawaySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the UserGiveaway
+     */
+    omit?: UserGiveawayOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserGiveawayInclude<ExtArgs> | null
+    /**
+     * Filter, which UserGiveaway to fetch.
+     */
+    where?: UserGiveawayWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of UserGiveaways to fetch.
+     */
+    orderBy?: UserGiveawayOrderByWithRelationInput | UserGiveawayOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for UserGiveaways.
+     */
+    cursor?: UserGiveawayWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` UserGiveaways from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` UserGiveaways.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of UserGiveaways.
+     */
+    distinct?: UserGiveawayScalarFieldEnum | UserGiveawayScalarFieldEnum[]
+  }
+
+  /**
+   * UserGiveaway findFirstOrThrow
+   */
+  export type UserGiveawayFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserGiveaway
+     */
+    select?: UserGiveawaySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the UserGiveaway
+     */
+    omit?: UserGiveawayOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserGiveawayInclude<ExtArgs> | null
+    /**
+     * Filter, which UserGiveaway to fetch.
+     */
+    where?: UserGiveawayWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of UserGiveaways to fetch.
+     */
+    orderBy?: UserGiveawayOrderByWithRelationInput | UserGiveawayOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for UserGiveaways.
+     */
+    cursor?: UserGiveawayWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` UserGiveaways from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` UserGiveaways.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of UserGiveaways.
+     */
+    distinct?: UserGiveawayScalarFieldEnum | UserGiveawayScalarFieldEnum[]
+  }
+
+  /**
+   * UserGiveaway findMany
+   */
+  export type UserGiveawayFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserGiveaway
+     */
+    select?: UserGiveawaySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the UserGiveaway
+     */
+    omit?: UserGiveawayOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserGiveawayInclude<ExtArgs> | null
+    /**
+     * Filter, which UserGiveaways to fetch.
+     */
+    where?: UserGiveawayWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of UserGiveaways to fetch.
+     */
+    orderBy?: UserGiveawayOrderByWithRelationInput | UserGiveawayOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing UserGiveaways.
+     */
+    cursor?: UserGiveawayWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` UserGiveaways from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` UserGiveaways.
+     */
+    skip?: number
+    distinct?: UserGiveawayScalarFieldEnum | UserGiveawayScalarFieldEnum[]
+  }
+
+  /**
+   * UserGiveaway create
+   */
+  export type UserGiveawayCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserGiveaway
+     */
+    select?: UserGiveawaySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the UserGiveaway
+     */
+    omit?: UserGiveawayOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserGiveawayInclude<ExtArgs> | null
+    /**
+     * The data needed to create a UserGiveaway.
+     */
+    data: XOR<UserGiveawayCreateInput, UserGiveawayUncheckedCreateInput>
+  }
+
+  /**
+   * UserGiveaway createMany
+   */
+  export type UserGiveawayCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many UserGiveaways.
+     */
+    data: UserGiveawayCreateManyInput | UserGiveawayCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * UserGiveaway createManyAndReturn
+   */
+  export type UserGiveawayCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserGiveaway
+     */
+    select?: UserGiveawaySelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the UserGiveaway
+     */
+    omit?: UserGiveawayOmit<ExtArgs> | null
+    /**
+     * The data used to create many UserGiveaways.
+     */
+    data: UserGiveawayCreateManyInput | UserGiveawayCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserGiveawayIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * UserGiveaway update
+   */
+  export type UserGiveawayUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserGiveaway
+     */
+    select?: UserGiveawaySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the UserGiveaway
+     */
+    omit?: UserGiveawayOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserGiveawayInclude<ExtArgs> | null
+    /**
+     * The data needed to update a UserGiveaway.
+     */
+    data: XOR<UserGiveawayUpdateInput, UserGiveawayUncheckedUpdateInput>
+    /**
+     * Choose, which UserGiveaway to update.
+     */
+    where: UserGiveawayWhereUniqueInput
+  }
+
+  /**
+   * UserGiveaway updateMany
+   */
+  export type UserGiveawayUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update UserGiveaways.
+     */
+    data: XOR<UserGiveawayUpdateManyMutationInput, UserGiveawayUncheckedUpdateManyInput>
+    /**
+     * Filter which UserGiveaways to update
+     */
+    where?: UserGiveawayWhereInput
+    /**
+     * Limit how many UserGiveaways to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * UserGiveaway updateManyAndReturn
+   */
+  export type UserGiveawayUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserGiveaway
+     */
+    select?: UserGiveawaySelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the UserGiveaway
+     */
+    omit?: UserGiveawayOmit<ExtArgs> | null
+    /**
+     * The data used to update UserGiveaways.
+     */
+    data: XOR<UserGiveawayUpdateManyMutationInput, UserGiveawayUncheckedUpdateManyInput>
+    /**
+     * Filter which UserGiveaways to update
+     */
+    where?: UserGiveawayWhereInput
+    /**
+     * Limit how many UserGiveaways to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserGiveawayIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * UserGiveaway upsert
+   */
+  export type UserGiveawayUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserGiveaway
+     */
+    select?: UserGiveawaySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the UserGiveaway
+     */
+    omit?: UserGiveawayOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserGiveawayInclude<ExtArgs> | null
+    /**
+     * The filter to search for the UserGiveaway to update in case it exists.
+     */
+    where: UserGiveawayWhereUniqueInput
+    /**
+     * In case the UserGiveaway found by the `where` argument doesn't exist, create a new UserGiveaway with this data.
+     */
+    create: XOR<UserGiveawayCreateInput, UserGiveawayUncheckedCreateInput>
+    /**
+     * In case the UserGiveaway was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<UserGiveawayUpdateInput, UserGiveawayUncheckedUpdateInput>
+  }
+
+  /**
+   * UserGiveaway delete
+   */
+  export type UserGiveawayDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserGiveaway
+     */
+    select?: UserGiveawaySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the UserGiveaway
+     */
+    omit?: UserGiveawayOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserGiveawayInclude<ExtArgs> | null
+    /**
+     * Filter which UserGiveaway to delete.
+     */
+    where: UserGiveawayWhereUniqueInput
+  }
+
+  /**
+   * UserGiveaway deleteMany
+   */
+  export type UserGiveawayDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which UserGiveaways to delete
+     */
+    where?: UserGiveawayWhereInput
+    /**
+     * Limit how many UserGiveaways to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * UserGiveaway without action
+   */
+  export type UserGiveawayDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserGiveaway
+     */
+    select?: UserGiveawaySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the UserGiveaway
+     */
+    omit?: UserGiveawayOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserGiveawayInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model GuildGiveaway
+   */
+
+  export type AggregateGuildGiveaway = {
+    _count: GuildGiveawayCountAggregateOutputType | null
+    _avg: GuildGiveawayAvgAggregateOutputType | null
+    _sum: GuildGiveawaySumAggregateOutputType | null
+    _min: GuildGiveawayMinAggregateOutputType | null
+    _max: GuildGiveawayMaxAggregateOutputType | null
+  }
+
+  export type GuildGiveawayAvgAggregateOutputType = {
+    id: number | null
+    giveawayId: number | null
+  }
+
+  export type GuildGiveawaySumAggregateOutputType = {
+    id: number | null
+    giveawayId: number | null
+  }
+
+  export type GuildGiveawayMinAggregateOutputType = {
+    id: number | null
+    guildId: string | null
+    channelId: string | null
+    messageId: string | null
+    giveawayId: number | null
+    createdAt: Date | null
+  }
+
+  export type GuildGiveawayMaxAggregateOutputType = {
+    id: number | null
+    guildId: string | null
+    channelId: string | null
+    messageId: string | null
+    giveawayId: number | null
+    createdAt: Date | null
+  }
+
+  export type GuildGiveawayCountAggregateOutputType = {
+    id: number
+    guildId: number
+    channelId: number
+    messageId: number
+    giveawayId: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type GuildGiveawayAvgAggregateInputType = {
+    id?: true
+    giveawayId?: true
+  }
+
+  export type GuildGiveawaySumAggregateInputType = {
+    id?: true
+    giveawayId?: true
+  }
+
+  export type GuildGiveawayMinAggregateInputType = {
+    id?: true
+    guildId?: true
+    channelId?: true
+    messageId?: true
+    giveawayId?: true
+    createdAt?: true
+  }
+
+  export type GuildGiveawayMaxAggregateInputType = {
+    id?: true
+    guildId?: true
+    channelId?: true
+    messageId?: true
+    giveawayId?: true
+    createdAt?: true
+  }
+
+  export type GuildGiveawayCountAggregateInputType = {
+    id?: true
+    guildId?: true
+    channelId?: true
+    messageId?: true
+    giveawayId?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type GuildGiveawayAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which GuildGiveaway to aggregate.
+     */
+    where?: GuildGiveawayWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of GuildGiveaways to fetch.
+     */
+    orderBy?: GuildGiveawayOrderByWithRelationInput | GuildGiveawayOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: GuildGiveawayWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` GuildGiveaways from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` GuildGiveaways.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned GuildGiveaways
+    **/
+    _count?: true | GuildGiveawayCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: GuildGiveawayAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: GuildGiveawaySumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: GuildGiveawayMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: GuildGiveawayMaxAggregateInputType
+  }
+
+  export type GetGuildGiveawayAggregateType<T extends GuildGiveawayAggregateArgs> = {
+        [P in keyof T & keyof AggregateGuildGiveaway]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateGuildGiveaway[P]>
+      : GetScalarType<T[P], AggregateGuildGiveaway[P]>
+  }
+
+
+
+
+  export type GuildGiveawayGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: GuildGiveawayWhereInput
+    orderBy?: GuildGiveawayOrderByWithAggregationInput | GuildGiveawayOrderByWithAggregationInput[]
+    by: GuildGiveawayScalarFieldEnum[] | GuildGiveawayScalarFieldEnum
+    having?: GuildGiveawayScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: GuildGiveawayCountAggregateInputType | true
+    _avg?: GuildGiveawayAvgAggregateInputType
+    _sum?: GuildGiveawaySumAggregateInputType
+    _min?: GuildGiveawayMinAggregateInputType
+    _max?: GuildGiveawayMaxAggregateInputType
+  }
+
+  export type GuildGiveawayGroupByOutputType = {
+    id: number
+    guildId: string
+    channelId: string
+    messageId: string
+    giveawayId: number
+    createdAt: Date
+    _count: GuildGiveawayCountAggregateOutputType | null
+    _avg: GuildGiveawayAvgAggregateOutputType | null
+    _sum: GuildGiveawaySumAggregateOutputType | null
+    _min: GuildGiveawayMinAggregateOutputType | null
+    _max: GuildGiveawayMaxAggregateOutputType | null
+  }
+
+  type GetGuildGiveawayGroupByPayload<T extends GuildGiveawayGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<GuildGiveawayGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof GuildGiveawayGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], GuildGiveawayGroupByOutputType[P]>
+            : GetScalarType<T[P], GuildGiveawayGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type GuildGiveawaySelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    guildId?: boolean
+    channelId?: boolean
+    messageId?: boolean
+    giveawayId?: boolean
+    createdAt?: boolean
+    guild?: boolean | GuildSettingsDefaultArgs<ExtArgs>
+    giveaway?: boolean | GiveawayDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["guildGiveaway"]>
+
+  export type GuildGiveawaySelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    guildId?: boolean
+    channelId?: boolean
+    messageId?: boolean
+    giveawayId?: boolean
+    createdAt?: boolean
+    guild?: boolean | GuildSettingsDefaultArgs<ExtArgs>
+    giveaway?: boolean | GiveawayDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["guildGiveaway"]>
+
+  export type GuildGiveawaySelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    guildId?: boolean
+    channelId?: boolean
+    messageId?: boolean
+    giveawayId?: boolean
+    createdAt?: boolean
+    guild?: boolean | GuildSettingsDefaultArgs<ExtArgs>
+    giveaway?: boolean | GiveawayDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["guildGiveaway"]>
+
+  export type GuildGiveawaySelectScalar = {
+    id?: boolean
+    guildId?: boolean
+    channelId?: boolean
+    messageId?: boolean
+    giveawayId?: boolean
+    createdAt?: boolean
+  }
+
+  export type GuildGiveawayOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "guildId" | "channelId" | "messageId" | "giveawayId" | "createdAt", ExtArgs["result"]["guildGiveaway"]>
+  export type GuildGiveawayInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    guild?: boolean | GuildSettingsDefaultArgs<ExtArgs>
+    giveaway?: boolean | GiveawayDefaultArgs<ExtArgs>
+  }
+  export type GuildGiveawayIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    guild?: boolean | GuildSettingsDefaultArgs<ExtArgs>
+    giveaway?: boolean | GiveawayDefaultArgs<ExtArgs>
+  }
+  export type GuildGiveawayIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    guild?: boolean | GuildSettingsDefaultArgs<ExtArgs>
+    giveaway?: boolean | GiveawayDefaultArgs<ExtArgs>
+  }
+
+  export type $GuildGiveawayPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "GuildGiveaway"
+    objects: {
+      guild: Prisma.$GuildSettingsPayload<ExtArgs>
+      giveaway: Prisma.$GiveawayPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: number
+      guildId: string
+      channelId: string
+      messageId: string
+      giveawayId: number
+      createdAt: Date
+    }, ExtArgs["result"]["guildGiveaway"]>
+    composites: {}
+  }
+
+  type GuildGiveawayGetPayload<S extends boolean | null | undefined | GuildGiveawayDefaultArgs> = $Result.GetResult<Prisma.$GuildGiveawayPayload, S>
+
+  type GuildGiveawayCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<GuildGiveawayFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: GuildGiveawayCountAggregateInputType | true
+    }
+
+  export interface GuildGiveawayDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['GuildGiveaway'], meta: { name: 'GuildGiveaway' } }
+    /**
+     * Find zero or one GuildGiveaway that matches the filter.
+     * @param {GuildGiveawayFindUniqueArgs} args - Arguments to find a GuildGiveaway
+     * @example
+     * // Get one GuildGiveaway
+     * const guildGiveaway = await prisma.guildGiveaway.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends GuildGiveawayFindUniqueArgs>(args: SelectSubset<T, GuildGiveawayFindUniqueArgs<ExtArgs>>): Prisma__GuildGiveawayClient<$Result.GetResult<Prisma.$GuildGiveawayPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one GuildGiveaway that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {GuildGiveawayFindUniqueOrThrowArgs} args - Arguments to find a GuildGiveaway
+     * @example
+     * // Get one GuildGiveaway
+     * const guildGiveaway = await prisma.guildGiveaway.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends GuildGiveawayFindUniqueOrThrowArgs>(args: SelectSubset<T, GuildGiveawayFindUniqueOrThrowArgs<ExtArgs>>): Prisma__GuildGiveawayClient<$Result.GetResult<Prisma.$GuildGiveawayPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first GuildGiveaway that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {GuildGiveawayFindFirstArgs} args - Arguments to find a GuildGiveaway
+     * @example
+     * // Get one GuildGiveaway
+     * const guildGiveaway = await prisma.guildGiveaway.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends GuildGiveawayFindFirstArgs>(args?: SelectSubset<T, GuildGiveawayFindFirstArgs<ExtArgs>>): Prisma__GuildGiveawayClient<$Result.GetResult<Prisma.$GuildGiveawayPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first GuildGiveaway that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {GuildGiveawayFindFirstOrThrowArgs} args - Arguments to find a GuildGiveaway
+     * @example
+     * // Get one GuildGiveaway
+     * const guildGiveaway = await prisma.guildGiveaway.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends GuildGiveawayFindFirstOrThrowArgs>(args?: SelectSubset<T, GuildGiveawayFindFirstOrThrowArgs<ExtArgs>>): Prisma__GuildGiveawayClient<$Result.GetResult<Prisma.$GuildGiveawayPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more GuildGiveaways that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {GuildGiveawayFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all GuildGiveaways
+     * const guildGiveaways = await prisma.guildGiveaway.findMany()
+     * 
+     * // Get first 10 GuildGiveaways
+     * const guildGiveaways = await prisma.guildGiveaway.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const guildGiveawayWithIdOnly = await prisma.guildGiveaway.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends GuildGiveawayFindManyArgs>(args?: SelectSubset<T, GuildGiveawayFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$GuildGiveawayPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a GuildGiveaway.
+     * @param {GuildGiveawayCreateArgs} args - Arguments to create a GuildGiveaway.
+     * @example
+     * // Create one GuildGiveaway
+     * const GuildGiveaway = await prisma.guildGiveaway.create({
+     *   data: {
+     *     // ... data to create a GuildGiveaway
+     *   }
+     * })
+     * 
+     */
+    create<T extends GuildGiveawayCreateArgs>(args: SelectSubset<T, GuildGiveawayCreateArgs<ExtArgs>>): Prisma__GuildGiveawayClient<$Result.GetResult<Prisma.$GuildGiveawayPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many GuildGiveaways.
+     * @param {GuildGiveawayCreateManyArgs} args - Arguments to create many GuildGiveaways.
+     * @example
+     * // Create many GuildGiveaways
+     * const guildGiveaway = await prisma.guildGiveaway.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends GuildGiveawayCreateManyArgs>(args?: SelectSubset<T, GuildGiveawayCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many GuildGiveaways and returns the data saved in the database.
+     * @param {GuildGiveawayCreateManyAndReturnArgs} args - Arguments to create many GuildGiveaways.
+     * @example
+     * // Create many GuildGiveaways
+     * const guildGiveaway = await prisma.guildGiveaway.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many GuildGiveaways and only return the `id`
+     * const guildGiveawayWithIdOnly = await prisma.guildGiveaway.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends GuildGiveawayCreateManyAndReturnArgs>(args?: SelectSubset<T, GuildGiveawayCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$GuildGiveawayPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a GuildGiveaway.
+     * @param {GuildGiveawayDeleteArgs} args - Arguments to delete one GuildGiveaway.
+     * @example
+     * // Delete one GuildGiveaway
+     * const GuildGiveaway = await prisma.guildGiveaway.delete({
+     *   where: {
+     *     // ... filter to delete one GuildGiveaway
+     *   }
+     * })
+     * 
+     */
+    delete<T extends GuildGiveawayDeleteArgs>(args: SelectSubset<T, GuildGiveawayDeleteArgs<ExtArgs>>): Prisma__GuildGiveawayClient<$Result.GetResult<Prisma.$GuildGiveawayPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one GuildGiveaway.
+     * @param {GuildGiveawayUpdateArgs} args - Arguments to update one GuildGiveaway.
+     * @example
+     * // Update one GuildGiveaway
+     * const guildGiveaway = await prisma.guildGiveaway.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends GuildGiveawayUpdateArgs>(args: SelectSubset<T, GuildGiveawayUpdateArgs<ExtArgs>>): Prisma__GuildGiveawayClient<$Result.GetResult<Prisma.$GuildGiveawayPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more GuildGiveaways.
+     * @param {GuildGiveawayDeleteManyArgs} args - Arguments to filter GuildGiveaways to delete.
+     * @example
+     * // Delete a few GuildGiveaways
+     * const { count } = await prisma.guildGiveaway.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends GuildGiveawayDeleteManyArgs>(args?: SelectSubset<T, GuildGiveawayDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more GuildGiveaways.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {GuildGiveawayUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many GuildGiveaways
+     * const guildGiveaway = await prisma.guildGiveaway.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends GuildGiveawayUpdateManyArgs>(args: SelectSubset<T, GuildGiveawayUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more GuildGiveaways and returns the data updated in the database.
+     * @param {GuildGiveawayUpdateManyAndReturnArgs} args - Arguments to update many GuildGiveaways.
+     * @example
+     * // Update many GuildGiveaways
+     * const guildGiveaway = await prisma.guildGiveaway.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more GuildGiveaways and only return the `id`
+     * const guildGiveawayWithIdOnly = await prisma.guildGiveaway.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends GuildGiveawayUpdateManyAndReturnArgs>(args: SelectSubset<T, GuildGiveawayUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$GuildGiveawayPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one GuildGiveaway.
+     * @param {GuildGiveawayUpsertArgs} args - Arguments to update or create a GuildGiveaway.
+     * @example
+     * // Update or create a GuildGiveaway
+     * const guildGiveaway = await prisma.guildGiveaway.upsert({
+     *   create: {
+     *     // ... data to create a GuildGiveaway
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the GuildGiveaway we want to update
+     *   }
+     * })
+     */
+    upsert<T extends GuildGiveawayUpsertArgs>(args: SelectSubset<T, GuildGiveawayUpsertArgs<ExtArgs>>): Prisma__GuildGiveawayClient<$Result.GetResult<Prisma.$GuildGiveawayPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of GuildGiveaways.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {GuildGiveawayCountArgs} args - Arguments to filter GuildGiveaways to count.
+     * @example
+     * // Count the number of GuildGiveaways
+     * const count = await prisma.guildGiveaway.count({
+     *   where: {
+     *     // ... the filter for the GuildGiveaways we want to count
+     *   }
+     * })
+    **/
+    count<T extends GuildGiveawayCountArgs>(
+      args?: Subset<T, GuildGiveawayCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], GuildGiveawayCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a GuildGiveaway.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {GuildGiveawayAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends GuildGiveawayAggregateArgs>(args: Subset<T, GuildGiveawayAggregateArgs>): Prisma.PrismaPromise<GetGuildGiveawayAggregateType<T>>
+
+    /**
+     * Group by GuildGiveaway.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {GuildGiveawayGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends GuildGiveawayGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: GuildGiveawayGroupByArgs['orderBy'] }
+        : { orderBy?: GuildGiveawayGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, GuildGiveawayGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetGuildGiveawayGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the GuildGiveaway model
+   */
+  readonly fields: GuildGiveawayFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for GuildGiveaway.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__GuildGiveawayClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    guild<T extends GuildSettingsDefaultArgs<ExtArgs> = {}>(args?: Subset<T, GuildSettingsDefaultArgs<ExtArgs>>): Prisma__GuildSettingsClient<$Result.GetResult<Prisma.$GuildSettingsPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    giveaway<T extends GiveawayDefaultArgs<ExtArgs> = {}>(args?: Subset<T, GiveawayDefaultArgs<ExtArgs>>): Prisma__GiveawayClient<$Result.GetResult<Prisma.$GiveawayPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the GuildGiveaway model
+   */
+  interface GuildGiveawayFieldRefs {
+    readonly id: FieldRef<"GuildGiveaway", 'Int'>
+    readonly guildId: FieldRef<"GuildGiveaway", 'String'>
+    readonly channelId: FieldRef<"GuildGiveaway", 'String'>
+    readonly messageId: FieldRef<"GuildGiveaway", 'String'>
+    readonly giveawayId: FieldRef<"GuildGiveaway", 'Int'>
+    readonly createdAt: FieldRef<"GuildGiveaway", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * GuildGiveaway findUnique
+   */
+  export type GuildGiveawayFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GuildGiveaway
+     */
+    select?: GuildGiveawaySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the GuildGiveaway
+     */
+    omit?: GuildGiveawayOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GuildGiveawayInclude<ExtArgs> | null
+    /**
+     * Filter, which GuildGiveaway to fetch.
+     */
+    where: GuildGiveawayWhereUniqueInput
+  }
+
+  /**
+   * GuildGiveaway findUniqueOrThrow
+   */
+  export type GuildGiveawayFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GuildGiveaway
+     */
+    select?: GuildGiveawaySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the GuildGiveaway
+     */
+    omit?: GuildGiveawayOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GuildGiveawayInclude<ExtArgs> | null
+    /**
+     * Filter, which GuildGiveaway to fetch.
+     */
+    where: GuildGiveawayWhereUniqueInput
+  }
+
+  /**
+   * GuildGiveaway findFirst
+   */
+  export type GuildGiveawayFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GuildGiveaway
+     */
+    select?: GuildGiveawaySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the GuildGiveaway
+     */
+    omit?: GuildGiveawayOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GuildGiveawayInclude<ExtArgs> | null
+    /**
+     * Filter, which GuildGiveaway to fetch.
+     */
+    where?: GuildGiveawayWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of GuildGiveaways to fetch.
+     */
+    orderBy?: GuildGiveawayOrderByWithRelationInput | GuildGiveawayOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for GuildGiveaways.
+     */
+    cursor?: GuildGiveawayWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` GuildGiveaways from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` GuildGiveaways.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of GuildGiveaways.
+     */
+    distinct?: GuildGiveawayScalarFieldEnum | GuildGiveawayScalarFieldEnum[]
+  }
+
+  /**
+   * GuildGiveaway findFirstOrThrow
+   */
+  export type GuildGiveawayFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GuildGiveaway
+     */
+    select?: GuildGiveawaySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the GuildGiveaway
+     */
+    omit?: GuildGiveawayOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GuildGiveawayInclude<ExtArgs> | null
+    /**
+     * Filter, which GuildGiveaway to fetch.
+     */
+    where?: GuildGiveawayWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of GuildGiveaways to fetch.
+     */
+    orderBy?: GuildGiveawayOrderByWithRelationInput | GuildGiveawayOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for GuildGiveaways.
+     */
+    cursor?: GuildGiveawayWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` GuildGiveaways from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` GuildGiveaways.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of GuildGiveaways.
+     */
+    distinct?: GuildGiveawayScalarFieldEnum | GuildGiveawayScalarFieldEnum[]
+  }
+
+  /**
+   * GuildGiveaway findMany
+   */
+  export type GuildGiveawayFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GuildGiveaway
+     */
+    select?: GuildGiveawaySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the GuildGiveaway
+     */
+    omit?: GuildGiveawayOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GuildGiveawayInclude<ExtArgs> | null
+    /**
+     * Filter, which GuildGiveaways to fetch.
+     */
+    where?: GuildGiveawayWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of GuildGiveaways to fetch.
+     */
+    orderBy?: GuildGiveawayOrderByWithRelationInput | GuildGiveawayOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing GuildGiveaways.
+     */
+    cursor?: GuildGiveawayWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` GuildGiveaways from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` GuildGiveaways.
+     */
+    skip?: number
+    distinct?: GuildGiveawayScalarFieldEnum | GuildGiveawayScalarFieldEnum[]
+  }
+
+  /**
+   * GuildGiveaway create
+   */
+  export type GuildGiveawayCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GuildGiveaway
+     */
+    select?: GuildGiveawaySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the GuildGiveaway
+     */
+    omit?: GuildGiveawayOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GuildGiveawayInclude<ExtArgs> | null
+    /**
+     * The data needed to create a GuildGiveaway.
+     */
+    data: XOR<GuildGiveawayCreateInput, GuildGiveawayUncheckedCreateInput>
+  }
+
+  /**
+   * GuildGiveaway createMany
+   */
+  export type GuildGiveawayCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many GuildGiveaways.
+     */
+    data: GuildGiveawayCreateManyInput | GuildGiveawayCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * GuildGiveaway createManyAndReturn
+   */
+  export type GuildGiveawayCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GuildGiveaway
+     */
+    select?: GuildGiveawaySelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the GuildGiveaway
+     */
+    omit?: GuildGiveawayOmit<ExtArgs> | null
+    /**
+     * The data used to create many GuildGiveaways.
+     */
+    data: GuildGiveawayCreateManyInput | GuildGiveawayCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GuildGiveawayIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * GuildGiveaway update
+   */
+  export type GuildGiveawayUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GuildGiveaway
+     */
+    select?: GuildGiveawaySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the GuildGiveaway
+     */
+    omit?: GuildGiveawayOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GuildGiveawayInclude<ExtArgs> | null
+    /**
+     * The data needed to update a GuildGiveaway.
+     */
+    data: XOR<GuildGiveawayUpdateInput, GuildGiveawayUncheckedUpdateInput>
+    /**
+     * Choose, which GuildGiveaway to update.
+     */
+    where: GuildGiveawayWhereUniqueInput
+  }
+
+  /**
+   * GuildGiveaway updateMany
+   */
+  export type GuildGiveawayUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update GuildGiveaways.
+     */
+    data: XOR<GuildGiveawayUpdateManyMutationInput, GuildGiveawayUncheckedUpdateManyInput>
+    /**
+     * Filter which GuildGiveaways to update
+     */
+    where?: GuildGiveawayWhereInput
+    /**
+     * Limit how many GuildGiveaways to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * GuildGiveaway updateManyAndReturn
+   */
+  export type GuildGiveawayUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GuildGiveaway
+     */
+    select?: GuildGiveawaySelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the GuildGiveaway
+     */
+    omit?: GuildGiveawayOmit<ExtArgs> | null
+    /**
+     * The data used to update GuildGiveaways.
+     */
+    data: XOR<GuildGiveawayUpdateManyMutationInput, GuildGiveawayUncheckedUpdateManyInput>
+    /**
+     * Filter which GuildGiveaways to update
+     */
+    where?: GuildGiveawayWhereInput
+    /**
+     * Limit how many GuildGiveaways to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GuildGiveawayIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * GuildGiveaway upsert
+   */
+  export type GuildGiveawayUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GuildGiveaway
+     */
+    select?: GuildGiveawaySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the GuildGiveaway
+     */
+    omit?: GuildGiveawayOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GuildGiveawayInclude<ExtArgs> | null
+    /**
+     * The filter to search for the GuildGiveaway to update in case it exists.
+     */
+    where: GuildGiveawayWhereUniqueInput
+    /**
+     * In case the GuildGiveaway found by the `where` argument doesn't exist, create a new GuildGiveaway with this data.
+     */
+    create: XOR<GuildGiveawayCreateInput, GuildGiveawayUncheckedCreateInput>
+    /**
+     * In case the GuildGiveaway was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<GuildGiveawayUpdateInput, GuildGiveawayUncheckedUpdateInput>
+  }
+
+  /**
+   * GuildGiveaway delete
+   */
+  export type GuildGiveawayDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GuildGiveaway
+     */
+    select?: GuildGiveawaySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the GuildGiveaway
+     */
+    omit?: GuildGiveawayOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GuildGiveawayInclude<ExtArgs> | null
+    /**
+     * Filter which GuildGiveaway to delete.
+     */
+    where: GuildGiveawayWhereUniqueInput
+  }
+
+  /**
+   * GuildGiveaway deleteMany
+   */
+  export type GuildGiveawayDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which GuildGiveaways to delete
+     */
+    where?: GuildGiveawayWhereInput
+    /**
+     * Limit how many GuildGiveaways to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * GuildGiveaway without action
+   */
+  export type GuildGiveawayDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GuildGiveaway
+     */
+    select?: GuildGiveawaySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the GuildGiveaway
+     */
+    omit?: GuildGiveawayOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GuildGiveawayInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -18765,6 +22722,54 @@ export namespace Prisma {
   };
 
   export type MailsScalarFieldEnum = (typeof MailsScalarFieldEnum)[keyof typeof MailsScalarFieldEnum]
+
+
+  export const GiveawayScalarFieldEnum: {
+    id: 'id',
+    localId: 'localId',
+    guildId: 'guildId',
+    channelId: 'channelId',
+    messageId: 'messageId',
+    title: 'title',
+    description: 'description',
+    blackListRoles: 'blackListRoles',
+    blackListMembers: 'blackListMembers',
+    onlyRoles: 'onlyRoles',
+    rolesMultipleEntry: 'rolesMultipleEntry',
+    serverStayRequired: 'serverStayRequired',
+    xpRequired: 'xpRequired',
+    messagesRequired: 'messagesRequired',
+    messagesInChannelRequired: 'messagesInChannelRequired',
+    messagesInGuidsRequired: 'messagesInGuidsRequired',
+    winnersIds: 'winnersIds',
+    expiresAt: 'expiresAt',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type GiveawayScalarFieldEnum = (typeof GiveawayScalarFieldEnum)[keyof typeof GiveawayScalarFieldEnum]
+
+
+  export const UserGiveawayScalarFieldEnum: {
+    id: 'id',
+    userId: 'userId',
+    giveawayId: 'giveawayId',
+    createdAt: 'createdAt'
+  };
+
+  export type UserGiveawayScalarFieldEnum = (typeof UserGiveawayScalarFieldEnum)[keyof typeof UserGiveawayScalarFieldEnum]
+
+
+  export const GuildGiveawayScalarFieldEnum: {
+    id: 'id',
+    guildId: 'guildId',
+    channelId: 'channelId',
+    messageId: 'messageId',
+    giveawayId: 'giveawayId',
+    createdAt: 'createdAt'
+  };
+
+  export type GuildGiveawayScalarFieldEnum = (typeof GuildGiveawayScalarFieldEnum)[keyof typeof GuildGiveawayScalarFieldEnum]
 
 
   export const SortOrder: {
@@ -19034,8 +23039,9 @@ export namespace Prisma {
     sendedMails?: MailsListRelationFilter
     applications?: ApplicationListRelationFilter
     guilds?: GuildMemberListRelationFilter
-    ransactionsSent?: TransactionListRelationFilter
+    transactionsSent?: TransactionListRelationFilter
     transactionsReceived?: TransactionListRelationFilter
+    giveaways?: UserGiveawayListRelationFilter
   }
 
   export type UserOrderByWithRelationInput = {
@@ -19057,8 +23063,9 @@ export namespace Prisma {
     sendedMails?: MailsOrderByRelationAggregateInput
     applications?: ApplicationOrderByRelationAggregateInput
     guilds?: GuildMemberOrderByRelationAggregateInput
-    ransactionsSent?: TransactionOrderByRelationAggregateInput
+    transactionsSent?: TransactionOrderByRelationAggregateInput
     transactionsReceived?: TransactionOrderByRelationAggregateInput
+    giveaways?: UserGiveawayOrderByRelationAggregateInput
   }
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -19083,8 +23090,9 @@ export namespace Prisma {
     sendedMails?: MailsListRelationFilter
     applications?: ApplicationListRelationFilter
     guilds?: GuildMemberListRelationFilter
-    ransactionsSent?: TransactionListRelationFilter
+    transactionsSent?: TransactionListRelationFilter
     transactionsReceived?: TransactionListRelationFilter
+    giveaways?: UserGiveawayListRelationFilter
   }, "id">
 
   export type UserOrderByWithAggregationInput = {
@@ -19818,6 +23826,8 @@ export namespace Prisma {
     levelGrant?: JsonFilter<"GuildSettings">
     members?: GuildMemberListRelationFilter
     transactions?: TransactionListRelationFilter
+    giveaways?: GiveawayListRelationFilter
+    connectedGiveaways?: GuildGiveawayListRelationFilter
   }
 
   export type GuildSettingsOrderByWithRelationInput = {
@@ -19838,6 +23848,8 @@ export namespace Prisma {
     levelGrant?: SortOrder
     members?: GuildMemberOrderByRelationAggregateInput
     transactions?: TransactionOrderByRelationAggregateInput
+    giveaways?: GiveawayOrderByRelationAggregateInput
+    connectedGiveaways?: GuildGiveawayOrderByRelationAggregateInput
   }
 
   export type GuildSettingsWhereUniqueInput = Prisma.AtLeast<{
@@ -19861,6 +23873,8 @@ export namespace Prisma {
     levelGrant?: JsonFilter<"GuildSettings">
     members?: GuildMemberListRelationFilter
     transactions?: TransactionListRelationFilter
+    giveaways?: GiveawayListRelationFilter
+    connectedGiveaways?: GuildGiveawayListRelationFilter
   }, "id">
 
   export type GuildSettingsOrderByWithAggregationInput = {
@@ -20043,6 +24057,267 @@ export namespace Prisma {
     createdAt?: DateTimeWithAggregatesFilter<"Mails"> | Date | string
   }
 
+  export type GiveawayWhereInput = {
+    AND?: GiveawayWhereInput | GiveawayWhereInput[]
+    OR?: GiveawayWhereInput[]
+    NOT?: GiveawayWhereInput | GiveawayWhereInput[]
+    id?: IntFilter<"Giveaway"> | number
+    localId?: IntFilter<"Giveaway"> | number
+    guildId?: StringFilter<"Giveaway"> | string
+    channelId?: StringFilter<"Giveaway"> | string
+    messageId?: StringFilter<"Giveaway"> | string
+    title?: StringFilter<"Giveaway"> | string
+    description?: StringNullableFilter<"Giveaway"> | string | null
+    blackListRoles?: StringNullableListFilter<"Giveaway">
+    blackListMembers?: StringNullableListFilter<"Giveaway">
+    onlyRoles?: StringNullableListFilter<"Giveaway">
+    rolesMultipleEntry?: JsonNullableFilter<"Giveaway">
+    serverStayRequired?: StringNullableListFilter<"Giveaway">
+    xpRequired?: IntNullableFilter<"Giveaway"> | number | null
+    messagesRequired?: IntNullableFilter<"Giveaway"> | number | null
+    messagesInChannelRequired?: JsonNullableFilter<"Giveaway">
+    messagesInGuidsRequired?: JsonNullableFilter<"Giveaway">
+    winnersIds?: StringNullableListFilter<"Giveaway">
+    expiresAt?: DateTimeFilter<"Giveaway"> | Date | string
+    createdAt?: DateTimeFilter<"Giveaway"> | Date | string
+    updatedAt?: DateTimeFilter<"Giveaway"> | Date | string
+    participants?: UserGiveawayListRelationFilter
+    guild?: XOR<GuildSettingsScalarRelationFilter, GuildSettingsWhereInput>
+    connectedGuilds?: GuildGiveawayListRelationFilter
+  }
+
+  export type GiveawayOrderByWithRelationInput = {
+    id?: SortOrder
+    localId?: SortOrder
+    guildId?: SortOrder
+    channelId?: SortOrder
+    messageId?: SortOrder
+    title?: SortOrder
+    description?: SortOrderInput | SortOrder
+    blackListRoles?: SortOrder
+    blackListMembers?: SortOrder
+    onlyRoles?: SortOrder
+    rolesMultipleEntry?: SortOrderInput | SortOrder
+    serverStayRequired?: SortOrder
+    xpRequired?: SortOrderInput | SortOrder
+    messagesRequired?: SortOrderInput | SortOrder
+    messagesInChannelRequired?: SortOrderInput | SortOrder
+    messagesInGuidsRequired?: SortOrderInput | SortOrder
+    winnersIds?: SortOrder
+    expiresAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    participants?: UserGiveawayOrderByRelationAggregateInput
+    guild?: GuildSettingsOrderByWithRelationInput
+    connectedGuilds?: GuildGiveawayOrderByRelationAggregateInput
+  }
+
+  export type GiveawayWhereUniqueInput = Prisma.AtLeast<{
+    id?: number
+    messageId?: string
+    guildId_localId?: GiveawayGuildIdLocalIdCompoundUniqueInput
+    AND?: GiveawayWhereInput | GiveawayWhereInput[]
+    OR?: GiveawayWhereInput[]
+    NOT?: GiveawayWhereInput | GiveawayWhereInput[]
+    localId?: IntFilter<"Giveaway"> | number
+    guildId?: StringFilter<"Giveaway"> | string
+    channelId?: StringFilter<"Giveaway"> | string
+    title?: StringFilter<"Giveaway"> | string
+    description?: StringNullableFilter<"Giveaway"> | string | null
+    blackListRoles?: StringNullableListFilter<"Giveaway">
+    blackListMembers?: StringNullableListFilter<"Giveaway">
+    onlyRoles?: StringNullableListFilter<"Giveaway">
+    rolesMultipleEntry?: JsonNullableFilter<"Giveaway">
+    serverStayRequired?: StringNullableListFilter<"Giveaway">
+    xpRequired?: IntNullableFilter<"Giveaway"> | number | null
+    messagesRequired?: IntNullableFilter<"Giveaway"> | number | null
+    messagesInChannelRequired?: JsonNullableFilter<"Giveaway">
+    messagesInGuidsRequired?: JsonNullableFilter<"Giveaway">
+    winnersIds?: StringNullableListFilter<"Giveaway">
+    expiresAt?: DateTimeFilter<"Giveaway"> | Date | string
+    createdAt?: DateTimeFilter<"Giveaway"> | Date | string
+    updatedAt?: DateTimeFilter<"Giveaway"> | Date | string
+    participants?: UserGiveawayListRelationFilter
+    guild?: XOR<GuildSettingsScalarRelationFilter, GuildSettingsWhereInput>
+    connectedGuilds?: GuildGiveawayListRelationFilter
+  }, "id" | "messageId" | "guildId_localId">
+
+  export type GiveawayOrderByWithAggregationInput = {
+    id?: SortOrder
+    localId?: SortOrder
+    guildId?: SortOrder
+    channelId?: SortOrder
+    messageId?: SortOrder
+    title?: SortOrder
+    description?: SortOrderInput | SortOrder
+    blackListRoles?: SortOrder
+    blackListMembers?: SortOrder
+    onlyRoles?: SortOrder
+    rolesMultipleEntry?: SortOrderInput | SortOrder
+    serverStayRequired?: SortOrder
+    xpRequired?: SortOrderInput | SortOrder
+    messagesRequired?: SortOrderInput | SortOrder
+    messagesInChannelRequired?: SortOrderInput | SortOrder
+    messagesInGuidsRequired?: SortOrderInput | SortOrder
+    winnersIds?: SortOrder
+    expiresAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: GiveawayCountOrderByAggregateInput
+    _avg?: GiveawayAvgOrderByAggregateInput
+    _max?: GiveawayMaxOrderByAggregateInput
+    _min?: GiveawayMinOrderByAggregateInput
+    _sum?: GiveawaySumOrderByAggregateInput
+  }
+
+  export type GiveawayScalarWhereWithAggregatesInput = {
+    AND?: GiveawayScalarWhereWithAggregatesInput | GiveawayScalarWhereWithAggregatesInput[]
+    OR?: GiveawayScalarWhereWithAggregatesInput[]
+    NOT?: GiveawayScalarWhereWithAggregatesInput | GiveawayScalarWhereWithAggregatesInput[]
+    id?: IntWithAggregatesFilter<"Giveaway"> | number
+    localId?: IntWithAggregatesFilter<"Giveaway"> | number
+    guildId?: StringWithAggregatesFilter<"Giveaway"> | string
+    channelId?: StringWithAggregatesFilter<"Giveaway"> | string
+    messageId?: StringWithAggregatesFilter<"Giveaway"> | string
+    title?: StringWithAggregatesFilter<"Giveaway"> | string
+    description?: StringNullableWithAggregatesFilter<"Giveaway"> | string | null
+    blackListRoles?: StringNullableListFilter<"Giveaway">
+    blackListMembers?: StringNullableListFilter<"Giveaway">
+    onlyRoles?: StringNullableListFilter<"Giveaway">
+    rolesMultipleEntry?: JsonNullableWithAggregatesFilter<"Giveaway">
+    serverStayRequired?: StringNullableListFilter<"Giveaway">
+    xpRequired?: IntNullableWithAggregatesFilter<"Giveaway"> | number | null
+    messagesRequired?: IntNullableWithAggregatesFilter<"Giveaway"> | number | null
+    messagesInChannelRequired?: JsonNullableWithAggregatesFilter<"Giveaway">
+    messagesInGuidsRequired?: JsonNullableWithAggregatesFilter<"Giveaway">
+    winnersIds?: StringNullableListFilter<"Giveaway">
+    expiresAt?: DateTimeWithAggregatesFilter<"Giveaway"> | Date | string
+    createdAt?: DateTimeWithAggregatesFilter<"Giveaway"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"Giveaway"> | Date | string
+  }
+
+  export type UserGiveawayWhereInput = {
+    AND?: UserGiveawayWhereInput | UserGiveawayWhereInput[]
+    OR?: UserGiveawayWhereInput[]
+    NOT?: UserGiveawayWhereInput | UserGiveawayWhereInput[]
+    id?: IntFilter<"UserGiveaway"> | number
+    userId?: StringFilter<"UserGiveaway"> | string
+    giveawayId?: IntFilter<"UserGiveaway"> | number
+    createdAt?: DateTimeFilter<"UserGiveaway"> | Date | string
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+    giveaway?: XOR<GiveawayScalarRelationFilter, GiveawayWhereInput>
+  }
+
+  export type UserGiveawayOrderByWithRelationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    giveawayId?: SortOrder
+    createdAt?: SortOrder
+    user?: UserOrderByWithRelationInput
+    giveaway?: GiveawayOrderByWithRelationInput
+  }
+
+  export type UserGiveawayWhereUniqueInput = Prisma.AtLeast<{
+    id?: number
+    userId_giveawayId?: UserGiveawayUserIdGiveawayIdCompoundUniqueInput
+    AND?: UserGiveawayWhereInput | UserGiveawayWhereInput[]
+    OR?: UserGiveawayWhereInput[]
+    NOT?: UserGiveawayWhereInput | UserGiveawayWhereInput[]
+    userId?: StringFilter<"UserGiveaway"> | string
+    giveawayId?: IntFilter<"UserGiveaway"> | number
+    createdAt?: DateTimeFilter<"UserGiveaway"> | Date | string
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+    giveaway?: XOR<GiveawayScalarRelationFilter, GiveawayWhereInput>
+  }, "id" | "userId_giveawayId">
+
+  export type UserGiveawayOrderByWithAggregationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    giveawayId?: SortOrder
+    createdAt?: SortOrder
+    _count?: UserGiveawayCountOrderByAggregateInput
+    _avg?: UserGiveawayAvgOrderByAggregateInput
+    _max?: UserGiveawayMaxOrderByAggregateInput
+    _min?: UserGiveawayMinOrderByAggregateInput
+    _sum?: UserGiveawaySumOrderByAggregateInput
+  }
+
+  export type UserGiveawayScalarWhereWithAggregatesInput = {
+    AND?: UserGiveawayScalarWhereWithAggregatesInput | UserGiveawayScalarWhereWithAggregatesInput[]
+    OR?: UserGiveawayScalarWhereWithAggregatesInput[]
+    NOT?: UserGiveawayScalarWhereWithAggregatesInput | UserGiveawayScalarWhereWithAggregatesInput[]
+    id?: IntWithAggregatesFilter<"UserGiveaway"> | number
+    userId?: StringWithAggregatesFilter<"UserGiveaway"> | string
+    giveawayId?: IntWithAggregatesFilter<"UserGiveaway"> | number
+    createdAt?: DateTimeWithAggregatesFilter<"UserGiveaway"> | Date | string
+  }
+
+  export type GuildGiveawayWhereInput = {
+    AND?: GuildGiveawayWhereInput | GuildGiveawayWhereInput[]
+    OR?: GuildGiveawayWhereInput[]
+    NOT?: GuildGiveawayWhereInput | GuildGiveawayWhereInput[]
+    id?: IntFilter<"GuildGiveaway"> | number
+    guildId?: StringFilter<"GuildGiveaway"> | string
+    channelId?: StringFilter<"GuildGiveaway"> | string
+    messageId?: StringFilter<"GuildGiveaway"> | string
+    giveawayId?: IntFilter<"GuildGiveaway"> | number
+    createdAt?: DateTimeFilter<"GuildGiveaway"> | Date | string
+    guild?: XOR<GuildSettingsScalarRelationFilter, GuildSettingsWhereInput>
+    giveaway?: XOR<GiveawayScalarRelationFilter, GiveawayWhereInput>
+  }
+
+  export type GuildGiveawayOrderByWithRelationInput = {
+    id?: SortOrder
+    guildId?: SortOrder
+    channelId?: SortOrder
+    messageId?: SortOrder
+    giveawayId?: SortOrder
+    createdAt?: SortOrder
+    guild?: GuildSettingsOrderByWithRelationInput
+    giveaway?: GiveawayOrderByWithRelationInput
+  }
+
+  export type GuildGiveawayWhereUniqueInput = Prisma.AtLeast<{
+    id?: number
+    messageId?: string
+    guildId_giveawayId?: GuildGiveawayGuildIdGiveawayIdCompoundUniqueInput
+    AND?: GuildGiveawayWhereInput | GuildGiveawayWhereInput[]
+    OR?: GuildGiveawayWhereInput[]
+    NOT?: GuildGiveawayWhereInput | GuildGiveawayWhereInput[]
+    guildId?: StringFilter<"GuildGiveaway"> | string
+    channelId?: StringFilter<"GuildGiveaway"> | string
+    giveawayId?: IntFilter<"GuildGiveaway"> | number
+    createdAt?: DateTimeFilter<"GuildGiveaway"> | Date | string
+    guild?: XOR<GuildSettingsScalarRelationFilter, GuildSettingsWhereInput>
+    giveaway?: XOR<GiveawayScalarRelationFilter, GiveawayWhereInput>
+  }, "id" | "messageId" | "guildId_giveawayId">
+
+  export type GuildGiveawayOrderByWithAggregationInput = {
+    id?: SortOrder
+    guildId?: SortOrder
+    channelId?: SortOrder
+    messageId?: SortOrder
+    giveawayId?: SortOrder
+    createdAt?: SortOrder
+    _count?: GuildGiveawayCountOrderByAggregateInput
+    _avg?: GuildGiveawayAvgOrderByAggregateInput
+    _max?: GuildGiveawayMaxOrderByAggregateInput
+    _min?: GuildGiveawayMinOrderByAggregateInput
+    _sum?: GuildGiveawaySumOrderByAggregateInput
+  }
+
+  export type GuildGiveawayScalarWhereWithAggregatesInput = {
+    AND?: GuildGiveawayScalarWhereWithAggregatesInput | GuildGiveawayScalarWhereWithAggregatesInput[]
+    OR?: GuildGiveawayScalarWhereWithAggregatesInput[]
+    NOT?: GuildGiveawayScalarWhereWithAggregatesInput | GuildGiveawayScalarWhereWithAggregatesInput[]
+    id?: IntWithAggregatesFilter<"GuildGiveaway"> | number
+    guildId?: StringWithAggregatesFilter<"GuildGiveaway"> | string
+    channelId?: StringWithAggregatesFilter<"GuildGiveaway"> | string
+    messageId?: StringWithAggregatesFilter<"GuildGiveaway"> | string
+    giveawayId?: IntWithAggregatesFilter<"GuildGiveaway"> | number
+    createdAt?: DateTimeWithAggregatesFilter<"GuildGiveaway"> | Date | string
+  }
+
   export type UserCreateInput = {
     id: string
     money?: Decimal | DecimalJsLike | number | string
@@ -20061,8 +24336,9 @@ export namespace Prisma {
     sendedMails?: MailsCreateNestedManyWithoutWhoSendUserInput
     applications?: ApplicationCreateNestedManyWithoutOwnerInput
     guilds?: GuildMemberCreateNestedManyWithoutUserInput
-    ransactionsSent?: TransactionCreateNestedManyWithoutUserInput
+    transactionsSent?: TransactionCreateNestedManyWithoutUserInput
     transactionsReceived?: TransactionCreateNestedManyWithoutTargetInput
+    giveaways?: UserGiveawayCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateInput = {
@@ -20083,8 +24359,9 @@ export namespace Prisma {
     sendedMails?: MailsUncheckedCreateNestedManyWithoutWhoSendUserInput
     applications?: ApplicationUncheckedCreateNestedManyWithoutOwnerInput
     guilds?: GuildMemberUncheckedCreateNestedManyWithoutUserInput
-    ransactionsSent?: TransactionUncheckedCreateNestedManyWithoutUserInput
+    transactionsSent?: TransactionUncheckedCreateNestedManyWithoutUserInput
     transactionsReceived?: TransactionUncheckedCreateNestedManyWithoutTargetInput
+    giveaways?: UserGiveawayUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserUpdateInput = {
@@ -20105,8 +24382,9 @@ export namespace Prisma {
     sendedMails?: MailsUpdateManyWithoutWhoSendUserNestedInput
     applications?: ApplicationUpdateManyWithoutOwnerNestedInput
     guilds?: GuildMemberUpdateManyWithoutUserNestedInput
-    ransactionsSent?: TransactionUpdateManyWithoutUserNestedInput
+    transactionsSent?: TransactionUpdateManyWithoutUserNestedInput
     transactionsReceived?: TransactionUpdateManyWithoutTargetNestedInput
+    giveaways?: UserGiveawayUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
@@ -20127,8 +24405,9 @@ export namespace Prisma {
     sendedMails?: MailsUncheckedUpdateManyWithoutWhoSendUserNestedInput
     applications?: ApplicationUncheckedUpdateManyWithoutOwnerNestedInput
     guilds?: GuildMemberUncheckedUpdateManyWithoutUserNestedInput
-    ransactionsSent?: TransactionUncheckedUpdateManyWithoutUserNestedInput
+    transactionsSent?: TransactionUncheckedUpdateManyWithoutUserNestedInput
     transactionsReceived?: TransactionUncheckedUpdateManyWithoutTargetNestedInput
+    giveaways?: UserGiveawayUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateManyInput = {
@@ -20458,7 +24737,7 @@ export namespace Prisma {
     reason?: string | null
     type?: $Enums.TransactionType
     status?: $Enums.TransactionStatus
-    user: UserCreateNestedOneWithoutRansactionsSentInput
+    user: UserCreateNestedOneWithoutTransactionsSentInput
     target?: UserCreateNestedOneWithoutTransactionsReceivedInput
     guild?: GuildSettingsCreateNestedOneWithoutTransactionsInput
   }
@@ -20489,7 +24768,7 @@ export namespace Prisma {
     reason?: NullableStringFieldUpdateOperationsInput | string | null
     type?: EnumTransactionTypeFieldUpdateOperationsInput | $Enums.TransactionType
     status?: EnumTransactionStatusFieldUpdateOperationsInput | $Enums.TransactionStatus
-    user?: UserUpdateOneRequiredWithoutRansactionsSentNestedInput
+    user?: UserUpdateOneRequiredWithoutTransactionsSentNestedInput
     target?: UserUpdateOneWithoutTransactionsReceivedNestedInput
     guild?: GuildSettingsUpdateOneWithoutTransactionsNestedInput
   }
@@ -20852,6 +25131,8 @@ export namespace Prisma {
     levelGrant?: JsonNullValueInput | InputJsonValue
     members?: GuildMemberCreateNestedManyWithoutGuildInput
     transactions?: TransactionCreateNestedManyWithoutGuildInput
+    giveaways?: GiveawayCreateNestedManyWithoutGuildInput
+    connectedGiveaways?: GuildGiveawayCreateNestedManyWithoutGuildInput
   }
 
   export type GuildSettingsUncheckedCreateInput = {
@@ -20872,6 +25153,8 @@ export namespace Prisma {
     levelGrant?: JsonNullValueInput | InputJsonValue
     members?: GuildMemberUncheckedCreateNestedManyWithoutGuildInput
     transactions?: TransactionUncheckedCreateNestedManyWithoutGuildInput
+    giveaways?: GiveawayUncheckedCreateNestedManyWithoutGuildInput
+    connectedGiveaways?: GuildGiveawayUncheckedCreateNestedManyWithoutGuildInput
   }
 
   export type GuildSettingsUpdateInput = {
@@ -20892,6 +25175,8 @@ export namespace Prisma {
     levelGrant?: JsonNullValueInput | InputJsonValue
     members?: GuildMemberUpdateManyWithoutGuildNestedInput
     transactions?: TransactionUpdateManyWithoutGuildNestedInput
+    giveaways?: GiveawayUpdateManyWithoutGuildNestedInput
+    connectedGiveaways?: GuildGiveawayUpdateManyWithoutGuildNestedInput
   }
 
   export type GuildSettingsUncheckedUpdateInput = {
@@ -20912,6 +25197,8 @@ export namespace Prisma {
     levelGrant?: JsonNullValueInput | InputJsonValue
     members?: GuildMemberUncheckedUpdateManyWithoutGuildNestedInput
     transactions?: TransactionUncheckedUpdateManyWithoutGuildNestedInput
+    giveaways?: GiveawayUncheckedUpdateManyWithoutGuildNestedInput
+    connectedGiveaways?: GuildGiveawayUncheckedUpdateManyWithoutGuildNestedInput
   }
 
   export type GuildSettingsCreateManyInput = {
@@ -21094,6 +25381,273 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type GiveawayCreateInput = {
+    localId: number
+    channelId: string
+    messageId: string
+    title: string
+    description?: string | null
+    blackListRoles?: GiveawayCreateblackListRolesInput | string[]
+    blackListMembers?: GiveawayCreateblackListMembersInput | string[]
+    onlyRoles?: GiveawayCreateonlyRolesInput | string[]
+    rolesMultipleEntry?: NullableJsonNullValueInput | InputJsonValue
+    serverStayRequired?: GiveawayCreateserverStayRequiredInput | string[]
+    xpRequired?: number | null
+    messagesRequired?: number | null
+    messagesInChannelRequired?: NullableJsonNullValueInput | InputJsonValue
+    messagesInGuidsRequired?: NullableJsonNullValueInput | InputJsonValue
+    winnersIds?: GiveawayCreatewinnersIdsInput | string[]
+    expiresAt: Date | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    participants?: UserGiveawayCreateNestedManyWithoutGiveawayInput
+    guild: GuildSettingsCreateNestedOneWithoutGiveawaysInput
+    connectedGuilds?: GuildGiveawayCreateNestedManyWithoutGiveawayInput
+  }
+
+  export type GiveawayUncheckedCreateInput = {
+    id?: number
+    localId: number
+    guildId: string
+    channelId: string
+    messageId: string
+    title: string
+    description?: string | null
+    blackListRoles?: GiveawayCreateblackListRolesInput | string[]
+    blackListMembers?: GiveawayCreateblackListMembersInput | string[]
+    onlyRoles?: GiveawayCreateonlyRolesInput | string[]
+    rolesMultipleEntry?: NullableJsonNullValueInput | InputJsonValue
+    serverStayRequired?: GiveawayCreateserverStayRequiredInput | string[]
+    xpRequired?: number | null
+    messagesRequired?: number | null
+    messagesInChannelRequired?: NullableJsonNullValueInput | InputJsonValue
+    messagesInGuidsRequired?: NullableJsonNullValueInput | InputJsonValue
+    winnersIds?: GiveawayCreatewinnersIdsInput | string[]
+    expiresAt: Date | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    participants?: UserGiveawayUncheckedCreateNestedManyWithoutGiveawayInput
+    connectedGuilds?: GuildGiveawayUncheckedCreateNestedManyWithoutGiveawayInput
+  }
+
+  export type GiveawayUpdateInput = {
+    localId?: IntFieldUpdateOperationsInput | number
+    channelId?: StringFieldUpdateOperationsInput | string
+    messageId?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    blackListRoles?: GiveawayUpdateblackListRolesInput | string[]
+    blackListMembers?: GiveawayUpdateblackListMembersInput | string[]
+    onlyRoles?: GiveawayUpdateonlyRolesInput | string[]
+    rolesMultipleEntry?: NullableJsonNullValueInput | InputJsonValue
+    serverStayRequired?: GiveawayUpdateserverStayRequiredInput | string[]
+    xpRequired?: NullableIntFieldUpdateOperationsInput | number | null
+    messagesRequired?: NullableIntFieldUpdateOperationsInput | number | null
+    messagesInChannelRequired?: NullableJsonNullValueInput | InputJsonValue
+    messagesInGuidsRequired?: NullableJsonNullValueInput | InputJsonValue
+    winnersIds?: GiveawayUpdatewinnersIdsInput | string[]
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    participants?: UserGiveawayUpdateManyWithoutGiveawayNestedInput
+    guild?: GuildSettingsUpdateOneRequiredWithoutGiveawaysNestedInput
+    connectedGuilds?: GuildGiveawayUpdateManyWithoutGiveawayNestedInput
+  }
+
+  export type GiveawayUncheckedUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    localId?: IntFieldUpdateOperationsInput | number
+    guildId?: StringFieldUpdateOperationsInput | string
+    channelId?: StringFieldUpdateOperationsInput | string
+    messageId?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    blackListRoles?: GiveawayUpdateblackListRolesInput | string[]
+    blackListMembers?: GiveawayUpdateblackListMembersInput | string[]
+    onlyRoles?: GiveawayUpdateonlyRolesInput | string[]
+    rolesMultipleEntry?: NullableJsonNullValueInput | InputJsonValue
+    serverStayRequired?: GiveawayUpdateserverStayRequiredInput | string[]
+    xpRequired?: NullableIntFieldUpdateOperationsInput | number | null
+    messagesRequired?: NullableIntFieldUpdateOperationsInput | number | null
+    messagesInChannelRequired?: NullableJsonNullValueInput | InputJsonValue
+    messagesInGuidsRequired?: NullableJsonNullValueInput | InputJsonValue
+    winnersIds?: GiveawayUpdatewinnersIdsInput | string[]
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    participants?: UserGiveawayUncheckedUpdateManyWithoutGiveawayNestedInput
+    connectedGuilds?: GuildGiveawayUncheckedUpdateManyWithoutGiveawayNestedInput
+  }
+
+  export type GiveawayCreateManyInput = {
+    id?: number
+    localId: number
+    guildId: string
+    channelId: string
+    messageId: string
+    title: string
+    description?: string | null
+    blackListRoles?: GiveawayCreateblackListRolesInput | string[]
+    blackListMembers?: GiveawayCreateblackListMembersInput | string[]
+    onlyRoles?: GiveawayCreateonlyRolesInput | string[]
+    rolesMultipleEntry?: NullableJsonNullValueInput | InputJsonValue
+    serverStayRequired?: GiveawayCreateserverStayRequiredInput | string[]
+    xpRequired?: number | null
+    messagesRequired?: number | null
+    messagesInChannelRequired?: NullableJsonNullValueInput | InputJsonValue
+    messagesInGuidsRequired?: NullableJsonNullValueInput | InputJsonValue
+    winnersIds?: GiveawayCreatewinnersIdsInput | string[]
+    expiresAt: Date | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type GiveawayUpdateManyMutationInput = {
+    localId?: IntFieldUpdateOperationsInput | number
+    channelId?: StringFieldUpdateOperationsInput | string
+    messageId?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    blackListRoles?: GiveawayUpdateblackListRolesInput | string[]
+    blackListMembers?: GiveawayUpdateblackListMembersInput | string[]
+    onlyRoles?: GiveawayUpdateonlyRolesInput | string[]
+    rolesMultipleEntry?: NullableJsonNullValueInput | InputJsonValue
+    serverStayRequired?: GiveawayUpdateserverStayRequiredInput | string[]
+    xpRequired?: NullableIntFieldUpdateOperationsInput | number | null
+    messagesRequired?: NullableIntFieldUpdateOperationsInput | number | null
+    messagesInChannelRequired?: NullableJsonNullValueInput | InputJsonValue
+    messagesInGuidsRequired?: NullableJsonNullValueInput | InputJsonValue
+    winnersIds?: GiveawayUpdatewinnersIdsInput | string[]
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type GiveawayUncheckedUpdateManyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    localId?: IntFieldUpdateOperationsInput | number
+    guildId?: StringFieldUpdateOperationsInput | string
+    channelId?: StringFieldUpdateOperationsInput | string
+    messageId?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    blackListRoles?: GiveawayUpdateblackListRolesInput | string[]
+    blackListMembers?: GiveawayUpdateblackListMembersInput | string[]
+    onlyRoles?: GiveawayUpdateonlyRolesInput | string[]
+    rolesMultipleEntry?: NullableJsonNullValueInput | InputJsonValue
+    serverStayRequired?: GiveawayUpdateserverStayRequiredInput | string[]
+    xpRequired?: NullableIntFieldUpdateOperationsInput | number | null
+    messagesRequired?: NullableIntFieldUpdateOperationsInput | number | null
+    messagesInChannelRequired?: NullableJsonNullValueInput | InputJsonValue
+    messagesInGuidsRequired?: NullableJsonNullValueInput | InputJsonValue
+    winnersIds?: GiveawayUpdatewinnersIdsInput | string[]
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type UserGiveawayCreateInput = {
+    createdAt?: Date | string
+    user: UserCreateNestedOneWithoutGiveawaysInput
+    giveaway: GiveawayCreateNestedOneWithoutParticipantsInput
+  }
+
+  export type UserGiveawayUncheckedCreateInput = {
+    id?: number
+    userId: string
+    giveawayId: number
+    createdAt?: Date | string
+  }
+
+  export type UserGiveawayUpdateInput = {
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutGiveawaysNestedInput
+    giveaway?: GiveawayUpdateOneRequiredWithoutParticipantsNestedInput
+  }
+
+  export type UserGiveawayUncheckedUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    userId?: StringFieldUpdateOperationsInput | string
+    giveawayId?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type UserGiveawayCreateManyInput = {
+    id?: number
+    userId: string
+    giveawayId: number
+    createdAt?: Date | string
+  }
+
+  export type UserGiveawayUpdateManyMutationInput = {
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type UserGiveawayUncheckedUpdateManyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    userId?: StringFieldUpdateOperationsInput | string
+    giveawayId?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type GuildGiveawayCreateInput = {
+    channelId: string
+    messageId: string
+    createdAt?: Date | string
+    guild: GuildSettingsCreateNestedOneWithoutConnectedGiveawaysInput
+    giveaway: GiveawayCreateNestedOneWithoutConnectedGuildsInput
+  }
+
+  export type GuildGiveawayUncheckedCreateInput = {
+    id?: number
+    guildId: string
+    channelId: string
+    messageId: string
+    giveawayId: number
+    createdAt?: Date | string
+  }
+
+  export type GuildGiveawayUpdateInput = {
+    channelId?: StringFieldUpdateOperationsInput | string
+    messageId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    guild?: GuildSettingsUpdateOneRequiredWithoutConnectedGiveawaysNestedInput
+    giveaway?: GiveawayUpdateOneRequiredWithoutConnectedGuildsNestedInput
+  }
+
+  export type GuildGiveawayUncheckedUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    guildId?: StringFieldUpdateOperationsInput | string
+    channelId?: StringFieldUpdateOperationsInput | string
+    messageId?: StringFieldUpdateOperationsInput | string
+    giveawayId?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type GuildGiveawayCreateManyInput = {
+    id?: number
+    guildId: string
+    channelId: string
+    messageId: string
+    giveawayId: number
+    createdAt?: Date | string
+  }
+
+  export type GuildGiveawayUpdateManyMutationInput = {
+    channelId?: StringFieldUpdateOperationsInput | string
+    messageId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type GuildGiveawayUncheckedUpdateManyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    guildId?: StringFieldUpdateOperationsInput | string
+    channelId?: StringFieldUpdateOperationsInput | string
+    messageId?: StringFieldUpdateOperationsInput | string
+    giveawayId?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type StringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -21251,6 +25805,12 @@ export namespace Prisma {
     none?: TransactionWhereInput
   }
 
+  export type UserGiveawayListRelationFilter = {
+    every?: UserGiveawayWhereInput
+    some?: UserGiveawayWhereInput
+    none?: UserGiveawayWhereInput
+  }
+
   export type SortOrderInput = {
     sort: SortOrder
     nulls?: NullsOrder
@@ -21281,6 +25841,10 @@ export namespace Prisma {
   }
 
   export type TransactionOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type UserGiveawayOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -22157,6 +26721,26 @@ export namespace Prisma {
     amount?: SortOrder
   }
 
+  export type GiveawayListRelationFilter = {
+    every?: GiveawayWhereInput
+    some?: GiveawayWhereInput
+    none?: GiveawayWhereInput
+  }
+
+  export type GuildGiveawayListRelationFilter = {
+    every?: GuildGiveawayWhereInput
+    some?: GuildGiveawayWhereInput
+    none?: GuildGiveawayWhereInput
+  }
+
+  export type GiveawayOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type GuildGiveawayOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
   export type GuildSettingsCountOrderByAggregateInput = {
     id?: SortOrder
     chatBotChannels?: SortOrder
@@ -22288,6 +26872,161 @@ export namespace Prisma {
     id?: SortOrder
   }
 
+  export type GiveawayGuildIdLocalIdCompoundUniqueInput = {
+    guildId: string
+    localId: number
+  }
+
+  export type GiveawayCountOrderByAggregateInput = {
+    id?: SortOrder
+    localId?: SortOrder
+    guildId?: SortOrder
+    channelId?: SortOrder
+    messageId?: SortOrder
+    title?: SortOrder
+    description?: SortOrder
+    blackListRoles?: SortOrder
+    blackListMembers?: SortOrder
+    onlyRoles?: SortOrder
+    rolesMultipleEntry?: SortOrder
+    serverStayRequired?: SortOrder
+    xpRequired?: SortOrder
+    messagesRequired?: SortOrder
+    messagesInChannelRequired?: SortOrder
+    messagesInGuidsRequired?: SortOrder
+    winnersIds?: SortOrder
+    expiresAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type GiveawayAvgOrderByAggregateInput = {
+    id?: SortOrder
+    localId?: SortOrder
+    xpRequired?: SortOrder
+    messagesRequired?: SortOrder
+  }
+
+  export type GiveawayMaxOrderByAggregateInput = {
+    id?: SortOrder
+    localId?: SortOrder
+    guildId?: SortOrder
+    channelId?: SortOrder
+    messageId?: SortOrder
+    title?: SortOrder
+    description?: SortOrder
+    xpRequired?: SortOrder
+    messagesRequired?: SortOrder
+    expiresAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type GiveawayMinOrderByAggregateInput = {
+    id?: SortOrder
+    localId?: SortOrder
+    guildId?: SortOrder
+    channelId?: SortOrder
+    messageId?: SortOrder
+    title?: SortOrder
+    description?: SortOrder
+    xpRequired?: SortOrder
+    messagesRequired?: SortOrder
+    expiresAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type GiveawaySumOrderByAggregateInput = {
+    id?: SortOrder
+    localId?: SortOrder
+    xpRequired?: SortOrder
+    messagesRequired?: SortOrder
+  }
+
+  export type GiveawayScalarRelationFilter = {
+    is?: GiveawayWhereInput
+    isNot?: GiveawayWhereInput
+  }
+
+  export type UserGiveawayUserIdGiveawayIdCompoundUniqueInput = {
+    userId: string
+    giveawayId: number
+  }
+
+  export type UserGiveawayCountOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    giveawayId?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type UserGiveawayAvgOrderByAggregateInput = {
+    id?: SortOrder
+    giveawayId?: SortOrder
+  }
+
+  export type UserGiveawayMaxOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    giveawayId?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type UserGiveawayMinOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    giveawayId?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type UserGiveawaySumOrderByAggregateInput = {
+    id?: SortOrder
+    giveawayId?: SortOrder
+  }
+
+  export type GuildGiveawayGuildIdGiveawayIdCompoundUniqueInput = {
+    guildId: string
+    giveawayId: number
+  }
+
+  export type GuildGiveawayCountOrderByAggregateInput = {
+    id?: SortOrder
+    guildId?: SortOrder
+    channelId?: SortOrder
+    messageId?: SortOrder
+    giveawayId?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type GuildGiveawayAvgOrderByAggregateInput = {
+    id?: SortOrder
+    giveawayId?: SortOrder
+  }
+
+  export type GuildGiveawayMaxOrderByAggregateInput = {
+    id?: SortOrder
+    guildId?: SortOrder
+    channelId?: SortOrder
+    messageId?: SortOrder
+    giveawayId?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type GuildGiveawayMinOrderByAggregateInput = {
+    id?: SortOrder
+    guildId?: SortOrder
+    channelId?: SortOrder
+    messageId?: SortOrder
+    giveawayId?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type GuildGiveawaySumOrderByAggregateInput = {
+    id?: SortOrder
+    giveawayId?: SortOrder
+  }
+
   export type UserCreatemailsTagsIgnoredInput = {
     set: string[]
   }
@@ -22361,6 +27100,13 @@ export namespace Prisma {
     connect?: TransactionWhereUniqueInput | TransactionWhereUniqueInput[]
   }
 
+  export type UserGiveawayCreateNestedManyWithoutUserInput = {
+    create?: XOR<UserGiveawayCreateWithoutUserInput, UserGiveawayUncheckedCreateWithoutUserInput> | UserGiveawayCreateWithoutUserInput[] | UserGiveawayUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: UserGiveawayCreateOrConnectWithoutUserInput | UserGiveawayCreateOrConnectWithoutUserInput[]
+    createMany?: UserGiveawayCreateManyUserInputEnvelope
+    connect?: UserGiveawayWhereUniqueInput | UserGiveawayWhereUniqueInput[]
+  }
+
   export type LogUncheckedCreateNestedManyWithoutUserInput = {
     create?: XOR<LogCreateWithoutUserInput, LogUncheckedCreateWithoutUserInput> | LogCreateWithoutUserInput[] | LogUncheckedCreateWithoutUserInput[]
     connectOrCreate?: LogCreateOrConnectWithoutUserInput | LogCreateOrConnectWithoutUserInput[]
@@ -22422,6 +27168,13 @@ export namespace Prisma {
     connectOrCreate?: TransactionCreateOrConnectWithoutTargetInput | TransactionCreateOrConnectWithoutTargetInput[]
     createMany?: TransactionCreateManyTargetInputEnvelope
     connect?: TransactionWhereUniqueInput | TransactionWhereUniqueInput[]
+  }
+
+  export type UserGiveawayUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<UserGiveawayCreateWithoutUserInput, UserGiveawayUncheckedCreateWithoutUserInput> | UserGiveawayCreateWithoutUserInput[] | UserGiveawayUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: UserGiveawayCreateOrConnectWithoutUserInput | UserGiveawayCreateOrConnectWithoutUserInput[]
+    createMany?: UserGiveawayCreateManyUserInputEnvelope
+    connect?: UserGiveawayWhereUniqueInput | UserGiveawayWhereUniqueInput[]
   }
 
   export type StringFieldUpdateOperationsInput = {
@@ -22597,6 +27350,20 @@ export namespace Prisma {
     deleteMany?: TransactionScalarWhereInput | TransactionScalarWhereInput[]
   }
 
+  export type UserGiveawayUpdateManyWithoutUserNestedInput = {
+    create?: XOR<UserGiveawayCreateWithoutUserInput, UserGiveawayUncheckedCreateWithoutUserInput> | UserGiveawayCreateWithoutUserInput[] | UserGiveawayUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: UserGiveawayCreateOrConnectWithoutUserInput | UserGiveawayCreateOrConnectWithoutUserInput[]
+    upsert?: UserGiveawayUpsertWithWhereUniqueWithoutUserInput | UserGiveawayUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: UserGiveawayCreateManyUserInputEnvelope
+    set?: UserGiveawayWhereUniqueInput | UserGiveawayWhereUniqueInput[]
+    disconnect?: UserGiveawayWhereUniqueInput | UserGiveawayWhereUniqueInput[]
+    delete?: UserGiveawayWhereUniqueInput | UserGiveawayWhereUniqueInput[]
+    connect?: UserGiveawayWhereUniqueInput | UserGiveawayWhereUniqueInput[]
+    update?: UserGiveawayUpdateWithWhereUniqueWithoutUserInput | UserGiveawayUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: UserGiveawayUpdateManyWithWhereWithoutUserInput | UserGiveawayUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: UserGiveawayScalarWhereInput | UserGiveawayScalarWhereInput[]
+  }
+
   export type NullableIntFieldUpdateOperationsInput = {
     set?: number | null
     increment?: number
@@ -22729,6 +27496,20 @@ export namespace Prisma {
     update?: TransactionUpdateWithWhereUniqueWithoutTargetInput | TransactionUpdateWithWhereUniqueWithoutTargetInput[]
     updateMany?: TransactionUpdateManyWithWhereWithoutTargetInput | TransactionUpdateManyWithWhereWithoutTargetInput[]
     deleteMany?: TransactionScalarWhereInput | TransactionScalarWhereInput[]
+  }
+
+  export type UserGiveawayUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<UserGiveawayCreateWithoutUserInput, UserGiveawayUncheckedCreateWithoutUserInput> | UserGiveawayCreateWithoutUserInput[] | UserGiveawayUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: UserGiveawayCreateOrConnectWithoutUserInput | UserGiveawayCreateOrConnectWithoutUserInput[]
+    upsert?: UserGiveawayUpsertWithWhereUniqueWithoutUserInput | UserGiveawayUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: UserGiveawayCreateManyUserInputEnvelope
+    set?: UserGiveawayWhereUniqueInput | UserGiveawayWhereUniqueInput[]
+    disconnect?: UserGiveawayWhereUniqueInput | UserGiveawayWhereUniqueInput[]
+    delete?: UserGiveawayWhereUniqueInput | UserGiveawayWhereUniqueInput[]
+    connect?: UserGiveawayWhereUniqueInput | UserGiveawayWhereUniqueInput[]
+    update?: UserGiveawayUpdateWithWhereUniqueWithoutUserInput | UserGiveawayUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: UserGiveawayUpdateManyWithWhereWithoutUserInput | UserGiveawayUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: UserGiveawayScalarWhereInput | UserGiveawayScalarWhereInput[]
   }
 
   export type TryviaQuestionsCreatetagsInput = {
@@ -22875,9 +27656,9 @@ export namespace Prisma {
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutLogsInput, UserUpdateWithoutLogsInput>, UserUncheckedUpdateWithoutLogsInput>
   }
 
-  export type UserCreateNestedOneWithoutRansactionsSentInput = {
-    create?: XOR<UserCreateWithoutRansactionsSentInput, UserUncheckedCreateWithoutRansactionsSentInput>
-    connectOrCreate?: UserCreateOrConnectWithoutRansactionsSentInput
+  export type UserCreateNestedOneWithoutTransactionsSentInput = {
+    create?: XOR<UserCreateWithoutTransactionsSentInput, UserUncheckedCreateWithoutTransactionsSentInput>
+    connectOrCreate?: UserCreateOrConnectWithoutTransactionsSentInput
     connect?: UserWhereUniqueInput
   }
 
@@ -22913,12 +27694,12 @@ export namespace Prisma {
     set?: $Enums.TransactionStatus
   }
 
-  export type UserUpdateOneRequiredWithoutRansactionsSentNestedInput = {
-    create?: XOR<UserCreateWithoutRansactionsSentInput, UserUncheckedCreateWithoutRansactionsSentInput>
-    connectOrCreate?: UserCreateOrConnectWithoutRansactionsSentInput
-    upsert?: UserUpsertWithoutRansactionsSentInput
+  export type UserUpdateOneRequiredWithoutTransactionsSentNestedInput = {
+    create?: XOR<UserCreateWithoutTransactionsSentInput, UserUncheckedCreateWithoutTransactionsSentInput>
+    connectOrCreate?: UserCreateOrConnectWithoutTransactionsSentInput
+    upsert?: UserUpsertWithoutTransactionsSentInput
     connect?: UserWhereUniqueInput
-    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutRansactionsSentInput, UserUpdateWithoutRansactionsSentInput>, UserUncheckedUpdateWithoutRansactionsSentInput>
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutTransactionsSentInput, UserUpdateWithoutTransactionsSentInput>, UserUncheckedUpdateWithoutTransactionsSentInput>
   }
 
   export type UserUpdateOneWithoutTransactionsReceivedNestedInput = {
@@ -23157,6 +27938,20 @@ export namespace Prisma {
     connect?: TransactionWhereUniqueInput | TransactionWhereUniqueInput[]
   }
 
+  export type GiveawayCreateNestedManyWithoutGuildInput = {
+    create?: XOR<GiveawayCreateWithoutGuildInput, GiveawayUncheckedCreateWithoutGuildInput> | GiveawayCreateWithoutGuildInput[] | GiveawayUncheckedCreateWithoutGuildInput[]
+    connectOrCreate?: GiveawayCreateOrConnectWithoutGuildInput | GiveawayCreateOrConnectWithoutGuildInput[]
+    createMany?: GiveawayCreateManyGuildInputEnvelope
+    connect?: GiveawayWhereUniqueInput | GiveawayWhereUniqueInput[]
+  }
+
+  export type GuildGiveawayCreateNestedManyWithoutGuildInput = {
+    create?: XOR<GuildGiveawayCreateWithoutGuildInput, GuildGiveawayUncheckedCreateWithoutGuildInput> | GuildGiveawayCreateWithoutGuildInput[] | GuildGiveawayUncheckedCreateWithoutGuildInput[]
+    connectOrCreate?: GuildGiveawayCreateOrConnectWithoutGuildInput | GuildGiveawayCreateOrConnectWithoutGuildInput[]
+    createMany?: GuildGiveawayCreateManyGuildInputEnvelope
+    connect?: GuildGiveawayWhereUniqueInput | GuildGiveawayWhereUniqueInput[]
+  }
+
   export type GuildMemberUncheckedCreateNestedManyWithoutGuildInput = {
     create?: XOR<GuildMemberCreateWithoutGuildInput, GuildMemberUncheckedCreateWithoutGuildInput> | GuildMemberCreateWithoutGuildInput[] | GuildMemberUncheckedCreateWithoutGuildInput[]
     connectOrCreate?: GuildMemberCreateOrConnectWithoutGuildInput | GuildMemberCreateOrConnectWithoutGuildInput[]
@@ -23169,6 +27964,20 @@ export namespace Prisma {
     connectOrCreate?: TransactionCreateOrConnectWithoutGuildInput | TransactionCreateOrConnectWithoutGuildInput[]
     createMany?: TransactionCreateManyGuildInputEnvelope
     connect?: TransactionWhereUniqueInput | TransactionWhereUniqueInput[]
+  }
+
+  export type GiveawayUncheckedCreateNestedManyWithoutGuildInput = {
+    create?: XOR<GiveawayCreateWithoutGuildInput, GiveawayUncheckedCreateWithoutGuildInput> | GiveawayCreateWithoutGuildInput[] | GiveawayUncheckedCreateWithoutGuildInput[]
+    connectOrCreate?: GiveawayCreateOrConnectWithoutGuildInput | GiveawayCreateOrConnectWithoutGuildInput[]
+    createMany?: GiveawayCreateManyGuildInputEnvelope
+    connect?: GiveawayWhereUniqueInput | GiveawayWhereUniqueInput[]
+  }
+
+  export type GuildGiveawayUncheckedCreateNestedManyWithoutGuildInput = {
+    create?: XOR<GuildGiveawayCreateWithoutGuildInput, GuildGiveawayUncheckedCreateWithoutGuildInput> | GuildGiveawayCreateWithoutGuildInput[] | GuildGiveawayUncheckedCreateWithoutGuildInput[]
+    connectOrCreate?: GuildGiveawayCreateOrConnectWithoutGuildInput | GuildGiveawayCreateOrConnectWithoutGuildInput[]
+    createMany?: GuildGiveawayCreateManyGuildInputEnvelope
+    connect?: GuildGiveawayWhereUniqueInput | GuildGiveawayWhereUniqueInput[]
   }
 
   export type GuildSettingsUpdatechatBotChannelsInput = {
@@ -23224,6 +28033,34 @@ export namespace Prisma {
     deleteMany?: TransactionScalarWhereInput | TransactionScalarWhereInput[]
   }
 
+  export type GiveawayUpdateManyWithoutGuildNestedInput = {
+    create?: XOR<GiveawayCreateWithoutGuildInput, GiveawayUncheckedCreateWithoutGuildInput> | GiveawayCreateWithoutGuildInput[] | GiveawayUncheckedCreateWithoutGuildInput[]
+    connectOrCreate?: GiveawayCreateOrConnectWithoutGuildInput | GiveawayCreateOrConnectWithoutGuildInput[]
+    upsert?: GiveawayUpsertWithWhereUniqueWithoutGuildInput | GiveawayUpsertWithWhereUniqueWithoutGuildInput[]
+    createMany?: GiveawayCreateManyGuildInputEnvelope
+    set?: GiveawayWhereUniqueInput | GiveawayWhereUniqueInput[]
+    disconnect?: GiveawayWhereUniqueInput | GiveawayWhereUniqueInput[]
+    delete?: GiveawayWhereUniqueInput | GiveawayWhereUniqueInput[]
+    connect?: GiveawayWhereUniqueInput | GiveawayWhereUniqueInput[]
+    update?: GiveawayUpdateWithWhereUniqueWithoutGuildInput | GiveawayUpdateWithWhereUniqueWithoutGuildInput[]
+    updateMany?: GiveawayUpdateManyWithWhereWithoutGuildInput | GiveawayUpdateManyWithWhereWithoutGuildInput[]
+    deleteMany?: GiveawayScalarWhereInput | GiveawayScalarWhereInput[]
+  }
+
+  export type GuildGiveawayUpdateManyWithoutGuildNestedInput = {
+    create?: XOR<GuildGiveawayCreateWithoutGuildInput, GuildGiveawayUncheckedCreateWithoutGuildInput> | GuildGiveawayCreateWithoutGuildInput[] | GuildGiveawayUncheckedCreateWithoutGuildInput[]
+    connectOrCreate?: GuildGiveawayCreateOrConnectWithoutGuildInput | GuildGiveawayCreateOrConnectWithoutGuildInput[]
+    upsert?: GuildGiveawayUpsertWithWhereUniqueWithoutGuildInput | GuildGiveawayUpsertWithWhereUniqueWithoutGuildInput[]
+    createMany?: GuildGiveawayCreateManyGuildInputEnvelope
+    set?: GuildGiveawayWhereUniqueInput | GuildGiveawayWhereUniqueInput[]
+    disconnect?: GuildGiveawayWhereUniqueInput | GuildGiveawayWhereUniqueInput[]
+    delete?: GuildGiveawayWhereUniqueInput | GuildGiveawayWhereUniqueInput[]
+    connect?: GuildGiveawayWhereUniqueInput | GuildGiveawayWhereUniqueInput[]
+    update?: GuildGiveawayUpdateWithWhereUniqueWithoutGuildInput | GuildGiveawayUpdateWithWhereUniqueWithoutGuildInput[]
+    updateMany?: GuildGiveawayUpdateManyWithWhereWithoutGuildInput | GuildGiveawayUpdateManyWithWhereWithoutGuildInput[]
+    deleteMany?: GuildGiveawayScalarWhereInput | GuildGiveawayScalarWhereInput[]
+  }
+
   export type GuildMemberUncheckedUpdateManyWithoutGuildNestedInput = {
     create?: XOR<GuildMemberCreateWithoutGuildInput, GuildMemberUncheckedCreateWithoutGuildInput> | GuildMemberCreateWithoutGuildInput[] | GuildMemberUncheckedCreateWithoutGuildInput[]
     connectOrCreate?: GuildMemberCreateOrConnectWithoutGuildInput | GuildMemberCreateOrConnectWithoutGuildInput[]
@@ -23250,6 +28087,34 @@ export namespace Prisma {
     update?: TransactionUpdateWithWhereUniqueWithoutGuildInput | TransactionUpdateWithWhereUniqueWithoutGuildInput[]
     updateMany?: TransactionUpdateManyWithWhereWithoutGuildInput | TransactionUpdateManyWithWhereWithoutGuildInput[]
     deleteMany?: TransactionScalarWhereInput | TransactionScalarWhereInput[]
+  }
+
+  export type GiveawayUncheckedUpdateManyWithoutGuildNestedInput = {
+    create?: XOR<GiveawayCreateWithoutGuildInput, GiveawayUncheckedCreateWithoutGuildInput> | GiveawayCreateWithoutGuildInput[] | GiveawayUncheckedCreateWithoutGuildInput[]
+    connectOrCreate?: GiveawayCreateOrConnectWithoutGuildInput | GiveawayCreateOrConnectWithoutGuildInput[]
+    upsert?: GiveawayUpsertWithWhereUniqueWithoutGuildInput | GiveawayUpsertWithWhereUniqueWithoutGuildInput[]
+    createMany?: GiveawayCreateManyGuildInputEnvelope
+    set?: GiveawayWhereUniqueInput | GiveawayWhereUniqueInput[]
+    disconnect?: GiveawayWhereUniqueInput | GiveawayWhereUniqueInput[]
+    delete?: GiveawayWhereUniqueInput | GiveawayWhereUniqueInput[]
+    connect?: GiveawayWhereUniqueInput | GiveawayWhereUniqueInput[]
+    update?: GiveawayUpdateWithWhereUniqueWithoutGuildInput | GiveawayUpdateWithWhereUniqueWithoutGuildInput[]
+    updateMany?: GiveawayUpdateManyWithWhereWithoutGuildInput | GiveawayUpdateManyWithWhereWithoutGuildInput[]
+    deleteMany?: GiveawayScalarWhereInput | GiveawayScalarWhereInput[]
+  }
+
+  export type GuildGiveawayUncheckedUpdateManyWithoutGuildNestedInput = {
+    create?: XOR<GuildGiveawayCreateWithoutGuildInput, GuildGiveawayUncheckedCreateWithoutGuildInput> | GuildGiveawayCreateWithoutGuildInput[] | GuildGiveawayUncheckedCreateWithoutGuildInput[]
+    connectOrCreate?: GuildGiveawayCreateOrConnectWithoutGuildInput | GuildGiveawayCreateOrConnectWithoutGuildInput[]
+    upsert?: GuildGiveawayUpsertWithWhereUniqueWithoutGuildInput | GuildGiveawayUpsertWithWhereUniqueWithoutGuildInput[]
+    createMany?: GuildGiveawayCreateManyGuildInputEnvelope
+    set?: GuildGiveawayWhereUniqueInput | GuildGiveawayWhereUniqueInput[]
+    disconnect?: GuildGiveawayWhereUniqueInput | GuildGiveawayWhereUniqueInput[]
+    delete?: GuildGiveawayWhereUniqueInput | GuildGiveawayWhereUniqueInput[]
+    connect?: GuildGiveawayWhereUniqueInput | GuildGiveawayWhereUniqueInput[]
+    update?: GuildGiveawayUpdateWithWhereUniqueWithoutGuildInput | GuildGiveawayUpdateWithWhereUniqueWithoutGuildInput[]
+    updateMany?: GuildGiveawayUpdateManyWithWhereWithoutGuildInput | GuildGiveawayUpdateManyWithWhereWithoutGuildInput[]
+    deleteMany?: GuildGiveawayScalarWhereInput | GuildGiveawayScalarWhereInput[]
   }
 
   export type GuildSettingsCreateNestedOneWithoutMembersInput = {
@@ -23317,6 +28182,205 @@ export namespace Prisma {
     upsert?: UserUpsertWithoutSendedMailsInput
     connect?: UserWhereUniqueInput
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutSendedMailsInput, UserUpdateWithoutSendedMailsInput>, UserUncheckedUpdateWithoutSendedMailsInput>
+  }
+
+  export type GiveawayCreateblackListRolesInput = {
+    set: string[]
+  }
+
+  export type GiveawayCreateblackListMembersInput = {
+    set: string[]
+  }
+
+  export type GiveawayCreateonlyRolesInput = {
+    set: string[]
+  }
+
+  export type GiveawayCreateserverStayRequiredInput = {
+    set: string[]
+  }
+
+  export type GiveawayCreatewinnersIdsInput = {
+    set: string[]
+  }
+
+  export type UserGiveawayCreateNestedManyWithoutGiveawayInput = {
+    create?: XOR<UserGiveawayCreateWithoutGiveawayInput, UserGiveawayUncheckedCreateWithoutGiveawayInput> | UserGiveawayCreateWithoutGiveawayInput[] | UserGiveawayUncheckedCreateWithoutGiveawayInput[]
+    connectOrCreate?: UserGiveawayCreateOrConnectWithoutGiveawayInput | UserGiveawayCreateOrConnectWithoutGiveawayInput[]
+    createMany?: UserGiveawayCreateManyGiveawayInputEnvelope
+    connect?: UserGiveawayWhereUniqueInput | UserGiveawayWhereUniqueInput[]
+  }
+
+  export type GuildSettingsCreateNestedOneWithoutGiveawaysInput = {
+    create?: XOR<GuildSettingsCreateWithoutGiveawaysInput, GuildSettingsUncheckedCreateWithoutGiveawaysInput>
+    connectOrCreate?: GuildSettingsCreateOrConnectWithoutGiveawaysInput
+    connect?: GuildSettingsWhereUniqueInput
+  }
+
+  export type GuildGiveawayCreateNestedManyWithoutGiveawayInput = {
+    create?: XOR<GuildGiveawayCreateWithoutGiveawayInput, GuildGiveawayUncheckedCreateWithoutGiveawayInput> | GuildGiveawayCreateWithoutGiveawayInput[] | GuildGiveawayUncheckedCreateWithoutGiveawayInput[]
+    connectOrCreate?: GuildGiveawayCreateOrConnectWithoutGiveawayInput | GuildGiveawayCreateOrConnectWithoutGiveawayInput[]
+    createMany?: GuildGiveawayCreateManyGiveawayInputEnvelope
+    connect?: GuildGiveawayWhereUniqueInput | GuildGiveawayWhereUniqueInput[]
+  }
+
+  export type UserGiveawayUncheckedCreateNestedManyWithoutGiveawayInput = {
+    create?: XOR<UserGiveawayCreateWithoutGiveawayInput, UserGiveawayUncheckedCreateWithoutGiveawayInput> | UserGiveawayCreateWithoutGiveawayInput[] | UserGiveawayUncheckedCreateWithoutGiveawayInput[]
+    connectOrCreate?: UserGiveawayCreateOrConnectWithoutGiveawayInput | UserGiveawayCreateOrConnectWithoutGiveawayInput[]
+    createMany?: UserGiveawayCreateManyGiveawayInputEnvelope
+    connect?: UserGiveawayWhereUniqueInput | UserGiveawayWhereUniqueInput[]
+  }
+
+  export type GuildGiveawayUncheckedCreateNestedManyWithoutGiveawayInput = {
+    create?: XOR<GuildGiveawayCreateWithoutGiveawayInput, GuildGiveawayUncheckedCreateWithoutGiveawayInput> | GuildGiveawayCreateWithoutGiveawayInput[] | GuildGiveawayUncheckedCreateWithoutGiveawayInput[]
+    connectOrCreate?: GuildGiveawayCreateOrConnectWithoutGiveawayInput | GuildGiveawayCreateOrConnectWithoutGiveawayInput[]
+    createMany?: GuildGiveawayCreateManyGiveawayInputEnvelope
+    connect?: GuildGiveawayWhereUniqueInput | GuildGiveawayWhereUniqueInput[]
+  }
+
+  export type GiveawayUpdateblackListRolesInput = {
+    set?: string[]
+    push?: string | string[]
+  }
+
+  export type GiveawayUpdateblackListMembersInput = {
+    set?: string[]
+    push?: string | string[]
+  }
+
+  export type GiveawayUpdateonlyRolesInput = {
+    set?: string[]
+    push?: string | string[]
+  }
+
+  export type GiveawayUpdateserverStayRequiredInput = {
+    set?: string[]
+    push?: string | string[]
+  }
+
+  export type GiveawayUpdatewinnersIdsInput = {
+    set?: string[]
+    push?: string | string[]
+  }
+
+  export type UserGiveawayUpdateManyWithoutGiveawayNestedInput = {
+    create?: XOR<UserGiveawayCreateWithoutGiveawayInput, UserGiveawayUncheckedCreateWithoutGiveawayInput> | UserGiveawayCreateWithoutGiveawayInput[] | UserGiveawayUncheckedCreateWithoutGiveawayInput[]
+    connectOrCreate?: UserGiveawayCreateOrConnectWithoutGiveawayInput | UserGiveawayCreateOrConnectWithoutGiveawayInput[]
+    upsert?: UserGiveawayUpsertWithWhereUniqueWithoutGiveawayInput | UserGiveawayUpsertWithWhereUniqueWithoutGiveawayInput[]
+    createMany?: UserGiveawayCreateManyGiveawayInputEnvelope
+    set?: UserGiveawayWhereUniqueInput | UserGiveawayWhereUniqueInput[]
+    disconnect?: UserGiveawayWhereUniqueInput | UserGiveawayWhereUniqueInput[]
+    delete?: UserGiveawayWhereUniqueInput | UserGiveawayWhereUniqueInput[]
+    connect?: UserGiveawayWhereUniqueInput | UserGiveawayWhereUniqueInput[]
+    update?: UserGiveawayUpdateWithWhereUniqueWithoutGiveawayInput | UserGiveawayUpdateWithWhereUniqueWithoutGiveawayInput[]
+    updateMany?: UserGiveawayUpdateManyWithWhereWithoutGiveawayInput | UserGiveawayUpdateManyWithWhereWithoutGiveawayInput[]
+    deleteMany?: UserGiveawayScalarWhereInput | UserGiveawayScalarWhereInput[]
+  }
+
+  export type GuildSettingsUpdateOneRequiredWithoutGiveawaysNestedInput = {
+    create?: XOR<GuildSettingsCreateWithoutGiveawaysInput, GuildSettingsUncheckedCreateWithoutGiveawaysInput>
+    connectOrCreate?: GuildSettingsCreateOrConnectWithoutGiveawaysInput
+    upsert?: GuildSettingsUpsertWithoutGiveawaysInput
+    connect?: GuildSettingsWhereUniqueInput
+    update?: XOR<XOR<GuildSettingsUpdateToOneWithWhereWithoutGiveawaysInput, GuildSettingsUpdateWithoutGiveawaysInput>, GuildSettingsUncheckedUpdateWithoutGiveawaysInput>
+  }
+
+  export type GuildGiveawayUpdateManyWithoutGiveawayNestedInput = {
+    create?: XOR<GuildGiveawayCreateWithoutGiveawayInput, GuildGiveawayUncheckedCreateWithoutGiveawayInput> | GuildGiveawayCreateWithoutGiveawayInput[] | GuildGiveawayUncheckedCreateWithoutGiveawayInput[]
+    connectOrCreate?: GuildGiveawayCreateOrConnectWithoutGiveawayInput | GuildGiveawayCreateOrConnectWithoutGiveawayInput[]
+    upsert?: GuildGiveawayUpsertWithWhereUniqueWithoutGiveawayInput | GuildGiveawayUpsertWithWhereUniqueWithoutGiveawayInput[]
+    createMany?: GuildGiveawayCreateManyGiveawayInputEnvelope
+    set?: GuildGiveawayWhereUniqueInput | GuildGiveawayWhereUniqueInput[]
+    disconnect?: GuildGiveawayWhereUniqueInput | GuildGiveawayWhereUniqueInput[]
+    delete?: GuildGiveawayWhereUniqueInput | GuildGiveawayWhereUniqueInput[]
+    connect?: GuildGiveawayWhereUniqueInput | GuildGiveawayWhereUniqueInput[]
+    update?: GuildGiveawayUpdateWithWhereUniqueWithoutGiveawayInput | GuildGiveawayUpdateWithWhereUniqueWithoutGiveawayInput[]
+    updateMany?: GuildGiveawayUpdateManyWithWhereWithoutGiveawayInput | GuildGiveawayUpdateManyWithWhereWithoutGiveawayInput[]
+    deleteMany?: GuildGiveawayScalarWhereInput | GuildGiveawayScalarWhereInput[]
+  }
+
+  export type UserGiveawayUncheckedUpdateManyWithoutGiveawayNestedInput = {
+    create?: XOR<UserGiveawayCreateWithoutGiveawayInput, UserGiveawayUncheckedCreateWithoutGiveawayInput> | UserGiveawayCreateWithoutGiveawayInput[] | UserGiveawayUncheckedCreateWithoutGiveawayInput[]
+    connectOrCreate?: UserGiveawayCreateOrConnectWithoutGiveawayInput | UserGiveawayCreateOrConnectWithoutGiveawayInput[]
+    upsert?: UserGiveawayUpsertWithWhereUniqueWithoutGiveawayInput | UserGiveawayUpsertWithWhereUniqueWithoutGiveawayInput[]
+    createMany?: UserGiveawayCreateManyGiveawayInputEnvelope
+    set?: UserGiveawayWhereUniqueInput | UserGiveawayWhereUniqueInput[]
+    disconnect?: UserGiveawayWhereUniqueInput | UserGiveawayWhereUniqueInput[]
+    delete?: UserGiveawayWhereUniqueInput | UserGiveawayWhereUniqueInput[]
+    connect?: UserGiveawayWhereUniqueInput | UserGiveawayWhereUniqueInput[]
+    update?: UserGiveawayUpdateWithWhereUniqueWithoutGiveawayInput | UserGiveawayUpdateWithWhereUniqueWithoutGiveawayInput[]
+    updateMany?: UserGiveawayUpdateManyWithWhereWithoutGiveawayInput | UserGiveawayUpdateManyWithWhereWithoutGiveawayInput[]
+    deleteMany?: UserGiveawayScalarWhereInput | UserGiveawayScalarWhereInput[]
+  }
+
+  export type GuildGiveawayUncheckedUpdateManyWithoutGiveawayNestedInput = {
+    create?: XOR<GuildGiveawayCreateWithoutGiveawayInput, GuildGiveawayUncheckedCreateWithoutGiveawayInput> | GuildGiveawayCreateWithoutGiveawayInput[] | GuildGiveawayUncheckedCreateWithoutGiveawayInput[]
+    connectOrCreate?: GuildGiveawayCreateOrConnectWithoutGiveawayInput | GuildGiveawayCreateOrConnectWithoutGiveawayInput[]
+    upsert?: GuildGiveawayUpsertWithWhereUniqueWithoutGiveawayInput | GuildGiveawayUpsertWithWhereUniqueWithoutGiveawayInput[]
+    createMany?: GuildGiveawayCreateManyGiveawayInputEnvelope
+    set?: GuildGiveawayWhereUniqueInput | GuildGiveawayWhereUniqueInput[]
+    disconnect?: GuildGiveawayWhereUniqueInput | GuildGiveawayWhereUniqueInput[]
+    delete?: GuildGiveawayWhereUniqueInput | GuildGiveawayWhereUniqueInput[]
+    connect?: GuildGiveawayWhereUniqueInput | GuildGiveawayWhereUniqueInput[]
+    update?: GuildGiveawayUpdateWithWhereUniqueWithoutGiveawayInput | GuildGiveawayUpdateWithWhereUniqueWithoutGiveawayInput[]
+    updateMany?: GuildGiveawayUpdateManyWithWhereWithoutGiveawayInput | GuildGiveawayUpdateManyWithWhereWithoutGiveawayInput[]
+    deleteMany?: GuildGiveawayScalarWhereInput | GuildGiveawayScalarWhereInput[]
+  }
+
+  export type UserCreateNestedOneWithoutGiveawaysInput = {
+    create?: XOR<UserCreateWithoutGiveawaysInput, UserUncheckedCreateWithoutGiveawaysInput>
+    connectOrCreate?: UserCreateOrConnectWithoutGiveawaysInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type GiveawayCreateNestedOneWithoutParticipantsInput = {
+    create?: XOR<GiveawayCreateWithoutParticipantsInput, GiveawayUncheckedCreateWithoutParticipantsInput>
+    connectOrCreate?: GiveawayCreateOrConnectWithoutParticipantsInput
+    connect?: GiveawayWhereUniqueInput
+  }
+
+  export type UserUpdateOneRequiredWithoutGiveawaysNestedInput = {
+    create?: XOR<UserCreateWithoutGiveawaysInput, UserUncheckedCreateWithoutGiveawaysInput>
+    connectOrCreate?: UserCreateOrConnectWithoutGiveawaysInput
+    upsert?: UserUpsertWithoutGiveawaysInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutGiveawaysInput, UserUpdateWithoutGiveawaysInput>, UserUncheckedUpdateWithoutGiveawaysInput>
+  }
+
+  export type GiveawayUpdateOneRequiredWithoutParticipantsNestedInput = {
+    create?: XOR<GiveawayCreateWithoutParticipantsInput, GiveawayUncheckedCreateWithoutParticipantsInput>
+    connectOrCreate?: GiveawayCreateOrConnectWithoutParticipantsInput
+    upsert?: GiveawayUpsertWithoutParticipantsInput
+    connect?: GiveawayWhereUniqueInput
+    update?: XOR<XOR<GiveawayUpdateToOneWithWhereWithoutParticipantsInput, GiveawayUpdateWithoutParticipantsInput>, GiveawayUncheckedUpdateWithoutParticipantsInput>
+  }
+
+  export type GuildSettingsCreateNestedOneWithoutConnectedGiveawaysInput = {
+    create?: XOR<GuildSettingsCreateWithoutConnectedGiveawaysInput, GuildSettingsUncheckedCreateWithoutConnectedGiveawaysInput>
+    connectOrCreate?: GuildSettingsCreateOrConnectWithoutConnectedGiveawaysInput
+    connect?: GuildSettingsWhereUniqueInput
+  }
+
+  export type GiveawayCreateNestedOneWithoutConnectedGuildsInput = {
+    create?: XOR<GiveawayCreateWithoutConnectedGuildsInput, GiveawayUncheckedCreateWithoutConnectedGuildsInput>
+    connectOrCreate?: GiveawayCreateOrConnectWithoutConnectedGuildsInput
+    connect?: GiveawayWhereUniqueInput
+  }
+
+  export type GuildSettingsUpdateOneRequiredWithoutConnectedGiveawaysNestedInput = {
+    create?: XOR<GuildSettingsCreateWithoutConnectedGiveawaysInput, GuildSettingsUncheckedCreateWithoutConnectedGiveawaysInput>
+    connectOrCreate?: GuildSettingsCreateOrConnectWithoutConnectedGiveawaysInput
+    upsert?: GuildSettingsUpsertWithoutConnectedGiveawaysInput
+    connect?: GuildSettingsWhereUniqueInput
+    update?: XOR<XOR<GuildSettingsUpdateToOneWithWhereWithoutConnectedGiveawaysInput, GuildSettingsUpdateWithoutConnectedGiveawaysInput>, GuildSettingsUncheckedUpdateWithoutConnectedGiveawaysInput>
+  }
+
+  export type GiveawayUpdateOneRequiredWithoutConnectedGuildsNestedInput = {
+    create?: XOR<GiveawayCreateWithoutConnectedGuildsInput, GiveawayUncheckedCreateWithoutConnectedGuildsInput>
+    connectOrCreate?: GiveawayCreateOrConnectWithoutConnectedGuildsInput
+    upsert?: GiveawayUpsertWithoutConnectedGuildsInput
+    connect?: GiveawayWhereUniqueInput
+    update?: XOR<XOR<GiveawayUpdateToOneWithWhereWithoutConnectedGuildsInput, GiveawayUpdateWithoutConnectedGuildsInput>, GiveawayUncheckedUpdateWithoutConnectedGuildsInput>
   }
 
   export type NestedStringFilter<$PrismaModel = never> = {
@@ -23989,7 +29053,7 @@ export namespace Prisma {
     reason?: string | null
     type?: $Enums.TransactionType
     status?: $Enums.TransactionStatus
-    user: UserCreateNestedOneWithoutRansactionsSentInput
+    user: UserCreateNestedOneWithoutTransactionsSentInput
     guild?: GuildSettingsCreateNestedOneWithoutTransactionsInput
   }
 
@@ -24015,6 +29079,27 @@ export namespace Prisma {
 
   export type TransactionCreateManyTargetInputEnvelope = {
     data: TransactionCreateManyTargetInput | TransactionCreateManyTargetInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type UserGiveawayCreateWithoutUserInput = {
+    createdAt?: Date | string
+    giveaway: GiveawayCreateNestedOneWithoutParticipantsInput
+  }
+
+  export type UserGiveawayUncheckedCreateWithoutUserInput = {
+    id?: number
+    giveawayId: number
+    createdAt?: Date | string
+  }
+
+  export type UserGiveawayCreateOrConnectWithoutUserInput = {
+    where: UserGiveawayWhereUniqueInput
+    create: XOR<UserGiveawayCreateWithoutUserInput, UserGiveawayUncheckedCreateWithoutUserInput>
+  }
+
+  export type UserGiveawayCreateManyUserInputEnvelope = {
+    data: UserGiveawayCreateManyUserInput | UserGiveawayCreateManyUserInput[]
     skipDuplicates?: boolean
   }
 
@@ -24280,6 +29365,32 @@ export namespace Prisma {
     data: XOR<TransactionUpdateManyMutationInput, TransactionUncheckedUpdateManyWithoutTargetInput>
   }
 
+  export type UserGiveawayUpsertWithWhereUniqueWithoutUserInput = {
+    where: UserGiveawayWhereUniqueInput
+    update: XOR<UserGiveawayUpdateWithoutUserInput, UserGiveawayUncheckedUpdateWithoutUserInput>
+    create: XOR<UserGiveawayCreateWithoutUserInput, UserGiveawayUncheckedCreateWithoutUserInput>
+  }
+
+  export type UserGiveawayUpdateWithWhereUniqueWithoutUserInput = {
+    where: UserGiveawayWhereUniqueInput
+    data: XOR<UserGiveawayUpdateWithoutUserInput, UserGiveawayUncheckedUpdateWithoutUserInput>
+  }
+
+  export type UserGiveawayUpdateManyWithWhereWithoutUserInput = {
+    where: UserGiveawayScalarWhereInput
+    data: XOR<UserGiveawayUpdateManyMutationInput, UserGiveawayUncheckedUpdateManyWithoutUserInput>
+  }
+
+  export type UserGiveawayScalarWhereInput = {
+    AND?: UserGiveawayScalarWhereInput | UserGiveawayScalarWhereInput[]
+    OR?: UserGiveawayScalarWhereInput[]
+    NOT?: UserGiveawayScalarWhereInput | UserGiveawayScalarWhereInput[]
+    id?: IntFilter<"UserGiveaway"> | number
+    userId?: StringFilter<"UserGiveaway"> | string
+    giveawayId?: IntFilter<"UserGiveaway"> | number
+    createdAt?: DateTimeFilter<"UserGiveaway"> | Date | string
+  }
+
   export type UserCreateWithoutApplicationsInput = {
     id: string
     money?: Decimal | DecimalJsLike | number | string
@@ -24297,8 +29408,9 @@ export namespace Prisma {
     mails?: MailsCreateNestedManyWithoutUserInput
     sendedMails?: MailsCreateNestedManyWithoutWhoSendUserInput
     guilds?: GuildMemberCreateNestedManyWithoutUserInput
-    ransactionsSent?: TransactionCreateNestedManyWithoutUserInput
+    transactionsSent?: TransactionCreateNestedManyWithoutUserInput
     transactionsReceived?: TransactionCreateNestedManyWithoutTargetInput
+    giveaways?: UserGiveawayCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutApplicationsInput = {
@@ -24318,8 +29430,9 @@ export namespace Prisma {
     mails?: MailsUncheckedCreateNestedManyWithoutUserInput
     sendedMails?: MailsUncheckedCreateNestedManyWithoutWhoSendUserInput
     guilds?: GuildMemberUncheckedCreateNestedManyWithoutUserInput
-    ransactionsSent?: TransactionUncheckedCreateNestedManyWithoutUserInput
+    transactionsSent?: TransactionUncheckedCreateNestedManyWithoutUserInput
     transactionsReceived?: TransactionUncheckedCreateNestedManyWithoutTargetInput
+    giveaways?: UserGiveawayUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutApplicationsInput = {
@@ -24376,8 +29489,9 @@ export namespace Prisma {
     mails?: MailsUpdateManyWithoutUserNestedInput
     sendedMails?: MailsUpdateManyWithoutWhoSendUserNestedInput
     guilds?: GuildMemberUpdateManyWithoutUserNestedInput
-    ransactionsSent?: TransactionUpdateManyWithoutUserNestedInput
+    transactionsSent?: TransactionUpdateManyWithoutUserNestedInput
     transactionsReceived?: TransactionUpdateManyWithoutTargetNestedInput
+    giveaways?: UserGiveawayUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutApplicationsInput = {
@@ -24397,8 +29511,9 @@ export namespace Prisma {
     mails?: MailsUncheckedUpdateManyWithoutUserNestedInput
     sendedMails?: MailsUncheckedUpdateManyWithoutWhoSendUserNestedInput
     guilds?: GuildMemberUncheckedUpdateManyWithoutUserNestedInput
-    ransactionsSent?: TransactionUncheckedUpdateManyWithoutUserNestedInput
+    transactionsSent?: TransactionUncheckedUpdateManyWithoutUserNestedInput
     transactionsReceived?: TransactionUncheckedUpdateManyWithoutTargetNestedInput
+    giveaways?: UserGiveawayUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type RequisitionUpsertWithWhereUniqueWithoutApplicationInput = {
@@ -24488,8 +29603,9 @@ export namespace Prisma {
     sendedMails?: MailsCreateNestedManyWithoutWhoSendUserInput
     applications?: ApplicationCreateNestedManyWithoutOwnerInput
     guilds?: GuildMemberCreateNestedManyWithoutUserInput
-    ransactionsSent?: TransactionCreateNestedManyWithoutUserInput
+    transactionsSent?: TransactionCreateNestedManyWithoutUserInput
     transactionsReceived?: TransactionCreateNestedManyWithoutTargetInput
+    giveaways?: UserGiveawayCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutLogsInput = {
@@ -24509,8 +29625,9 @@ export namespace Prisma {
     sendedMails?: MailsUncheckedCreateNestedManyWithoutWhoSendUserInput
     applications?: ApplicationUncheckedCreateNestedManyWithoutOwnerInput
     guilds?: GuildMemberUncheckedCreateNestedManyWithoutUserInput
-    ransactionsSent?: TransactionUncheckedCreateNestedManyWithoutUserInput
+    transactionsSent?: TransactionUncheckedCreateNestedManyWithoutUserInput
     transactionsReceived?: TransactionUncheckedCreateNestedManyWithoutTargetInput
+    giveaways?: UserGiveawayUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutLogsInput = {
@@ -24546,8 +29663,9 @@ export namespace Prisma {
     sendedMails?: MailsUpdateManyWithoutWhoSendUserNestedInput
     applications?: ApplicationUpdateManyWithoutOwnerNestedInput
     guilds?: GuildMemberUpdateManyWithoutUserNestedInput
-    ransactionsSent?: TransactionUpdateManyWithoutUserNestedInput
+    transactionsSent?: TransactionUpdateManyWithoutUserNestedInput
     transactionsReceived?: TransactionUpdateManyWithoutTargetNestedInput
+    giveaways?: UserGiveawayUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutLogsInput = {
@@ -24567,11 +29685,12 @@ export namespace Prisma {
     sendedMails?: MailsUncheckedUpdateManyWithoutWhoSendUserNestedInput
     applications?: ApplicationUncheckedUpdateManyWithoutOwnerNestedInput
     guilds?: GuildMemberUncheckedUpdateManyWithoutUserNestedInput
-    ransactionsSent?: TransactionUncheckedUpdateManyWithoutUserNestedInput
+    transactionsSent?: TransactionUncheckedUpdateManyWithoutUserNestedInput
     transactionsReceived?: TransactionUncheckedUpdateManyWithoutTargetNestedInput
+    giveaways?: UserGiveawayUncheckedUpdateManyWithoutUserNestedInput
   }
 
-  export type UserCreateWithoutRansactionsSentInput = {
+  export type UserCreateWithoutTransactionsSentInput = {
     id: string
     money?: Decimal | DecimalJsLike | number | string
     bank?: Decimal | DecimalJsLike | number | string
@@ -24590,9 +29709,10 @@ export namespace Prisma {
     applications?: ApplicationCreateNestedManyWithoutOwnerInput
     guilds?: GuildMemberCreateNestedManyWithoutUserInput
     transactionsReceived?: TransactionCreateNestedManyWithoutTargetInput
+    giveaways?: UserGiveawayCreateNestedManyWithoutUserInput
   }
 
-  export type UserUncheckedCreateWithoutRansactionsSentInput = {
+  export type UserUncheckedCreateWithoutTransactionsSentInput = {
     id: string
     money?: Decimal | DecimalJsLike | number | string
     bank?: Decimal | DecimalJsLike | number | string
@@ -24611,11 +29731,12 @@ export namespace Prisma {
     applications?: ApplicationUncheckedCreateNestedManyWithoutOwnerInput
     guilds?: GuildMemberUncheckedCreateNestedManyWithoutUserInput
     transactionsReceived?: TransactionUncheckedCreateNestedManyWithoutTargetInput
+    giveaways?: UserGiveawayUncheckedCreateNestedManyWithoutUserInput
   }
 
-  export type UserCreateOrConnectWithoutRansactionsSentInput = {
+  export type UserCreateOrConnectWithoutTransactionsSentInput = {
     where: UserWhereUniqueInput
-    create: XOR<UserCreateWithoutRansactionsSentInput, UserUncheckedCreateWithoutRansactionsSentInput>
+    create: XOR<UserCreateWithoutTransactionsSentInput, UserUncheckedCreateWithoutTransactionsSentInput>
   }
 
   export type UserCreateWithoutTransactionsReceivedInput = {
@@ -24636,7 +29757,8 @@ export namespace Prisma {
     sendedMails?: MailsCreateNestedManyWithoutWhoSendUserInput
     applications?: ApplicationCreateNestedManyWithoutOwnerInput
     guilds?: GuildMemberCreateNestedManyWithoutUserInput
-    ransactionsSent?: TransactionCreateNestedManyWithoutUserInput
+    transactionsSent?: TransactionCreateNestedManyWithoutUserInput
+    giveaways?: UserGiveawayCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutTransactionsReceivedInput = {
@@ -24657,7 +29779,8 @@ export namespace Prisma {
     sendedMails?: MailsUncheckedCreateNestedManyWithoutWhoSendUserInput
     applications?: ApplicationUncheckedCreateNestedManyWithoutOwnerInput
     guilds?: GuildMemberUncheckedCreateNestedManyWithoutUserInput
-    ransactionsSent?: TransactionUncheckedCreateNestedManyWithoutUserInput
+    transactionsSent?: TransactionUncheckedCreateNestedManyWithoutUserInput
+    giveaways?: UserGiveawayUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutTransactionsReceivedInput = {
@@ -24682,6 +29805,8 @@ export namespace Prisma {
     warnLevelUp?: JsonNullValueInput | InputJsonValue
     levelGrant?: JsonNullValueInput | InputJsonValue
     members?: GuildMemberCreateNestedManyWithoutGuildInput
+    giveaways?: GiveawayCreateNestedManyWithoutGuildInput
+    connectedGiveaways?: GuildGiveawayCreateNestedManyWithoutGuildInput
   }
 
   export type GuildSettingsUncheckedCreateWithoutTransactionsInput = {
@@ -24701,6 +29826,8 @@ export namespace Prisma {
     warnLevelUp?: JsonNullValueInput | InputJsonValue
     levelGrant?: JsonNullValueInput | InputJsonValue
     members?: GuildMemberUncheckedCreateNestedManyWithoutGuildInput
+    giveaways?: GiveawayUncheckedCreateNestedManyWithoutGuildInput
+    connectedGiveaways?: GuildGiveawayUncheckedCreateNestedManyWithoutGuildInput
   }
 
   export type GuildSettingsCreateOrConnectWithoutTransactionsInput = {
@@ -24708,18 +29835,18 @@ export namespace Prisma {
     create: XOR<GuildSettingsCreateWithoutTransactionsInput, GuildSettingsUncheckedCreateWithoutTransactionsInput>
   }
 
-  export type UserUpsertWithoutRansactionsSentInput = {
-    update: XOR<UserUpdateWithoutRansactionsSentInput, UserUncheckedUpdateWithoutRansactionsSentInput>
-    create: XOR<UserCreateWithoutRansactionsSentInput, UserUncheckedCreateWithoutRansactionsSentInput>
+  export type UserUpsertWithoutTransactionsSentInput = {
+    update: XOR<UserUpdateWithoutTransactionsSentInput, UserUncheckedUpdateWithoutTransactionsSentInput>
+    create: XOR<UserCreateWithoutTransactionsSentInput, UserUncheckedCreateWithoutTransactionsSentInput>
     where?: UserWhereInput
   }
 
-  export type UserUpdateToOneWithWhereWithoutRansactionsSentInput = {
+  export type UserUpdateToOneWithWhereWithoutTransactionsSentInput = {
     where?: UserWhereInput
-    data: XOR<UserUpdateWithoutRansactionsSentInput, UserUncheckedUpdateWithoutRansactionsSentInput>
+    data: XOR<UserUpdateWithoutTransactionsSentInput, UserUncheckedUpdateWithoutTransactionsSentInput>
   }
 
-  export type UserUpdateWithoutRansactionsSentInput = {
+  export type UserUpdateWithoutTransactionsSentInput = {
     id?: StringFieldUpdateOperationsInput | string
     money?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     bank?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
@@ -24738,9 +29865,10 @@ export namespace Prisma {
     applications?: ApplicationUpdateManyWithoutOwnerNestedInput
     guilds?: GuildMemberUpdateManyWithoutUserNestedInput
     transactionsReceived?: TransactionUpdateManyWithoutTargetNestedInput
+    giveaways?: UserGiveawayUpdateManyWithoutUserNestedInput
   }
 
-  export type UserUncheckedUpdateWithoutRansactionsSentInput = {
+  export type UserUncheckedUpdateWithoutTransactionsSentInput = {
     id?: StringFieldUpdateOperationsInput | string
     money?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     bank?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
@@ -24759,6 +29887,7 @@ export namespace Prisma {
     applications?: ApplicationUncheckedUpdateManyWithoutOwnerNestedInput
     guilds?: GuildMemberUncheckedUpdateManyWithoutUserNestedInput
     transactionsReceived?: TransactionUncheckedUpdateManyWithoutTargetNestedInput
+    giveaways?: UserGiveawayUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserUpsertWithoutTransactionsReceivedInput = {
@@ -24790,7 +29919,8 @@ export namespace Prisma {
     sendedMails?: MailsUpdateManyWithoutWhoSendUserNestedInput
     applications?: ApplicationUpdateManyWithoutOwnerNestedInput
     guilds?: GuildMemberUpdateManyWithoutUserNestedInput
-    ransactionsSent?: TransactionUpdateManyWithoutUserNestedInput
+    transactionsSent?: TransactionUpdateManyWithoutUserNestedInput
+    giveaways?: UserGiveawayUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutTransactionsReceivedInput = {
@@ -24811,7 +29941,8 @@ export namespace Prisma {
     sendedMails?: MailsUncheckedUpdateManyWithoutWhoSendUserNestedInput
     applications?: ApplicationUncheckedUpdateManyWithoutOwnerNestedInput
     guilds?: GuildMemberUncheckedUpdateManyWithoutUserNestedInput
-    ransactionsSent?: TransactionUncheckedUpdateManyWithoutUserNestedInput
+    transactionsSent?: TransactionUncheckedUpdateManyWithoutUserNestedInput
+    giveaways?: UserGiveawayUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type GuildSettingsUpsertWithoutTransactionsInput = {
@@ -24842,6 +29973,8 @@ export namespace Prisma {
     warnLevelUp?: JsonNullValueInput | InputJsonValue
     levelGrant?: JsonNullValueInput | InputJsonValue
     members?: GuildMemberUpdateManyWithoutGuildNestedInput
+    giveaways?: GiveawayUpdateManyWithoutGuildNestedInput
+    connectedGiveaways?: GuildGiveawayUpdateManyWithoutGuildNestedInput
   }
 
   export type GuildSettingsUncheckedUpdateWithoutTransactionsInput = {
@@ -24861,6 +29994,8 @@ export namespace Prisma {
     warnLevelUp?: JsonNullValueInput | InputJsonValue
     levelGrant?: JsonNullValueInput | InputJsonValue
     members?: GuildMemberUncheckedUpdateManyWithoutGuildNestedInput
+    giveaways?: GiveawayUncheckedUpdateManyWithoutGuildNestedInput
+    connectedGiveaways?: GuildGiveawayUncheckedUpdateManyWithoutGuildNestedInput
   }
 
   export type UserCreateWithoutCooldownsInput = {
@@ -24880,8 +30015,9 @@ export namespace Prisma {
     sendedMails?: MailsCreateNestedManyWithoutWhoSendUserInput
     applications?: ApplicationCreateNestedManyWithoutOwnerInput
     guilds?: GuildMemberCreateNestedManyWithoutUserInput
-    ransactionsSent?: TransactionCreateNestedManyWithoutUserInput
+    transactionsSent?: TransactionCreateNestedManyWithoutUserInput
     transactionsReceived?: TransactionCreateNestedManyWithoutTargetInput
+    giveaways?: UserGiveawayCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutCooldownsInput = {
@@ -24901,8 +30037,9 @@ export namespace Prisma {
     sendedMails?: MailsUncheckedCreateNestedManyWithoutWhoSendUserInput
     applications?: ApplicationUncheckedCreateNestedManyWithoutOwnerInput
     guilds?: GuildMemberUncheckedCreateNestedManyWithoutUserInput
-    ransactionsSent?: TransactionUncheckedCreateNestedManyWithoutUserInput
+    transactionsSent?: TransactionUncheckedCreateNestedManyWithoutUserInput
     transactionsReceived?: TransactionUncheckedCreateNestedManyWithoutTargetInput
+    giveaways?: UserGiveawayUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutCooldownsInput = {
@@ -24938,8 +30075,9 @@ export namespace Prisma {
     sendedMails?: MailsUpdateManyWithoutWhoSendUserNestedInput
     applications?: ApplicationUpdateManyWithoutOwnerNestedInput
     guilds?: GuildMemberUpdateManyWithoutUserNestedInput
-    ransactionsSent?: TransactionUpdateManyWithoutUserNestedInput
+    transactionsSent?: TransactionUpdateManyWithoutUserNestedInput
     transactionsReceived?: TransactionUpdateManyWithoutTargetNestedInput
+    giveaways?: UserGiveawayUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutCooldownsInput = {
@@ -24959,8 +30097,9 @@ export namespace Prisma {
     sendedMails?: MailsUncheckedUpdateManyWithoutWhoSendUserNestedInput
     applications?: ApplicationUncheckedUpdateManyWithoutOwnerNestedInput
     guilds?: GuildMemberUncheckedUpdateManyWithoutUserNestedInput
-    ransactionsSent?: TransactionUncheckedUpdateManyWithoutUserNestedInput
+    transactionsSent?: TransactionUncheckedUpdateManyWithoutUserNestedInput
     transactionsReceived?: TransactionUncheckedUpdateManyWithoutTargetNestedInput
+    giveaways?: UserGiveawayUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutCompanyInput = {
@@ -24980,8 +30119,9 @@ export namespace Prisma {
     sendedMails?: MailsCreateNestedManyWithoutWhoSendUserInput
     applications?: ApplicationCreateNestedManyWithoutOwnerInput
     guilds?: GuildMemberCreateNestedManyWithoutUserInput
-    ransactionsSent?: TransactionCreateNestedManyWithoutUserInput
+    transactionsSent?: TransactionCreateNestedManyWithoutUserInput
     transactionsReceived?: TransactionCreateNestedManyWithoutTargetInput
+    giveaways?: UserGiveawayCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutCompanyInput = {
@@ -25001,8 +30141,9 @@ export namespace Prisma {
     sendedMails?: MailsUncheckedCreateNestedManyWithoutWhoSendUserInput
     applications?: ApplicationUncheckedCreateNestedManyWithoutOwnerInput
     guilds?: GuildMemberUncheckedCreateNestedManyWithoutUserInput
-    ransactionsSent?: TransactionUncheckedCreateNestedManyWithoutUserInput
+    transactionsSent?: TransactionUncheckedCreateNestedManyWithoutUserInput
     transactionsReceived?: TransactionUncheckedCreateNestedManyWithoutTargetInput
+    giveaways?: UserGiveawayUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutCompanyInput = {
@@ -25202,8 +30343,9 @@ export namespace Prisma {
     sendedMails?: MailsCreateNestedManyWithoutWhoSendUserInput
     applications?: ApplicationCreateNestedManyWithoutOwnerInput
     guilds?: GuildMemberCreateNestedManyWithoutUserInput
-    ransactionsSent?: TransactionCreateNestedManyWithoutUserInput
+    transactionsSent?: TransactionCreateNestedManyWithoutUserInput
     transactionsReceived?: TransactionCreateNestedManyWithoutTargetInput
+    giveaways?: UserGiveawayCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutStocksInput = {
@@ -25223,8 +30365,9 @@ export namespace Prisma {
     sendedMails?: MailsUncheckedCreateNestedManyWithoutWhoSendUserInput
     applications?: ApplicationUncheckedCreateNestedManyWithoutOwnerInput
     guilds?: GuildMemberUncheckedCreateNestedManyWithoutUserInput
-    ransactionsSent?: TransactionUncheckedCreateNestedManyWithoutUserInput
+    transactionsSent?: TransactionUncheckedCreateNestedManyWithoutUserInput
     transactionsReceived?: TransactionUncheckedCreateNestedManyWithoutTargetInput
+    giveaways?: UserGiveawayUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutStocksInput = {
@@ -25284,8 +30427,9 @@ export namespace Prisma {
     sendedMails?: MailsUpdateManyWithoutWhoSendUserNestedInput
     applications?: ApplicationUpdateManyWithoutOwnerNestedInput
     guilds?: GuildMemberUpdateManyWithoutUserNestedInput
-    ransactionsSent?: TransactionUpdateManyWithoutUserNestedInput
+    transactionsSent?: TransactionUpdateManyWithoutUserNestedInput
     transactionsReceived?: TransactionUpdateManyWithoutTargetNestedInput
+    giveaways?: UserGiveawayUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutStocksInput = {
@@ -25305,8 +30449,9 @@ export namespace Prisma {
     sendedMails?: MailsUncheckedUpdateManyWithoutWhoSendUserNestedInput
     applications?: ApplicationUncheckedUpdateManyWithoutOwnerNestedInput
     guilds?: GuildMemberUncheckedUpdateManyWithoutUserNestedInput
-    ransactionsSent?: TransactionUncheckedUpdateManyWithoutUserNestedInput
+    transactionsSent?: TransactionUncheckedUpdateManyWithoutUserNestedInput
     transactionsReceived?: TransactionUncheckedUpdateManyWithoutTargetNestedInput
+    giveaways?: UserGiveawayUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type StockUpsertWithoutHoldersInput = {
@@ -25375,7 +30520,7 @@ export namespace Prisma {
     reason?: string | null
     type?: $Enums.TransactionType
     status?: $Enums.TransactionStatus
-    user: UserCreateNestedOneWithoutRansactionsSentInput
+    user: UserCreateNestedOneWithoutTransactionsSentInput
     target?: UserCreateNestedOneWithoutTransactionsReceivedInput
   }
 
@@ -25401,6 +30546,88 @@ export namespace Prisma {
 
   export type TransactionCreateManyGuildInputEnvelope = {
     data: TransactionCreateManyGuildInput | TransactionCreateManyGuildInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type GiveawayCreateWithoutGuildInput = {
+    localId: number
+    channelId: string
+    messageId: string
+    title: string
+    description?: string | null
+    blackListRoles?: GiveawayCreateblackListRolesInput | string[]
+    blackListMembers?: GiveawayCreateblackListMembersInput | string[]
+    onlyRoles?: GiveawayCreateonlyRolesInput | string[]
+    rolesMultipleEntry?: NullableJsonNullValueInput | InputJsonValue
+    serverStayRequired?: GiveawayCreateserverStayRequiredInput | string[]
+    xpRequired?: number | null
+    messagesRequired?: number | null
+    messagesInChannelRequired?: NullableJsonNullValueInput | InputJsonValue
+    messagesInGuidsRequired?: NullableJsonNullValueInput | InputJsonValue
+    winnersIds?: GiveawayCreatewinnersIdsInput | string[]
+    expiresAt: Date | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    participants?: UserGiveawayCreateNestedManyWithoutGiveawayInput
+    connectedGuilds?: GuildGiveawayCreateNestedManyWithoutGiveawayInput
+  }
+
+  export type GiveawayUncheckedCreateWithoutGuildInput = {
+    id?: number
+    localId: number
+    channelId: string
+    messageId: string
+    title: string
+    description?: string | null
+    blackListRoles?: GiveawayCreateblackListRolesInput | string[]
+    blackListMembers?: GiveawayCreateblackListMembersInput | string[]
+    onlyRoles?: GiveawayCreateonlyRolesInput | string[]
+    rolesMultipleEntry?: NullableJsonNullValueInput | InputJsonValue
+    serverStayRequired?: GiveawayCreateserverStayRequiredInput | string[]
+    xpRequired?: number | null
+    messagesRequired?: number | null
+    messagesInChannelRequired?: NullableJsonNullValueInput | InputJsonValue
+    messagesInGuidsRequired?: NullableJsonNullValueInput | InputJsonValue
+    winnersIds?: GiveawayCreatewinnersIdsInput | string[]
+    expiresAt: Date | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    participants?: UserGiveawayUncheckedCreateNestedManyWithoutGiveawayInput
+    connectedGuilds?: GuildGiveawayUncheckedCreateNestedManyWithoutGiveawayInput
+  }
+
+  export type GiveawayCreateOrConnectWithoutGuildInput = {
+    where: GiveawayWhereUniqueInput
+    create: XOR<GiveawayCreateWithoutGuildInput, GiveawayUncheckedCreateWithoutGuildInput>
+  }
+
+  export type GiveawayCreateManyGuildInputEnvelope = {
+    data: GiveawayCreateManyGuildInput | GiveawayCreateManyGuildInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type GuildGiveawayCreateWithoutGuildInput = {
+    channelId: string
+    messageId: string
+    createdAt?: Date | string
+    giveaway: GiveawayCreateNestedOneWithoutConnectedGuildsInput
+  }
+
+  export type GuildGiveawayUncheckedCreateWithoutGuildInput = {
+    id?: number
+    channelId: string
+    messageId: string
+    giveawayId: number
+    createdAt?: Date | string
+  }
+
+  export type GuildGiveawayCreateOrConnectWithoutGuildInput = {
+    where: GuildGiveawayWhereUniqueInput
+    create: XOR<GuildGiveawayCreateWithoutGuildInput, GuildGiveawayUncheckedCreateWithoutGuildInput>
+  }
+
+  export type GuildGiveawayCreateManyGuildInputEnvelope = {
+    data: GuildGiveawayCreateManyGuildInput | GuildGiveawayCreateManyGuildInput[]
     skipDuplicates?: boolean
   }
 
@@ -25436,6 +30663,76 @@ export namespace Prisma {
     data: XOR<TransactionUpdateManyMutationInput, TransactionUncheckedUpdateManyWithoutGuildInput>
   }
 
+  export type GiveawayUpsertWithWhereUniqueWithoutGuildInput = {
+    where: GiveawayWhereUniqueInput
+    update: XOR<GiveawayUpdateWithoutGuildInput, GiveawayUncheckedUpdateWithoutGuildInput>
+    create: XOR<GiveawayCreateWithoutGuildInput, GiveawayUncheckedCreateWithoutGuildInput>
+  }
+
+  export type GiveawayUpdateWithWhereUniqueWithoutGuildInput = {
+    where: GiveawayWhereUniqueInput
+    data: XOR<GiveawayUpdateWithoutGuildInput, GiveawayUncheckedUpdateWithoutGuildInput>
+  }
+
+  export type GiveawayUpdateManyWithWhereWithoutGuildInput = {
+    where: GiveawayScalarWhereInput
+    data: XOR<GiveawayUpdateManyMutationInput, GiveawayUncheckedUpdateManyWithoutGuildInput>
+  }
+
+  export type GiveawayScalarWhereInput = {
+    AND?: GiveawayScalarWhereInput | GiveawayScalarWhereInput[]
+    OR?: GiveawayScalarWhereInput[]
+    NOT?: GiveawayScalarWhereInput | GiveawayScalarWhereInput[]
+    id?: IntFilter<"Giveaway"> | number
+    localId?: IntFilter<"Giveaway"> | number
+    guildId?: StringFilter<"Giveaway"> | string
+    channelId?: StringFilter<"Giveaway"> | string
+    messageId?: StringFilter<"Giveaway"> | string
+    title?: StringFilter<"Giveaway"> | string
+    description?: StringNullableFilter<"Giveaway"> | string | null
+    blackListRoles?: StringNullableListFilter<"Giveaway">
+    blackListMembers?: StringNullableListFilter<"Giveaway">
+    onlyRoles?: StringNullableListFilter<"Giveaway">
+    rolesMultipleEntry?: JsonNullableFilter<"Giveaway">
+    serverStayRequired?: StringNullableListFilter<"Giveaway">
+    xpRequired?: IntNullableFilter<"Giveaway"> | number | null
+    messagesRequired?: IntNullableFilter<"Giveaway"> | number | null
+    messagesInChannelRequired?: JsonNullableFilter<"Giveaway">
+    messagesInGuidsRequired?: JsonNullableFilter<"Giveaway">
+    winnersIds?: StringNullableListFilter<"Giveaway">
+    expiresAt?: DateTimeFilter<"Giveaway"> | Date | string
+    createdAt?: DateTimeFilter<"Giveaway"> | Date | string
+    updatedAt?: DateTimeFilter<"Giveaway"> | Date | string
+  }
+
+  export type GuildGiveawayUpsertWithWhereUniqueWithoutGuildInput = {
+    where: GuildGiveawayWhereUniqueInput
+    update: XOR<GuildGiveawayUpdateWithoutGuildInput, GuildGiveawayUncheckedUpdateWithoutGuildInput>
+    create: XOR<GuildGiveawayCreateWithoutGuildInput, GuildGiveawayUncheckedCreateWithoutGuildInput>
+  }
+
+  export type GuildGiveawayUpdateWithWhereUniqueWithoutGuildInput = {
+    where: GuildGiveawayWhereUniqueInput
+    data: XOR<GuildGiveawayUpdateWithoutGuildInput, GuildGiveawayUncheckedUpdateWithoutGuildInput>
+  }
+
+  export type GuildGiveawayUpdateManyWithWhereWithoutGuildInput = {
+    where: GuildGiveawayScalarWhereInput
+    data: XOR<GuildGiveawayUpdateManyMutationInput, GuildGiveawayUncheckedUpdateManyWithoutGuildInput>
+  }
+
+  export type GuildGiveawayScalarWhereInput = {
+    AND?: GuildGiveawayScalarWhereInput | GuildGiveawayScalarWhereInput[]
+    OR?: GuildGiveawayScalarWhereInput[]
+    NOT?: GuildGiveawayScalarWhereInput | GuildGiveawayScalarWhereInput[]
+    id?: IntFilter<"GuildGiveaway"> | number
+    guildId?: StringFilter<"GuildGiveaway"> | string
+    channelId?: StringFilter<"GuildGiveaway"> | string
+    messageId?: StringFilter<"GuildGiveaway"> | string
+    giveawayId?: IntFilter<"GuildGiveaway"> | number
+    createdAt?: DateTimeFilter<"GuildGiveaway"> | Date | string
+  }
+
   export type GuildSettingsCreateWithoutMembersInput = {
     id: string
     chatBotChannels?: GuildSettingsCreatechatBotChannelsInput | string[]
@@ -25453,6 +30750,8 @@ export namespace Prisma {
     warnLevelUp?: JsonNullValueInput | InputJsonValue
     levelGrant?: JsonNullValueInput | InputJsonValue
     transactions?: TransactionCreateNestedManyWithoutGuildInput
+    giveaways?: GiveawayCreateNestedManyWithoutGuildInput
+    connectedGiveaways?: GuildGiveawayCreateNestedManyWithoutGuildInput
   }
 
   export type GuildSettingsUncheckedCreateWithoutMembersInput = {
@@ -25472,6 +30771,8 @@ export namespace Prisma {
     warnLevelUp?: JsonNullValueInput | InputJsonValue
     levelGrant?: JsonNullValueInput | InputJsonValue
     transactions?: TransactionUncheckedCreateNestedManyWithoutGuildInput
+    giveaways?: GiveawayUncheckedCreateNestedManyWithoutGuildInput
+    connectedGiveaways?: GuildGiveawayUncheckedCreateNestedManyWithoutGuildInput
   }
 
   export type GuildSettingsCreateOrConnectWithoutMembersInput = {
@@ -25496,8 +30797,9 @@ export namespace Prisma {
     mails?: MailsCreateNestedManyWithoutUserInput
     sendedMails?: MailsCreateNestedManyWithoutWhoSendUserInput
     applications?: ApplicationCreateNestedManyWithoutOwnerInput
-    ransactionsSent?: TransactionCreateNestedManyWithoutUserInput
+    transactionsSent?: TransactionCreateNestedManyWithoutUserInput
     transactionsReceived?: TransactionCreateNestedManyWithoutTargetInput
+    giveaways?: UserGiveawayCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutGuildsInput = {
@@ -25517,8 +30819,9 @@ export namespace Prisma {
     mails?: MailsUncheckedCreateNestedManyWithoutUserInput
     sendedMails?: MailsUncheckedCreateNestedManyWithoutWhoSendUserInput
     applications?: ApplicationUncheckedCreateNestedManyWithoutOwnerInput
-    ransactionsSent?: TransactionUncheckedCreateNestedManyWithoutUserInput
+    transactionsSent?: TransactionUncheckedCreateNestedManyWithoutUserInput
     transactionsReceived?: TransactionUncheckedCreateNestedManyWithoutTargetInput
+    giveaways?: UserGiveawayUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutGuildsInput = {
@@ -25554,6 +30857,8 @@ export namespace Prisma {
     warnLevelUp?: JsonNullValueInput | InputJsonValue
     levelGrant?: JsonNullValueInput | InputJsonValue
     transactions?: TransactionUpdateManyWithoutGuildNestedInput
+    giveaways?: GiveawayUpdateManyWithoutGuildNestedInput
+    connectedGiveaways?: GuildGiveawayUpdateManyWithoutGuildNestedInput
   }
 
   export type GuildSettingsUncheckedUpdateWithoutMembersInput = {
@@ -25573,6 +30878,8 @@ export namespace Prisma {
     warnLevelUp?: JsonNullValueInput | InputJsonValue
     levelGrant?: JsonNullValueInput | InputJsonValue
     transactions?: TransactionUncheckedUpdateManyWithoutGuildNestedInput
+    giveaways?: GiveawayUncheckedUpdateManyWithoutGuildNestedInput
+    connectedGiveaways?: GuildGiveawayUncheckedUpdateManyWithoutGuildNestedInput
   }
 
   export type UserUpsertWithoutGuildsInput = {
@@ -25603,8 +30910,9 @@ export namespace Prisma {
     mails?: MailsUpdateManyWithoutUserNestedInput
     sendedMails?: MailsUpdateManyWithoutWhoSendUserNestedInput
     applications?: ApplicationUpdateManyWithoutOwnerNestedInput
-    ransactionsSent?: TransactionUpdateManyWithoutUserNestedInput
+    transactionsSent?: TransactionUpdateManyWithoutUserNestedInput
     transactionsReceived?: TransactionUpdateManyWithoutTargetNestedInput
+    giveaways?: UserGiveawayUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutGuildsInput = {
@@ -25624,8 +30932,9 @@ export namespace Prisma {
     mails?: MailsUncheckedUpdateManyWithoutUserNestedInput
     sendedMails?: MailsUncheckedUpdateManyWithoutWhoSendUserNestedInput
     applications?: ApplicationUncheckedUpdateManyWithoutOwnerNestedInput
-    ransactionsSent?: TransactionUncheckedUpdateManyWithoutUserNestedInput
+    transactionsSent?: TransactionUncheckedUpdateManyWithoutUserNestedInput
     transactionsReceived?: TransactionUncheckedUpdateManyWithoutTargetNestedInput
+    giveaways?: UserGiveawayUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutMailsInput = {
@@ -25645,8 +30954,9 @@ export namespace Prisma {
     sendedMails?: MailsCreateNestedManyWithoutWhoSendUserInput
     applications?: ApplicationCreateNestedManyWithoutOwnerInput
     guilds?: GuildMemberCreateNestedManyWithoutUserInput
-    ransactionsSent?: TransactionCreateNestedManyWithoutUserInput
+    transactionsSent?: TransactionCreateNestedManyWithoutUserInput
     transactionsReceived?: TransactionCreateNestedManyWithoutTargetInput
+    giveaways?: UserGiveawayCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutMailsInput = {
@@ -25666,8 +30976,9 @@ export namespace Prisma {
     sendedMails?: MailsUncheckedCreateNestedManyWithoutWhoSendUserInput
     applications?: ApplicationUncheckedCreateNestedManyWithoutOwnerInput
     guilds?: GuildMemberUncheckedCreateNestedManyWithoutUserInput
-    ransactionsSent?: TransactionUncheckedCreateNestedManyWithoutUserInput
+    transactionsSent?: TransactionUncheckedCreateNestedManyWithoutUserInput
     transactionsReceived?: TransactionUncheckedCreateNestedManyWithoutTargetInput
+    giveaways?: UserGiveawayUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutMailsInput = {
@@ -25692,8 +31003,9 @@ export namespace Prisma {
     mails?: MailsCreateNestedManyWithoutUserInput
     applications?: ApplicationCreateNestedManyWithoutOwnerInput
     guilds?: GuildMemberCreateNestedManyWithoutUserInput
-    ransactionsSent?: TransactionCreateNestedManyWithoutUserInput
+    transactionsSent?: TransactionCreateNestedManyWithoutUserInput
     transactionsReceived?: TransactionCreateNestedManyWithoutTargetInput
+    giveaways?: UserGiveawayCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutSendedMailsInput = {
@@ -25713,8 +31025,9 @@ export namespace Prisma {
     mails?: MailsUncheckedCreateNestedManyWithoutUserInput
     applications?: ApplicationUncheckedCreateNestedManyWithoutOwnerInput
     guilds?: GuildMemberUncheckedCreateNestedManyWithoutUserInput
-    ransactionsSent?: TransactionUncheckedCreateNestedManyWithoutUserInput
+    transactionsSent?: TransactionUncheckedCreateNestedManyWithoutUserInput
     transactionsReceived?: TransactionUncheckedCreateNestedManyWithoutTargetInput
+    giveaways?: UserGiveawayUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutSendedMailsInput = {
@@ -25750,8 +31063,9 @@ export namespace Prisma {
     sendedMails?: MailsUpdateManyWithoutWhoSendUserNestedInput
     applications?: ApplicationUpdateManyWithoutOwnerNestedInput
     guilds?: GuildMemberUpdateManyWithoutUserNestedInput
-    ransactionsSent?: TransactionUpdateManyWithoutUserNestedInput
+    transactionsSent?: TransactionUpdateManyWithoutUserNestedInput
     transactionsReceived?: TransactionUpdateManyWithoutTargetNestedInput
+    giveaways?: UserGiveawayUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutMailsInput = {
@@ -25771,8 +31085,9 @@ export namespace Prisma {
     sendedMails?: MailsUncheckedUpdateManyWithoutWhoSendUserNestedInput
     applications?: ApplicationUncheckedUpdateManyWithoutOwnerNestedInput
     guilds?: GuildMemberUncheckedUpdateManyWithoutUserNestedInput
-    ransactionsSent?: TransactionUncheckedUpdateManyWithoutUserNestedInput
+    transactionsSent?: TransactionUncheckedUpdateManyWithoutUserNestedInput
     transactionsReceived?: TransactionUncheckedUpdateManyWithoutTargetNestedInput
+    giveaways?: UserGiveawayUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserUpsertWithoutSendedMailsInput = {
@@ -25803,8 +31118,9 @@ export namespace Prisma {
     mails?: MailsUpdateManyWithoutUserNestedInput
     applications?: ApplicationUpdateManyWithoutOwnerNestedInput
     guilds?: GuildMemberUpdateManyWithoutUserNestedInput
-    ransactionsSent?: TransactionUpdateManyWithoutUserNestedInput
+    transactionsSent?: TransactionUpdateManyWithoutUserNestedInput
     transactionsReceived?: TransactionUpdateManyWithoutTargetNestedInput
+    giveaways?: UserGiveawayUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSendedMailsInput = {
@@ -25824,8 +31140,611 @@ export namespace Prisma {
     mails?: MailsUncheckedUpdateManyWithoutUserNestedInput
     applications?: ApplicationUncheckedUpdateManyWithoutOwnerNestedInput
     guilds?: GuildMemberUncheckedUpdateManyWithoutUserNestedInput
-    ransactionsSent?: TransactionUncheckedUpdateManyWithoutUserNestedInput
+    transactionsSent?: TransactionUncheckedUpdateManyWithoutUserNestedInput
     transactionsReceived?: TransactionUncheckedUpdateManyWithoutTargetNestedInput
+    giveaways?: UserGiveawayUncheckedUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserGiveawayCreateWithoutGiveawayInput = {
+    createdAt?: Date | string
+    user: UserCreateNestedOneWithoutGiveawaysInput
+  }
+
+  export type UserGiveawayUncheckedCreateWithoutGiveawayInput = {
+    id?: number
+    userId: string
+    createdAt?: Date | string
+  }
+
+  export type UserGiveawayCreateOrConnectWithoutGiveawayInput = {
+    where: UserGiveawayWhereUniqueInput
+    create: XOR<UserGiveawayCreateWithoutGiveawayInput, UserGiveawayUncheckedCreateWithoutGiveawayInput>
+  }
+
+  export type UserGiveawayCreateManyGiveawayInputEnvelope = {
+    data: UserGiveawayCreateManyGiveawayInput | UserGiveawayCreateManyGiveawayInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type GuildSettingsCreateWithoutGiveawaysInput = {
+    id: string
+    chatBotChannels?: GuildSettingsCreatechatBotChannelsInput | string[]
+    chatBotEnabled?: boolean
+    channelsCommandDisabled?: GuildSettingsCreatechannelsCommandDisabledInput | string[]
+    channelsCommandDisabledIsHabilited?: boolean
+    channelsCommandEnabled?: GuildSettingsCreatechannelsCommandEnabledInput | string[]
+    channelsCommandEnabledIsHabilited?: boolean
+    xpSystemEnabled?: boolean
+    difficulty?: number
+    rolesXpBonus?: JsonNullValueInput | InputJsonValue
+    rolesNotWinXp?: GuildSettingsCreaterolesNotWinXpInput | string[]
+    channelsXpBonus?: JsonNullValueInput | InputJsonValue
+    channelsNotWinXp?: GuildSettingsCreatechannelsNotWinXpInput | string[]
+    warnLevelUp?: JsonNullValueInput | InputJsonValue
+    levelGrant?: JsonNullValueInput | InputJsonValue
+    members?: GuildMemberCreateNestedManyWithoutGuildInput
+    transactions?: TransactionCreateNestedManyWithoutGuildInput
+    connectedGiveaways?: GuildGiveawayCreateNestedManyWithoutGuildInput
+  }
+
+  export type GuildSettingsUncheckedCreateWithoutGiveawaysInput = {
+    id: string
+    chatBotChannels?: GuildSettingsCreatechatBotChannelsInput | string[]
+    chatBotEnabled?: boolean
+    channelsCommandDisabled?: GuildSettingsCreatechannelsCommandDisabledInput | string[]
+    channelsCommandDisabledIsHabilited?: boolean
+    channelsCommandEnabled?: GuildSettingsCreatechannelsCommandEnabledInput | string[]
+    channelsCommandEnabledIsHabilited?: boolean
+    xpSystemEnabled?: boolean
+    difficulty?: number
+    rolesXpBonus?: JsonNullValueInput | InputJsonValue
+    rolesNotWinXp?: GuildSettingsCreaterolesNotWinXpInput | string[]
+    channelsXpBonus?: JsonNullValueInput | InputJsonValue
+    channelsNotWinXp?: GuildSettingsCreatechannelsNotWinXpInput | string[]
+    warnLevelUp?: JsonNullValueInput | InputJsonValue
+    levelGrant?: JsonNullValueInput | InputJsonValue
+    members?: GuildMemberUncheckedCreateNestedManyWithoutGuildInput
+    transactions?: TransactionUncheckedCreateNestedManyWithoutGuildInput
+    connectedGiveaways?: GuildGiveawayUncheckedCreateNestedManyWithoutGuildInput
+  }
+
+  export type GuildSettingsCreateOrConnectWithoutGiveawaysInput = {
+    where: GuildSettingsWhereUniqueInput
+    create: XOR<GuildSettingsCreateWithoutGiveawaysInput, GuildSettingsUncheckedCreateWithoutGiveawaysInput>
+  }
+
+  export type GuildGiveawayCreateWithoutGiveawayInput = {
+    channelId: string
+    messageId: string
+    createdAt?: Date | string
+    guild: GuildSettingsCreateNestedOneWithoutConnectedGiveawaysInput
+  }
+
+  export type GuildGiveawayUncheckedCreateWithoutGiveawayInput = {
+    id?: number
+    guildId: string
+    channelId: string
+    messageId: string
+    createdAt?: Date | string
+  }
+
+  export type GuildGiveawayCreateOrConnectWithoutGiveawayInput = {
+    where: GuildGiveawayWhereUniqueInput
+    create: XOR<GuildGiveawayCreateWithoutGiveawayInput, GuildGiveawayUncheckedCreateWithoutGiveawayInput>
+  }
+
+  export type GuildGiveawayCreateManyGiveawayInputEnvelope = {
+    data: GuildGiveawayCreateManyGiveawayInput | GuildGiveawayCreateManyGiveawayInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type UserGiveawayUpsertWithWhereUniqueWithoutGiveawayInput = {
+    where: UserGiveawayWhereUniqueInput
+    update: XOR<UserGiveawayUpdateWithoutGiveawayInput, UserGiveawayUncheckedUpdateWithoutGiveawayInput>
+    create: XOR<UserGiveawayCreateWithoutGiveawayInput, UserGiveawayUncheckedCreateWithoutGiveawayInput>
+  }
+
+  export type UserGiveawayUpdateWithWhereUniqueWithoutGiveawayInput = {
+    where: UserGiveawayWhereUniqueInput
+    data: XOR<UserGiveawayUpdateWithoutGiveawayInput, UserGiveawayUncheckedUpdateWithoutGiveawayInput>
+  }
+
+  export type UserGiveawayUpdateManyWithWhereWithoutGiveawayInput = {
+    where: UserGiveawayScalarWhereInput
+    data: XOR<UserGiveawayUpdateManyMutationInput, UserGiveawayUncheckedUpdateManyWithoutGiveawayInput>
+  }
+
+  export type GuildSettingsUpsertWithoutGiveawaysInput = {
+    update: XOR<GuildSettingsUpdateWithoutGiveawaysInput, GuildSettingsUncheckedUpdateWithoutGiveawaysInput>
+    create: XOR<GuildSettingsCreateWithoutGiveawaysInput, GuildSettingsUncheckedCreateWithoutGiveawaysInput>
+    where?: GuildSettingsWhereInput
+  }
+
+  export type GuildSettingsUpdateToOneWithWhereWithoutGiveawaysInput = {
+    where?: GuildSettingsWhereInput
+    data: XOR<GuildSettingsUpdateWithoutGiveawaysInput, GuildSettingsUncheckedUpdateWithoutGiveawaysInput>
+  }
+
+  export type GuildSettingsUpdateWithoutGiveawaysInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    chatBotChannels?: GuildSettingsUpdatechatBotChannelsInput | string[]
+    chatBotEnabled?: BoolFieldUpdateOperationsInput | boolean
+    channelsCommandDisabled?: GuildSettingsUpdatechannelsCommandDisabledInput | string[]
+    channelsCommandDisabledIsHabilited?: BoolFieldUpdateOperationsInput | boolean
+    channelsCommandEnabled?: GuildSettingsUpdatechannelsCommandEnabledInput | string[]
+    channelsCommandEnabledIsHabilited?: BoolFieldUpdateOperationsInput | boolean
+    xpSystemEnabled?: BoolFieldUpdateOperationsInput | boolean
+    difficulty?: FloatFieldUpdateOperationsInput | number
+    rolesXpBonus?: JsonNullValueInput | InputJsonValue
+    rolesNotWinXp?: GuildSettingsUpdaterolesNotWinXpInput | string[]
+    channelsXpBonus?: JsonNullValueInput | InputJsonValue
+    channelsNotWinXp?: GuildSettingsUpdatechannelsNotWinXpInput | string[]
+    warnLevelUp?: JsonNullValueInput | InputJsonValue
+    levelGrant?: JsonNullValueInput | InputJsonValue
+    members?: GuildMemberUpdateManyWithoutGuildNestedInput
+    transactions?: TransactionUpdateManyWithoutGuildNestedInput
+    connectedGiveaways?: GuildGiveawayUpdateManyWithoutGuildNestedInput
+  }
+
+  export type GuildSettingsUncheckedUpdateWithoutGiveawaysInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    chatBotChannels?: GuildSettingsUpdatechatBotChannelsInput | string[]
+    chatBotEnabled?: BoolFieldUpdateOperationsInput | boolean
+    channelsCommandDisabled?: GuildSettingsUpdatechannelsCommandDisabledInput | string[]
+    channelsCommandDisabledIsHabilited?: BoolFieldUpdateOperationsInput | boolean
+    channelsCommandEnabled?: GuildSettingsUpdatechannelsCommandEnabledInput | string[]
+    channelsCommandEnabledIsHabilited?: BoolFieldUpdateOperationsInput | boolean
+    xpSystemEnabled?: BoolFieldUpdateOperationsInput | boolean
+    difficulty?: FloatFieldUpdateOperationsInput | number
+    rolesXpBonus?: JsonNullValueInput | InputJsonValue
+    rolesNotWinXp?: GuildSettingsUpdaterolesNotWinXpInput | string[]
+    channelsXpBonus?: JsonNullValueInput | InputJsonValue
+    channelsNotWinXp?: GuildSettingsUpdatechannelsNotWinXpInput | string[]
+    warnLevelUp?: JsonNullValueInput | InputJsonValue
+    levelGrant?: JsonNullValueInput | InputJsonValue
+    members?: GuildMemberUncheckedUpdateManyWithoutGuildNestedInput
+    transactions?: TransactionUncheckedUpdateManyWithoutGuildNestedInput
+    connectedGiveaways?: GuildGiveawayUncheckedUpdateManyWithoutGuildNestedInput
+  }
+
+  export type GuildGiveawayUpsertWithWhereUniqueWithoutGiveawayInput = {
+    where: GuildGiveawayWhereUniqueInput
+    update: XOR<GuildGiveawayUpdateWithoutGiveawayInput, GuildGiveawayUncheckedUpdateWithoutGiveawayInput>
+    create: XOR<GuildGiveawayCreateWithoutGiveawayInput, GuildGiveawayUncheckedCreateWithoutGiveawayInput>
+  }
+
+  export type GuildGiveawayUpdateWithWhereUniqueWithoutGiveawayInput = {
+    where: GuildGiveawayWhereUniqueInput
+    data: XOR<GuildGiveawayUpdateWithoutGiveawayInput, GuildGiveawayUncheckedUpdateWithoutGiveawayInput>
+  }
+
+  export type GuildGiveawayUpdateManyWithWhereWithoutGiveawayInput = {
+    where: GuildGiveawayScalarWhereInput
+    data: XOR<GuildGiveawayUpdateManyMutationInput, GuildGiveawayUncheckedUpdateManyWithoutGiveawayInput>
+  }
+
+  export type UserCreateWithoutGiveawaysInput = {
+    id: string
+    money?: Decimal | DecimalJsLike | number | string
+    bank?: Decimal | DecimalJsLike | number | string
+    xp?: number
+    mailsTagsIgnored?: UserCreatemailsTagsIgnoredInput | string[]
+    dmNotification?: boolean
+    token?: NullableJsonNullValueInput | InputJsonValue
+    afkReasson?: string | null
+    afkTime?: Date | string | null
+    company?: CompanyCreateNestedOneWithoutWorkersInput
+    logs?: LogCreateNestedManyWithoutUserInput
+    cooldowns?: CooldownCreateNestedManyWithoutUserInput
+    stocks?: StockHoldingCreateNestedManyWithoutUserInput
+    mails?: MailsCreateNestedManyWithoutUserInput
+    sendedMails?: MailsCreateNestedManyWithoutWhoSendUserInput
+    applications?: ApplicationCreateNestedManyWithoutOwnerInput
+    guilds?: GuildMemberCreateNestedManyWithoutUserInput
+    transactionsSent?: TransactionCreateNestedManyWithoutUserInput
+    transactionsReceived?: TransactionCreateNestedManyWithoutTargetInput
+  }
+
+  export type UserUncheckedCreateWithoutGiveawaysInput = {
+    id: string
+    money?: Decimal | DecimalJsLike | number | string
+    bank?: Decimal | DecimalJsLike | number | string
+    xp?: number
+    companyId?: number | null
+    mailsTagsIgnored?: UserCreatemailsTagsIgnoredInput | string[]
+    dmNotification?: boolean
+    token?: NullableJsonNullValueInput | InputJsonValue
+    afkReasson?: string | null
+    afkTime?: Date | string | null
+    logs?: LogUncheckedCreateNestedManyWithoutUserInput
+    cooldowns?: CooldownUncheckedCreateNestedManyWithoutUserInput
+    stocks?: StockHoldingUncheckedCreateNestedManyWithoutUserInput
+    mails?: MailsUncheckedCreateNestedManyWithoutUserInput
+    sendedMails?: MailsUncheckedCreateNestedManyWithoutWhoSendUserInput
+    applications?: ApplicationUncheckedCreateNestedManyWithoutOwnerInput
+    guilds?: GuildMemberUncheckedCreateNestedManyWithoutUserInput
+    transactionsSent?: TransactionUncheckedCreateNestedManyWithoutUserInput
+    transactionsReceived?: TransactionUncheckedCreateNestedManyWithoutTargetInput
+  }
+
+  export type UserCreateOrConnectWithoutGiveawaysInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutGiveawaysInput, UserUncheckedCreateWithoutGiveawaysInput>
+  }
+
+  export type GiveawayCreateWithoutParticipantsInput = {
+    localId: number
+    channelId: string
+    messageId: string
+    title: string
+    description?: string | null
+    blackListRoles?: GiveawayCreateblackListRolesInput | string[]
+    blackListMembers?: GiveawayCreateblackListMembersInput | string[]
+    onlyRoles?: GiveawayCreateonlyRolesInput | string[]
+    rolesMultipleEntry?: NullableJsonNullValueInput | InputJsonValue
+    serverStayRequired?: GiveawayCreateserverStayRequiredInput | string[]
+    xpRequired?: number | null
+    messagesRequired?: number | null
+    messagesInChannelRequired?: NullableJsonNullValueInput | InputJsonValue
+    messagesInGuidsRequired?: NullableJsonNullValueInput | InputJsonValue
+    winnersIds?: GiveawayCreatewinnersIdsInput | string[]
+    expiresAt: Date | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    guild: GuildSettingsCreateNestedOneWithoutGiveawaysInput
+    connectedGuilds?: GuildGiveawayCreateNestedManyWithoutGiveawayInput
+  }
+
+  export type GiveawayUncheckedCreateWithoutParticipantsInput = {
+    id?: number
+    localId: number
+    guildId: string
+    channelId: string
+    messageId: string
+    title: string
+    description?: string | null
+    blackListRoles?: GiveawayCreateblackListRolesInput | string[]
+    blackListMembers?: GiveawayCreateblackListMembersInput | string[]
+    onlyRoles?: GiveawayCreateonlyRolesInput | string[]
+    rolesMultipleEntry?: NullableJsonNullValueInput | InputJsonValue
+    serverStayRequired?: GiveawayCreateserverStayRequiredInput | string[]
+    xpRequired?: number | null
+    messagesRequired?: number | null
+    messagesInChannelRequired?: NullableJsonNullValueInput | InputJsonValue
+    messagesInGuidsRequired?: NullableJsonNullValueInput | InputJsonValue
+    winnersIds?: GiveawayCreatewinnersIdsInput | string[]
+    expiresAt: Date | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    connectedGuilds?: GuildGiveawayUncheckedCreateNestedManyWithoutGiveawayInput
+  }
+
+  export type GiveawayCreateOrConnectWithoutParticipantsInput = {
+    where: GiveawayWhereUniqueInput
+    create: XOR<GiveawayCreateWithoutParticipantsInput, GiveawayUncheckedCreateWithoutParticipantsInput>
+  }
+
+  export type UserUpsertWithoutGiveawaysInput = {
+    update: XOR<UserUpdateWithoutGiveawaysInput, UserUncheckedUpdateWithoutGiveawaysInput>
+    create: XOR<UserCreateWithoutGiveawaysInput, UserUncheckedCreateWithoutGiveawaysInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutGiveawaysInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutGiveawaysInput, UserUncheckedUpdateWithoutGiveawaysInput>
+  }
+
+  export type UserUpdateWithoutGiveawaysInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    money?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    bank?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    xp?: IntFieldUpdateOperationsInput | number
+    mailsTagsIgnored?: UserUpdatemailsTagsIgnoredInput | string[]
+    dmNotification?: BoolFieldUpdateOperationsInput | boolean
+    token?: NullableJsonNullValueInput | InputJsonValue
+    afkReasson?: NullableStringFieldUpdateOperationsInput | string | null
+    afkTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    company?: CompanyUpdateOneWithoutWorkersNestedInput
+    logs?: LogUpdateManyWithoutUserNestedInput
+    cooldowns?: CooldownUpdateManyWithoutUserNestedInput
+    stocks?: StockHoldingUpdateManyWithoutUserNestedInput
+    mails?: MailsUpdateManyWithoutUserNestedInput
+    sendedMails?: MailsUpdateManyWithoutWhoSendUserNestedInput
+    applications?: ApplicationUpdateManyWithoutOwnerNestedInput
+    guilds?: GuildMemberUpdateManyWithoutUserNestedInput
+    transactionsSent?: TransactionUpdateManyWithoutUserNestedInput
+    transactionsReceived?: TransactionUpdateManyWithoutTargetNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutGiveawaysInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    money?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    bank?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    xp?: IntFieldUpdateOperationsInput | number
+    companyId?: NullableIntFieldUpdateOperationsInput | number | null
+    mailsTagsIgnored?: UserUpdatemailsTagsIgnoredInput | string[]
+    dmNotification?: BoolFieldUpdateOperationsInput | boolean
+    token?: NullableJsonNullValueInput | InputJsonValue
+    afkReasson?: NullableStringFieldUpdateOperationsInput | string | null
+    afkTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    logs?: LogUncheckedUpdateManyWithoutUserNestedInput
+    cooldowns?: CooldownUncheckedUpdateManyWithoutUserNestedInput
+    stocks?: StockHoldingUncheckedUpdateManyWithoutUserNestedInput
+    mails?: MailsUncheckedUpdateManyWithoutUserNestedInput
+    sendedMails?: MailsUncheckedUpdateManyWithoutWhoSendUserNestedInput
+    applications?: ApplicationUncheckedUpdateManyWithoutOwnerNestedInput
+    guilds?: GuildMemberUncheckedUpdateManyWithoutUserNestedInput
+    transactionsSent?: TransactionUncheckedUpdateManyWithoutUserNestedInput
+    transactionsReceived?: TransactionUncheckedUpdateManyWithoutTargetNestedInput
+  }
+
+  export type GiveawayUpsertWithoutParticipantsInput = {
+    update: XOR<GiveawayUpdateWithoutParticipantsInput, GiveawayUncheckedUpdateWithoutParticipantsInput>
+    create: XOR<GiveawayCreateWithoutParticipantsInput, GiveawayUncheckedCreateWithoutParticipantsInput>
+    where?: GiveawayWhereInput
+  }
+
+  export type GiveawayUpdateToOneWithWhereWithoutParticipantsInput = {
+    where?: GiveawayWhereInput
+    data: XOR<GiveawayUpdateWithoutParticipantsInput, GiveawayUncheckedUpdateWithoutParticipantsInput>
+  }
+
+  export type GiveawayUpdateWithoutParticipantsInput = {
+    localId?: IntFieldUpdateOperationsInput | number
+    channelId?: StringFieldUpdateOperationsInput | string
+    messageId?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    blackListRoles?: GiveawayUpdateblackListRolesInput | string[]
+    blackListMembers?: GiveawayUpdateblackListMembersInput | string[]
+    onlyRoles?: GiveawayUpdateonlyRolesInput | string[]
+    rolesMultipleEntry?: NullableJsonNullValueInput | InputJsonValue
+    serverStayRequired?: GiveawayUpdateserverStayRequiredInput | string[]
+    xpRequired?: NullableIntFieldUpdateOperationsInput | number | null
+    messagesRequired?: NullableIntFieldUpdateOperationsInput | number | null
+    messagesInChannelRequired?: NullableJsonNullValueInput | InputJsonValue
+    messagesInGuidsRequired?: NullableJsonNullValueInput | InputJsonValue
+    winnersIds?: GiveawayUpdatewinnersIdsInput | string[]
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    guild?: GuildSettingsUpdateOneRequiredWithoutGiveawaysNestedInput
+    connectedGuilds?: GuildGiveawayUpdateManyWithoutGiveawayNestedInput
+  }
+
+  export type GiveawayUncheckedUpdateWithoutParticipantsInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    localId?: IntFieldUpdateOperationsInput | number
+    guildId?: StringFieldUpdateOperationsInput | string
+    channelId?: StringFieldUpdateOperationsInput | string
+    messageId?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    blackListRoles?: GiveawayUpdateblackListRolesInput | string[]
+    blackListMembers?: GiveawayUpdateblackListMembersInput | string[]
+    onlyRoles?: GiveawayUpdateonlyRolesInput | string[]
+    rolesMultipleEntry?: NullableJsonNullValueInput | InputJsonValue
+    serverStayRequired?: GiveawayUpdateserverStayRequiredInput | string[]
+    xpRequired?: NullableIntFieldUpdateOperationsInput | number | null
+    messagesRequired?: NullableIntFieldUpdateOperationsInput | number | null
+    messagesInChannelRequired?: NullableJsonNullValueInput | InputJsonValue
+    messagesInGuidsRequired?: NullableJsonNullValueInput | InputJsonValue
+    winnersIds?: GiveawayUpdatewinnersIdsInput | string[]
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    connectedGuilds?: GuildGiveawayUncheckedUpdateManyWithoutGiveawayNestedInput
+  }
+
+  export type GuildSettingsCreateWithoutConnectedGiveawaysInput = {
+    id: string
+    chatBotChannels?: GuildSettingsCreatechatBotChannelsInput | string[]
+    chatBotEnabled?: boolean
+    channelsCommandDisabled?: GuildSettingsCreatechannelsCommandDisabledInput | string[]
+    channelsCommandDisabledIsHabilited?: boolean
+    channelsCommandEnabled?: GuildSettingsCreatechannelsCommandEnabledInput | string[]
+    channelsCommandEnabledIsHabilited?: boolean
+    xpSystemEnabled?: boolean
+    difficulty?: number
+    rolesXpBonus?: JsonNullValueInput | InputJsonValue
+    rolesNotWinXp?: GuildSettingsCreaterolesNotWinXpInput | string[]
+    channelsXpBonus?: JsonNullValueInput | InputJsonValue
+    channelsNotWinXp?: GuildSettingsCreatechannelsNotWinXpInput | string[]
+    warnLevelUp?: JsonNullValueInput | InputJsonValue
+    levelGrant?: JsonNullValueInput | InputJsonValue
+    members?: GuildMemberCreateNestedManyWithoutGuildInput
+    transactions?: TransactionCreateNestedManyWithoutGuildInput
+    giveaways?: GiveawayCreateNestedManyWithoutGuildInput
+  }
+
+  export type GuildSettingsUncheckedCreateWithoutConnectedGiveawaysInput = {
+    id: string
+    chatBotChannels?: GuildSettingsCreatechatBotChannelsInput | string[]
+    chatBotEnabled?: boolean
+    channelsCommandDisabled?: GuildSettingsCreatechannelsCommandDisabledInput | string[]
+    channelsCommandDisabledIsHabilited?: boolean
+    channelsCommandEnabled?: GuildSettingsCreatechannelsCommandEnabledInput | string[]
+    channelsCommandEnabledIsHabilited?: boolean
+    xpSystemEnabled?: boolean
+    difficulty?: number
+    rolesXpBonus?: JsonNullValueInput | InputJsonValue
+    rolesNotWinXp?: GuildSettingsCreaterolesNotWinXpInput | string[]
+    channelsXpBonus?: JsonNullValueInput | InputJsonValue
+    channelsNotWinXp?: GuildSettingsCreatechannelsNotWinXpInput | string[]
+    warnLevelUp?: JsonNullValueInput | InputJsonValue
+    levelGrant?: JsonNullValueInput | InputJsonValue
+    members?: GuildMemberUncheckedCreateNestedManyWithoutGuildInput
+    transactions?: TransactionUncheckedCreateNestedManyWithoutGuildInput
+    giveaways?: GiveawayUncheckedCreateNestedManyWithoutGuildInput
+  }
+
+  export type GuildSettingsCreateOrConnectWithoutConnectedGiveawaysInput = {
+    where: GuildSettingsWhereUniqueInput
+    create: XOR<GuildSettingsCreateWithoutConnectedGiveawaysInput, GuildSettingsUncheckedCreateWithoutConnectedGiveawaysInput>
+  }
+
+  export type GiveawayCreateWithoutConnectedGuildsInput = {
+    localId: number
+    channelId: string
+    messageId: string
+    title: string
+    description?: string | null
+    blackListRoles?: GiveawayCreateblackListRolesInput | string[]
+    blackListMembers?: GiveawayCreateblackListMembersInput | string[]
+    onlyRoles?: GiveawayCreateonlyRolesInput | string[]
+    rolesMultipleEntry?: NullableJsonNullValueInput | InputJsonValue
+    serverStayRequired?: GiveawayCreateserverStayRequiredInput | string[]
+    xpRequired?: number | null
+    messagesRequired?: number | null
+    messagesInChannelRequired?: NullableJsonNullValueInput | InputJsonValue
+    messagesInGuidsRequired?: NullableJsonNullValueInput | InputJsonValue
+    winnersIds?: GiveawayCreatewinnersIdsInput | string[]
+    expiresAt: Date | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    participants?: UserGiveawayCreateNestedManyWithoutGiveawayInput
+    guild: GuildSettingsCreateNestedOneWithoutGiveawaysInput
+  }
+
+  export type GiveawayUncheckedCreateWithoutConnectedGuildsInput = {
+    id?: number
+    localId: number
+    guildId: string
+    channelId: string
+    messageId: string
+    title: string
+    description?: string | null
+    blackListRoles?: GiveawayCreateblackListRolesInput | string[]
+    blackListMembers?: GiveawayCreateblackListMembersInput | string[]
+    onlyRoles?: GiveawayCreateonlyRolesInput | string[]
+    rolesMultipleEntry?: NullableJsonNullValueInput | InputJsonValue
+    serverStayRequired?: GiveawayCreateserverStayRequiredInput | string[]
+    xpRequired?: number | null
+    messagesRequired?: number | null
+    messagesInChannelRequired?: NullableJsonNullValueInput | InputJsonValue
+    messagesInGuidsRequired?: NullableJsonNullValueInput | InputJsonValue
+    winnersIds?: GiveawayCreatewinnersIdsInput | string[]
+    expiresAt: Date | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    participants?: UserGiveawayUncheckedCreateNestedManyWithoutGiveawayInput
+  }
+
+  export type GiveawayCreateOrConnectWithoutConnectedGuildsInput = {
+    where: GiveawayWhereUniqueInput
+    create: XOR<GiveawayCreateWithoutConnectedGuildsInput, GiveawayUncheckedCreateWithoutConnectedGuildsInput>
+  }
+
+  export type GuildSettingsUpsertWithoutConnectedGiveawaysInput = {
+    update: XOR<GuildSettingsUpdateWithoutConnectedGiveawaysInput, GuildSettingsUncheckedUpdateWithoutConnectedGiveawaysInput>
+    create: XOR<GuildSettingsCreateWithoutConnectedGiveawaysInput, GuildSettingsUncheckedCreateWithoutConnectedGiveawaysInput>
+    where?: GuildSettingsWhereInput
+  }
+
+  export type GuildSettingsUpdateToOneWithWhereWithoutConnectedGiveawaysInput = {
+    where?: GuildSettingsWhereInput
+    data: XOR<GuildSettingsUpdateWithoutConnectedGiveawaysInput, GuildSettingsUncheckedUpdateWithoutConnectedGiveawaysInput>
+  }
+
+  export type GuildSettingsUpdateWithoutConnectedGiveawaysInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    chatBotChannels?: GuildSettingsUpdatechatBotChannelsInput | string[]
+    chatBotEnabled?: BoolFieldUpdateOperationsInput | boolean
+    channelsCommandDisabled?: GuildSettingsUpdatechannelsCommandDisabledInput | string[]
+    channelsCommandDisabledIsHabilited?: BoolFieldUpdateOperationsInput | boolean
+    channelsCommandEnabled?: GuildSettingsUpdatechannelsCommandEnabledInput | string[]
+    channelsCommandEnabledIsHabilited?: BoolFieldUpdateOperationsInput | boolean
+    xpSystemEnabled?: BoolFieldUpdateOperationsInput | boolean
+    difficulty?: FloatFieldUpdateOperationsInput | number
+    rolesXpBonus?: JsonNullValueInput | InputJsonValue
+    rolesNotWinXp?: GuildSettingsUpdaterolesNotWinXpInput | string[]
+    channelsXpBonus?: JsonNullValueInput | InputJsonValue
+    channelsNotWinXp?: GuildSettingsUpdatechannelsNotWinXpInput | string[]
+    warnLevelUp?: JsonNullValueInput | InputJsonValue
+    levelGrant?: JsonNullValueInput | InputJsonValue
+    members?: GuildMemberUpdateManyWithoutGuildNestedInput
+    transactions?: TransactionUpdateManyWithoutGuildNestedInput
+    giveaways?: GiveawayUpdateManyWithoutGuildNestedInput
+  }
+
+  export type GuildSettingsUncheckedUpdateWithoutConnectedGiveawaysInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    chatBotChannels?: GuildSettingsUpdatechatBotChannelsInput | string[]
+    chatBotEnabled?: BoolFieldUpdateOperationsInput | boolean
+    channelsCommandDisabled?: GuildSettingsUpdatechannelsCommandDisabledInput | string[]
+    channelsCommandDisabledIsHabilited?: BoolFieldUpdateOperationsInput | boolean
+    channelsCommandEnabled?: GuildSettingsUpdatechannelsCommandEnabledInput | string[]
+    channelsCommandEnabledIsHabilited?: BoolFieldUpdateOperationsInput | boolean
+    xpSystemEnabled?: BoolFieldUpdateOperationsInput | boolean
+    difficulty?: FloatFieldUpdateOperationsInput | number
+    rolesXpBonus?: JsonNullValueInput | InputJsonValue
+    rolesNotWinXp?: GuildSettingsUpdaterolesNotWinXpInput | string[]
+    channelsXpBonus?: JsonNullValueInput | InputJsonValue
+    channelsNotWinXp?: GuildSettingsUpdatechannelsNotWinXpInput | string[]
+    warnLevelUp?: JsonNullValueInput | InputJsonValue
+    levelGrant?: JsonNullValueInput | InputJsonValue
+    members?: GuildMemberUncheckedUpdateManyWithoutGuildNestedInput
+    transactions?: TransactionUncheckedUpdateManyWithoutGuildNestedInput
+    giveaways?: GiveawayUncheckedUpdateManyWithoutGuildNestedInput
+  }
+
+  export type GiveawayUpsertWithoutConnectedGuildsInput = {
+    update: XOR<GiveawayUpdateWithoutConnectedGuildsInput, GiveawayUncheckedUpdateWithoutConnectedGuildsInput>
+    create: XOR<GiveawayCreateWithoutConnectedGuildsInput, GiveawayUncheckedCreateWithoutConnectedGuildsInput>
+    where?: GiveawayWhereInput
+  }
+
+  export type GiveawayUpdateToOneWithWhereWithoutConnectedGuildsInput = {
+    where?: GiveawayWhereInput
+    data: XOR<GiveawayUpdateWithoutConnectedGuildsInput, GiveawayUncheckedUpdateWithoutConnectedGuildsInput>
+  }
+
+  export type GiveawayUpdateWithoutConnectedGuildsInput = {
+    localId?: IntFieldUpdateOperationsInput | number
+    channelId?: StringFieldUpdateOperationsInput | string
+    messageId?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    blackListRoles?: GiveawayUpdateblackListRolesInput | string[]
+    blackListMembers?: GiveawayUpdateblackListMembersInput | string[]
+    onlyRoles?: GiveawayUpdateonlyRolesInput | string[]
+    rolesMultipleEntry?: NullableJsonNullValueInput | InputJsonValue
+    serverStayRequired?: GiveawayUpdateserverStayRequiredInput | string[]
+    xpRequired?: NullableIntFieldUpdateOperationsInput | number | null
+    messagesRequired?: NullableIntFieldUpdateOperationsInput | number | null
+    messagesInChannelRequired?: NullableJsonNullValueInput | InputJsonValue
+    messagesInGuidsRequired?: NullableJsonNullValueInput | InputJsonValue
+    winnersIds?: GiveawayUpdatewinnersIdsInput | string[]
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    participants?: UserGiveawayUpdateManyWithoutGiveawayNestedInput
+    guild?: GuildSettingsUpdateOneRequiredWithoutGiveawaysNestedInput
+  }
+
+  export type GiveawayUncheckedUpdateWithoutConnectedGuildsInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    localId?: IntFieldUpdateOperationsInput | number
+    guildId?: StringFieldUpdateOperationsInput | string
+    channelId?: StringFieldUpdateOperationsInput | string
+    messageId?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    blackListRoles?: GiveawayUpdateblackListRolesInput | string[]
+    blackListMembers?: GiveawayUpdateblackListMembersInput | string[]
+    onlyRoles?: GiveawayUpdateonlyRolesInput | string[]
+    rolesMultipleEntry?: NullableJsonNullValueInput | InputJsonValue
+    serverStayRequired?: GiveawayUpdateserverStayRequiredInput | string[]
+    xpRequired?: NullableIntFieldUpdateOperationsInput | number | null
+    messagesRequired?: NullableIntFieldUpdateOperationsInput | number | null
+    messagesInChannelRequired?: NullableJsonNullValueInput | InputJsonValue
+    messagesInGuidsRequired?: NullableJsonNullValueInput | InputJsonValue
+    winnersIds?: GiveawayUpdatewinnersIdsInput | string[]
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    participants?: UserGiveawayUncheckedUpdateManyWithoutGiveawayNestedInput
   }
 
   export type LogCreateManyUserInput = {
@@ -25910,6 +31829,12 @@ export namespace Prisma {
     reason?: string | null
     type?: $Enums.TransactionType
     status?: $Enums.TransactionStatus
+  }
+
+  export type UserGiveawayCreateManyUserInput = {
+    id?: number
+    giveawayId: number
+    createdAt?: Date | string
   }
 
   export type LogUpdateWithoutUserInput = {
@@ -26125,7 +32050,7 @@ export namespace Prisma {
     reason?: NullableStringFieldUpdateOperationsInput | string | null
     type?: EnumTransactionTypeFieldUpdateOperationsInput | $Enums.TransactionType
     status?: EnumTransactionStatusFieldUpdateOperationsInput | $Enums.TransactionStatus
-    user?: UserUpdateOneRequiredWithoutRansactionsSentNestedInput
+    user?: UserUpdateOneRequiredWithoutTransactionsSentNestedInput
     guild?: GuildSettingsUpdateOneWithoutTransactionsNestedInput
   }
 
@@ -26157,6 +32082,23 @@ export namespace Prisma {
     reason?: NullableStringFieldUpdateOperationsInput | string | null
     type?: EnumTransactionTypeFieldUpdateOperationsInput | $Enums.TransactionType
     status?: EnumTransactionStatusFieldUpdateOperationsInput | $Enums.TransactionStatus
+  }
+
+  export type UserGiveawayUpdateWithoutUserInput = {
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    giveaway?: GiveawayUpdateOneRequiredWithoutParticipantsNestedInput
+  }
+
+  export type UserGiveawayUncheckedUpdateWithoutUserInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    giveawayId?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type UserGiveawayUncheckedUpdateManyWithoutUserInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    giveawayId?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type RequisitionCreateManyApplicationInput = {
@@ -26211,8 +32153,9 @@ export namespace Prisma {
     sendedMails?: MailsUpdateManyWithoutWhoSendUserNestedInput
     applications?: ApplicationUpdateManyWithoutOwnerNestedInput
     guilds?: GuildMemberUpdateManyWithoutUserNestedInput
-    ransactionsSent?: TransactionUpdateManyWithoutUserNestedInput
+    transactionsSent?: TransactionUpdateManyWithoutUserNestedInput
     transactionsReceived?: TransactionUpdateManyWithoutTargetNestedInput
+    giveaways?: UserGiveawayUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutCompanyInput = {
@@ -26232,8 +32175,9 @@ export namespace Prisma {
     sendedMails?: MailsUncheckedUpdateManyWithoutWhoSendUserNestedInput
     applications?: ApplicationUncheckedUpdateManyWithoutOwnerNestedInput
     guilds?: GuildMemberUncheckedUpdateManyWithoutUserNestedInput
-    ransactionsSent?: TransactionUncheckedUpdateManyWithoutUserNestedInput
+    transactionsSent?: TransactionUncheckedUpdateManyWithoutUserNestedInput
     transactionsReceived?: TransactionUncheckedUpdateManyWithoutTargetNestedInput
+    giveaways?: UserGiveawayUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateManyWithoutCompanyInput = {
@@ -26317,6 +32261,36 @@ export namespace Prisma {
     status?: $Enums.TransactionStatus
   }
 
+  export type GiveawayCreateManyGuildInput = {
+    id?: number
+    localId: number
+    channelId: string
+    messageId: string
+    title: string
+    description?: string | null
+    blackListRoles?: GiveawayCreateblackListRolesInput | string[]
+    blackListMembers?: GiveawayCreateblackListMembersInput | string[]
+    onlyRoles?: GiveawayCreateonlyRolesInput | string[]
+    rolesMultipleEntry?: NullableJsonNullValueInput | InputJsonValue
+    serverStayRequired?: GiveawayCreateserverStayRequiredInput | string[]
+    xpRequired?: number | null
+    messagesRequired?: number | null
+    messagesInChannelRequired?: NullableJsonNullValueInput | InputJsonValue
+    messagesInGuidsRequired?: NullableJsonNullValueInput | InputJsonValue
+    winnersIds?: GiveawayCreatewinnersIdsInput | string[]
+    expiresAt: Date | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type GuildGiveawayCreateManyGuildInput = {
+    id?: number
+    channelId: string
+    messageId: string
+    giveawayId: number
+    createdAt?: Date | string
+  }
+
   export type GuildMemberUpdateWithoutGuildInput = {
     xp?: IntFieldUpdateOperationsInput | number
     tryviaPoints?: IntFieldUpdateOperationsInput | number
@@ -26351,7 +32325,7 @@ export namespace Prisma {
     reason?: NullableStringFieldUpdateOperationsInput | string | null
     type?: EnumTransactionTypeFieldUpdateOperationsInput | $Enums.TransactionType
     status?: EnumTransactionStatusFieldUpdateOperationsInput | $Enums.TransactionStatus
-    user?: UserUpdateOneRequiredWithoutRansactionsSentNestedInput
+    user?: UserUpdateOneRequiredWithoutTransactionsSentNestedInput
     target?: UserUpdateOneWithoutTransactionsReceivedNestedInput
   }
 
@@ -26383,6 +32357,152 @@ export namespace Prisma {
     reason?: NullableStringFieldUpdateOperationsInput | string | null
     type?: EnumTransactionTypeFieldUpdateOperationsInput | $Enums.TransactionType
     status?: EnumTransactionStatusFieldUpdateOperationsInput | $Enums.TransactionStatus
+  }
+
+  export type GiveawayUpdateWithoutGuildInput = {
+    localId?: IntFieldUpdateOperationsInput | number
+    channelId?: StringFieldUpdateOperationsInput | string
+    messageId?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    blackListRoles?: GiveawayUpdateblackListRolesInput | string[]
+    blackListMembers?: GiveawayUpdateblackListMembersInput | string[]
+    onlyRoles?: GiveawayUpdateonlyRolesInput | string[]
+    rolesMultipleEntry?: NullableJsonNullValueInput | InputJsonValue
+    serverStayRequired?: GiveawayUpdateserverStayRequiredInput | string[]
+    xpRequired?: NullableIntFieldUpdateOperationsInput | number | null
+    messagesRequired?: NullableIntFieldUpdateOperationsInput | number | null
+    messagesInChannelRequired?: NullableJsonNullValueInput | InputJsonValue
+    messagesInGuidsRequired?: NullableJsonNullValueInput | InputJsonValue
+    winnersIds?: GiveawayUpdatewinnersIdsInput | string[]
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    participants?: UserGiveawayUpdateManyWithoutGiveawayNestedInput
+    connectedGuilds?: GuildGiveawayUpdateManyWithoutGiveawayNestedInput
+  }
+
+  export type GiveawayUncheckedUpdateWithoutGuildInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    localId?: IntFieldUpdateOperationsInput | number
+    channelId?: StringFieldUpdateOperationsInput | string
+    messageId?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    blackListRoles?: GiveawayUpdateblackListRolesInput | string[]
+    blackListMembers?: GiveawayUpdateblackListMembersInput | string[]
+    onlyRoles?: GiveawayUpdateonlyRolesInput | string[]
+    rolesMultipleEntry?: NullableJsonNullValueInput | InputJsonValue
+    serverStayRequired?: GiveawayUpdateserverStayRequiredInput | string[]
+    xpRequired?: NullableIntFieldUpdateOperationsInput | number | null
+    messagesRequired?: NullableIntFieldUpdateOperationsInput | number | null
+    messagesInChannelRequired?: NullableJsonNullValueInput | InputJsonValue
+    messagesInGuidsRequired?: NullableJsonNullValueInput | InputJsonValue
+    winnersIds?: GiveawayUpdatewinnersIdsInput | string[]
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    participants?: UserGiveawayUncheckedUpdateManyWithoutGiveawayNestedInput
+    connectedGuilds?: GuildGiveawayUncheckedUpdateManyWithoutGiveawayNestedInput
+  }
+
+  export type GiveawayUncheckedUpdateManyWithoutGuildInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    localId?: IntFieldUpdateOperationsInput | number
+    channelId?: StringFieldUpdateOperationsInput | string
+    messageId?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    blackListRoles?: GiveawayUpdateblackListRolesInput | string[]
+    blackListMembers?: GiveawayUpdateblackListMembersInput | string[]
+    onlyRoles?: GiveawayUpdateonlyRolesInput | string[]
+    rolesMultipleEntry?: NullableJsonNullValueInput | InputJsonValue
+    serverStayRequired?: GiveawayUpdateserverStayRequiredInput | string[]
+    xpRequired?: NullableIntFieldUpdateOperationsInput | number | null
+    messagesRequired?: NullableIntFieldUpdateOperationsInput | number | null
+    messagesInChannelRequired?: NullableJsonNullValueInput | InputJsonValue
+    messagesInGuidsRequired?: NullableJsonNullValueInput | InputJsonValue
+    winnersIds?: GiveawayUpdatewinnersIdsInput | string[]
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type GuildGiveawayUpdateWithoutGuildInput = {
+    channelId?: StringFieldUpdateOperationsInput | string
+    messageId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    giveaway?: GiveawayUpdateOneRequiredWithoutConnectedGuildsNestedInput
+  }
+
+  export type GuildGiveawayUncheckedUpdateWithoutGuildInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    channelId?: StringFieldUpdateOperationsInput | string
+    messageId?: StringFieldUpdateOperationsInput | string
+    giveawayId?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type GuildGiveawayUncheckedUpdateManyWithoutGuildInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    channelId?: StringFieldUpdateOperationsInput | string
+    messageId?: StringFieldUpdateOperationsInput | string
+    giveawayId?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type UserGiveawayCreateManyGiveawayInput = {
+    id?: number
+    userId: string
+    createdAt?: Date | string
+  }
+
+  export type GuildGiveawayCreateManyGiveawayInput = {
+    id?: number
+    guildId: string
+    channelId: string
+    messageId: string
+    createdAt?: Date | string
+  }
+
+  export type UserGiveawayUpdateWithoutGiveawayInput = {
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutGiveawaysNestedInput
+  }
+
+  export type UserGiveawayUncheckedUpdateWithoutGiveawayInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    userId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type UserGiveawayUncheckedUpdateManyWithoutGiveawayInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    userId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type GuildGiveawayUpdateWithoutGiveawayInput = {
+    channelId?: StringFieldUpdateOperationsInput | string
+    messageId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    guild?: GuildSettingsUpdateOneRequiredWithoutConnectedGiveawaysNestedInput
+  }
+
+  export type GuildGiveawayUncheckedUpdateWithoutGiveawayInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    guildId?: StringFieldUpdateOperationsInput | string
+    channelId?: StringFieldUpdateOperationsInput | string
+    messageId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type GuildGiveawayUncheckedUpdateManyWithoutGiveawayInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    guildId?: StringFieldUpdateOperationsInput | string
+    channelId?: StringFieldUpdateOperationsInput | string
+    messageId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
 

@@ -265,7 +265,7 @@ createCommand({
                     ])
                 }
 
-                return await interaction.respond(categoriesFiltred.map(category => ({
+                return await interaction.respond(categoriesFiltred.slice(0, 25).map(category => ({
                     name: category,
                     value: category
                 })));
