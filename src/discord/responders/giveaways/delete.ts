@@ -1,6 +1,7 @@
 import { createResponder, ResponderType } from "#base";
 import { prisma } from "#database";
-import { icon, res } from "#functions";
+import { icon, res, resv2 } from "#functions";
+import { brBuilder } from "@magicyan/discord";
 import { channelMention, userMention } from "discord.js";
 
 createResponder({
@@ -14,7 +15,7 @@ createResponder({
         }
     },
     async run(interaction, { delete: isDelete, userId, giveawayId }) {
-        const { user, guild } = interaction
+        const { user, guild, client } = interaction
 
         if (user.id !== userId) {
             interaction.reply(res.danger(`${icon.denied} | Você não tem permissão pra interagir com esse botão! você precisa ser ${userMention(userId)} para isso!`));
@@ -46,15 +47,16 @@ createResponder({
             return;
         }
 
-        const guildIsConnected = giveaway.connectedGuilds.some(g => g.guildId === guild.id);
-        const guildIsHost = giveaway.guildId === guild.id;
+        const guildConnected = giveaway.connectedGuilds.find(g => g.guildId === guild.id);
 
-        if (!guildIsConnected && !guildIsHost) {
-            interaction.editReply(res.danger(`${icon.error} | Esse server não faz parte desse sorteio!`))
+        if (!guildConnected) {
+            interaction.editReply(res.danger(`${icon.error} | Esse server não faz parte desse sorteio!`));
             return;
         }
 
-        if (guildIsConnected) {
+        const guildIsHost = guildConnected.isHost;
+
+        if (!guildIsHost) {
             await prisma.guildGiveaway.delete({
                 where: {
                     guildId_giveawayId: {
@@ -62,130 +64,92 @@ createResponder({
                         guildId: guild.id
                     }
                 }
-            });
+            })
 
-            const connectInfo = giveaway.connectedGuilds.find(g => g.guildId === guild.id);
-
-            if (!connectInfo) {
-                interaction.editReply(res.danger(`${icon.error} | Não foi possivel achar as informações desse server no sorteio!`))
-                return;
-            };
-
-            let channel = interaction.guild.channels.cache.get(connectInfo.channelId) || null;
-            if (!channel) channel = await interaction.guild.channels.fetch(connectInfo.channelId);
-
+            let channel = guild.channels.cache.get(guildConnected.channelId) || null;
+            if (!channel) channel = await guild.channels.fetch(guildConnected.channelId);
             if (!channel || !channel.isTextBased()) {
-                interaction.editReply(res.danger(`${icon.error} | Não foi possivel achar o canal desse server no sorteio!, porém o servidor foi removido do sorteio com sucesso!`))
+                interaction.editReply(res.danger(`${icon.error} | Não foi possivel encontrar o canal do sorteio! mas o server foi removido do sorteio com sucesso.`))
                 return;
             }
 
-            const message = await channel.messages.fetch(connectInfo.messageId).catch((_) => null);
-
+            const message = await channel.messages.fetch(guildConnected.messageId).catch(_ => null);
             if (!message) {
-                interaction.editReply(res.danger(`${icon.error} | Não foi possivel achar a mensagem do sorteio no canal ${channelMention(channel.id)} mas o servidor foi removido do server com sucesso!`))
+                interaction.editReply(res.danger(`${icon.error} | Não foi possivel encontrar a mensagem do sorteio! mas o server foi removido do sorteio com sucesso.`))
                 return;
             }
 
-            await message.edit(res.danger(
-                `${icon.Eris_cry} | O moderador ${userMention(userId)} decidiu tirar o servidor desse sorteio!`,
-                {
-                    components: []
-                }
-            )).catch((_) => null);
+            await message.edit(resv2.danger(
+                `O moderador: ${userMention(user.id)} removeu esse server do sorteio!`
+            )).catch(_ => null)
 
-            interaction.editReply(res.success(`${icon.success} | Você retirou o server do sorteio!`, { components: [] }))
-            return;
-        }
-        if (guildIsHost && giveaway.connectedGuilds.length < 1) {
-            // sorteio exclusivo do server
+            interaction.editReply(res.success(`${icon.success} | Sucesso ao remover o server do sorteio!`))
+        } else {
+            const errors: { guildId: string; error: string; guildName: string }[] = []
+            
             await prisma.giveaway.delete({
                 where: {
                     id: giveawayId
                 }
             })
-            let channel = interaction.guild.channels.cache.get(giveaway.channelId) || null;
-            if (!channel) channel = await interaction.guild.channels.fetch(giveaway.channelId);
 
-            if (!channel || !channel.isTextBased()) {
-                interaction.editReply(res.danger(`${icon.error} | Não foi possivel achar o canal desse server no sorteio!, porém o servidor foi removido do sorteio com sucesso!`))
-                return;
-            }
+            for (const connectedGuild of giveaway.connectedGuilds) {
+                const cnnGuild = client.guilds.cache.get(connectedGuild.guildId);
+                if (!cnnGuild) {
+                    errors.push({
+                        guildId: connectedGuild.guildId,
+                        error: "Server não encontrado",
+                        guildName: connectedGuild.guildId
+                    });
+                    continue;
+                };
 
-            const message = await channel.messages.fetch(giveaway.messageId).catch((_) => null);
-
-            if (!message) {
-                interaction.editReply(res.danger(`${icon.error} | Não foi possivel achar a mensagem do sorteio no canal ${channelMention(channel.id)} mas o servidor foi removido do server com sucesso!`))
-                return;
-            }
-
-            await message.edit(res.danger(
-                `${icon.Eris_cry} | O moderador ${userMention(userId)} decidiu tirar o servidor desse sorteio!`,
-                {
-                    components: []
+                let channel = cnnGuild.channels.cache.get(connectedGuild.channelId) || null;
+                if (!channel) channel = await cnnGuild.channels.fetch(connectedGuild.channelId);
+                if (!channel || !channel.isTextBased()) {
+                    errors.push({
+                        guildId: cnnGuild.id,
+                        error: `Canal ${channelMention(connectedGuild.channelId)} id: \`${connectedGuild.channelId}\` não encontrado`,
+                        guildName: cnnGuild.name
+                    });
+                    continue
                 }
-            )).catch((_) => null);
 
-            interaction.editReply(res.success(`${icon.success} | Você excluiu o sorteio com sucesso!`, { components: [] }))
-            return;
+                const message = await channel.messages.fetch(connectedGuild.messageId).catch(_ => null);
+                if (!message) {
+                    errors.push({
+                        guildId: cnnGuild.id,
+                        guildName: cnnGuild.name,
+                        error: `Não foi possivel encontrar a mensagem do sorteio`
+                    })
+                    continue;
+                }
+
+                try {
+                    await message.edit(resv2.danger(
+                        `Esse sorteio foi deletado pelo moderador: **${user.displayName.replace(/([\\_*~`|>])/g, '\\$1')}**`,
+                        !guildIsHost && `Pelo moderador do server host: **\`${guild.name}\`**`
+                    ))
+                } catch (_) {
+                    errors.push({
+                        guildId: cnnGuild.id,
+                        guildName: cnnGuild.name,
+                        error: `Não foi possivel editar a mensagem do sorteio!`
+                    })
+                    continue;
+                }
+            }
+
+            interaction.editReply(res.success(
+                brBuilder(
+                    `${icon.success} | Sucesso ao deletar o sorteio!`,
+                    errors.length > 0 ? brBuilder(
+                        `No entando ocorreu **${errors.length}** erros!`,
+                        errors.map(e => `**\`${e.guildName}\`**: ${e.error}`)
+                    ) : null
+                )
+            ))
         }
-        // se não for server conectado, nem for sorteio exclusivo do server, então o server é host
-        await prisma.giveaway.delete({
-            where: {
-                id: giveawayId
-            }
-        });
-
-        giveaway.connectedGuilds.push({
-            channelId: giveaway.channelId,
-            giveawayId: giveaway.id,
-            guildId: guild.id,
-            messageId: giveaway.messageId,
-            createdAt: new Date(),
-            id: 999
-        });
-
-        const errors: string[] = []
-
-        for (const connectedGuild of giveaway.connectedGuilds) {
-            const connectedGuildInfo = interaction.client.guilds.cache.get(connectedGuild.guildId);
-            if (!connectedGuildInfo) {
-                errors.push(`Servidor de id: ${connectedGuild.guildId} não encontrado!`);
-                continue
-            }
-
-            let channel = connectedGuildInfo.channels.cache.get(giveaway.channelId) || null;
-            if (!channel) channel = await interaction.guild.channels.fetch(giveaway.channelId);
-
-            if (!channel || !channel.isTextBased()) {
-                errors.push(`Não foi possivel encontrar o canal de id ${connectedGuild.channelId} no server **\`${connectedGuildInfo.name}\`**`)
-                continue;
-            }
-
-            const message = await channel.messages.fetch(giveaway.messageId).catch((_) => null);
-
-            if (!message) {
-                errors.push(`Não foi possivel encontrar a mensagem de sorteio do servidor: **${connectedGuildInfo.name}** no canal: **${channel.name}**`)
-                continue;
-            }
-            
-            await message.edit(res.danger(
-                `${icon.Eris_cry} | O moderador ${userMention(userId)} (${user.displayName}) decidiu excluir o sorteio! como ele é do servidor host então todos os servers que faziam parte desse sorteio também foram removidos dele!`,
-                {
-                    components: []
-                }
-            )).catch((_) => (
-                errors.push(`Não foi possivel editar a mensagem de sorteio do servidor: **${connectedGuildInfo.name}** no canal: **${channel.name}**`)
-            ));
-        }
-
-        interaction.editReply(res.success(`${icon.success} | Todos os servers foram retirados do sorteio!`, {
-            fields: errors.length > 0 ? [
-                {
-                    name: "Erros:",
-                    value: errors.join("\n")
-                }
-            ] : [],
-            components: []
-        }))
+        return;
     },
 });

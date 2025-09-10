@@ -12,7 +12,7 @@ export function giveawayEndMenu<R>(winnersIds: string[], info: {
     const container = createContainer(settings.colors.fuchsia,
         brBuilder(
             "# Fim de sorteio",
-            `O sorteio: **${info.title}** foi finalizado! ele rodou por: \`${formatElapsedTime(info.createdAt, info.expiresAt)}\``
+            `O sorteio: **${info.title}** foi finalizado! ele durou por: \`${formatElapsedTime(info.createdAt, info.expiresAt)}\``
         ),
         createSeparator(),
         brBuilder(

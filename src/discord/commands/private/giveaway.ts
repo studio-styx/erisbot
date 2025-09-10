@@ -1,8 +1,9 @@
 import { createCommand } from "#base";
 import { prisma } from "#database";
 import { icon, res, selectWinner } from "#functions";
+import { menus } from "#menus";
 import { createRow, limitText } from "@magicyan/discord";
-import { ApplicationCommandOptionType, ApplicationCommandType, ButtonBuilder, ButtonStyle } from "discord.js";
+import { ApplicationCommandOptionType, ApplicationCommandType, ButtonBuilder, ButtonStyle, userMention } from "discord.js";
 
 createCommand({
     name: "giveaway",
@@ -301,12 +302,12 @@ createCommand({
                 }
 
                 const guildConnected = giveaway.connectedGuilds.find(g => g.guildId === guild.id);
-                
+
                 if (!guildConnected) {
                     interaction.editReply(res.danger(`${icon.error} | Esse server não faz parte desse sorteio!`))
                     return;
                 }
-                
+
                 const guildIsHost = guildConnected.isHost;
 
                 // pedir confirmação antes
@@ -341,7 +342,7 @@ createCommand({
             }
             case "reroll": {
                 const giveawayId = Number(options.getString("id", true));
-                const userId = options.getString("user");
+                const userId = options.getString("user", true);
 
                 const giveaway = await prisma.giveaway.findUnique({
                     where: {
@@ -386,6 +387,57 @@ createCommand({
                     interaction.editReply(res.danger(`${icon.error} | Não existe outros usuários que se adequem aos requisitos para possuir o lugar desse usuário!`))
                     return;
                 }
+
+                const winner = newWinner[0];
+
+                const [_a, _b, newWinners] = await prisma.$transaction([
+                    prisma.userGiveaway.update({
+                        where: {
+                            userId_giveawayId: {
+                                giveawayId,
+                                userId
+                            }
+                        },
+                        data: {
+                            isWinner: false
+                        }
+                    }),
+                    prisma.userGiveaway.update({
+                        where: {
+                            userId_giveawayId: {
+                                giveawayId,
+                                userId: winner.userId
+                            }
+                        },
+                        data: {
+                            isWinner: true
+                        }
+                    }),
+                    prisma.userGiveaway.findMany({
+                        where: {
+                            giveawayId,
+                            isWinner: true
+                        }
+                    })
+                ]);
+
+                // editar a mensagem
+                for (const connectedGuild of giveaway.connectedGuilds) {
+                    try {
+                        const guild = client.guilds.cache.get(connectedGuild.guildId);
+                        if (!guild) continue;
+                        let channel = guild.channels.cache.get(connectedGuild.channelId) || null;
+                        if (!channel) channel = await guild.channels.fetch(connectedGuild.channelId);
+                        if (!channel || !channel.isTextBased()) continue;
+                        const message = await channel.messages.fetch(connectedGuild.messageId).catch(_ => null);
+                        if (!message) continue
+    
+                        await message.edit(menus.giveaway.giveawayEnd(newWinners.map(w => w.userId), giveaway))
+                    } catch (_) {}
+                }
+
+                interaction.editReply(res.success(`${icon.success} | Sucesso ao trocar o ganhador: **${userMention(userId)}** pelo: **${userMention(winner.userId)}**`))
+                return;
             }
         }
     }
