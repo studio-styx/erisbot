@@ -235,7 +235,6 @@ model GuildSettings {
 
   members            GuildMember[]
   transactions       Transaction[]
-  giveaways          Giveaway[]
   connectedGiveaways GuildGiveaway[]
 }
 
@@ -271,35 +270,22 @@ model Mails {
 }
 
 model Giveaway {
-  id        Int    @id @default(autoincrement())
-  localId   Int
-  guildId   String
-  channelId String
-  messageId String @unique
-
-  title                     String
-  description               String?
-  blackListRoles            String[]
-  blackListMembers          String[]
-  onlyRoles                 String[]
-  rolesMultipleEntry        Json?
-  serverStayRequired        String[]
-  xpRequired                Int?
-  messagesRequired          Int?
-  messagesInChannelRequired Json?
-  messagesInGuidsRequired   Json?
-
+  id              Int                 @id @default(autoincrement())
+  localId         Int // ID do sorteio no servidor host
+  title           String
+  description     String?
   participants    UserGiveaway[]
-  guild           GuildSettings   @relation(fields: [guildId], references: [id], onDelete: Cascade)
   connectedGuilds GuildGiveaway[]
+  roleEntries     RoleMultipleEntry[]
 
-  winnersIds String[]
+  serverStayRequired Boolean @default(false) // se o usuário precisa estar em todos os servidores conectados
+  usersWins          Int     @default(1) // quantidade de vencedores
 
   expiresAt DateTime
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt()
 
-  @@unique([guildId, localId])
+  @@index([expiresAt])
 }
 
 model UserGiveaway {
@@ -308,22 +294,40 @@ model UserGiveaway {
   giveawayId Int
   user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   giveaway   Giveaway @relation(fields: [giveawayId], references: [id], onDelete: Cascade)
-  createdAt  DateTime @default(now())
+
+  isWinner  Boolean  @default(false)
+  createdAt DateTime @default(now())
 
   @@unique([userId, giveawayId])
 }
 
 model GuildGiveaway {
-  id         Int    @id @default(autoincrement())
+  id         Int     @id @default(autoincrement())
   guildId    String
   channelId  String
-  messageId  String @unique
+  messageId  String  @unique
   giveawayId Int
+  isHost     Boolean @default(false)
 
   guild    GuildSettings @relation(fields: [guildId], references: [id], onDelete: Cascade)
   giveaway Giveaway      @relation(fields: [giveawayId], references: [id], onDelete: Cascade)
 
+  blackListRoles String[]
+  xpRequired     Int?
+
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt()
 
   @@unique([guildId, giveawayId])
+}
+
+model RoleMultipleEntry {
+  id           Int    @id @default(autoincrement())
+  giveawayId   Int
+  roleId       String
+  extraEntries Int
+
+  giveaway Giveaway @relation(fields: [giveawayId], references: [id], onDelete: Cascade)
+
+  @@unique([giveawayId, roleId])
 }

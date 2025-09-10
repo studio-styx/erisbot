@@ -1,6 +1,6 @@
 import { createCommand } from "#base";
 import { prisma } from "#database";
-import { icon, res } from "#functions";
+import { icon, res, selectWinner } from "#functions";
 import { createRow, limitText } from "@magicyan/discord";
 import { ApplicationCommandOptionType, ApplicationCommandType, ButtonBuilder, ButtonStyle } from "discord.js";
 
@@ -199,7 +199,10 @@ createCommand({
 
         if (giveawayID) {
             const giveaway = await prisma.giveaway.findUnique({
-                where: { id: Number(giveawayID) }
+                where: { id: Number(giveawayID) },
+                include: {
+                    participants: true
+                }
             });
 
             if (!giveaway) return await interaction.respond([{
@@ -212,17 +215,19 @@ createCommand({
                 value: "null"
             }]);
 
-            if (giveaway.winnersIds.length < 1) return await interaction.respond([{
+            const winners = giveaway.participants.filter(p => p.isWinner === true)
+
+            if (winners.length < 1) return await interaction.respond([{
                 name: "Nenhum usuário ganhou esse sorteio",
                 value: "null"
             }]);
 
             const values: { name: string; value: string }[] = []
-            for (const userId of giveaway.winnersIds) {
-                let user = interaction.client.users.cache.get(userId) || null;
-                if (!user) user = await interaction.client.users.fetch(userId, { cache: true });
+            for (const winner of winners) {
+                let user = interaction.client.users.cache.get(winner.userId) || null;
+                if (!user) user = await interaction.client.users.fetch(winner.userId, { cache: true });
                 if (!user) {
-                    values.push({ name: "Não encontrado", value: userId });
+                    values.push({ name: "Não encontrado", value: winner.userId });
                     continue;
                 }
                 values.push({ name: user.displayName, value: user.id })
@@ -239,16 +244,12 @@ createCommand({
                 expiresAt: {
                     gt: new Date()
                 },
-                OR: [
-                    { guildId: interaction.guildId },
-                    { connectedGuilds: { some: { guildId: interaction.guildId } } }
-                ]
+                connectedGuilds: { some: { guildId: interaction.guildId } }
             },
             select: {
                 title: true,
                 id: true,
                 localId: true,
-                guildId: true,
                 connectedGuilds: true
             },
             take: 25
@@ -260,14 +261,14 @@ createCommand({
         }])
 
         return await interaction.respond(giveaways.map(g => ({
-            name: limitText(`Id: ${g.id} | LocalId: ${g.localId} | Sorteio conectado?: ${g.connectedGuilds.length > 0 ? "Sim" : "Não"} | Titulo: ${g.title}`, 97, "..."),
+            name: limitText(`Id: ${g.id} | LocalId: ${g.localId} | Sorteio conectado?: ${g.connectedGuilds.length > 1 ? "Sim" : "Não"} | Titulo: ${g.title}`, 97, "..."),
             value: g.id.toString()
         })))
     },
     dmPermission: false,
     defaultMemberPermissions: ["ManageEvents"],
     async run(interaction) {
-        const { user, options, member, guild } = interaction;
+        const { user, options, member, guild, client } = interaction;
 
         const hasPerms = member.permissions.has("ManageEvents");
 
@@ -299,20 +300,21 @@ createCommand({
                     return;
                 }
 
-                const guildIsConnected = giveaway.connectedGuilds.some(g => g.guildId === guild.id);
-                const guildIsHost = giveaway.guildId === guild.id;
-
-                if (!guildIsConnected && !guildIsHost) {
+                const guildConnected = giveaway.connectedGuilds.find(g => g.guildId === guild.id);
+                
+                if (!guildConnected) {
                     interaction.editReply(res.danger(`${icon.error} | Esse server não faz parte desse sorteio!`))
                     return;
                 }
+                
+                const guildIsHost = guildConnected.isHost;
 
                 // pedir confirmação antes
                 interaction.editReply(
                     res.danger(`${icon.Eris_cry} | Você está prestes a excluir o sorteio de id **${giveaway.localId}** 
-                        ${guildIsHost && giveaway.connectedGuilds.length > 0
+                        ${guildIsHost && giveaway.connectedGuilds.length > 1
                             ? `como esse é um servidor host do sorteio, ao excluir ele todos os outros sorteio(s) de outro(s) **${giveaway.connectedGuilds.length}** server(s) também será apagado`
-                            : guildIsConnected
+                            : !guildIsHost && giveaway.connectedGuilds.length > 1
                                 ? `como esse é um sorteio conectado a outro(s) server(s) e ele não é host, apenas esse server sairá do sorteio, enquanto os outros contiuarão funcionando normalmente`
                                 : ""}. Você tem certeza que deseja apagar esse sorteio?`,
                         {
@@ -338,13 +340,24 @@ createCommand({
                 return;
             }
             case "reroll": {
-                const giveawayID = Number(options.getString("id", true));
-                const userId = options.getString("user", true);
+                const giveawayId = Number(options.getString("id", true));
+                const userId = options.getString("user");
 
                 const giveaway = await prisma.giveaway.findUnique({
-                    where: { id: giveawayID },
+                    where: {
+                        id: giveawayId,
+                        expiresAt: {
+                            gt: new Date()
+                        },
+                        connectedGuilds: { some: { guildId: interaction.guildId } }
+                    },
                     include: {
-                        connectedGuilds: true,
+                        connectedGuilds: {
+                            include: {
+                                guild: true
+                            }
+                        },
+                        roleEntries: true,
                         participants: true
                     }
                 });
@@ -354,70 +367,23 @@ createCommand({
                     return;
                 }
 
-                const guildIsConnected = giveaway.connectedGuilds.some(g => g.guildId === guild.id);
-                const guildIsHost = giveaway.guildId === guild.id;
+                const participant = giveaway.participants.find(p => p.userId === userId);
 
-                if (!guildIsConnected && !guildIsHost) {
+                if (!participant) {
+                    interaction.editReply(res.danger(`${icon.error} | Esse usuário não existe ou não faz parte desse sorteio!`))
+                    return;
+                }
+
+                const giveawayGuildInfo = giveaway.connectedGuilds.find(g => g.guildId === interaction.guildId);
+
+                if (!giveawayGuildInfo) {
                     interaction.editReply(res.danger(`${icon.error} | Esse server não faz parte desse sorteio!`))
                     return;
                 }
 
-                if (!giveaway.winnersIds.includes(userId)) {
-                    interaction.editReply(res.danger(`${icon.error} | Esse usuário não ganhou o sorteio para ser regerado!`))
-                    return;
-                }
-
-                // regenerar o ganhador
-
-                const newWinners = giveaway.winnersIds.filter(w => w !== userId);
-
-                const selectNewWinner = () => {
-                    // Filtrar participantes válidos (excluindo o usuário removido e vencedores restantes)
-                    const eligibleParticipants = giveaway.participants.filter(participant =>
-                        participant.userId !== userId && !newWinners.includes(participant.userId)
-                    );
-
-                    if (eligibleParticipants.length === 0) {
-                        return null;
-                    }
-
-                    // Selecionar aleatoriamente um novo vencedor
-                    const randomIndex = Math.floor(Math.random() * eligibleParticipants.length);
-                    return eligibleParticipants[randomIndex].userId;
-                };
-
-                const newWinnerId = selectNewWinner();
-
-                if (!newWinnerId) {
-                    interaction.editReply(res.danger(`${icon.error} | Não há participantes elegíveis para selecionar um novo vencedor!`))
-                    return;
-                }
-
-                // Adicionar o novo vencedor à lista
-                newWinners.push(newWinnerId);
-
-                try {
-                    const channel = guildIsHost 
-                        ? await guild.channels.fetch(giveaway.channelId)
-                        : await guild.channels.fetch(giveaway.connectedGuilds.find(g => g.guildId === guild.id)!.channelId);
-
-                    if (!channel || !channel.isTextBased()) {
-                        interaction.editReply(res.danger(`${icon.error} | Não foi possivel encontrar o canal de sorteios`));
-                        return;
-                    }
-                    const messageId = guildIsHost ? giveaway.messageId : giveaway.connectedGuilds.find(g => g.guildId === guild.id)!.messageId;
-
-                    const message = await channel.messages.fetch(messageId).catch((_) => null);
-
-                    if (!message) {
-                        interaction.editReply(res.danger(`${icon.error} | Não foi possivel encontrar a mensagem do sorteio no canal de sorteios`));
-                        return;
-                    }
-
-                    
-                } catch (error) {
-                    console.error(error);
-                    interaction.editReply(res.danger(`${icon.error} | Um erro desconhecido ocorreu! por favor tente novamente`));
+                const newWinner = await selectWinner(client, giveaway, giveaway.participants, giveaway.connectedGuilds, 1)
+                if (!newWinner) {
+                    interaction.editReply(res.danger(`${icon.error} | Não existe outros usuários que se adequem aos requisitos para possuir o lugar desse usuário!`))
                     return;
                 }
             }

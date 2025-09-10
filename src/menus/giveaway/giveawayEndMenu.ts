@@ -1,18 +1,23 @@
+import { formatElapsedTime, icon } from "#functions";
 import { settings } from "#settings";
-import { brBuilder, createContainer, createRow } from "@magicyan/discord";
-import { ButtonBuilder, ButtonStyle, type InteractionReplyOptions } from "discord.js";
+import { brBuilder, createContainer, createSeparator } from "@magicyan/discord";
+import { userMention, type InteractionReplyOptions } from "discord.js";
 
-export function giveawayEndMenuMenu<R>(ownerId: string, winnersIds: string[]): R {
-    const container = createContainer(settings.colors.azoxo,
+export function giveawayEndMenu<R>(winnersIds: string[], info: {
+    title: string;
+    description: string | null;
+    expiresAt: Date;
+    createdAt: Date;
+}): R {
+    const container = createContainer(settings.colors.fuchsia,
         brBuilder(
-            "## giveawayEndMenu menu"
+            "# Fim de sorteio",
+            `O sorteio: **${info.title}** foi finalizado! ele rodou por: \`${formatElapsedTime(info.createdAt, info.expiresAt)}\``
         ),
-        createRow(
-            new ButtonBuilder({
-                customId: "menu/action",
-                label: ">",
-                style: ButtonStyle.Success
-            })
+        createSeparator(),
+        brBuilder(
+            `## Ganhadores:`,
+            winnersIds.map(w => `${icon.arrow_enter} ${userMention(w)}`)
         )
     );
 

@@ -6,6 +6,7 @@ import { addQuestionMenu } from "./dev/tryvia/addQuestion.js";
 import { editQuestionMenu } from "./dev/tryvia/editQuestion.js";
 import { fetchAllPendingQuestionsMenu } from "./dev/tryvia/fetchAllPendingQuestions.js";
 import { fetchAllQuestionsMenu } from "./dev/tryvia/fetchAllQuestions.js";
+import { giveawayEndMenu } from "./giveaway/giveawayEndMenu.js";
 import { stockInfoMenu } from "./investment/stockInfo.js";
 import { stocksMenu } from "./investment/stocks.js";
 import { userStocksMenu } from "./investment/userStocks.js";
@@ -61,5 +62,8 @@ export const menus = {
     leaderboard: {
         startRanking: startRankingMenu,
         ranking: rankingMenu
+    },
+    giveaway: {
+        giveawayEnd: giveawayEndMenu
     }
 }
