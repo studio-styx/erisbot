@@ -1,9 +1,10 @@
 import { createCommand } from "#base";
-import { prisma } from "#database";
+import { prisma, redis } from "#database";
 import { icon, res, selectWinner } from "#functions";
 import { menus } from "#menus";
+import { GiveawayManageDataInfo } from "#types/giveawayManageDataType.js";
 import { createRow, limitText } from "@magicyan/discord";
-import { ApplicationCommandOptionType, ApplicationCommandType, ButtonBuilder, ButtonStyle, userMention } from "discord.js";
+import { ApplicationCommandOptionType, ApplicationCommandType, ButtonBuilder, ButtonStyle, channelMention, userMention } from "discord.js";
 
 createCommand({
     name: "giveaway",
@@ -437,6 +438,126 @@ createCommand({
                 }
 
                 interaction.editReply(res.success(`${icon.success} | Sucesso ao trocar o ganhador: **${userMention(userId)}** pelo: **${userMention(winner.userId)}**`))
+                return;
+            }
+            case "end": {
+                const giveawayId = Number(options.getString("id", true));
+
+                const giveaway = await prisma.giveaway.findUnique({
+                    where: {
+                        id: giveawayId,
+                        expiresAt: {
+                            gt: new Date()
+                        },
+                        connectedGuilds: { some: { guildId: interaction.guildId } }
+                    },
+                    include: {
+                        connectedGuilds: {
+                            include: {
+                                guild: true
+                            }
+                        },
+                        roleEntries: true,
+                        participants: true
+                    }
+                });
+
+                if (!giveaway) {
+                    interaction.editReply(res.danger(`${icon.error} | Não foi possivel encontrar esse sorteio!`))
+                    return;
+                }
+
+                const giveawayGuildInfo = giveaway.connectedGuilds.find(g => g.guildId === interaction.guildId);
+
+                if (!giveawayGuildInfo) {
+                    interaction.editReply(res.danger(`${icon.error} | Esse server não faz parte desse sorteio!`))
+                    return;
+                }
+
+                const winners = await selectWinner(client, giveaway, giveaway.participants, giveaway.connectedGuilds, giveaway.usersWins);
+
+                if (!winners || winners.length < 1) {
+                    interaction.editReply(res.danger(`${icon.error} | Não há participantes elegiveis para ganhar o sorteio!`));
+                    return;
+                }
+
+                try {
+                    const errors: { guildName: string; error: string }[] = []
+                    for (const connectedGuild of giveaway.connectedGuilds) {
+                        const discordGuild = client.guilds.cache.get(connectedGuild.guildId);
+                        if (!discordGuild) {
+                            errors.push({
+                                guildName: connectedGuild.guildId,
+                                error: "O server não foi encontrado! provavelmente eu fui retirada dele antes do sorteio acabar"
+                            })
+                            continue;
+                        }
+                        
+                        let channel = discordGuild.channels.cache.get(connectedGuild.channelId) || null;
+                        if (!channel) channel = await discordGuild.channels.fetch(connectedGuild.channelId);
+                        if (!channel || !channel.isTextBased()) {
+                            errors.push({
+                                guildName: discordGuild.name,
+                                error: `Não consegui encontrar o canal de id: ${connectedGuild.channelId} ${channelMention(connectedGuild.channelId)}`
+                            })
+                            continue;
+                        }
+
+                        const message = await channel.messages.fetch(connectedGuild.messageId).catch(_ => null);
+
+                        if (!message) {
+                            errors.push({
+                                guildName: discordGuild.name,
+                                error: `Não foi possivel encontrar a mensagem do sorteio em ${channelMention(connectedGuild.channelId)}`
+                            })
+                            continue;
+                        }
+
+                        try {
+                            const msg = await message.edit(menus.giveaway.giveawayEnd(winners.map(w => w.userId), giveaway));
+                            await msg.reply(`O moderador: ${userMention(user.id)} finalizou o sorteio mais cedo, os ganhadores são: **${winners.map(w => userMention(w.userId)).join(", ")}**`)
+                        } catch (error) {
+                            errors.push({
+                                guildName: discordGuild.name,
+                                error: "Não foi possivel editar a mensagem do sorteio"
+                            })
+                            continue;
+                        }
+                    }
+                } catch (error) {
+                    console.error(error)
+                    interaction.editReply(res.danger(`${icon.Eris_cry} | Um erro inesperado ocorreu! me perdoe por tamanha nigligência ${icon.Eris_shy_left}`));
+                    return;
+                } finally {
+                    await prisma.$transaction([
+                        prisma.userGiveaway.updateMany({
+                            where: {
+                                userId: {
+                                    in: winners.map(w => w.userId)
+                                }
+                            },
+                            data: {
+                                isWinner: true
+                            }
+                        }),
+                        prisma.giveaway.update({
+                            where: {
+                                id: giveawayId,
+                            },
+                            data: {
+                                expiresAt: new Date(),
+                            }
+                        })
+                    ])
+                }
+            }
+            case "create": {
+                const data: GiveawayManageDataInfo = {
+                    channelId: interaction.channelId,
+                }
+
+                const msg = await interaction.editReply(menus.giveaway.giveawayManage(user.id, data, "main"));
+                await redis.setex(`giveaway:manage:${msg.id}`, 60 * 300, JSON.stringify(data))
                 return;
             }
         }
