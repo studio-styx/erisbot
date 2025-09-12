@@ -7,5 +7,6 @@ export interface GiveawayManageDataInfo {
     blackListRoles?: string[];
     xpRequired?: number;
     connectedGuilds?: string[];
-    winners?: number
+    winners?: number;
+    stayInServerRequire?: boolean;
 }

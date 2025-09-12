@@ -7,15 +7,16 @@ import { brBuilder, createModalFields } from "@magicyan/discord";
 import { TextInputStyle } from "discord.js";
 
 createResponder({
-    customId: "giveaway/manage/main/:userId/:part",
+    customId: "giveaway/manage/main/:userId/:part/:giveawayId",
     types: [ResponderType.StringSelect, ResponderType.ModalComponent], cache: "cached",
     parse(params) {
         return {
             userId: params.userId,
-            part: params.part as "title" | "description" | "expiresAt" | "xpRequired" | "winners"
+            part: params.part as "title" | "description" | "expiresAt" | "xpRequired" | "winners",
+            giveawayId: params.giveawayId
         }
     },
-    async run(interaction, { userId, part }) {
+    async run(interaction, { userId, part, giveawayId }) {
         const { user, message } = interaction;
         if (user.id !== userId) {
             interaction.reply(res.danger(`${icon.denied} | Não foi você que executou esse comando!`))
@@ -26,9 +27,9 @@ createResponder({
 
         if (interaction.isStringSelectMenu()) {
             const option = interaction.values[0];
-            if (option !== "channelId" && option !== "blacklistRoles" && option !== "roleEntries" && option !== "connectedGuilds") {
+            if (option !== "channelId" && option !== "blacklistRoles" && option !== "roleEntries" && option !== "connectedGuilds" && option !== "stayInServerRequire") {
                 interaction.showModal({
-                    customId: `giveaway/manage/main/${userId}/${option}`,
+                    customId: `giveaway/manage/main/${userId}/${option}/${giveawayId}`,
                     title: option === "title"
                         ? "titulo"
                         : option === "description"
@@ -70,6 +71,25 @@ createResponder({
                     }),
                 });
                 return;
+            } else if (option === "stayInServerRequire") {
+                await interaction.deferUpdate();
+
+                const raw = await redis.get(key);
+                if (!raw) {
+                    interaction.editReply(resv2.danger(`${icon.Eris_cry} | Parece que você demorou demais para setar as configurações do sorteio! as informações sobre o sorteio sumiram!`));
+                    return;
+                }
+                const giveawayData = JSON.parse(raw) as GiveawayManageDataInfo;
+
+                if (!giveawayData.connectedGuilds || giveawayData.connectedGuilds.length < 1) {
+                    interaction.followUp(res.danger(`${icon.error} | Para definir o requisito **\`"Precisa estar em todos os server"\`** é necessário primeiro definir os servidores conectados!`))
+                    return;
+                }
+
+                giveawayData.stayInServerRequire = giveawayData.stayInServerRequire === undefined || giveawayData.stayInServerRequire === false ? true : false;
+
+                interaction.editReply(menus.giveaway.giveawayManage(userId, giveawayData, "main", giveawayId ? Number(giveawayId) : undefined))
+                return;
             } else {
                 await interaction.deferUpdate();
 
@@ -80,7 +100,7 @@ createResponder({
                 }
                 const giveawayData = JSON.parse(raw) as GiveawayManageDataInfo;
 
-                interaction.editReply(menus.giveaway.giveawayManage(userId, giveawayData, option))
+                interaction.editReply(menus.giveaway.giveawayManage(userId, giveawayData, option, giveawayId ? Number(giveawayId) : undefined))
                 return;
             }
         } else {
@@ -247,7 +267,7 @@ createResponder({
             }
 
             await redis.setex(key, 60 * 300, JSON.stringify(giveawayData));
-            interaction.editReply(menus.giveaway.giveawayManage(userId, giveawayData, "main"));
+            interaction.editReply(menus.giveaway.giveawayManage(userId, giveawayData, "main", giveawayId ? Number(giveawayId) : undefined));
             return
         }
     },
