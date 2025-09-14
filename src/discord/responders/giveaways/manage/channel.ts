@@ -5,9 +5,9 @@ import { menus } from "#menus";
 import { GiveawayManageDataInfo } from "#types/giveawayManageDataType.js";
 
 createResponder({
-    customId: "giveaway/manage/channelSelect/channel/:userId/:giveawayId",
+    customId: "giveaway/manage/channelSelect/channel/:userId",
     types: [ResponderType.ChannelSelect], cache: "cached",
-    async run(interaction, { giveawayId, userId }) {
+    async run(interaction, { userId }) {
         const { user, message, guild, member } = interaction;
         if (user.id !== userId) {
             interaction.reply(res.danger(`${icon.denied} | Não foi você que executou esse comando!`))
@@ -50,7 +50,7 @@ createResponder({
 
         await redis.setex(key, 60 * 300, JSON.stringify(giveawayData));
 
-        interaction.editReply(menus.giveaway.giveawayManage(userId, giveawayData, "main", giveawayId ? Number(giveawayId) : undefined))
+        interaction.editReply(menus.giveaway.giveawayManage(userId, giveawayData, "main"))
         return;
     },
 });

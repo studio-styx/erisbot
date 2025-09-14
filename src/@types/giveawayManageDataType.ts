@@ -1,4 +1,5 @@
 export interface GiveawayManageDataInfo {
+    id?: number;
     title?: string;
     description?: string;
     expiresAt?: Date;
@@ -6,7 +7,7 @@ export interface GiveawayManageDataInfo {
     channelId?: string;
     blackListRoles?: string[];
     xpRequired?: number;
-    connectedGuilds?: string[];
+    connectedGuilds?: { guildName: string; guildId: string, accepted: boolean }[];
     winners?: number;
     stayInServerRequire?: boolean;
 }

@@ -1,35 +1,34 @@
 import { createResponder, ResponderType } from "#base";
-import { redis } from "#database";
-import { icon, res, resv2 } from "#functions";
+import { prisma, redis } from "#database";
+import { getMutualGuilds, icon, res, resv2 } from "#functions";
 import { menus } from "#menus";
 import { GiveawayManageDataInfo } from "#types/giveawayManageDataType.js";
 import { brBuilder, createModalFields } from "@magicyan/discord";
 import { TextInputStyle } from "discord.js";
 
 createResponder({
-    customId: "giveaway/manage/main/:userId/:part/:giveawayId",
+    customId: "giveaway/manage/main/:userId/:part",
     types: [ResponderType.StringSelect, ResponderType.ModalComponent], cache: "cached",
     parse(params) {
         return {
             userId: params.userId,
             part: params.part as "title" | "description" | "expiresAt" | "xpRequired" | "winners",
-            giveawayId: params.giveawayId
         }
     },
-    async run(interaction, { userId, part, giveawayId }) {
+    async run(interaction, { userId, part }) {
         const { user, message } = interaction;
         if (user.id !== userId) {
             interaction.reply(res.danger(`${icon.denied} | Não foi você que executou esse comando!`))
             return;
         }
 
-        const key = `giveaway:manage:${message.id}`
+        const key = `giveaway:manage:${message.id}`;
 
         if (interaction.isStringSelectMenu()) {
             const option = interaction.values[0];
             if (option !== "channelId" && option !== "blacklistRoles" && option !== "roleEntries" && option !== "connectedGuilds" && option !== "stayInServerRequire") {
                 interaction.showModal({
-                    customId: `giveaway/manage/main/${userId}/${option}/${giveawayId}`,
+                    customId: `giveaway/manage/main/${userId}/${option}`,
                     title: option === "title"
                         ? "titulo"
                         : option === "description"
@@ -88,7 +87,24 @@ createResponder({
 
                 giveawayData.stayInServerRequire = giveawayData.stayInServerRequire === undefined || giveawayData.stayInServerRequire === false ? true : false;
 
-                interaction.editReply(menus.giveaway.giveawayManage(userId, giveawayData, "main", giveawayId ? Number(giveawayId) : undefined))
+                interaction.editReply(menus.giveaway.giveawayManage(userId, giveawayData, "main"))
+                return;
+            } else if (option === "connectedGuilds") {
+                await interaction.deferUpdate();
+                const raw = await redis.get(key);
+                if (!raw) {
+                    interaction.editReply(resv2.danger(`${icon.Eris_cry} | Parece que você demorou demais para setar as configurações do sorteio! as informações sobre o sorteio sumiram!`));
+                    return;
+                }
+                const giveawayData = JSON.parse(raw) as GiveawayManageDataInfo;
+                const mutualGuilds = (await getMutualGuilds(interaction.client, userId)).filter(g => g.id !== interaction.guild.id);
+
+                if (mutualGuilds.length < 1) {
+                    interaction.followUp(res.danger(`${icon.error} | Não tem servers onde você e eu estamos ao mesmo tempo sem ser esse!`))
+                    return;
+                }
+
+                interaction.editReply(menus.giveaway.giveawayManage(userId, giveawayData, "connectedGuilds", 0, mutualGuilds))
                 return;
             } else {
                 await interaction.deferUpdate();
@@ -100,7 +116,7 @@ createResponder({
                 }
                 const giveawayData = JSON.parse(raw) as GiveawayManageDataInfo;
 
-                interaction.editReply(menus.giveaway.giveawayManage(userId, giveawayData, option, giveawayId ? Number(giveawayId) : undefined))
+                interaction.editReply(menus.giveaway.giveawayManage(userId, giveawayData, option))
                 return;
             }
         } else {
@@ -257,6 +273,15 @@ createResponder({
                     break;
                 }
                 case "xpRequired": {
+                    const isEnabled = (await prisma.guildSettings.findUnique({
+                        where: { id: interaction.guildId },
+                        select: { xpSystemEnabled: true }
+                    }))?.xpSystemEnabled;
+
+                    if (!isEnabled) {
+                        interaction.followUp(res.danger(`${icon.error} | O sistema de xp precisa estar ativado para definir o xp!`))
+                        return;
+                    }
                     giveawayData.xpRequired = formatted as number;
                     break;
                 }
@@ -267,7 +292,7 @@ createResponder({
             }
 
             await redis.setex(key, 60 * 300, JSON.stringify(giveawayData));
-            interaction.editReply(menus.giveaway.giveawayManage(userId, giveawayData, "main", giveawayId ? Number(giveawayId) : undefined));
+            interaction.editReply(menus.giveaway.giveawayManage(userId, giveawayData, "main"));
             return
         }
     },

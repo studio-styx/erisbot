@@ -9,16 +9,15 @@ import { menus } from "#menus";
 const selectedRoles = new Store<string[]>()
 
 createResponder({
-    customId: "giveaway/manage/:type/roleEntries/:userId/:giveawayId",
+    customId: "giveaway/manage/:type/roleEntries/:userId",
     types: [ResponderType.RoleSelect, ResponderType.Button, ResponderType.ModalComponent], cache: "cached",
     parse(params) {
         return {
             type: params.type as "roleSelect" | "otherRole",
             userId: params.userId,
-            giveawayId: params.giveawayId
         }
     },
-    async run(interaction, { type, userId, giveawayId }) {
+    async run(interaction, { type, userId }) {
         const { user, message, client } = interaction;
         if (user.id !== userId) {
             interaction.reply(res.danger(`${icon.denied} | Não foi você que executou esse comando!`))
@@ -30,7 +29,7 @@ createResponder({
         if (type === "otherRole") {
             if (interaction.isButton()) {
                 interaction.showModal({
-                    customId: `giveaway/manage/otherRole/roleEntries/${userId}/${giveawayId}`,
+                    customId: `giveaway/manage/otherRole/roleEntries/${userId}`,
                     title: "Outro cargo",
                     components: createModalFields({
                         roleId: {
@@ -70,7 +69,7 @@ createResponder({
                 const connectedGuilds = giveawayData.connectedGuilds;
                 if (!connectedGuilds || connectedGuilds.length < 1) {
                     await interaction.followUp(res.danger(`${icon.error} | Para definir id de cargos de outros servers, primeiro você precisa setar os servidores que farão parte do sorteio!`));
-                    await interaction.editReply(menus.giveaway.giveawayManage(userId, giveawayData, "main", giveawayId ? Number(giveawayId) : undefined));
+                    await interaction.editReply(menus.giveaway.giveawayManage(userId, giveawayData, "main"));
                     return;
                 }
 
@@ -109,7 +108,7 @@ createResponder({
                 giveawayData.roleEntries = updatedEntries;
                 await redis.setex(key, 60 * 300, JSON.stringify(giveawayData));
 
-                interaction.editReply(menus.giveaway.giveawayManage(userId, giveawayData, "main", giveawayId ? Number(giveawayId) : undefined));
+                interaction.editReply(menus.giveaway.giveawayManage(userId, giveawayData, "main"));
                 return;
             }
             return;
@@ -119,7 +118,7 @@ createResponder({
                 const roles = interaction.values;
                 selectedRoles.set(message.id, roles, { time: 1000 * 60 * 3 });
                 interaction.showModal({
-                    customId: `giveaway/manage/roleSelect/roleEntries/${userId}/${giveawayId}`,
+                    customId: `giveaway/manage/roleSelect/roleEntries/${userId}`,
                     title: "Quantidade de entradas",
                     components: createModalFields({
                         entries: {
@@ -179,7 +178,7 @@ createResponder({
                     giveawayData.roleEntries = updatedRoles;
                     await redis.setex(key, 60 * 300, JSON.stringify(updatedRoles));
 
-                    await interaction.editReply(menus.giveaway.giveawayManage(userId, giveawayData, "roleEntries", giveawayId ? Number(giveawayId) : undefined));
+                    await interaction.editReply(menus.giveaway.giveawayManage(userId, giveawayData, "roleEntries"));
                     await interaction.followUp(res.success(`${icon.success} | Sucesso ao adicionar os cargos ${rolesIds.map(id => roleMention(id))} com **${entries}** entradas! agora tem: **${updatedRoles.length}** cargos com multiplas entradas, sendo eles: ${updatedRoles.map(r => `**\`${r.roleName}\`**. entradas: **${r.entries}**`).join(", ")}`))
                     return;
                 } finally {

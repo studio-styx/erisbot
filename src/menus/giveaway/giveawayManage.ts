@@ -3,7 +3,7 @@ import { GiveawayManageDataInfo } from "#types/giveawayManageDataType.js";
 import { brBuilder, ComponentData, createContainer, createRow, createSeparator } from "@magicyan/discord";
 import { ButtonBuilder, ButtonStyle, channelMention, ChannelSelectMenuBuilder, roleMention, RoleSelectMenuBuilder, SelectMenuDefaultValueType, StringSelectMenuBuilder, time, type InteractionReplyOptions } from "discord.js";
 
-export function giveawayManageMenu<R>(userId: string, data: GiveawayManageDataInfo, page: "main" | "blacklistRoles" | "roleEntries" | "connectedGuilds" | "channelId", giveawayId?: number, guilds: { name: string; id: string }[] = []): R {
+export function giveawayManageMenu<R>(userId: string, data: GiveawayManageDataInfo, page: "main" | "blacklistRoles" | "roleEntries" | "connectedGuilds" | "channelId", guildsPage: number = 0, guilds: { name: string; id: string }[] = []): R {
     const components: ComponentData[] = [
         brBuilder(
             "## Gerenciamento de sorteio"
@@ -40,7 +40,7 @@ export function giveawayManageMenu<R>(userId: string, data: GiveawayManageDataIn
             ) : null,
             data.connectedGuilds ? brBuilder(
                 `### Servers conectados:`,
-                data.connectedGuilds.map(guild => `**\`${guild}\`**`).join(", ")
+                data.connectedGuilds.map(guild => `**\`${guild.guildName}\`**`).join(", ")
             ) : null,
             data.stayInServerRequire === undefined ? brBuilder(
                 `### É necessário estar em todos os servers para participar do sorteio?`,
@@ -63,7 +63,7 @@ export function giveawayManageMenu<R>(userId: string, data: GiveawayManageDataIn
     const rows: any[] = [
         createRow(
             new StringSelectMenuBuilder({
-                customId: `giveaway/manage/main/${userId}/main/${giveawayId ? giveawayId : "false"}`,
+                customId: `giveaway/manage/main/${userId}/main`,
                 placeholder: `Escolha algo para editar`,
                 options: [
                     { label: "Título", description: "Título do sorteio", value: "title" },
@@ -85,7 +85,7 @@ export function giveawayManageMenu<R>(userId: string, data: GiveawayManageDataIn
     page === "blacklistRoles" && rows.push(
         createRow(
             new RoleSelectMenuBuilder({
-                customId: `giveaway/manage/roleSelect/blacklist/${userId}/${giveawayId ? giveawayId : "false"}`,
+                customId: `giveaway/manage/roleSelect/blacklist/${userId}`,
                 placeholder: "Cargos para adicionar na blacklist",
                 minValues: 1,
                 maxValues: 25,
@@ -100,7 +100,7 @@ export function giveawayManageMenu<R>(userId: string, data: GiveawayManageDataIn
     page === "roleEntries" && rows.push(
         createRow(
             new RoleSelectMenuBuilder({
-                customId: `giveaway/manage/roleSelect/roleEntries/${userId}/${giveawayId ? giveawayId : "false"}`,
+                customId: `giveaway/manage/roleSelect/roleEntries/${userId}`,
                 placeholder: "Cargos para multiplas entradas",
                 minValues: 1,
                 maxValues: 25,
@@ -108,19 +108,22 @@ export function giveawayManageMenu<R>(userId: string, data: GiveawayManageDataIn
         ),
         createRow(
             new ButtonBuilder({
-                customId: `giveaway/manage/otherRole/roleEntries/${userId}/${giveawayId ? giveawayId : "false"}`,
+                customId: `giveaway/manage/otherRole/roleEntries/${userId}`,
                 label: "Cargos de outros servers",
                 style: ButtonStyle.Secondary,
             }),
         )
     )
 
+    const inicial = guildsPage * 25;
+    const final = inicial + guildsPage;
+
     page === "connectedGuilds" && rows.push(
         createRow(
             new StringSelectMenuBuilder({
-                customId: `giveaway/manage/stringSelect/connectedGuilds/${userId}/${giveawayId ? giveawayId : "false"}`,
+                customId: `giveaway/manage/stringSelect/connectedGuilds/${userId}/${guildsPage}`,
                 placeholder: "Servidores conectados",
-                options: guilds.map(guild => ({
+                options: guilds.slice(inicial, final).map(guild => ({
                     label: guild.name,
                     value: guild.id
                 }))
@@ -128,17 +131,30 @@ export function giveawayManageMenu<R>(userId: string, data: GiveawayManageDataIn
         ),
         createRow(
             new ButtonBuilder({
-                customId: `giveaway/manage/button/connectedGuilds/${userId}/${giveawayId ? giveawayId : "false"}`,
-                label: "Outro",
-                style: ButtonStyle.Secondary
-            })
+                customId: `giveaway/manage/button/connectedGuilds/${userId}/${guildsPage - 1}`,
+                label: "Anterior",
+                style: ButtonStyle.Secondary,
+                disabled: guildsPage < 1,
+            }),
+            new ButtonBuilder({
+                customId: `giveaway/manage/clearCache/connectedGuilds/${userId}/${guildsPage - 1}`,
+                label: "Limpar cache",
+                style: ButtonStyle.Danger,
+                disabled: guildsPage < 1,
+            }),
+            new ButtonBuilder({
+                customId: `giveaway/manage/button/connectedGuilds/${userId}/${guildsPage + 2}`,
+                label: "Próximo",
+                style: ButtonStyle.Secondary,
+                disabled: guildsPage === guilds.length - 1,
+            }),
         )
     )
 
     page === "channelId" && rows.push(
         createRow(
             new ChannelSelectMenuBuilder({
-                customId: `giveaway/manage/channelSelect/channel/${userId}/${giveawayId ? giveawayId : "false"}`,
+                customId: `giveaway/manage/channelSelect/channel/${userId}`,
                 placeholder: "Canal onde ocorrerá o sorteio",
                 minValues: 1,
                 maxValues: 1,
@@ -149,7 +165,7 @@ export function giveawayManageMenu<R>(userId: string, data: GiveawayManageDataIn
     page !== "main" && rows.push(
         createRow(
             new ButtonBuilder({
-                customId: `giveaway/manage/back/${userId}/${giveawayId ? giveawayId : "false"}`,
+                customId: `giveaway/manage/back/${userId}`,
                 label: "Voltar",
                 style: ButtonStyle.Secondary,
             })
@@ -159,9 +175,9 @@ export function giveawayManageMenu<R>(userId: string, data: GiveawayManageDataIn
     page === "main" && rows.push(
         createRow(
             new ButtonBuilder({
-                customId: `giveaway/manage/start/${userId}/${giveawayId ? giveawayId : "false"}`,
+                customId: `giveaway/manage/start/${userId}`,
                 style: ButtonStyle.Success,
-                label: giveawayId ? "Editar" : "Iniciar",
+                label: data.id ? "Editar" : "Iniciar",
                 disabled: !data.winners || !data.channelId || !data.title || !data.expiresAt
             })
         )

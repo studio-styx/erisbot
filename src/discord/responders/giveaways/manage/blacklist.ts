@@ -5,9 +5,9 @@ import { menus } from "#menus";
 import { GiveawayManageDataInfo } from "#types/giveawayManageDataType.js";
 
 createResponder({
-    customId: "giveaway/manage/roleSelect/blacklist/:userId/:giveawayId",
+    customId: "giveaway/manage/roleSelect/blacklist/:userId",
     types: [ResponderType.RoleSelect], cache: "cached",
-    async run(interaction, { userId, giveawayId }) {
+    async run(interaction, { userId }) {
         const { user, message } = interaction;
         if (user.id !== userId) {
             interaction.reply(res.danger(`${icon.denied} | Não foi você que executou esse comando!`))
@@ -28,7 +28,7 @@ createResponder({
         giveawayData.blackListRoles = roles;
 
         await redis.setex(key, 60 * 300, JSON.stringify(giveawayData));
-        interaction.editReply(menus.giveaway.giveawayManage(userId, giveawayData, "main", giveawayId ? Number(giveawayId) : undefined));
+        interaction.editReply(menus.giveaway.giveawayManage(userId, giveawayData, "main"));
         return;
     },
 });
