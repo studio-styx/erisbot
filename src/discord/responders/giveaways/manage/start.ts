@@ -1,8 +1,10 @@
 import { createResponder, ResponderType } from "#base";
-import { redis } from "#database";
+import { prisma, redis } from "#database";
 import { icon, res, resv2 } from "#functions";
+import { menus } from "#menus";
 import { GiveawayManageDataInfo } from "#types/giveawayManageDataType.js";
-import { channelMention } from "discord.js";
+import { channelMention, Message } from "discord.js";
+import crypto from "crypto"
 
 createResponder({
     customId: "giveaway/manage/start/:userId",
@@ -30,11 +32,19 @@ createResponder({
             interaction.followUp(res.danger(`${icon.error} | Você precisa setar o canal onde será enviado a mensagem!`))
             return;
         }
+        if (!giveawayData.title) {
+            interaction.followUp(res.danger(`${icon.error} | Você precisa setar o título do sorteio!`))
+            return;
+        }
+        if (!giveawayData.expiresAt) {
+            interaction.followUp(res.danger(`${icon.error} | Você precisa setar a data de termino do sorteio!`))
+            return;
+        }
 
         const channel = await guild.channels.fetch(giveawayData.channelId);
 
-        if (!channel) {
-            interaction.followUp(res.danger(`${icon.error} | Canal do sorteio não foi encontrado! por favor selecione outro canal para criar o sorteio`));
+        if (!channel || !channel.isTextBased()) {
+            interaction.followUp(res.danger(`${icon.error} | Canal do sorteio não foi encontrado ou não é um canal de texto! por favor selecione outro canal para criar o sorteio`));
             return;
         }
 
@@ -53,6 +63,93 @@ createResponder({
             return;
         }
 
+        const nextId = (await prisma.giveaway.findFirst({
+            where: {
+                connectedGuilds: {
+                    some: {
+                        guildId: guild.id
+                    }
+                }
+            },
+            orderBy: {
+                localId: "desc"
+            },
+            select: {
+                localId: true
+            }
+        }) || { localId: 0 }).localId + 1;
         
+        await prisma.$transaction(async tx => {
+            const giveawayCreated = await tx.giveaway.upsert({
+                where: { id: giveawayData.id || 0 },
+                update: {
+                    title: giveawayData.title,
+                    description: giveawayData.description,
+                    expiresAt: giveawayData.expiresAt,
+                    usersWins: giveawayData.winners,
+                    serverStayRequired: giveawayData.stayInServerRequire,
+                },
+                create: {
+                    title: giveawayData.title!,
+                    localId: nextId,
+                    description: giveawayData.description,
+                    expiresAt: giveawayData.expiresAt!,
+                    usersWins: giveawayData.winners,
+                    serverStayRequired: giveawayData.stayInServerRequire,
+                },
+                include: {
+                    connectedGuilds: true
+                }
+            });
+
+            const guildGiveawayCreated = await tx.guildGiveaway.upsert({
+                where: {
+                    guildId_giveawayId: {
+                        guildId: guild.id,
+                        giveawayId: giveawayData.id || 0
+                    }
+                },
+                update: {
+                    blackListRoles: giveawayData.blackListRoles,
+                    xpRequired: giveawayData.xpRequired,
+                },
+                create: {
+                    guildId: guild.id,
+                    giveawayId: giveawayCreated.id,
+                    channelId: giveawayData.channelId!,
+                    messageId: crypto.randomBytes(Math.ceil(18 / 2))
+                        .toString('hex')
+                        .slice(0, 18), // irá ser trocado depois pelo id da mensagem
+                    blackListRoles: giveawayData.blackListRoles,
+                    xpRequired: giveawayData.xpRequired,
+                }
+            });
+
+            if (giveawayData.roleEntries) {
+                for (const roleEntry of giveawayData.roleEntries) {
+                    await tx.roleMultipleEntry.upsert({
+                        where: {
+                            giveawayId_roleId: {
+                                roleId: roleEntry.roleId,
+                                giveawayId: giveawayCreated.id
+                            }
+                        },
+                        update: {
+                            extraEntries: roleEntry.entries
+                        },
+                        create: {
+                            roleId: roleEntry.roleId,
+                            extraEntries: roleEntry.entries,
+                            giveawayId: giveawayCreated.id
+                        }
+                    });
+                }
+            }
+            
+
+            for (const connectedGuild of giveawayCreated.connectedGuilds) {
+                
+            }
+        });
     },
 });

@@ -7,6 +7,7 @@ import { editQuestionMenu } from "./dev/tryvia/editQuestion.js";
 import { fetchAllPendingQuestionsMenu } from "./dev/tryvia/fetchAllPendingQuestions.js";
 import { fetchAllQuestionsMenu } from "./dev/tryvia/fetchAllQuestions.js";
 import { giveawayEndMenu } from "./giveaway/giveawayEndMenu.js";
+import { giveawayInterfaceMenu } from "./giveaway/giveawayInterface.js";
 import { giveawayManageMenu } from "./giveaway/giveawayManage.js";
 import { stockInfoMenu } from "./investment/stockInfo.js";
 import { stocksMenu } from "./investment/stocks.js";
@@ -66,6 +67,7 @@ export const menus = {
     },
     giveaway: {
         giveawayEnd: giveawayEndMenu,
-        giveawayManage: giveawayManageMenu
+        giveawayManage: giveawayManageMenu,
+        giveawayInterface: giveawayInterfaceMenu
     }
 }
