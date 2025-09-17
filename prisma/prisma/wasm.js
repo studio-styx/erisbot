@@ -5,13 +5,28 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 
 const {
+  PrismaClientKnownRequestError,
+  PrismaClientUnknownRequestError,
+  PrismaClientRustPanicError,
+  PrismaClientInitializationError,
+  PrismaClientValidationError,
+  getPrismaClient,
+  sqltag,
+  empty,
+  join,
+  raw,
+  skip,
   Decimal,
+  Debug,
   objectEnumValues,
   makeStrictEnum,
+  Extensions,
+  warnOnce,
+  defineDmmfProperty,
   Public,
   getRuntime,
-  skip
-} = require('./runtime/index-browser.js')
+  createParam,
+} = require('./runtime/wasm-engine-edge.js')
 
 
 const Prisma = {}
@@ -20,79 +35,35 @@ exports.Prisma = Prisma
 exports.$Enums = {}
 
 /**
- * Prisma Client JS version: 6.15.0
- * Query Engine version: 85179d7826409ee107a6ba334b5e305ae3fba9fb
+ * Prisma Client JS version: 6.16.2
+ * Query Engine version: 1c57fdcd7e44b29b9313256c76699e91c3ac3c43
  */
 Prisma.prismaVersion = {
-  client: "6.15.0",
-  engine: "85179d7826409ee107a6ba334b5e305ae3fba9fb"
+  client: "6.16.2",
+  engine: "1c57fdcd7e44b29b9313256c76699e91c3ac3c43"
 }
 
-Prisma.PrismaClientKnownRequestError = () => {
-  const runtimeName = getRuntime().prettyName;
-  throw new Error(`PrismaClientKnownRequestError is unable to run in this browser environment, or has been bundled for the browser (running in ${runtimeName}).
-In case this error is unexpected for you, please report it in https://pris.ly/prisma-prisma-bug-report`,
-)};
-Prisma.PrismaClientUnknownRequestError = () => {
-  const runtimeName = getRuntime().prettyName;
-  throw new Error(`PrismaClientUnknownRequestError is unable to run in this browser environment, or has been bundled for the browser (running in ${runtimeName}).
-In case this error is unexpected for you, please report it in https://pris.ly/prisma-prisma-bug-report`,
-)}
-Prisma.PrismaClientRustPanicError = () => {
-  const runtimeName = getRuntime().prettyName;
-  throw new Error(`PrismaClientRustPanicError is unable to run in this browser environment, or has been bundled for the browser (running in ${runtimeName}).
-In case this error is unexpected for you, please report it in https://pris.ly/prisma-prisma-bug-report`,
-)}
-Prisma.PrismaClientInitializationError = () => {
-  const runtimeName = getRuntime().prettyName;
-  throw new Error(`PrismaClientInitializationError is unable to run in this browser environment, or has been bundled for the browser (running in ${runtimeName}).
-In case this error is unexpected for you, please report it in https://pris.ly/prisma-prisma-bug-report`,
-)}
-Prisma.PrismaClientValidationError = () => {
-  const runtimeName = getRuntime().prettyName;
-  throw new Error(`PrismaClientValidationError is unable to run in this browser environment, or has been bundled for the browser (running in ${runtimeName}).
-In case this error is unexpected for you, please report it in https://pris.ly/prisma-prisma-bug-report`,
-)}
+Prisma.PrismaClientKnownRequestError = PrismaClientKnownRequestError;
+Prisma.PrismaClientUnknownRequestError = PrismaClientUnknownRequestError
+Prisma.PrismaClientRustPanicError = PrismaClientRustPanicError
+Prisma.PrismaClientInitializationError = PrismaClientInitializationError
+Prisma.PrismaClientValidationError = PrismaClientValidationError
 Prisma.Decimal = Decimal
 
 /**
  * Re-export of sql-template-tag
  */
-Prisma.sql = () => {
-  const runtimeName = getRuntime().prettyName;
-  throw new Error(`sqltag is unable to run in this browser environment, or has been bundled for the browser (running in ${runtimeName}).
-In case this error is unexpected for you, please report it in https://pris.ly/prisma-prisma-bug-report`,
-)}
-Prisma.empty = () => {
-  const runtimeName = getRuntime().prettyName;
-  throw new Error(`empty is unable to run in this browser environment, or has been bundled for the browser (running in ${runtimeName}).
-In case this error is unexpected for you, please report it in https://pris.ly/prisma-prisma-bug-report`,
-)}
-Prisma.join = () => {
-  const runtimeName = getRuntime().prettyName;
-  throw new Error(`join is unable to run in this browser environment, or has been bundled for the browser (running in ${runtimeName}).
-In case this error is unexpected for you, please report it in https://pris.ly/prisma-prisma-bug-report`,
-)}
-Prisma.raw = () => {
-  const runtimeName = getRuntime().prettyName;
-  throw new Error(`raw is unable to run in this browser environment, or has been bundled for the browser (running in ${runtimeName}).
-In case this error is unexpected for you, please report it in https://pris.ly/prisma-prisma-bug-report`,
-)}
+Prisma.sql = sqltag
+Prisma.empty = empty
+Prisma.join = join
+Prisma.raw = raw
 Prisma.validator = Public.validator
 
 /**
 * Extensions
 */
-Prisma.getExtensionContext = () => {
-  const runtimeName = getRuntime().prettyName;
-  throw new Error(`Extensions.getExtensionContext is unable to run in this browser environment, or has been bundled for the browser (running in ${runtimeName}).
-In case this error is unexpected for you, please report it in https://pris.ly/prisma-prisma-bug-report`,
-)}
-Prisma.defineExtension = () => {
-  const runtimeName = getRuntime().prettyName;
-  throw new Error(`Extensions.defineExtension is unable to run in this browser environment, or has been bundled for the browser (running in ${runtimeName}).
-In case this error is unexpected for you, please report it in https://pris.ly/prisma-prisma-bug-report`,
-)}
+Prisma.getExtensionContext = Extensions.getExtensionContext
+Prisma.defineExtension = Extensions.defineExtension
 
 /**
  * Shorthand utilities for JSON filtering
@@ -109,10 +80,11 @@ Prisma.NullTypes = {
 
 
 
+
+
 /**
  * Enums
  */
-
 exports.Prisma.TransactionIsolationLevel = makeStrictEnum({
   ReadUncommitted: 'ReadUncommitted',
   ReadCommitted: 'ReadCommitted',
@@ -337,22 +309,16 @@ exports.Prisma.NullsOrder = {
   first: 'first',
   last: 'last'
 };
-exports.TryviaDifficulty = exports.$Enums.TryviaDifficulty = {
-  EASY: 'EASY',
-  MEDIUM: 'MEDIUM',
-  HARD: 'HARD'
+exports.TryviaStatus = exports.$Enums.TryviaStatus = {
+  APPROVED: 'APPROVED',
+  PENDING: 'PENDING',
+  REJECTED: 'REJECTED'
 };
 
 exports.TryviaTypes = exports.$Enums.TryviaTypes = {
   BOOLEAN: 'BOOLEAN',
   MULTIPLE: 'MULTIPLE',
   WRITEINCHAT: 'WRITEINCHAT'
-};
-
-exports.TryviaStatus = exports.$Enums.TryviaStatus = {
-  APPROVED: 'APPROVED',
-  PENDING: 'PENDING',
-  REJECTED: 'REJECTED'
 };
 
 exports.TryviaOrigin = exports.$Enums.TryviaOrigin = {
@@ -362,9 +328,10 @@ exports.TryviaOrigin = exports.$Enums.TryviaOrigin = {
   ADMIN: 'ADMIN'
 };
 
-exports.TransactionQuitType = exports.$Enums.TransactionQuitType = {
-  SUB: 'SUB',
-  SUM: 'SUM'
+exports.TryviaDifficulty = exports.$Enums.TryviaDifficulty = {
+  EASY: 'EASY',
+  MEDIUM: 'MEDIUM',
+  HARD: 'HARD'
 };
 
 exports.TransactionType = exports.$Enums.TransactionType = {
@@ -373,6 +340,11 @@ exports.TransactionType = exports.$Enums.TransactionType = {
   ADMIN: 'ADMIN',
   BUY: 'BUY',
   SELL: 'SELL'
+};
+
+exports.TransactionQuitType = exports.$Enums.TransactionQuitType = {
+  SUB: 'SUB',
+  SUM: 'SUM'
 };
 
 exports.TransactionStatus = exports.$Enums.TransactionStatus = {
@@ -402,34 +374,82 @@ exports.Prisma.ModelName = {
   GuildGiveaway: 'GuildGiveaway',
   RoleMultipleEntry: 'RoleMultipleEntry'
 };
-
 /**
- * This is a stub Prisma Client that will error at runtime if called.
+ * Create the Client
  */
-class PrismaClient {
-  constructor() {
-    return new Proxy(this, {
-      get(target, prop) {
-        let message
-        const runtime = getRuntime()
-        if (runtime.isEdge) {
-          message = `PrismaClient is not configured to run in ${runtime.prettyName}. In order to run Prisma Client on edge runtime, either:
-- Use Prisma Accelerate: https://pris.ly/d/accelerate
-- Use Driver Adapters: https://pris.ly/d/driver-adapters
-`;
-        } else {
-          message = 'PrismaClient is unable to run in this browser environment, or has been bundled for the browser (running in `' + runtime.prettyName + '`).'
-        }
-
-        message += `
-If this is unexpected, please open an issue: https://pris.ly/prisma-prisma-bug-report`
-
-        throw new Error(message)
+const config = {
+  "generator": {
+    "name": "client",
+    "provider": {
+      "fromEnvVar": null,
+      "value": "prisma-client-js"
+    },
+    "output": {
+      "value": "/home/guilherme/Documentos/projetos/eris-barry/prisma/prisma",
+      "fromEnvVar": null
+    },
+    "config": {
+      "engineType": "library"
+    },
+    "binaryTargets": [
+      {
+        "fromEnvVar": null,
+        "value": "debian-openssl-3.0.x",
+        "native": true
       }
-    })
+    ],
+    "previewFeatures": [],
+    "sourceFilePath": "/home/guilherme/Documentos/projetos/eris-barry/prisma/schema.prisma",
+    "isCustomOutput": true
+  },
+  "relativeEnvPaths": {
+    "rootEnvPath": null,
+    "schemaEnvPath": "../../.env"
+  },
+  "relativePath": "..",
+  "clientVersion": "6.16.2",
+  "engineVersion": "1c57fdcd7e44b29b9313256c76699e91c3ac3c43",
+  "datasourceNames": [
+    "db"
+  ],
+  "activeProvider": "postgresql",
+  "inlineDatasources": {
+    "db": {
+      "url": {
+        "fromEnvVar": "DEV_DATABASE_URL",
+        "value": null
+      }
+    }
+  },
+  "inlineSchema": "// This is your Prisma schema file,\n// learn more about it in the docs: https://pris.ly/d/prisma-schema\n\n// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?\n// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init\n\ngenerator client {\n  provider = \"prisma-client-js\"\n  output   = \"./prisma\"\n}\n\ndatasource db {\n  provider = \"postgresql\"\n  url      = env(\"DEV_DATABASE_URL\")\n}\n\nmodel User {\n  id                   String         @id\n  money                Decimal        @default(0.0) @db.Decimal(12, 2)\n  bank                 Decimal        @default(50.0) @db.Decimal(12, 2)\n  xp                   Int            @default(0)\n  company              Company?       @relation(fields: [companyId], references: [id], onDelete: SetNull)\n  companyId            Int?\n  logs                 Log[]\n  cooldowns            Cooldown[]\n  stocks               StockHolding[]\n  mails                Mails[]        @relation(\"ReceivedMails\")\n  sendedMails          Mails[]        @relation(\"SentMails\")\n  mailsTagsIgnored     String[]       @default([])\n  dmNotification       Boolean        @default(false)\n  applications         Application[]\n  token                Json?\n  afkReasson           String?\n  afkTime              DateTime?\n  guilds               GuildMember[]\n  transactionsSent     Transaction[]  @relation(\"UserTransactions\")\n  transactionsReceived Transaction[]  @relation(\"TargetTransactions\")\n  giveaways            UserGiveaway[]\n}\n\nmodel TryviaQuestions {\n  id                      Int              @id @default(autoincrement())\n  question                String\n  difficulty              TryviaDifficulty\n  type                    TryviaTypes      @default(WRITEINCHAT)\n  correct                 Boolean?\n  tags                    String[]\n  correctAnswer           String\n  correctAnswersVariation String[]         @default([])\n  explanation             String\n  incorrectAnswers        String[]\n  createdAt               DateTime         @default(now())\n  updatedAt               DateTime         @default(now())\n  status                  TryviaStatus\n  origin                  TryviaOrigin\n\n  @@unique([question, type])\n}\n\nenum TryviaStatus {\n  APPROVED\n  PENDING\n  REJECTED\n}\n\nenum TryviaTypes {\n  BOOLEAN\n  MULTIPLE\n  WRITEINCHAT\n}\n\nenum TryviaOrigin {\n  USER\n  API\n  IA\n  ADMIN\n}\n\nenum TryviaDifficulty {\n  EASY\n  MEDIUM\n  HARD\n}\n\nmodel Application {\n  id           String        @id\n  money        Decimal       @default(0.0) @db.Decimal(12, 2)\n  token        String?       @unique\n  ownerId      String\n  owner        User          @relation(fields: [ownerId], references: [id])\n  requisitions Requisition[]\n}\n\nmodel Requisition {\n  id            Int         @id @default(autoincrement())\n  createdAt     DateTime    @default(now())\n  url           String\n  Application   Application @relation(fields: [applicationId], references: [id])\n  applicationId String\n}\n\nmodel Log {\n  id        Int      @id @default(autoincrement())\n  userId    String\n  user      User     @relation(fields: [userId], references: [id])\n  message   String\n  timestamp DateTime @default(now())\n  level     Int      @default(0)\n  type      String   @default(\"info\")\n  tags      String[] @default([])\n}\n\nmodel Transaction {\n  id Int @id @default(autoincrement())\n\n  userId String\n  user   User   @relation(\"UserTransactions\", fields: [userId], references: [id])\n\n  targetId String?\n  target   User?   @relation(\"TargetTransactions\", fields: [targetId], references: [id])\n\n  amount   Float\n  quitType TransactionQuitType?\n\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt()\n\n  guildId String?\n  guild   GuildSettings? @relation(fields: [guildId], references: [id], onDelete: Cascade)\n\n  channelId String?\n  messageId String?\n\n  reason String?\n  type   TransactionType   @default(USER)\n  status TransactionStatus @default(PENDING)\n}\n\nenum TransactionType {\n  API\n  USER\n  ADMIN\n  BUY\n  SELL\n}\n\nenum TransactionQuitType {\n  SUB\n  SUM\n}\n\nenum TransactionStatus {\n  PENDING\n  APPROVED\n  REJECTED\n  EXPIRED\n}\n\nmodel Cooldown {\n  id        Int      @id @default(autoincrement())\n  userId    String\n  user      User     @relation(fields: [userId], references: [id])\n  name      String\n  timestamp DateTime @default(now())\n  willEndIn DateTime\n\n  @@unique([userId, name])\n}\n\nmodel Company {\n  id           Int     @id @default(autoincrement())\n  name         String\n  description  String?\n  difficulty   Int     @default(1)\n  experience   Int     @default(0)\n  wage         Decimal @default(100.0) @db.Decimal(12, 2)\n  expectations Json\n  workers      User[]\n}\n\nmodel Stock {\n  id           Int            @id @default(autoincrement())\n  name         String\n  price        Decimal        @db.Decimal(12, 2)\n  description  String?\n  iaAvaliation String?\n  trend        String?\n  history      StockHistory[]\n  holders      StockHolding[]\n}\n\nmodel StockHistory {\n  id      Int      @id @default(autoincrement())\n  stock   Stock    @relation(fields: [stockId], references: [id], onDelete: Cascade)\n  stockId Int\n  price   Decimal  @db.Decimal(12, 2)\n  date    DateTime @default(now())\n\n  @@unique([stockId, date])\n}\n\nmodel StockHolding {\n  id      Int    @id @default(autoincrement())\n  user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)\n  userId  String\n  stock   Stock  @relation(fields: [stockId], references: [id], onDelete: Cascade)\n  stockId Int\n  amount  Int    @default(0)\n\n  @@unique([userId, stockId])\n}\n\nmodel GuildSettings {\n  id              String   @id\n  chatBotChannels String[] @default([])\n  chatBotEnabled  Boolean  @default(false)\n\n  channelsCommandDisabled            String[] @default([])\n  channelsCommandDisabledIsHabilited Boolean  @default(false)\n\n  channelsCommandEnabled            String[] @default([])\n  channelsCommandEnabledIsHabilited Boolean  @default(false)\n\n  xpSystemEnabled Boolean @default(false)\n  difficulty      Float   @default(1.0)\n\n  rolesXpBonus  Json     @default(\"[]\")\n  rolesNotWinXp String[] @default([])\n\n  channelsXpBonus  Json     @default(\"[]\")\n  channelsNotWinXp String[] @default([])\n\n  warnLevelUp Json @default(\"{}\")\n  levelGrant  Json @default(\"[]\")\n\n  members            GuildMember[]\n  transactions       Transaction[]\n  connectedGiveaways GuildGiveaway[]\n}\n\nmodel GuildMember {\n  id      String\n  guildId String\n\n  guild GuildSettings @relation(fields: [guildId], references: [id], onDelete: Cascade)\n  user  User?         @relation(fields: [id], references: [id], onDelete: Cascade)\n\n  xp           Int @default(0)\n  tryviaPoints Int @default(0)\n  tryviaGames  Int @default(0)\n  tryviaWins   Int @default(0)\n\n  @@id([guildId, id])\n}\n\nmodel Mails {\n  id Int @id @default(autoincrement())\n\n  userId String\n  user   User   @relation(\"ReceivedMails\", fields: [userId], references: [id], onDelete: Cascade)\n\n  content String\n  asRead  Boolean  @default(false)\n  tags    String[]\n\n  whoSendId   String\n  whoSendUser User   @relation(\"SentMails\", fields: [whoSendId], references: [id], onDelete: Cascade)\n\n  createdAt DateTime @default(now())\n}\n\nmodel Giveaway {\n  id              Int                 @id @default(autoincrement())\n  localId         Int // ID do sorteio no servidor host\n  title           String\n  description     String?\n  participants    UserGiveaway[]\n  connectedGuilds GuildGiveaway[]\n  roleEntries     RoleMultipleEntry[]\n\n  serverStayRequired Boolean @default(false) // se o usuário precisa estar em todos os servidores conectados\n  usersWins          Int     @default(1) // quantidade de vencedores\n\n  expiresAt DateTime\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt()\n\n  @@index([expiresAt])\n}\n\nmodel UserGiveaway {\n  id         Int      @id @default(autoincrement())\n  userId     String\n  giveawayId Int\n  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)\n  giveaway   Giveaway @relation(fields: [giveawayId], references: [id], onDelete: Cascade)\n\n  isWinner  Boolean  @default(false)\n  createdAt DateTime @default(now())\n\n  @@unique([userId, giveawayId])\n}\n\nmodel GuildGiveaway {\n  id         Int     @id @default(autoincrement())\n  guildId    String\n  channelId  String\n  messageId  String  @unique\n  giveawayId Int\n  isHost     Boolean @default(false)\n\n  guild    GuildSettings @relation(fields: [guildId], references: [id], onDelete: Cascade)\n  giveaway Giveaway      @relation(fields: [giveawayId], references: [id], onDelete: Cascade)\n\n  blackListRoles String[]\n  xpRequired     Int?\n\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt()\n\n  @@unique([guildId, giveawayId])\n}\n\nmodel RoleMultipleEntry {\n  id           Int    @id @default(autoincrement())\n  giveawayId   Int\n  roleId       String\n  extraEntries Int\n\n  giveaway Giveaway @relation(fields: [giveawayId], references: [id], onDelete: Cascade)\n\n  @@unique([giveawayId, roleId])\n}\n",
+  "inlineSchemaHash": "3074f482e41a9005c52df8e7f9d1f913402424bb59ba97375c188cd605071edd",
+  "copyEngine": true
+}
+config.dirname = '/'
+
+config.runtimeDataModel = JSON.parse("{\"models\":{\"User\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"money\",\"kind\":\"scalar\",\"type\":\"Decimal\"},{\"name\":\"bank\",\"kind\":\"scalar\",\"type\":\"Decimal\"},{\"name\":\"xp\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"company\",\"kind\":\"object\",\"type\":\"Company\",\"relationName\":\"CompanyToUser\"},{\"name\":\"companyId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"logs\",\"kind\":\"object\",\"type\":\"Log\",\"relationName\":\"LogToUser\"},{\"name\":\"cooldowns\",\"kind\":\"object\",\"type\":\"Cooldown\",\"relationName\":\"CooldownToUser\"},{\"name\":\"stocks\",\"kind\":\"object\",\"type\":\"StockHolding\",\"relationName\":\"StockHoldingToUser\"},{\"name\":\"mails\",\"kind\":\"object\",\"type\":\"Mails\",\"relationName\":\"ReceivedMails\"},{\"name\":\"sendedMails\",\"kind\":\"object\",\"type\":\"Mails\",\"relationName\":\"SentMails\"},{\"name\":\"mailsTagsIgnored\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"dmNotification\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"applications\",\"kind\":\"object\",\"type\":\"Application\",\"relationName\":\"ApplicationToUser\"},{\"name\":\"token\",\"kind\":\"scalar\",\"type\":\"Json\"},{\"name\":\"afkReasson\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"afkTime\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"guilds\",\"kind\":\"object\",\"type\":\"GuildMember\",\"relationName\":\"GuildMemberToUser\"},{\"name\":\"transactionsSent\",\"kind\":\"object\",\"type\":\"Transaction\",\"relationName\":\"UserTransactions\"},{\"name\":\"transactionsReceived\",\"kind\":\"object\",\"type\":\"Transaction\",\"relationName\":\"TargetTransactions\"},{\"name\":\"giveaways\",\"kind\":\"object\",\"type\":\"UserGiveaway\",\"relationName\":\"UserToUserGiveaway\"}],\"dbName\":null},\"TryviaQuestions\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"question\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"difficulty\",\"kind\":\"enum\",\"type\":\"TryviaDifficulty\"},{\"name\":\"type\",\"kind\":\"enum\",\"type\":\"TryviaTypes\"},{\"name\":\"correct\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"tags\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"correctAnswer\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"correctAnswersVariation\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"explanation\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"incorrectAnswers\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"status\",\"kind\":\"enum\",\"type\":\"TryviaStatus\"},{\"name\":\"origin\",\"kind\":\"enum\",\"type\":\"TryviaOrigin\"}],\"dbName\":null},\"Application\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"money\",\"kind\":\"scalar\",\"type\":\"Decimal\"},{\"name\":\"token\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"ownerId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"owner\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"ApplicationToUser\"},{\"name\":\"requisitions\",\"kind\":\"object\",\"type\":\"Requisition\",\"relationName\":\"ApplicationToRequisition\"}],\"dbName\":null},\"Requisition\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"url\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"Application\",\"kind\":\"object\",\"type\":\"Application\",\"relationName\":\"ApplicationToRequisition\"},{\"name\":\"applicationId\",\"kind\":\"scalar\",\"type\":\"String\"}],\"dbName\":null},\"Log\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"userId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"user\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"LogToUser\"},{\"name\":\"message\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"timestamp\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"level\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"type\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"tags\",\"kind\":\"scalar\",\"type\":\"String\"}],\"dbName\":null},\"Transaction\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"userId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"user\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"UserTransactions\"},{\"name\":\"targetId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"target\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"TargetTransactions\"},{\"name\":\"amount\",\"kind\":\"scalar\",\"type\":\"Float\"},{\"name\":\"quitType\",\"kind\":\"enum\",\"type\":\"TransactionQuitType\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"guildId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"guild\",\"kind\":\"object\",\"type\":\"GuildSettings\",\"relationName\":\"GuildSettingsToTransaction\"},{\"name\":\"channelId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"messageId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"reason\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"type\",\"kind\":\"enum\",\"type\":\"TransactionType\"},{\"name\":\"status\",\"kind\":\"enum\",\"type\":\"TransactionStatus\"}],\"dbName\":null},\"Cooldown\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"userId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"user\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"CooldownToUser\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"timestamp\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"willEndIn\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":null},\"Company\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"description\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"difficulty\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"experience\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"wage\",\"kind\":\"scalar\",\"type\":\"Decimal\"},{\"name\":\"expectations\",\"kind\":\"scalar\",\"type\":\"Json\"},{\"name\":\"workers\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"CompanyToUser\"}],\"dbName\":null},\"Stock\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"price\",\"kind\":\"scalar\",\"type\":\"Decimal\"},{\"name\":\"description\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"iaAvaliation\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"trend\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"history\",\"kind\":\"object\",\"type\":\"StockHistory\",\"relationName\":\"StockToStockHistory\"},{\"name\":\"holders\",\"kind\":\"object\",\"type\":\"StockHolding\",\"relationName\":\"StockToStockHolding\"}],\"dbName\":null},\"StockHistory\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"stock\",\"kind\":\"object\",\"type\":\"Stock\",\"relationName\":\"StockToStockHistory\"},{\"name\":\"stockId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"price\",\"kind\":\"scalar\",\"type\":\"Decimal\"},{\"name\":\"date\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":null},\"StockHolding\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"user\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"StockHoldingToUser\"},{\"name\":\"userId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"stock\",\"kind\":\"object\",\"type\":\"Stock\",\"relationName\":\"StockToStockHolding\"},{\"name\":\"stockId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"amount\",\"kind\":\"scalar\",\"type\":\"Int\"}],\"dbName\":null},\"GuildSettings\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"chatBotChannels\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"chatBotEnabled\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"channelsCommandDisabled\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"channelsCommandDisabledIsHabilited\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"channelsCommandEnabled\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"channelsCommandEnabledIsHabilited\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"xpSystemEnabled\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"difficulty\",\"kind\":\"scalar\",\"type\":\"Float\"},{\"name\":\"rolesXpBonus\",\"kind\":\"scalar\",\"type\":\"Json\"},{\"name\":\"rolesNotWinXp\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"channelsXpBonus\",\"kind\":\"scalar\",\"type\":\"Json\"},{\"name\":\"channelsNotWinXp\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"warnLevelUp\",\"kind\":\"scalar\",\"type\":\"Json\"},{\"name\":\"levelGrant\",\"kind\":\"scalar\",\"type\":\"Json\"},{\"name\":\"members\",\"kind\":\"object\",\"type\":\"GuildMember\",\"relationName\":\"GuildMemberToGuildSettings\"},{\"name\":\"transactions\",\"kind\":\"object\",\"type\":\"Transaction\",\"relationName\":\"GuildSettingsToTransaction\"},{\"name\":\"connectedGiveaways\",\"kind\":\"object\",\"type\":\"GuildGiveaway\",\"relationName\":\"GuildGiveawayToGuildSettings\"}],\"dbName\":null},\"GuildMember\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"guildId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"guild\",\"kind\":\"object\",\"type\":\"GuildSettings\",\"relationName\":\"GuildMemberToGuildSettings\"},{\"name\":\"user\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"GuildMemberToUser\"},{\"name\":\"xp\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"tryviaPoints\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"tryviaGames\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"tryviaWins\",\"kind\":\"scalar\",\"type\":\"Int\"}],\"dbName\":null},\"Mails\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"userId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"user\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"ReceivedMails\"},{\"name\":\"content\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"asRead\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"tags\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"whoSendId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"whoSendUser\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"SentMails\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":null},\"Giveaway\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"localId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"title\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"description\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"participants\",\"kind\":\"object\",\"type\":\"UserGiveaway\",\"relationName\":\"GiveawayToUserGiveaway\"},{\"name\":\"connectedGuilds\",\"kind\":\"object\",\"type\":\"GuildGiveaway\",\"relationName\":\"GiveawayToGuildGiveaway\"},{\"name\":\"roleEntries\",\"kind\":\"object\",\"type\":\"RoleMultipleEntry\",\"relationName\":\"GiveawayToRoleMultipleEntry\"},{\"name\":\"serverStayRequired\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"usersWins\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"expiresAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":null},\"UserGiveaway\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"userId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"giveawayId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"user\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"UserToUserGiveaway\"},{\"name\":\"giveaway\",\"kind\":\"object\",\"type\":\"Giveaway\",\"relationName\":\"GiveawayToUserGiveaway\"},{\"name\":\"isWinner\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":null},\"GuildGiveaway\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"guildId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"channelId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"messageId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"giveawayId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"isHost\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"guild\",\"kind\":\"object\",\"type\":\"GuildSettings\",\"relationName\":\"GuildGiveawayToGuildSettings\"},{\"name\":\"giveaway\",\"kind\":\"object\",\"type\":\"Giveaway\",\"relationName\":\"GiveawayToGuildGiveaway\"},{\"name\":\"blackListRoles\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"xpRequired\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":null},\"RoleMultipleEntry\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"giveawayId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"roleId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"extraEntries\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"giveaway\",\"kind\":\"object\",\"type\":\"Giveaway\",\"relationName\":\"GiveawayToRoleMultipleEntry\"}],\"dbName\":null}},\"enums\":{},\"types\":{}}")
+defineDmmfProperty(exports.Prisma, config.runtimeDataModel)
+config.engineWasm = {
+  getRuntime: async () => require('./query_engine_bg.js'),
+  getQueryEngineWasmModule: async () => {
+    const loader = (await import('#wasm-engine-loader')).default
+    const engine = (await loader).default
+    return engine
   }
 }
+config.compilerWasm = undefined
 
+config.injectableEdgeEnv = () => ({
+  parsed: {
+    DEV_DATABASE_URL: typeof globalThis !== 'undefined' && globalThis['DEV_DATABASE_URL'] || typeof process !== 'undefined' && process.env && process.env.DEV_DATABASE_URL || undefined
+  }
+})
+
+if (typeof globalThis !== 'undefined' && globalThis['DEBUG'] || typeof process !== 'undefined' && process.env && process.env.DEBUG || undefined) {
+  Debug.enable(typeof globalThis !== 'undefined' && globalThis['DEBUG'] || typeof process !== 'undefined' && process.env && process.env.DEBUG || undefined)
+}
+
+const PrismaClient = getPrismaClient(config)
 exports.PrismaClient = PrismaClient
-
 Object.assign(exports, Prisma)
+

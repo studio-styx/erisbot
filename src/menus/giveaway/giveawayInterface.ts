@@ -11,9 +11,9 @@ export function giveawayInterfaceMenu<R>(data: (Giveaway & { roleEntries: (RoleM
         `${icon.confetti} | **Sorteio ${data.localId}**`,
         `## ${data.title}`,
         createSeparator(),
-        data.description,
-        createSeparator(),
-        brBuilder(
+        data.description && data.description,
+        data.description && createSeparator(),
+        (data.roleEntries.length > 1 && data.connectedGuilds.length > 1) ? brBuilder(
             data.roleEntries.length > 0 ? brBuilder(
                 `${icon.ticket2x} - Cargos que ganham multiplas entradas:`,
                 data.roleEntries.map(r => `**${r.roleName} - ${r.extraEntries}**`)
@@ -22,9 +22,9 @@ export function giveawayInterfaceMenu<R>(data: (Giveaway & { roleEntries: (RoleM
                 `${icon.connect_guilds} - Servidores que estão conectados ao sorteio: **(${data.connectedGuilds.length})**`,
                 data.connectedGuilds.map(g => `**${g.guildName}**`).join(", ")
             ) : null,
-        ),
-        createSeparator(),
-        brBuilder(
+        ) : false,
+        (data.roleEntries.length > 1 && data.connectedGuilds.length > 1) ? createSeparator() : false,
+        (guildInfo.blackListRoles.length > 0 && guildInfo.xpRequired) ? brBuilder(
             guildInfo.blackListRoles.length > 0 ? brBuilder(
                 `${icon.blacklist} - Cargos de blacklist:`,
                 guildInfo.blackListRoles.map(rb => `**${roleMention(rb)}**`)
@@ -33,8 +33,8 @@ export function giveawayInterfaceMenu<R>(data: (Giveaway & { roleEntries: (RoleM
                 `${icon.info} - Xp exigido:`,
                 guildInfo.xpRequired.toString()
             ) : null,
-        ),
-        createSeparator(),
+        ) : false,
+        (guildInfo.blackListRoles.length > 0 && guildInfo.xpRequired) ? createSeparator() : false,
         `${icon.alarm} - Sorteio termina ${time(data.expiresAt, "R")}`
     );
 

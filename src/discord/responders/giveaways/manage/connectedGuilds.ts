@@ -22,16 +22,22 @@ createResponder({
 
         const { client, guildId, message } = interaction;
 
-        
+
         const key = `giveaway:manage:${message.id}`;
-        
+
         const raw = await redis.get(key);
         if (!raw) {
             interaction.editReply(resv2.danger(`${icon.Eris_cry} | Parece que você demorou demais para setar as configurações do sorteio! as informações sobre o sorteio sumiram!`));
             return;
         }
-        const giveawayData = JSON.parse(raw) as GiveawayManageDataInfo;
-        
+        const giveawayData = JSON.parse(raw, (key, value) => {
+            // Converte strings de data de volta para objetos Date
+            if (key === 'expiresAt' && typeof value === 'string') {
+                return new Date(value);
+            }
+            return value;
+        }) as GiveawayManageDataInfo;
+
         if (interaction.isButton()) {
             await interaction.deferUpdate();
             if (type === "clearCache") {
@@ -52,7 +58,7 @@ createResponder({
             interaction.editReply(menus.giveaway.giveawayManage(userId, giveawayData, "connectedGuilds", page, mutualGuilds));
             return;
         } else {
-            await interaction.deferReply()
+            await interaction.deferReply({ flags: ["Ephemeral"] })
             const choice = interaction.values[0];
             if (giveawayData.connectedGuilds?.some(g => g.guildId === choice)) {
                 interaction.editReply(res.danger(`${icon.denied} | Esse server já está na lista de servidores conectados! e será solicitado conexão quando o sorteio for iniciado!`))
@@ -72,9 +78,13 @@ createResponder({
                 return;
             }
 
-            (giveawayData.connectedGuilds ? giveawayData.connectedGuilds : []).push({ accepted: false, guildName: guild.name, guildId: guild.id });
-
-            await redis.setex(key, 60 * 300, JSON.stringify(giveawayData));
+            await redis.setex(key, 3600, JSON.stringify({
+                ...giveawayData,
+                expiresAt: giveawayData.expiresAt?.toISOString(),
+                connectedGuilds: giveawayData.connectedGuilds 
+                    ? giveawayData.connectedGuilds.push({ accepted: false, guildName: guild.name, guildId: guild.id })
+                    : [{ accepted: false, guildName: guild.name, guildId: guild.id }]
+            }));
 
             interaction.editReply(res.success(`${icon.success} | Sucesso ao solicitar sorteio conectado com **\`${guild.name}\`**! A solicitação será enviada quando o sorteio for iniciado.`))
             return;

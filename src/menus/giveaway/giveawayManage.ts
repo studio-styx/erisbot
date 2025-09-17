@@ -52,7 +52,7 @@ export function giveawayManageMenu<R>(userId: string, data: GiveawayManageDataIn
             ) : null,
         ),
         createSeparator(),
-        `-# Titulo, Expiração, quantidade de jogadores e canal do sorteio são obrigatórios`
+        `-# Titulo, Expiração, quantidade de ganhadores e canal do sorteio são obrigatórios`
     ]
 
     const container = createContainer({
@@ -116,7 +116,7 @@ export function giveawayManageMenu<R>(userId: string, data: GiveawayManageDataIn
     )
 
     const inicial = guildsPage * 25;
-    const final = inicial + guildsPage;
+    const final = Math.min(inicial + 25, guilds.length);
 
     page === "connectedGuilds" && rows.push(
         createRow(

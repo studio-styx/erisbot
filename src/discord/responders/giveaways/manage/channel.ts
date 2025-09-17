@@ -44,11 +44,20 @@ createResponder({
             interaction.editReply(resv2.danger(`${icon.Eris_cry} | Parece que você demorou demais para setar as configurações do sorteio! as informações sobre o sorteio sumiram!`));
             return;
         }
-        const giveawayData = JSON.parse(raw) as GiveawayManageDataInfo;
+        const giveawayData = JSON.parse(raw, (key, value) => {
+            // Converte strings de data de volta para objetos Date
+            if (key === 'expiresAt' && typeof value === 'string') {
+                return new Date(value);
+            }
+            return value;
+        }) as GiveawayManageDataInfo;
 
         giveawayData.channelId = channel.id;
 
-        await redis.setex(key, 60 * 300, JSON.stringify(giveawayData));
+        await redis.setex(key, 3600, JSON.stringify({
+            ...giveawayData,
+            expiresAt: giveawayData.expiresAt?.toISOString() // Converte Date para string
+        }));
 
         interaction.editReply(menus.giveaway.giveawayManage(userId, giveawayData, "main"))
         return;

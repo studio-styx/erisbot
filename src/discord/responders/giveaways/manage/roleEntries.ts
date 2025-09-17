@@ -1,5 +1,5 @@
 import { createResponder, ResponderType, Store } from "#base";
-import { res, icon } from "#functions";
+import { res, icon, resv2 } from "#functions";
 import { GiveawayManageDataInfo } from "#types/giveawayManageDataType.js";
 import { redis } from "#database";
 import { createModalFields } from "@magicyan/discord";
@@ -62,10 +62,16 @@ createResponder({
                 await interaction.deferUpdate();
                 const raw = await redis.get(key);
                 if (!raw) {
-                    interaction.editReply(res.danger(`${icon.Eris_cry} | Parece que você demorou demais para setar as configurações do sorteio! as informações sobre o sorteio sumiram!`));
+                    interaction.editReply(resv2.danger(`${icon.Eris_cry} | Parece que você demorou demais para setar as configurações do sorteio! as informações sobre o sorteio sumiram!`));
                     return;
                 }
-                const giveawayData = JSON.parse(raw) as GiveawayManageDataInfo;
+                const giveawayData = JSON.parse(raw, (key, value) => {
+                    // Converte strings de data de volta para objetos Date
+                    if (key === 'expiresAt' && typeof value === 'string') {
+                        return new Date(value);
+                    }
+                    return value;
+                }) as GiveawayManageDataInfo;
                 const connectedGuilds = giveawayData.connectedGuilds;
                 if (!connectedGuilds || connectedGuilds.length < 1) {
                     await interaction.followUp(res.danger(`${icon.error} | Para definir id de cargos de outros servers, primeiro você precisa setar os servidores que farão parte do sorteio!`));
@@ -82,7 +88,7 @@ createResponder({
 
                 const roleInfo: { roleName?: string; roleId?: string } = {}
                 for (const connectedGuild of connectedGuilds) {
-                    const guild = client.guilds.cache.get(connectedGuild);
+                    const guild = client.guilds.cache.get(connectedGuild.guildId);
                     if (!guild) continue;
                     const role = await guild.roles.fetch(roleId);
                     if (!role) continue;
@@ -106,7 +112,10 @@ createResponder({
                     newEntry
                 ];
                 giveawayData.roleEntries = updatedEntries;
-                await redis.setex(key, 60 * 300, JSON.stringify(giveawayData));
+                await redis.setex(key, 3600, JSON.stringify({
+                    ...giveawayData,
+                    expiresAt: giveawayData.expiresAt?.toISOString() // Converte Date para string
+                }));
 
                 interaction.editReply(menus.giveaway.giveawayManage(userId, giveawayData, "main"));
                 return;
@@ -151,10 +160,16 @@ createResponder({
                     await interaction.deferUpdate();
                     const raw = await redis.get(key);
                     if (!raw) {
-                        interaction.editReply(res.danger(`${icon.Eris_cry} | Parece que você demorou demais para setar as configurações do sorteio! as informações sobre o sorteio sumiram!`));
+                        interaction.editReply(resv2.danger(`${icon.Eris_cry} | Parece que você demorou demais para setar as configurações do sorteio! as informações sobre o sorteio sumiram!`));
                         return;
                     }
-                    const giveawayData = JSON.parse(raw) as GiveawayManageDataInfo;
+                    const giveawayData = JSON.parse(raw, (key, value) => {
+                        // Converte strings de data de volta para objetos Date
+                        if (key === 'expiresAt' && typeof value === 'string') {
+                            return new Date(value);
+                        }
+                        return value;
+                    }) as GiveawayManageDataInfo;
 
                     const roles: { roleName: string; roleId: string; entries: number }[] = []
 
@@ -176,7 +191,10 @@ createResponder({
                     ];
 
                     giveawayData.roleEntries = updatedRoles;
-                    await redis.setex(key, 60 * 300, JSON.stringify(updatedRoles));
+                    await redis.setex(key, 3600, JSON.stringify({
+                        ...giveawayData,
+                        expiresAt: giveawayData.expiresAt?.toISOString() // Converte Date para string
+                    }));
 
                     await interaction.editReply(menus.giveaway.giveawayManage(userId, giveawayData, "roleEntries"));
                     await interaction.followUp(res.success(`${icon.success} | Sucesso ao adicionar os cargos ${rolesIds.map(id => roleMention(id))} com **${entries}** entradas! agora tem: **${updatedRoles.length}** cargos com multiplas entradas, sendo eles: ${updatedRoles.map(r => `**\`${r.roleName}\`**. entradas: **${r.entries}**`).join(", ")}`))

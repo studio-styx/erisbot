@@ -1,12 +1,12 @@
 import { createResponder, ResponderType } from "#base";
-import { redis } from "#database";
-import { icon, res, resv2 } from "#functions";
-import { menus } from "#menus";
+import { res, icon, resv2 } from "#functions";
 import { GiveawayManageDataInfo } from "#types/giveawayManageDataType.js";
+import { redis } from "#database";
+import { menus } from "#menus";
 
 createResponder({
-    customId: "giveaway/manage/roleSelect/blacklist/:userId",
-    types: [ResponderType.RoleSelect], cache: "cached",
+    customId: "giveaway/manage/back/:userId",
+    types: [ResponderType.Button], cache: "cached",
     async run(interaction, { userId }) {
         const { user, message } = interaction;
         if (user.id !== userId) {
@@ -28,16 +28,7 @@ createResponder({
             return value;
         }) as GiveawayManageDataInfo;
 
-        const roles = interaction.values;
-
-
-        giveawayData.blackListRoles = roles;
-
-        await redis.setex(key, 3600, JSON.stringify({
-            ...giveawayData,
-            expiresAt: giveawayData.expiresAt?.toISOString() // Converte Date para string
-        }));
-        interaction.editReply(menus.giveaway.giveawayManage(userId, giveawayData, "main"));
+        interaction.editReply(menus.giveaway.giveawayManage(userId, giveawayData, "main"))
         return;
     },
 });

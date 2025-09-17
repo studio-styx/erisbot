@@ -37,7 +37,9 @@ createResponder({
                                 ? "termina em"
                                 : option === "xpRequired"
                                     ? "xp exigido"
-                                    : option,
+                                    : option === "winners"
+                                        ? "ganhadores"
+                                        : option,
                     components: createModalFields({
                         response: {
                             label: (option === "title"
@@ -48,7 +50,9 @@ createResponder({
                                         ? "data de termino"
                                         : option === "xpRequired"
                                             ? "xp exigido"
-                                            : option) + " do sorteio",
+                                            : option === "winners"
+                                                ? "ganhadores"
+                                                : option) + " do sorteio",
                             placeholder: option === "title"
                                 ? "sorteio de 1... sonhos..."
                                 : option === "description"
@@ -57,7 +61,9 @@ createResponder({
                                         ? "ex: (13/07/2023 15:00), (24h)"
                                         : option === "xpRequired"
                                             ? "5000"
-                                            : option,
+                                            : option === "winners"
+                                                ? "3"
+                                                : option,
                             style: option === "description" ? TextInputStyle.Paragraph : TextInputStyle.Short,
                             required: true,
                             minLength: 1,
@@ -78,14 +84,25 @@ createResponder({
                     interaction.editReply(resv2.danger(`${icon.Eris_cry} | Parece que você demorou demais para setar as configurações do sorteio! as informações sobre o sorteio sumiram!`));
                     return;
                 }
-                const giveawayData = JSON.parse(raw) as GiveawayManageDataInfo;
+                const giveawayData = JSON.parse(raw, (key, value) => {
+                    // Converte strings de data de volta para objetos Date
+                    if (key === 'expiresAt' && typeof value === 'string') {
+                        return new Date(value);
+                    }
+                    return value;
+                }) as GiveawayManageDataInfo;
 
                 if (!giveawayData.connectedGuilds || giveawayData.connectedGuilds.length < 1) {
                     interaction.followUp(res.danger(`${icon.error} | Para definir o requisito **\`"Precisa estar em todos os server"\`** é necessário primeiro definir os servidores conectados!`))
                     return;
                 }
 
-                giveawayData.stayInServerRequire = giveawayData.stayInServerRequire === undefined || giveawayData.stayInServerRequire === false ? true : false;
+                giveawayData.stayInServerRequire = (giveawayData.stayInServerRequire === undefined || giveawayData.stayInServerRequire === false) ? true : false;
+
+                await redis.setex(key, 3600, JSON.stringify({
+                    ...giveawayData,
+                    expiresAt: giveawayData.expiresAt?.toISOString() // Converte Date para string
+                }));
 
                 interaction.editReply(menus.giveaway.giveawayManage(userId, giveawayData, "main"))
                 return;
@@ -96,7 +113,13 @@ createResponder({
                     interaction.editReply(resv2.danger(`${icon.Eris_cry} | Parece que você demorou demais para setar as configurações do sorteio! as informações sobre o sorteio sumiram!`));
                     return;
                 }
-                const giveawayData = JSON.parse(raw) as GiveawayManageDataInfo;
+                const giveawayData = JSON.parse(raw, (key, value) => {
+                    // Converte strings de data de volta para objetos Date
+                    if (key === 'expiresAt' && typeof value === 'string') {
+                        return new Date(value);
+                    }
+                    return value;
+                }) as GiveawayManageDataInfo;
                 const mutualGuilds = (await getMutualGuilds(interaction.client, userId)).filter(g => g.id !== interaction.guild.id);
 
                 if (mutualGuilds.length < 1) {
@@ -114,7 +137,12 @@ createResponder({
                     interaction.editReply(resv2.danger(`${icon.Eris_cry} | Parece que você demorou demais para setar as configurações do sorteio! as informações sobre o sorteio sumiram!`));
                     return;
                 }
-                const giveawayData = JSON.parse(raw) as GiveawayManageDataInfo;
+                const giveawayData = JSON.parse(raw, (key, value) => {
+                    if (key === 'expiresAt' && typeof value === 'string') {
+                        return new Date(value);
+                    }
+                    return value;
+                }) as GiveawayManageDataInfo;
 
                 interaction.editReply(menus.giveaway.giveawayManage(userId, giveawayData, option))
                 return;
@@ -257,7 +285,12 @@ createResponder({
                 interaction.editReply(resv2.danger(`${icon.Eris_cry} | Parece que você demorou demais para setar as configurações do sorteio! as informações sobre o sorteio sumiram!`));
                 return;
             }
-            const giveawayData = JSON.parse(raw) as GiveawayManageDataInfo;
+            const giveawayData = JSON.parse(raw, (key, value) => {
+                if (key === 'expiresAt' && typeof value === 'string') {
+                    return new Date(value);
+                }
+                return value;
+            }) as GiveawayManageDataInfo;
 
             switch (part) {
                 case "title": {
@@ -291,7 +324,10 @@ createResponder({
                 }
             }
 
-            await redis.setex(key, 60 * 300, JSON.stringify(giveawayData));
+            await redis.setex(key, 3600, JSON.stringify({
+                ...giveawayData,
+                expiresAt: giveawayData.expiresAt?.toISOString() // Converte Date para string
+            }));
             interaction.editReply(menus.giveaway.giveawayManage(userId, giveawayData, "main"));
             return
         }
