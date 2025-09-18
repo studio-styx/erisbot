@@ -205,7 +205,7 @@ createCommand({
                 include: {
                     participants: true
                 }
-            });
+            }).catch(() => null);
 
             if (!giveaway) return await interaction.respond([{
                 name: "Sorteio não encontrado",
@@ -550,6 +550,8 @@ createCommand({
                         })
                     ])
                 }
+                interaction.editReply(res.success(`${icon.success} | Você finalizou o sorteio mais cedo!`))
+                return;
             }
             case "create": {
                 const data: GiveawayManageDataInfo = {
