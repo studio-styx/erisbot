@@ -277,6 +277,7 @@ model Giveaway {
   participants    UserGiveaway[]
   connectedGuilds GuildGiveaway[]
   roleEntries     RoleMultipleEntry[]
+  ended           Boolean             @default(false)
 
   serverStayRequired Boolean @default(false) // se o usuário precisa estar em todos os servidores conectados
   usersWins          Int     @default(1) // quantidade de vencedores

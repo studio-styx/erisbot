@@ -1,6 +1,6 @@
 import { createResponder, ResponderType } from "#base";
 import { prisma, redis } from "#database";
-import { icon, res, resv2 } from "#functions";
+import { icon, res, resv2, scheduleGiveaway } from "#functions";
 import { menus } from "#menus";
 import { GiveawayManageDataInfo } from "#types/giveawayManageDataType.js";
 import { channelMention, Client, Guild } from "discord.js";
@@ -161,6 +161,7 @@ createResponder({
                         messageId: crypto.randomBytes(Math.ceil(18 / 2)).toString('hex').slice(0, 18), // Placeholder, será atualizado
                         blackListRoles: giveawayData.blackListRoles,
                         xpRequired: giveawayData.xpRequired,
+                        isHost: giveawayCreated.connectedGuilds.some(g => g.guildId === interaction.guildId && g.isHost === true)
                     },
                 });
 
@@ -194,6 +195,18 @@ createResponder({
                         participants: true,
                     },
                 });
+
+                // solicitar conexão com servers
+                const missingGuilds = (giveawayData.connectedGuilds || []).filter(
+                    cn => !giveawayCreated.connectedGuilds.some(g => g.guildId === cn.guildId)
+                );
+
+                if (missingGuilds.length > 0) {
+                    const makeSolicitation = missingGuilds.map(missingGuild => (async () => {
+                        await redis.setex(`connectedGiveaway:solicitation:${missingGuild.guildId}:${giveawayCreated.id}`, 60 * 60 * 24, giveawayCreated.id);
+                    })());
+                    await Promise.all(makeSolicitation)
+                }
 
                 if (!freshGiveaway) {
                     throw new Error("Falha ao recarregar os dados do sorteio após atualizações.");
@@ -264,6 +277,35 @@ createResponder({
                 })());
 
                 await Promise.all(updatePromises);
+
+                if (freshGiveaway.expiresAt.getTime() <= Date.now() + 1000 * 60 * 12) {
+                    console.log("Tentando agendar o sorteio, ele dura menos que 12 minutos")
+                    const fullGiveaway = await tx.giveaway.findUnique({
+                        where: {
+                            id: freshGiveaway.id
+                        },
+                        include: {
+                            connectedGuilds: {
+                                include: {
+                                    guild: true
+                                }
+                            },
+                            roleEntries: true,
+                        }
+                    });
+
+                    if (fullGiveaway) {
+                        console.log(`Sorteio ${fullGiveaway.id} criado com tempo curto, agendando finalização imediata`);
+                        scheduleGiveaway(client, fullGiveaway);
+                    } else {
+                        console.log("Não foi possivel encontrar o sorteio")
+                    }
+                } else {
+                    console.log("Sorteio não dura menos que 12 minutos")
+                }
+            }, {
+                maxWait: 30000,
+                timeout: 30000,
             });
 
             await interaction.editReply(resv2.success(sincronize.errors.length > 0

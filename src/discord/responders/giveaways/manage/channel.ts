@@ -25,6 +25,11 @@ createResponder({
             return;
         }
 
+        if (!channel.isTextBased()) {
+            interaction.followUp(res.danger(`${icon.error} | Você tem que retornar um canal de texto válido!`))
+            return;
+        }
+
         const errors: string[] = [];
         // verificar ambas as permissões
         const erisMember = guild.members.me!;

@@ -273,6 +273,7 @@ exports.Prisma.GiveawayScalarFieldEnum = {
   localId: 'localId',
   title: 'title',
   description: 'description',
+  ended: 'ended',
   serverStayRequired: 'serverStayRequired',
   usersWins: 'usersWins',
   expiresAt: 'expiresAt',

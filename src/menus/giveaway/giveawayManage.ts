@@ -1,7 +1,7 @@
 import { settings } from "#settings";
 import { GiveawayManageDataInfo } from "#types/giveawayManageDataType.js";
 import { brBuilder, ComponentData, createContainer, createRow, createSeparator } from "@magicyan/discord";
-import { ButtonBuilder, ButtonStyle, channelMention, ChannelSelectMenuBuilder, roleMention, RoleSelectMenuBuilder, SelectMenuDefaultValueType, StringSelectMenuBuilder, time, type InteractionReplyOptions } from "discord.js";
+import { ButtonBuilder, ButtonStyle, channelMention, ChannelSelectMenuBuilder, ChannelType, roleMention, RoleSelectMenuBuilder, SelectMenuDefaultValueType, StringSelectMenuBuilder, time, type InteractionReplyOptions } from "discord.js";
 
 export function giveawayManageMenu<R>(userId: string, data: GiveawayManageDataInfo, page: "main" | "blacklistRoles" | "roleEntries" | "connectedGuilds" | "channelId", guildsPage: number = 0, guilds: { name: string; id: string }[] = []): R {
     const components: ComponentData[] = [
@@ -158,6 +158,7 @@ export function giveawayManageMenu<R>(userId: string, data: GiveawayManageDataIn
                 placeholder: "Canal onde ocorrerá o sorteio",
                 minValues: 1,
                 maxValues: 1,
+                channelTypes: [ChannelType.GuildText]
             })
         )
     )

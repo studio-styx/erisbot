@@ -2,9 +2,189 @@ import { createCommand } from "#base";
 import { prisma, redis } from "#database";
 import { icon, res, selectWinner } from "#functions";
 import { menus } from "#menus";
+import { GuildGiveaway, RoleMultipleEntry } from "#prisma";
 import { GiveawayManageDataInfo } from "#types/giveawayManageDataType.js";
 import { createRow, limitText } from "@magicyan/discord";
-import { ApplicationCommandOptionType, ApplicationCommandType, ButtonBuilder, ButtonStyle, channelMention, userMention } from "discord.js";
+import { ApplicationCommandOptionType, ApplicationCommandType, AutocompleteInteraction, ButtonBuilder, ButtonStyle, channelMention, ChannelType, Client, Guild, TextChannel, userMention } from "discord.js";
+import { getSolicitationsByGuildScan } from "functions/giveaway/getSolicitationsByGuild.js";
+import crypto from "crypto"
+
+async function handleGiveawayToRerollAutocomplete(interaction: AutocompleteInteraction<"cached">, focused: string) {
+    const giveaways = await prisma.giveaway.findMany({
+        where: {
+            title: {
+                contains: focused
+            },
+            expiresAt: {
+                lt: new Date() // Já expirou
+            },
+            connectedGuilds: {
+                some: {
+                    guildId: interaction.guildId
+                }
+            }
+        },
+        select: {
+            title: true,
+            id: true,
+            localId: true,
+            connectedGuilds: true
+        },
+        take: 25
+    });
+
+    if (giveaways.length < 1) {
+        return await interaction.respond([{
+            name: "Nenhum sorteio finalizado encontrado",
+            value: "no_ended_giveaways"
+        }]);
+    }
+
+    return await interaction.respond(giveaways.map(g => ({
+        name: limitText(`ID: ${g.id} | Local: ${g.localId} | ${g.connectedGuilds.some(cg => cg.guildId === interaction.guildId) ? "Conectado" : "Não conectado"} | Título: ${g.title}`, 97, "..."),
+        value: g.id.toString()
+    })));
+}
+
+async function handleUserAutocomplete(interaction: AutocompleteInteraction<"cached">, focused: string) {
+    // Primeiro, precisamos do ID do sorteio para buscar os vencedores
+    const giveawayId = interaction.options.getString("giveawaytoreroll");
+
+    if (!giveawayId) {
+        return await interaction.respond([{
+            name: "Selecione um sorteio primeiro",
+            value: "select_giveaway_first"
+        }]);
+    }
+
+    const giveaway = await prisma.giveaway.findUnique({
+        where: { id: Number(giveawayId) },
+        include: {
+            participants: true
+        }
+    });
+
+    if (!giveaway) {
+        return await interaction.respond([{
+            name: "Sorteio não encontrado",
+            value: "giveaway_not_found"
+        }]);
+    }
+
+    if (giveaway.expiresAt > new Date()) {
+        return await interaction.respond([{
+            name: "Esse sorteio ainda não acabou!",
+            value: "giveaway_not_ended"
+        }]);
+    }
+
+    const winners = giveaway.participants.filter(p => p.isWinner === true);
+
+    if (winners.length < 1) {
+        return await interaction.respond([{
+            name: "Nenhum usuário ganhou esse sorteio",
+            value: "no_winners"
+        }]);
+    }
+
+    const values = [];
+    for (const winner of winners) {
+        let user;
+        try {
+            user = interaction.client.users.cache.get(winner.userId) ||
+                await interaction.client.users.fetch(winner.userId, { cache: true });
+        } catch (error) {
+            user = null;
+        }
+
+        if (!user) {
+            values.push({ name: `Não encontrado (ID: ${winner.userId})`, value: winner.userId });
+        } else {
+            values.push({
+                name: `${user.username} (${user.id})`,
+                value: user.id
+            });
+        }
+    }
+
+    // Filtrar por texto digitado, se houver
+    const filteredValues = focused ?
+        values.filter(v => v.name.toLowerCase().includes(focused.toLowerCase())) :
+        values;
+
+    return await interaction.respond(filteredValues.slice(0, 25));
+}
+
+async function handleGiveawayAutocomplete(interaction: AutocompleteInteraction<"cached">, focused: string) {
+    const solicitations = await getSolicitationsByGuildScan(interaction.guildId);
+    if (solicitations.length < 1) {
+        return await interaction.respond([{
+            name: "Nenhum convite de sorteio conectado encontrado",
+            value: "null"
+        }])
+    }
+
+    const giveaways = await prisma.giveaway.findMany({
+        where: {
+            id: {
+                in: solicitations.map(s => Number(s.giveawayId))
+            },
+            title: {
+                contains: focused
+            },
+        },
+        select: {
+            title: true,
+            id: true,
+            localId: true,
+            connectedGuilds: true
+        },
+        take: 25
+    });
+
+    if (giveaways.length < 1) {
+        return await interaction.respond([{
+            name: "Nenhum sorteio encontrado nos convites recebidos",
+            value: "null"
+        }])
+    }
+
+    return await interaction.respond(giveaways.map(g => ({
+        name: limitText(`Id: ${g.id} | LocalId: ${g.localId} | Sorteio conectado?: ${g.connectedGuilds.length > 1 ? "Sim" : "Não"} | Titulo: ${g.title}`, 97, "..."),
+        value: g.id.toString()
+    })))
+}
+
+async function handleIdAutocomplete(interaction: AutocompleteInteraction<"cached">, focused: string) {
+    const giveaways = await prisma.giveaway.findMany({
+        where: {
+            title: {
+                contains: focused
+            },
+            expiresAt: {
+                gt: new Date()
+            },
+            connectedGuilds: { some: { guildId: interaction.guildId } }
+        },
+        select: {
+            title: true,
+            id: true,
+            localId: true,
+            connectedGuilds: true
+        },
+        take: 25
+    });
+
+    if (giveaways.length < 1) return await interaction.respond([{
+        name: "Nenhum sorteio encontrado",
+        value: "null"
+    }])
+
+    return await interaction.respond(giveaways.map(g => ({
+        name: limitText(`Id: ${g.id} | LocalId: ${g.localId} | Sorteio conectado?: ${g.connectedGuilds.length > 1 ? "Sim" : "Não"} | Titulo: ${g.title}`, 97, "..."),
+        value: g.id.toString()
+    })))
+}
 
 createCommand({
     name: "giveaway",
@@ -86,7 +266,7 @@ createCommand({
             },
             options: [
                 {
-                    name: "id",
+                    name: "giveawaytoreroll",
                     description: "giveaway id",
                     type: ApplicationCommandOptionType.String,
                     required: true,
@@ -116,7 +296,8 @@ createCommand({
                         "pt-BR": "usuario para substituir no sorteio",
                         "en-US": "user to reroll",
                         "es-ES": "usuario para sustituir en el sorteo"
-                    }
+                    },
+                    required: true
                 }
             ]
         },
@@ -187,85 +368,92 @@ createCommand({
                     }
                 }
             ]
-        }
+        },
+        {
+            name: "entry",
+            description: "entry in a connected giveaway using a invite",
+            type: ApplicationCommandOptionType.Subcommand,
+            nameLocalizations: {
+                "pt-BR": "entrar",
+                "en-US": "entry",
+                'es-ES': 'entrar'
+            },
+            descriptionLocalizations: {
+                "pt-BR": "entrar em um sorteio conectado usando um convite",
+                "en-US": "entry in a connected giveaway using a invite",
+                'es-ES': 'entrar en un sorteo conectado usando un convite'
+            },
+            options: [
+                {
+                    name: "giveaway",
+                    description: "giveaway id",
+                    type: ApplicationCommandOptionType.String,
+                    required: true,
+                    autocomplete: true,
+                    nameLocalizations: {
+                        "pt-BR": "id",
+                        "en-US": "id",
+                        'es-ES': 'id'
+                    },
+                    descriptionLocalizations: {
+                        "pt-BR": "id do sorteio",
+                        "en-US": "giveaway id",
+                        'es-ES': 'id del sorteo'
+                    }
+                },
+                {
+                    name: "channel",
+                    description: "channel where the giveaway will be sent",
+                    type: ApplicationCommandOptionType.Channel,
+                    required: true,
+                    channelTypes: [ChannelType.GuildText],
+                    nameLocalizations: {
+                        "pt-BR": "canal",
+                        "en-US": "channel",
+                        'es-ES': 'canal'
+                    },
+                    descriptionLocalizations: {
+                        "pt-BR": "canal onde o sorteio será enviado",
+                        "en-US": "channel where the giveaway will be sent",
+                        'es-ES': 'canal donde el sorteo será enviado'
+                    }
+                }
+            ],
+        },
     ],
     async autocomplete(interaction) {
         const hasPerms = interaction.memberPermissions.has("ManageEvents");
         if (!hasPerms) return interaction.respond([{
             name: "Você não tem permissão para usar esse comando!",
-            value: "null"
-        }])
+            value: "no_permission"
+        }]);
 
         const focused = interaction.options.getFocused();
-        const giveawayID = interaction.options.getString("id");
+        const focusedOption = interaction.options.getFocused(true);
+        const optionName = focusedOption.name;
 
-        if (giveawayID) {
-            const giveaway = await prisma.giveaway.findUnique({
-                where: { id: Number(giveawayID) },
-                include: {
-                    participants: true
-                }
-            }).catch(() => null);
+        // Use switch para maior clareza
+        switch (optionName) {
+            case 'id': // Para subcomandos end, cancel, edit
+                await handleIdAutocomplete(interaction, focused);
+                break;
 
-            if (!giveaway) return await interaction.respond([{
-                name: "Sorteio não encontrado",
-                value: "null"
-            }]);
+            case 'giveaway': // Para subcomando entry
+                await handleGiveawayAutocomplete(interaction, focused);
+                break;
 
-            if (giveaway.expiresAt > new Date()) return await interaction.respond([{
-                name: "Esse sorteio ainda não acabou!",
-                value: "null"
-            }]);
+            case 'giveawaytoreroll': // Para subcomando reroll
+                await handleGiveawayToRerollAutocomplete(interaction, focused);
+                break;
 
-            const winners = giveaway.participants.filter(p => p.isWinner === true)
+            case 'user': // Para subcomando reroll (usuário)
+                await handleUserAutocomplete(interaction, focused);
+                break;
 
-            if (winners.length < 1) return await interaction.respond([{
-                name: "Nenhum usuário ganhou esse sorteio",
-                value: "null"
-            }]);
-
-            const values: { name: string; value: string }[] = []
-            for (const winner of winners) {
-                let user = interaction.client.users.cache.get(winner.userId) || null;
-                if (!user) user = await interaction.client.users.fetch(winner.userId, { cache: true });
-                if (!user) {
-                    values.push({ name: "Não encontrado", value: winner.userId });
-                    continue;
-                }
-                values.push({ name: user.displayName, value: user.id })
-            }
-
-            return await interaction.respond(values)
+            default:
+                // Fallback para outros casos
+                await handleIdAutocomplete(interaction, focused);
         }
-
-        const giveaways = await prisma.giveaway.findMany({
-            where: {
-                title: {
-                    contains: focused
-                },
-                expiresAt: {
-                    gt: new Date()
-                },
-                connectedGuilds: { some: { guildId: interaction.guildId } }
-            },
-            select: {
-                title: true,
-                id: true,
-                localId: true,
-                connectedGuilds: true
-            },
-            take: 25
-        });
-
-        if (giveaways.length < 1) return await interaction.respond([{
-            name: "Nenhum sorteio encontrado",
-            value: "null"
-        }])
-
-        return await interaction.respond(giveaways.map(g => ({
-            name: limitText(`Id: ${g.id} | LocalId: ${g.localId} | Sorteio conectado?: ${g.connectedGuilds.length > 1 ? "Sim" : "Não"} | Titulo: ${g.title}`, 97, "..."),
-            value: g.id.toString()
-        })))
     },
     dmPermission: false,
     defaultMemberPermissions: ["ManageEvents"],
@@ -342,14 +530,14 @@ createCommand({
                 return;
             }
             case "reroll": {
-                const giveawayId = Number(options.getString("id", true));
+                const giveawayId = Number(options.getString("giveawaytoreroll", true));
                 const userId = options.getString("user", true);
 
                 const giveaway = await prisma.giveaway.findUnique({
                     where: {
                         id: giveawayId,
                         expiresAt: {
-                            gt: new Date()
+                            lt: new Date()
                         },
                         connectedGuilds: { some: { guildId: interaction.guildId } }
                     },
@@ -432,9 +620,9 @@ createCommand({
                         if (!channel || !channel.isTextBased()) continue;
                         const message = await channel.messages.fetch(connectedGuild.messageId).catch(_ => null);
                         if (!message) continue
-    
+
                         await message.edit(menus.giveaway.giveawayEnd(newWinners.map(w => w.userId), giveaway))
-                    } catch (_) {}
+                    } catch (_) { }
                 }
 
                 interaction.editReply(res.success(`${icon.success} | Sucesso ao trocar o ganhador: **${userMention(userId)}** pelo: **${userMention(winner.userId)}**`))
@@ -492,7 +680,7 @@ createCommand({
                             })
                             continue;
                         }
-                        
+
                         let channel = discordGuild.channels.cache.get(connectedGuild.channelId) || null;
                         if (!channel) channel = await discordGuild.channels.fetch(connectedGuild.channelId);
                         if (!channel || !channel.isTextBased()) {
@@ -546,6 +734,7 @@ createCommand({
                             },
                             data: {
                                 expiresAt: new Date(),
+                                ended: true
                             }
                         })
                     ])
@@ -560,6 +749,224 @@ createCommand({
 
                 const msg = await interaction.editReply(menus.giveaway.giveawayManage(user.id, data, "main"));
                 await redis.setex(`giveaway:manage:${msg.id}`, 60 * 300, JSON.stringify(data))
+                return;
+            }
+            case "entry": {
+                const giveawayId = Number(options.getString("giveaway", true));
+
+                // verificar se o servidor é convidado
+                const key = `connectedGiveaway:solicitation:${guild.id}:${giveawayId}`;
+                const solicitation = await redis.get(key);
+                if (!solicitation) {
+                    interaction.editReply(res.danger(`${icon.error} | Esse convite não existe!`))
+                    return;
+                }
+
+                let success = true;
+                try {
+                    const giveaway = await prisma.giveaway.findUnique({
+                        where: {
+                            id: giveawayId
+                        },
+                        select: {
+                            connectedGuilds: true
+                        }
+                    });
+
+                    if (!giveaway) {
+                        interaction.editReply(res.danger(`${icon.error} | Esse convite leva para um sorteio que foi deletado!`));
+                        return;
+                    }
+
+                    if (giveaway.connectedGuilds.some(cn => cn.guildId === guild.id)) {
+                        interaction.editReply(res.danger(`${icon.error} | Esse server já faz parte desse sorteio!`))
+                        return;
+                    }
+
+                    const channel = options.getChannel("channel", true) as TextChannel;
+                    const errors: string[] = [];
+                    // verificar ambas as permissões
+                    const erisMember = guild.members.me!;
+                    const erisPermissions = erisMember.permissionsIn(channel);
+                    if (!erisPermissions.has("SendMessages")) errors.push("Eu não tenho a permissão de enviar mensagens nesse canal!");
+                    if (!erisPermissions.has("EmbedLinks")) errors.push("Eu não tenho a permissão de enviar links nesse canal!");
+                    const userPermissions = member.permissionsIn(channel);
+                    if (!userPermissions.has("SendMessages")) errors.push("Você não tem a permissão de enviar mensagens nesse canal!");
+
+                    if (errors.length > 0) {
+                        interaction.editReply(res.danger(`${icon.error} | Um total de **${errors.length}** ocorreram!\n ${errors.join("\n")}`));
+                        return;
+                    }
+
+                    async function getRoleNames(roleEntries: RoleMultipleEntry[], guild: Guild): Promise<(RoleMultipleEntry & { roleName: string })[]> {
+                        return Promise.all(roleEntries.map(async (roleEntry) => {
+                            const role = guild.roles.cache.get(roleEntry.roleId) ?? (await guild.roles.fetch(roleEntry.roleId).catch(() => null));
+                            return {
+                                ...roleEntry,
+                                roleName: role?.name ?? 'Role não encontrado',
+                            };
+                        }));
+                    }
+
+                    async function getGuildNames(connectedGuilds: GuildGiveaway[], client: Client): Promise<(GuildGiveaway & { guildName: string })[]> {
+                        return Promise.all(connectedGuilds.map(async (guildEntry) => {
+                            const fetchedGuild = client.guilds.cache.get(guildEntry.guildId) ?? (await client.guilds.fetch(guildEntry.guildId).catch(() => null));
+                            return {
+                                ...guildEntry,
+                                guildName: fetchedGuild?.name ?? 'Servidor não encontrado',
+                            };
+                        }));
+                    }
+
+                    await prisma.$transaction(async (tx) => {
+                        await tx.guildGiveaway.create({
+                            data: {
+                                channelId: channel.id,
+                                isHost: false,
+                                messageId: crypto.randomBytes(Math.ceil(18 / 2)).toString('hex').slice(0, 18),
+                                giveawayId,
+                                guildId: guild.id,
+                            }
+                        });
+
+                        const freshGiveaway = await tx.giveaway.findUnique({
+                            where: { id: giveawayId },
+                            include: {
+                                connectedGuilds: true,
+                                roleEntries: true,
+                                participants: true,
+                            },
+                        });
+
+                        if (!freshGiveaway) {
+                            throw new Error("Falha ao recarregar os dados do sorteio após atualizações.");
+                        }
+
+
+                        const connectedGuildsWithNames = await getGuildNames(freshGiveaway.connectedGuilds, client);
+
+                        const roleEntriesWithNames = await getRoleNames(freshGiveaway.roleEntries, guild);
+
+                        const completeData = {
+                            ...freshGiveaway,
+                            roleEntries: roleEntriesWithNames,
+                            connectedGuilds: connectedGuildsWithNames,
+                        };
+
+                        const message = await channel.send(menus.giveaway.giveawayInterface(
+                            completeData,
+                            guild.id
+                        ));
+
+                        await tx.guildGiveaway.update({
+                            where: {
+                                guildId_giveawayId: {
+                                    giveawayId,
+                                    guildId: guild.id
+                                }
+                            },
+                            data: {
+                                messageId: message.id
+                            }
+                        });
+                    })
+
+                    await interaction.editReply(res.success(`${icon.warning} | Você aceitou o convite! e o sorteio já foi iniciado aqui!`))
+                } catch (error) {
+                    console.error("Erro ocorreu ao tentar entrar no sorteio conectado:", error);
+                    success = false
+                    interaction.editReply(res.danger(`${icon.error} | Um erro inesperado aconteceu!`))
+                } finally {
+                    if (success) await redis.del(key)
+                }
+                return;
+            }
+            case "edit": {
+                try {
+                    const giveawayId = Number(options.getString("id", true));
+    
+                    const giveaway = await prisma.giveaway.findUnique({
+                        where: {
+                            id: giveawayId,
+                            expiresAt: {
+                                gt: new Date()
+                            },
+                        },
+                        include: {
+                            connectedGuilds: true,
+                            roleEntries: true
+                        }
+                    });
+    
+                    if (!giveaway) {
+                        interaction.editReply(res.danger(`${icon.error} | Não foi possivel encontrar esse sorteio!`))
+                        return;
+                    }
+    
+                    const guildConnected = giveaway.connectedGuilds.find(g => g.guildId === guild.id);
+    
+                    if (!guildConnected) {
+                        interaction.editReply(res.danger(`${icon.error} | Esse server não faz parte desse sorteio!`))
+                        return;
+                    }
+    
+                    async function getRoleNames(roleEntries: RoleMultipleEntry[], guild: Guild): Promise<(RoleMultipleEntry & { roleName: string })[]> {
+                        return Promise.all(roleEntries.map(async (roleEntry) => {
+                            const role = guild.roles.cache.get(roleEntry.roleId) ?? (await guild.roles.fetch(roleEntry.roleId).catch(() => null));
+                            return {
+                                ...roleEntry,
+                                roleName: role?.name ?? 'Role não encontrado',
+                            };
+                        }));
+                    }
+    
+                    async function getGuildNames(connectedGuilds: GuildGiveaway[], client: Client): Promise<(GuildGiveaway & { guildName: string })[]> {
+                        return Promise.all(connectedGuilds.map(async (guildEntry) => {
+                            const fetchedGuild = client.guilds.cache.get(guildEntry.guildId) ?? (await client.guilds.fetch(guildEntry.guildId).catch(() => null));
+                            return {
+                                ...guildEntry,
+                                guildName: fetchedGuild?.name ?? 'Servidor não encontrado',
+                            };
+                        }));
+                    }
+    
+                    // Mapear roleEntries para o formato correto
+                    const roleEntriesMapped = await getRoleNames(giveaway.roleEntries, guild);
+                    const roleEntriesFormatted = roleEntriesMapped.map(role => ({
+                        roleName: role.roleName,
+                        roleId: role.roleId,
+                        entries: role.extraEntries
+                    }));
+    
+                    // Mapear connectedGuilds para o formato correto
+                    const connectedGuildsMapped = await getGuildNames(giveaway.connectedGuilds, client);
+                    const connectedGuildsFormatted = connectedGuildsMapped.map(guild => ({
+                        guildName: guild.guildName,
+                        guildId: guild.guildId,
+                        accepted: true
+                    }));
+    
+                    // Preparar os dados para a função
+                    const giveawayData: GiveawayManageDataInfo = {
+                        id: giveaway.id,
+                        title: giveaway.title,
+                        description: giveaway.description || undefined,
+                        expiresAt: giveaway.expiresAt,
+                        roleEntries: roleEntriesFormatted,
+                        channelId: guildConnected.channelId,
+                        blackListRoles: guildConnected.blackListRoles,
+                        xpRequired: guildConnected.xpRequired || undefined,
+                        connectedGuilds: connectedGuildsFormatted,
+                        winners: giveaway.usersWins,
+                        stayInServerRequire: giveaway.serverStayRequired
+                    };
+    
+                    const msg = await interaction.editReply(menus.giveaway.giveawayManage(user.id, giveawayData, "main"));
+                    await redis.setex(`giveaway:manage:${msg.id}`, 60 * 300, JSON.stringify(giveawayData))
+                } catch (error) {
+                    console.error("Erro ao mandar o menu de edição do sorteio:", error)
+                    interaction.editReply(res.danger(`${icon.error} | Um erro inesperado ocorreu ao usar esse comando!`))
+                }
                 return;
             }
         }

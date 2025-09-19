@@ -81,8 +81,8 @@ createResponder({
             await redis.setex(key, 3600, JSON.stringify({
                 ...giveawayData,
                 expiresAt: giveawayData.expiresAt?.toISOString(),
-                connectedGuilds: giveawayData.connectedGuilds 
-                    ? giveawayData.connectedGuilds.push({ accepted: false, guildName: guild.name, guildId: guild.id })
+                connectedGuilds: giveawayData.connectedGuilds
+                    ? [...giveawayData.connectedGuilds, { accepted: false, guildName: guild.name, guildId: guild.id }]
                     : [{ accepted: false, guildName: guild.name, guildId: guild.id }]
             }));
 

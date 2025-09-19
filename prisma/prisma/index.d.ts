@@ -19083,6 +19083,7 @@ export namespace Prisma {
     localId: number | null
     title: string | null
     description: string | null
+    ended: boolean | null
     serverStayRequired: boolean | null
     usersWins: number | null
     expiresAt: Date | null
@@ -19095,6 +19096,7 @@ export namespace Prisma {
     localId: number | null
     title: string | null
     description: string | null
+    ended: boolean | null
     serverStayRequired: boolean | null
     usersWins: number | null
     expiresAt: Date | null
@@ -19107,6 +19109,7 @@ export namespace Prisma {
     localId: number
     title: number
     description: number
+    ended: number
     serverStayRequired: number
     usersWins: number
     expiresAt: number
@@ -19133,6 +19136,7 @@ export namespace Prisma {
     localId?: true
     title?: true
     description?: true
+    ended?: true
     serverStayRequired?: true
     usersWins?: true
     expiresAt?: true
@@ -19145,6 +19149,7 @@ export namespace Prisma {
     localId?: true
     title?: true
     description?: true
+    ended?: true
     serverStayRequired?: true
     usersWins?: true
     expiresAt?: true
@@ -19157,6 +19162,7 @@ export namespace Prisma {
     localId?: true
     title?: true
     description?: true
+    ended?: true
     serverStayRequired?: true
     usersWins?: true
     expiresAt?: true
@@ -19256,6 +19262,7 @@ export namespace Prisma {
     localId: number
     title: string
     description: string | null
+    ended: boolean
     serverStayRequired: boolean
     usersWins: number
     expiresAt: Date
@@ -19287,6 +19294,7 @@ export namespace Prisma {
     localId?: boolean
     title?: boolean
     description?: boolean
+    ended?: boolean
     serverStayRequired?: boolean
     usersWins?: boolean
     expiresAt?: boolean
@@ -19303,6 +19311,7 @@ export namespace Prisma {
     localId?: boolean
     title?: boolean
     description?: boolean
+    ended?: boolean
     serverStayRequired?: boolean
     usersWins?: boolean
     expiresAt?: boolean
@@ -19315,6 +19324,7 @@ export namespace Prisma {
     localId?: boolean
     title?: boolean
     description?: boolean
+    ended?: boolean
     serverStayRequired?: boolean
     usersWins?: boolean
     expiresAt?: boolean
@@ -19327,6 +19337,7 @@ export namespace Prisma {
     localId?: boolean
     title?: boolean
     description?: boolean
+    ended?: boolean
     serverStayRequired?: boolean
     usersWins?: boolean
     expiresAt?: boolean
@@ -19334,7 +19345,7 @@ export namespace Prisma {
     updatedAt?: boolean
   }
 
-  export type GiveawayOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "localId" | "title" | "description" | "serverStayRequired" | "usersWins" | "expiresAt" | "createdAt" | "updatedAt", ExtArgs["result"]["giveaway"]>
+  export type GiveawayOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "localId" | "title" | "description" | "ended" | "serverStayRequired" | "usersWins" | "expiresAt" | "createdAt" | "updatedAt", ExtArgs["result"]["giveaway"]>
   export type GiveawayInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     participants?: boolean | Giveaway$participantsArgs<ExtArgs>
     connectedGuilds?: boolean | Giveaway$connectedGuildsArgs<ExtArgs>
@@ -19356,6 +19367,7 @@ export namespace Prisma {
       localId: number
       title: string
       description: string | null
+      ended: boolean
       serverStayRequired: boolean
       usersWins: number
       expiresAt: Date
@@ -19791,6 +19803,7 @@ export namespace Prisma {
     readonly localId: FieldRef<"Giveaway", 'Int'>
     readonly title: FieldRef<"Giveaway", 'String'>
     readonly description: FieldRef<"Giveaway", 'String'>
+    readonly ended: FieldRef<"Giveaway", 'Boolean'>
     readonly serverStayRequired: FieldRef<"Giveaway", 'Boolean'>
     readonly usersWins: FieldRef<"Giveaway", 'Int'>
     readonly expiresAt: FieldRef<"Giveaway", 'DateTime'>
@@ -23843,6 +23856,7 @@ export namespace Prisma {
     localId: 'localId',
     title: 'title',
     description: 'description',
+    ended: 'ended',
     serverStayRequired: 'serverStayRequired',
     usersWins: 'usersWins',
     expiresAt: 'expiresAt',
@@ -25180,6 +25194,7 @@ export namespace Prisma {
     localId?: IntFilter<"Giveaway"> | number
     title?: StringFilter<"Giveaway"> | string
     description?: StringNullableFilter<"Giveaway"> | string | null
+    ended?: BoolFilter<"Giveaway"> | boolean
     serverStayRequired?: BoolFilter<"Giveaway"> | boolean
     usersWins?: IntFilter<"Giveaway"> | number
     expiresAt?: DateTimeFilter<"Giveaway"> | Date | string
@@ -25195,6 +25210,7 @@ export namespace Prisma {
     localId?: SortOrder
     title?: SortOrder
     description?: SortOrderInput | SortOrder
+    ended?: SortOrder
     serverStayRequired?: SortOrder
     usersWins?: SortOrder
     expiresAt?: SortOrder
@@ -25213,6 +25229,7 @@ export namespace Prisma {
     localId?: IntFilter<"Giveaway"> | number
     title?: StringFilter<"Giveaway"> | string
     description?: StringNullableFilter<"Giveaway"> | string | null
+    ended?: BoolFilter<"Giveaway"> | boolean
     serverStayRequired?: BoolFilter<"Giveaway"> | boolean
     usersWins?: IntFilter<"Giveaway"> | number
     expiresAt?: DateTimeFilter<"Giveaway"> | Date | string
@@ -25228,6 +25245,7 @@ export namespace Prisma {
     localId?: SortOrder
     title?: SortOrder
     description?: SortOrderInput | SortOrder
+    ended?: SortOrder
     serverStayRequired?: SortOrder
     usersWins?: SortOrder
     expiresAt?: SortOrder
@@ -25248,6 +25266,7 @@ export namespace Prisma {
     localId?: IntWithAggregatesFilter<"Giveaway"> | number
     title?: StringWithAggregatesFilter<"Giveaway"> | string
     description?: StringNullableWithAggregatesFilter<"Giveaway"> | string | null
+    ended?: BoolWithAggregatesFilter<"Giveaway"> | boolean
     serverStayRequired?: BoolWithAggregatesFilter<"Giveaway"> | boolean
     usersWins?: IntWithAggregatesFilter<"Giveaway"> | number
     expiresAt?: DateTimeWithAggregatesFilter<"Giveaway"> | Date | string
@@ -26518,6 +26537,7 @@ export namespace Prisma {
     localId: number
     title: string
     description?: string | null
+    ended?: boolean
     serverStayRequired?: boolean
     usersWins?: number
     expiresAt: Date | string
@@ -26533,6 +26553,7 @@ export namespace Prisma {
     localId: number
     title: string
     description?: string | null
+    ended?: boolean
     serverStayRequired?: boolean
     usersWins?: number
     expiresAt: Date | string
@@ -26547,6 +26568,7 @@ export namespace Prisma {
     localId?: IntFieldUpdateOperationsInput | number
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    ended?: BoolFieldUpdateOperationsInput | boolean
     serverStayRequired?: BoolFieldUpdateOperationsInput | boolean
     usersWins?: IntFieldUpdateOperationsInput | number
     expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -26562,6 +26584,7 @@ export namespace Prisma {
     localId?: IntFieldUpdateOperationsInput | number
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    ended?: BoolFieldUpdateOperationsInput | boolean
     serverStayRequired?: BoolFieldUpdateOperationsInput | boolean
     usersWins?: IntFieldUpdateOperationsInput | number
     expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -26577,6 +26600,7 @@ export namespace Prisma {
     localId: number
     title: string
     description?: string | null
+    ended?: boolean
     serverStayRequired?: boolean
     usersWins?: number
     expiresAt: Date | string
@@ -26588,6 +26612,7 @@ export namespace Prisma {
     localId?: IntFieldUpdateOperationsInput | number
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    ended?: BoolFieldUpdateOperationsInput | boolean
     serverStayRequired?: BoolFieldUpdateOperationsInput | boolean
     usersWins?: IntFieldUpdateOperationsInput | number
     expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -26600,6 +26625,7 @@ export namespace Prisma {
     localId?: IntFieldUpdateOperationsInput | number
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    ended?: BoolFieldUpdateOperationsInput | boolean
     serverStayRequired?: BoolFieldUpdateOperationsInput | boolean
     usersWins?: IntFieldUpdateOperationsInput | number
     expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -28018,6 +28044,7 @@ export namespace Prisma {
     localId?: SortOrder
     title?: SortOrder
     description?: SortOrder
+    ended?: SortOrder
     serverStayRequired?: SortOrder
     usersWins?: SortOrder
     expiresAt?: SortOrder
@@ -28036,6 +28063,7 @@ export namespace Prisma {
     localId?: SortOrder
     title?: SortOrder
     description?: SortOrder
+    ended?: SortOrder
     serverStayRequired?: SortOrder
     usersWins?: SortOrder
     expiresAt?: SortOrder
@@ -28048,6 +28076,7 @@ export namespace Prisma {
     localId?: SortOrder
     title?: SortOrder
     description?: SortOrder
+    ended?: SortOrder
     serverStayRequired?: SortOrder
     usersWins?: SortOrder
     expiresAt?: SortOrder
@@ -32375,6 +32404,7 @@ export namespace Prisma {
     localId: number
     title: string
     description?: string | null
+    ended?: boolean
     serverStayRequired?: boolean
     usersWins?: number
     expiresAt: Date | string
@@ -32389,6 +32419,7 @@ export namespace Prisma {
     localId: number
     title: string
     description?: string | null
+    ended?: boolean
     serverStayRequired?: boolean
     usersWins?: number
     expiresAt: Date | string
@@ -32473,6 +32504,7 @@ export namespace Prisma {
     localId?: IntFieldUpdateOperationsInput | number
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    ended?: BoolFieldUpdateOperationsInput | boolean
     serverStayRequired?: BoolFieldUpdateOperationsInput | boolean
     usersWins?: IntFieldUpdateOperationsInput | number
     expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -32487,6 +32519,7 @@ export namespace Prisma {
     localId?: IntFieldUpdateOperationsInput | number
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    ended?: BoolFieldUpdateOperationsInput | boolean
     serverStayRequired?: BoolFieldUpdateOperationsInput | boolean
     usersWins?: IntFieldUpdateOperationsInput | number
     expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -32545,6 +32578,7 @@ export namespace Prisma {
     localId: number
     title: string
     description?: string | null
+    ended?: boolean
     serverStayRequired?: boolean
     usersWins?: number
     expiresAt: Date | string
@@ -32559,6 +32593,7 @@ export namespace Prisma {
     localId: number
     title: string
     description?: string | null
+    ended?: boolean
     serverStayRequired?: boolean
     usersWins?: number
     expiresAt: Date | string
@@ -32639,6 +32674,7 @@ export namespace Prisma {
     localId?: IntFieldUpdateOperationsInput | number
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    ended?: BoolFieldUpdateOperationsInput | boolean
     serverStayRequired?: BoolFieldUpdateOperationsInput | boolean
     usersWins?: IntFieldUpdateOperationsInput | number
     expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -32653,6 +32689,7 @@ export namespace Prisma {
     localId?: IntFieldUpdateOperationsInput | number
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    ended?: BoolFieldUpdateOperationsInput | boolean
     serverStayRequired?: BoolFieldUpdateOperationsInput | boolean
     usersWins?: IntFieldUpdateOperationsInput | number
     expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -32666,6 +32703,7 @@ export namespace Prisma {
     localId: number
     title: string
     description?: string | null
+    ended?: boolean
     serverStayRequired?: boolean
     usersWins?: number
     expiresAt: Date | string
@@ -32680,6 +32718,7 @@ export namespace Prisma {
     localId: number
     title: string
     description?: string | null
+    ended?: boolean
     serverStayRequired?: boolean
     usersWins?: number
     expiresAt: Date | string
@@ -32709,6 +32748,7 @@ export namespace Prisma {
     localId?: IntFieldUpdateOperationsInput | number
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    ended?: BoolFieldUpdateOperationsInput | boolean
     serverStayRequired?: BoolFieldUpdateOperationsInput | boolean
     usersWins?: IntFieldUpdateOperationsInput | number
     expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -32723,6 +32763,7 @@ export namespace Prisma {
     localId?: IntFieldUpdateOperationsInput | number
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    ended?: BoolFieldUpdateOperationsInput | boolean
     serverStayRequired?: BoolFieldUpdateOperationsInput | boolean
     usersWins?: IntFieldUpdateOperationsInput | number
     expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
