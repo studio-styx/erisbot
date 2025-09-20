@@ -13,7 +13,8 @@ async function handleGiveawayToRerollAutocomplete(interaction: AutocompleteInter
     const giveaways = await prisma.giveaway.findMany({
         where: {
             title: {
-                contains: focused
+                contains: focused,
+                mode: "insensitive"
             },
             expiresAt: {
                 lt: new Date() // Já expirou
@@ -159,7 +160,8 @@ async function handleIdAutocomplete(interaction: AutocompleteInteraction<"cached
     const giveaways = await prisma.giveaway.findMany({
         where: {
             title: {
-                contains: focused
+                contains: focused,
+                mode: "insensitive"
             },
             expiresAt: {
                 gt: new Date()
@@ -798,12 +800,47 @@ createCommand({
                         return;
                     }
 
-                    async function getRoleNames(roleEntries: RoleMultipleEntry[], guild: Guild): Promise<(RoleMultipleEntry & { roleName: string })[]> {
+                    async function getRoleNames(
+                        roleEntries: RoleMultipleEntry[],
+                        connectedGuilds: GuildGiveaway[],
+                        client: Client
+                    ): Promise<(RoleMultipleEntry & { roleName: string })[]> {
                         return Promise.all(roleEntries.map(async (roleEntry) => {
-                            const role = guild.roles.cache.get(roleEntry.roleId) ?? (await guild.roles.fetch(roleEntry.roleId).catch(() => null));
+                            // Tentar encontrar em qual guild essa role pertence
+                            let roleGuild: Guild | null = null;
+                            let role: any = null;
+
+                            // Procurar a guild que tem essa role
+                            for (const conn of connectedGuilds) {
+                                const guild = client.guilds.cache.get(conn.guildId);
+                                if (!guild) continue;
+
+                                // Primeiro tenta no cache
+                                role = guild.roles.cache.get(roleEntry.roleId);
+                                if (role) {
+                                    roleGuild = guild;
+                                    break;
+                                }
+
+                                // Se não achou no cache, tenta fetch
+                                try {
+                                    role = await guild.roles.fetch(roleEntry.roleId);
+                                    if (role) {
+                                        roleGuild = guild;
+                                        break;
+                                    }
+                                } catch (error) {
+                                    // Role não existe nessa guild, continua procurando
+                                    continue;
+                                }
+                            }
+
+                            // Se não achou em nenhuma guild, usa o nome genérico
+                            const roleName = role?.name ?? 'Role não encontrada';
+
                             return {
                                 ...roleEntry,
-                                roleName: role?.name ?? 'Role não encontrado',
+                                roleName
                             };
                         }));
                     }
@@ -818,6 +855,7 @@ createCommand({
                         }));
                     }
 
+                    // No seu código da transação:
                     await prisma.$transaction(async (tx) => {
                         await tx.guildGiveaway.create({
                             data: {
@@ -842,10 +880,8 @@ createCommand({
                             throw new Error("Falha ao recarregar os dados do sorteio após atualizações.");
                         }
 
-
                         const connectedGuildsWithNames = await getGuildNames(freshGiveaway.connectedGuilds, client);
-
-                        const roleEntriesWithNames = await getRoleNames(freshGiveaway.roleEntries, guild);
+                        const roleEntriesWithNames = await getRoleNames(freshGiveaway.roleEntries, freshGiveaway.connectedGuilds, client);
 
                         const completeData = {
                             ...freshGiveaway,
@@ -869,7 +905,7 @@ createCommand({
                                 messageId: message.id
                             }
                         });
-                    })
+                    });
 
                     await interaction.editReply(res.success(`${icon.warning} | Você aceitou o convite! e o sorteio já foi iniciado aqui!`))
                 } catch (error) {
@@ -884,7 +920,7 @@ createCommand({
             case "edit": {
                 try {
                     const giveawayId = Number(options.getString("id", true));
-    
+
                     const giveaway = await prisma.giveaway.findUnique({
                         where: {
                             id: giveawayId,
@@ -897,19 +933,19 @@ createCommand({
                             roleEntries: true
                         }
                     });
-    
+
                     if (!giveaway) {
                         interaction.editReply(res.danger(`${icon.error} | Não foi possivel encontrar esse sorteio!`))
                         return;
                     }
-    
+
                     const guildConnected = giveaway.connectedGuilds.find(g => g.guildId === guild.id);
-    
+
                     if (!guildConnected) {
                         interaction.editReply(res.danger(`${icon.error} | Esse server não faz parte desse sorteio!`))
                         return;
                     }
-    
+
                     async function getRoleNames(roleEntries: RoleMultipleEntry[], guild: Guild): Promise<(RoleMultipleEntry & { roleName: string })[]> {
                         return Promise.all(roleEntries.map(async (roleEntry) => {
                             const role = guild.roles.cache.get(roleEntry.roleId) ?? (await guild.roles.fetch(roleEntry.roleId).catch(() => null));
@@ -919,7 +955,7 @@ createCommand({
                             };
                         }));
                     }
-    
+
                     async function getGuildNames(connectedGuilds: GuildGiveaway[], client: Client): Promise<(GuildGiveaway & { guildName: string })[]> {
                         return Promise.all(connectedGuilds.map(async (guildEntry) => {
                             const fetchedGuild = client.guilds.cache.get(guildEntry.guildId) ?? (await client.guilds.fetch(guildEntry.guildId).catch(() => null));
@@ -929,7 +965,7 @@ createCommand({
                             };
                         }));
                     }
-    
+
                     // Mapear roleEntries para o formato correto
                     const roleEntriesMapped = await getRoleNames(giveaway.roleEntries, guild);
                     const roleEntriesFormatted = roleEntriesMapped.map(role => ({
@@ -937,7 +973,7 @@ createCommand({
                         roleId: role.roleId,
                         entries: role.extraEntries
                     }));
-    
+
                     // Mapear connectedGuilds para o formato correto
                     const connectedGuildsMapped = await getGuildNames(giveaway.connectedGuilds, client);
                     const connectedGuildsFormatted = connectedGuildsMapped.map(guild => ({
@@ -945,7 +981,7 @@ createCommand({
                         guildId: guild.guildId,
                         accepted: true
                     }));
-    
+
                     // Preparar os dados para a função
                     const giveawayData: GiveawayManageDataInfo = {
                         id: giveaway.id,
@@ -960,7 +996,7 @@ createCommand({
                         winners: giveaway.usersWins,
                         stayInServerRequire: giveaway.serverStayRequired
                     };
-    
+
                     const msg = await interaction.editReply(menus.giveaway.giveawayManage(user.id, giveawayData, "main"));
                     await redis.setex(`giveaway:manage:${msg.id}`, 60 * 300, JSON.stringify(giveawayData))
                 } catch (error) {

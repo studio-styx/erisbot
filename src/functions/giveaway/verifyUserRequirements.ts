@@ -17,7 +17,6 @@ export async function verifyUserRequirements(
         const guildId = conn.guildId;
         const guild = client.guilds.cache.get(guildId);
         if (!guild) {
-            console.log(`DEBUG: Guild ${guildId} não encontrada para user ${userId}`);
             return { guildId, member: null };
         }
 
@@ -25,13 +24,9 @@ export async function verifyUserRequirements(
         if (!member) {
             try {
                 member = await guild.members.fetch(userId);
-                console.log(`DEBUG: Fetch sucesso para user ${userId} em guild ${guildId}`);
             } catch (error: any) {
-                console.error(`DEBUG: Erro ao fetch member ${userId} em ${guildId}: ${error.message}`);
                 member = null;
             }
-        } else {
-            console.log(`DEBUG: Member ${userId} encontrado no cache em ${guildId}`);
         }
         return { guildId, member };
     });
@@ -43,10 +38,7 @@ export async function verifyUserRequirements(
         if (!member) missingGuilds.push(guildId);
     });
 
-    console.log(`DEBUG: Para user ${userId} em sorteio ${giveaway.id} | Missing guilds: ${missingGuilds.join(', ')} | Stay required: ${giveaway.serverStayRequired}`);
-
     if (giveaway.serverStayRequired && missingGuilds.length > 0) {
-        console.log(`DEBUG: Adicionando missing para stay required para user ${userId}`);
         if (inPortuguese) {
             const guildNamePromises = missingGuilds.map(async (guildId) => {
                 const guild = client.guilds.cache.get(guildId) ?? (await client.guilds.fetch(guildId).catch(() => null));
@@ -66,10 +58,8 @@ export async function verifyUserRequirements(
         const member = members[conn.guildId];
         if (!member) continue;
         const blRoles = conn.blackListRoles;
-        console.log(`DEBUG: Verificando blackListRoles para guild ${conn.guildId}: roles ${blRoles.join(', ')}`);
         for (const roleId of blRoles) {
             if (member.roles.cache.has(roleId)) {
-                console.log(`DEBUG: User ${userId} has blacklisted role ${roleId} in ${conn.guildId}`);
                 if (inPortuguese) {
                     blacklistedChecks.push((async () => {
                         const guild = client.guilds.cache.get(conn.guildId) ?? (await client.guilds.fetch(conn.guildId).catch(() => null));
@@ -77,7 +67,6 @@ export async function verifyUserRequirements(
                         return `Você possui o cargo proibido **${role?.name ?? roleId}** no servidor **${guild?.name ?? conn.guildId}**!`;
                     })());
                 } else {
-                    console.log(`DEBUG: Adding blacklistedRole for user ${userId}: ${roleId} in guild ${conn.guildId}`);
                     missing.push(`blacklistedRole:${roleId}:${conn.guildId}`);
                 }
             }
@@ -91,7 +80,6 @@ export async function verifyUserRequirements(
     const xpCheckPromises = connectedGuilds
         .filter(conn => {
             const shouldCheck = conn.xpRequired && conn.guild.xpSystemEnabled;
-            console.log(`DEBUG: Checking XP for guild ${conn.guildId}: required ${conn.xpRequired}, enabled ${conn.guild.xpSystemEnabled}, will check: ${shouldCheck}`);
             return shouldCheck;
         })
         .map(async (conn) => {
@@ -101,10 +89,7 @@ export async function verifyUserRequirements(
                 },
                 select: { xp: true }
             });
-            console.log(`DEBUG: XP for user ${userId} in ${conn.guildId}: ${memberPrisma?.xp ?? 'none'}`);
-            if (!memberPrisma || memberPrisma.xp < (conn.xpRequired ?? 0)) {
-                console.log(`DEBUG: Adding missingXp for user ${userId} in guild ${conn.guildId}: required ${conn.xpRequired}, has ${memberPrisma?.xp ?? 'none'}`);
-                if (inPortuguese) {
+            if (!memberPrisma || memberPrisma.xp < (conn.xpRequired ?? 0)) {if (inPortuguese) {
                     const guild = client.guilds.cache.get(conn.guildId) ?? (await client.guilds.fetch(conn.guildId).catch(() => null));
                     return `Você precisa de **${conn.xpRequired}** xp no servidor **${guild?.name ?? conn.guildId}** para participar desse sorteio!`;
                 } else {
@@ -116,8 +101,6 @@ export async function verifyUserRequirements(
 
     const xpMissing = (await Promise.all(xpCheckPromises)).filter((msg): msg is string => msg !== null);
     missing.push(...xpMissing);
-
-    console.log(`DEBUG: Requisitos missing finais para user ${userId}: ${JSON.stringify(missing)}`);
 
     return { missing, members };
 }

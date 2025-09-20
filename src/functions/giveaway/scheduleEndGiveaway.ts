@@ -44,17 +44,11 @@ export async function scheduleAllEndGiveaways(client: Client) {
         });
 
         if (giveawaysToEnd.length === 0) {
-            console.log("DEBUG: Nenhum sorteio pendente encontrado nesta verificação.");
             return;
         }
 
-        console.log(`DEBUG: Encontrados ${giveawaysToEnd.length} sorteios pendentes: ${giveawaysToEnd.map(g => g.id).join(', ')}`);
-
-        console.log(`Agendando finalização de ${giveawaysToEnd.length} sorteios pendentes`);
-
         for (const giveaway of giveawaysToEnd) {
             if (processingGiveaways.has(giveaway.id)) {
-                console.log(`Sorteio ${giveaway.id} já está sendo processado`);
                 continue;
             }
             await scheduleGiveaway(client, giveaway);
@@ -66,28 +60,22 @@ export async function scheduleAllEndGiveaways(client: Client) {
 
 export async function scheduleGiveaway(client: Client, giveaway: Giveaway & { connectedGuilds: (GuildGiveaway & { guild: GuildSettings })[] }) {
     const timeUntilEnd = giveaway.expiresAt.getTime() - Date.now();
-    
-    console.log(`DEBUG: Agendando sorteio ${giveaway.id} | Expires at: ${giveaway.expiresAt.toISOString()} | Time left: ${timeUntilEnd / 1000}s | Stay required: ${giveaway.serverStayRequired}`);
-
+   
     if (timeUntilEnd <= 0) {
-        console.log(`DEBUG: Sorteio ${giveaway.id} já expirou, processando imediatamente.`);
         await processGiveawayEnd(client, giveaway);
         return;
     }
 
     if (processingGiveaways.has(giveaway.id)) {
-        console.log(`DEBUG: Sorteio ${giveaway.id} já em processamento, skipping agendamento.`);
         return;
     }
 
     if (scheduledTimeouts.has(giveaway.id)) {
-        console.log(`DEBUG: Cancelando timeout anterior para sorteio ${giveaway.id}`);
         clearTimeout(scheduledTimeouts.get(giveaway.id)!);
         scheduledTimeouts.delete(giveaway.id);
     }
 
     const timeout = setTimeout(async () => {
-        console.log(`DEBUG: Timeout disparado para sorteio ${giveaway.id}`);
         scheduledTimeouts.delete(giveaway.id);
         await processGiveawayEnd(client, giveaway);
     }, timeUntilEnd);
@@ -99,14 +87,12 @@ async function processGiveawayEnd(client: Client, giveaway: Giveaway & { connect
     const giveawayId = giveaway.id;
     
     if (processingGiveaways.has(giveawayId)) {
-        console.log(`Sorteio ${giveawayId} já está sendo processado por outro processo`);
         return;
     }
 
     processingGiveaways.add(giveawayId);
     
     try {
-        console.log(`Processando finalização do sorteio ${giveawayId}: ${giveaway.title}`);
         
         await prisma.giveaway.update({
             where: { id: giveawayId },
@@ -146,9 +132,6 @@ async function processGiveawayEnd(client: Client, giveaway: Giveaway & { connect
             fullGiveaway.connectedGuilds
         );
 
-        console.log("Participantes:", fullGiveaway.participants)
-        console.log("Vencedores:", winners)
-
         if (!winners || winners.length === 0) {
             await handleNoEligibleWinners(client, fullGiveaway);
             return;
@@ -163,12 +146,7 @@ async function processGiveawayEnd(client: Client, giveaway: Giveaway & { connect
         });
 
         await updateAllGuildMessages(client, fullGiveaway, winners);
-
-        console.log(`✅ Sorteio ${giveawayId} finalizado com sucesso. ${winners.length} vencedor(es) selecionado(s)`);
-        
     } catch (error) {
-        console.error(`❌ Erro ao processar sorteio ${giveawayId}:`, error);
-        
         try {
             await prisma.giveaway.update({
                 where: { id: giveawayId },
@@ -260,7 +238,7 @@ async function updateAllGuildMessages(client: Client, giveaway: GiveawayPayload,
                 }).catch(e => console.error(`Erro ao atualizar messageId na guild ${cnGuild.guildId}:`, e));
                 
                 // Enviar notificação separada
-                await updateResult.channel.send(winnerNotification as any);
+                await newMessage.reply(winnerNotification as any);
             }
         } catch (error) {
             console.error(`Erro ao atualizar mensagens da guild ${cnGuild.guildId}:`, error);
@@ -334,7 +312,6 @@ export function cancelGiveawaySchedule(giveawayId: number) {
     if (scheduledTimeouts.has(giveawayId)) {
         clearTimeout(scheduledTimeouts.get(giveawayId)!);
         scheduledTimeouts.delete(giveawayId);
-        console.log(`Agendamento do sorteio ${giveawayId} cancelado`);
     }
     processingGiveaways.delete(giveawayId);
 }

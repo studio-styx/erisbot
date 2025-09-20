@@ -42,9 +42,9 @@ export function giveawayManageMenu<R>(userId: string, data: GiveawayManageDataIn
                 `### Servers conectados:`,
                 data.connectedGuilds.map(guild => `**\`${guild.guildName}\`**`).join(", ")
             ) : null,
-            data.stayInServerRequire === undefined ? brBuilder(
+            data.stayInServerRequire ? brBuilder(
                 `### É necessário estar em todos os servers para participar do sorteio?`,
-                data.stayInServerRequire === true ? "Sim" : "Não"
+                data.stayInServerRequire ? "Sim" : "Não"
             ) : null,
             data.winners ? brBuilder(
                 `### Quantidade de ganhadores:`,
@@ -140,7 +140,6 @@ export function giveawayManageMenu<R>(userId: string, data: GiveawayManageDataIn
                 customId: `giveaway/manage/clearCache/connectedGuilds/${userId}/${guildsPage - 1}`,
                 label: "Limpar cache",
                 style: ButtonStyle.Danger,
-                disabled: guildsPage < 1,
             }),
             new ButtonBuilder({
                 customId: `giveaway/manage/button/connectedGuilds/${userId}/${guildsPage + 2}`,

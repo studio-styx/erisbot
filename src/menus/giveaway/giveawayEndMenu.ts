@@ -23,6 +23,7 @@ export function giveawayEndMenu<R>(winnersIds: string[], info: {
 
     return ({
         flags: ["Ephemeral", "IsComponentsV2"],
-        components: [container]
+        components: [container],
+        allowedMentions: { parse: [] }
     } satisfies InteractionReplyOptions) as R;
 }

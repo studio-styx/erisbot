@@ -92,12 +92,47 @@ createResponder({
             },
         }))?.localId ?? 0) + 1;
 
-        async function getRoleNames(roleEntries: RoleMultipleEntry[], guild: Guild): Promise<(RoleMultipleEntry & { roleName: string })[]> {
+        async function getRoleNames(
+            roleEntries: RoleMultipleEntry[],
+            connectedGuilds: GuildGiveaway[],
+            client: Client
+        ): Promise<(RoleMultipleEntry & { roleName: string })[]> {
             return Promise.all(roleEntries.map(async (roleEntry) => {
-                const role = guild.roles.cache.get(roleEntry.roleId) ?? (await guild.roles.fetch(roleEntry.roleId).catch(() => null));
+                // Tentar encontrar em qual guild essa role pertence
+                let roleGuild: Guild | null = null;
+                let role: any = null;
+
+                // Procurar a guild que tem essa role
+                for (const conn of connectedGuilds) {
+                    const guild = client.guilds.cache.get(conn.guildId);
+                    if (!guild) continue;
+
+                    // Primeiro tenta no cache
+                    role = guild.roles.cache.get(roleEntry.roleId);
+                    if (role) {
+                        roleGuild = guild;
+                        break;
+                    }
+
+                    // Se não achou no cache, tenta fetch
+                    try {
+                        role = await guild.roles.fetch(roleEntry.roleId);
+                        if (role) {
+                            roleGuild = guild;
+                            break;
+                        }
+                    } catch (error) {
+                        // Role não existe nessa guild, continua procurando
+                        continue;
+                    }
+                }
+
+                // Se não achou em nenhuma guild, usa o nome genérico
+                const roleName = role?.name ?? 'Role não encontrada';
+
                 return {
                     ...roleEntry,
-                    roleName: role?.name ?? 'Role não encontrado',
+                    roleName
                 };
             }));
         }
@@ -212,8 +247,6 @@ createResponder({
                     throw new Error("Falha ao recarregar os dados do sorteio após atualizações.");
                 }
 
-                const connectedGuildsWithNames = await getGuildNames(freshGiveaway.connectedGuilds, client);
-
                 const updatePromises = freshGiveaway.connectedGuilds.map((connectedGuild) => (async () => {
                     const gvGuild = client.guilds.cache.get(connectedGuild.guildId) ?? (await client.guilds.fetch(connectedGuild.guildId).catch(() => null));
                     if (!gvGuild) {
@@ -238,7 +271,8 @@ createResponder({
                     try {
                         const message = await giveawayChannel.messages.fetch(connectedGuild.messageId).catch(() => null);
 
-                        const roleEntriesWithNames = await getRoleNames(freshGiveaway.roleEntries, gvGuild);
+                        const connectedGuildsWithNames = await getGuildNames(freshGiveaway.connectedGuilds, client);
+                        const roleEntriesWithNames = await getRoleNames(freshGiveaway.roleEntries, freshGiveaway.connectedGuilds, client);
 
                         const completeData = {
                             ...freshGiveaway,

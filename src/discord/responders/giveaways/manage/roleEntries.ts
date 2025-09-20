@@ -40,7 +40,7 @@ createResponder({
                         },
                         entries: {
                             label: "quantidade de entradas",
-                            placeholder: "2",
+                            placeholder: "2 (0 para remover)",
                             style: TextInputStyle.Short,
                             required: true,
                         }
@@ -52,6 +52,32 @@ createResponder({
 
                 if (Number.isNaN(entries)) {
                     interaction.reply(res.danger(`${icon.error} | Digite um número de entradas válido!`));
+                    return;
+                }
+                if (entries === 0) {
+                    await interaction.deferUpdate();
+                    const raw = await redis.get(key);
+                    if (!raw) {
+                        interaction.editReply(resv2.danger(`${icon.Eris_cry} | Parece que você demorou demais para setar as configurações do sorteio! as informações sobre o sorteio sumiram!`));
+                        return;
+                    }
+                    const giveawayData = JSON.parse(raw, (key, value) => {
+                        // Converte strings de data de volta para objetos Date
+                        if (key === 'expiresAt' && typeof value === 'string') {
+                            return new Date(value);
+                        }
+                        return value;
+                    }) as GiveawayManageDataInfo;
+
+                    const roleExist = giveawayData.roleEntries?.some(r => r.roleId === roleId);
+                    if (!roleExist) {
+                        interaction.followUp(res.danger(`${icon.error} | Esse cargo não está registrado no sorteio`))
+                        return;
+                    }
+                    const updatedEntries = giveawayData.roleEntries?.filter(r => r.roleId !== roleId);
+                    giveawayData.roleEntries = updatedEntries;
+                    await redis.setex(key, 3600, JSON.stringify(giveawayData));
+                    interaction.editReply(menus.giveaway.giveawayManage(userId, giveawayData, "main"))
                     return;
                 }
                 if (entries < 2) {
@@ -132,7 +158,7 @@ createResponder({
                     components: createModalFields({
                         entries: {
                             label: "quantidade de entradas",
-                            placeholder: "2",
+                            placeholder: "2 (0 para remover)",
                             style: TextInputStyle.Short,
                             required: true,
                         }
@@ -144,6 +170,37 @@ createResponder({
 
                     if (Number.isNaN(entries)) {
                         interaction.reply(res.danger(`${icon.error} | Digite um número de entradas válido!`));
+                        return;
+                    }
+                    if (entries === 0) {
+                        await interaction.deferUpdate();
+                        const raw = await redis.get(key);
+                        if (!raw) {
+                            interaction.editReply(resv2.danger(`${icon.Eris_cry} | Parece que você demorou demais para setar as configurações do sorteio! as informações sobre o sorteio sumiram!`));
+                            return;
+                        }
+                        const giveawayData = JSON.parse(raw, (key, value) => {
+                            // Converte strings de data de volta para objetos Date
+                            if (key === 'expiresAt' && typeof value === 'string') {
+                                return new Date(value);
+                            }
+                            return value;
+                        }) as GiveawayManageDataInfo;
+
+                        const rolesIds = selectedRoles.get(message.id);
+                        if (!rolesIds) {
+                            interaction.reply(res.danger(`${icon.error} | Você demorou demais para definir a quantidade de entradas dos cargos selecionados, os dados dos cargos sumiram!`));
+                            return;
+                        }
+                        const roleExist = giveawayData.roleEntries?.some(r => rolesIds.includes(r.roleId));
+                        if (!roleExist) {
+                            interaction.followUp(res.danger(`${icon.error} | Esse cargo não está registrado no sorteio`))
+                            return;
+                        }
+                        const updatedEntries = giveawayData.roleEntries?.filter(r => !rolesIds.includes(r.roleId));
+                        giveawayData.roleEntries = updatedEntries;
+                        await redis.setex(key, 3600, JSON.stringify(giveawayData));
+                        interaction.editReply(menus.giveaway.giveawayManage(userId, giveawayData, "main"))
                         return;
                     }
                     if (entries < 2) {
