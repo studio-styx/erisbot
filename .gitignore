@@ -9,6 +9,7 @@
 /prisma/devzone/
 /database.json
 /prisma/certs
+/.yarn
 
 # Files
 /.env
