@@ -80,7 +80,7 @@
       "./build/lib/index.js"
     ],
     "#prisma": [
-      "./prisma/prisma/client.js"
+      "./prisma/eris/client.js"
     ],
     "#asPrisma": [
       "./prisma/erishelper/client.js"

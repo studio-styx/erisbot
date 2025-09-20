@@ -5,6 +5,7 @@
 /deprecated
 /node_modules
 /prisma/prisma/
+/prisma/eris/
 /prisma/erishelper/
 /prisma/devzone/
 /database.json
