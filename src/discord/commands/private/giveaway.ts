@@ -461,6 +461,13 @@ createCommand({
     defaultMemberPermissions: ["ManageEvents"],
     async run(interaction) {
         const { user, options, member, guild, client } = interaction;
+        
+        const avaibleGuilds = ["1395383469210865694", "1338980027529957396"];
+
+        if (!avaibleGuilds.includes(guild.id)) {
+            interaction.reply(res.danger(`${icon.denied} | Esse é um recurso alpha exclusivo apenas para servidores selecionados! algum dia esse recurso será disponibilizado para todos os servers poderem usar livremente.`))
+            return;
+        }
 
         const hasPerms = member.permissions.has("ManageEvents");
 
