@@ -4,7 +4,7 @@ import { icon, res, verifyUserRequirements } from "#functions";
 import { menus } from "#menus";
 import { GuildGiveaway, RoleMultipleEntry } from "#prisma";
 import { brBuilder } from "@magicyan/discord";
-import { Client, Guild } from "discord.js";
+import { Client } from "discord.js";
 
 const cooldown = new Store();
 
@@ -102,7 +102,6 @@ createResponder({
                 ): Promise<(RoleMultipleEntry & { roleName: string })[]> {
                     return Promise.all(roleEntries.map(async (roleEntry) => {
                         // Tentar encontrar em qual guild essa role pertence
-                        let roleGuild: Guild | null = null;
                         let role: any = null;
 
                         // Procurar a guild que tem essa role
@@ -113,7 +112,6 @@ createResponder({
                             // Primeiro tenta no cache
                             role = guild.roles.cache.get(roleEntry.roleId);
                             if (role) {
-                                roleGuild = guild;
                                 break;
                             }
 
@@ -121,7 +119,6 @@ createResponder({
                             try {
                                 role = await guild.roles.fetch(roleEntry.roleId);
                                 if (role) {
-                                    roleGuild = guild;
                                     break;
                                 }
                             } catch (error) {

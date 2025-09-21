@@ -59,9 +59,8 @@ createEvent({
         app.addHook('onRequest', async (req, res) => {
             console.log('Request:', req.url, 'method:', req.method);
 
-            if (req.url.startsWith('/v1/bot/economy/ws/take-stx')) {
-                return;
-            }
+            if (req.url.startsWith('/v1/bot/economy/ws/take-stx')) return;
+            if (req.url === "/") return;
             if (req.url.startsWith('/auth')) return;
 
             if (req.url.startsWith('/user') || req.url.startsWith('/guilds') || req.url.startsWith('/botlist') || req.url.startsWith('/bot')) {

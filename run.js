@@ -11,7 +11,7 @@ try {
   execSync("npx prisma generate --schema prisma/devzone.prisma", { stdio: "inherit" })
 
   console.log("🚀 Iniciando o bot...");
-  execSync("npm run start:dev", { stdio: "inherit" });
+  execSync("npm run start", { stdio: "inherit" });
 
 } catch (error) {
   console.error("❌ Erro ao executar os comandos:", error);

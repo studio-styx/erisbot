@@ -157,15 +157,20 @@ createResponder({
             function parseExpiresAt(input: string): Date | null {
                 input = input.trim().toLowerCase();
 
-                const now = new Date();
-                const maxFuture = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
+                // Offset fixo para Brasil (UTC-3 em ms)
+                const brazilOffsetMs = -3 * 60 * 60 * 1000;
+
+                // Now ajustado para Brasil
+                const now = new Date(Date.now() + brazilOffsetMs);
+                const maxFuture = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000); // 30 dias
 
                 // Formato absoluto: dd/mm/yyyy HH:mm
                 let absMatch = input.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})\s+(\d{1,2}):(\d{2})$/);
                 if (absMatch) {
                     const [, d, m, y, h, min] = absMatch.map(Number);
-                    const date = new Date(y, m - 1, d, h, min);
-                    if (date > now && date <= maxFuture) return date;
+                    let date = new Date(y, m - 1, d, h, min);
+                    date = new Date(date.getTime() + brazilOffsetMs); // Ajusta para Brasil
+                    if (date > now && date <= maxFuture) return new Date(date.getTime() - brazilOffsetMs); // Retorna em UTC para salvar
                     return null;
                 }
 
@@ -173,18 +178,20 @@ createResponder({
                 absMatch = input.match(/^(\d{1,2})[\/\-](\d{1,2})\s+(\d{1,2}):(\d{2})$/);
                 if (absMatch) {
                     const [, d, m, h, min] = absMatch.map(Number);
-                    const date = new Date(now.getFullYear(), m - 1, d, h, min);
-                    if (date > now && date <= maxFuture) return date;
-                    return null; // passou ou excede limite
+                    let date = new Date(now.getFullYear(), m - 1, d, h, min);
+                    date = new Date(date.getTime() + brazilOffsetMs);
+                    if (date > now && date <= maxFuture) return new Date(date.getTime() - brazilOffsetMs);
+                    return null;
                 }
 
-                // Formato absoluto sem ano e sem hora: dd/mm  (assume 12:00)
+                // Formato absoluto sem ano e sem hora: dd/mm (assume 12:00)
                 absMatch = input.match(/^(\d{1,2})[\/\-](\d{1,2})$/);
                 if (absMatch) {
                     const [, d, m] = absMatch.map(Number);
-                    const date = new Date(now.getFullYear(), m - 1, d, 12, 0);
-                    if (date > now && date <= maxFuture) return date;
-                    return null; // passou ou excede limite
+                    let date = new Date(now.getFullYear(), m - 1, d, 12, 0);
+                    date = new Date(date.getTime() + brazilOffsetMs);
+                    if (date > now && date <= maxFuture) return new Date(date.getTime() - brazilOffsetMs);
+                    return null;
                 }
 
                 // Apenas horário do dia (ex: 18:20 ou 00:00)
@@ -192,11 +199,11 @@ createResponder({
                 if (timeMatch) {
                     const [, h, min] = timeMatch.map(Number);
                     let date = new Date(now.getFullYear(), now.getMonth(), now.getDate(), h, min);
-
                     if (date <= now) {
-                        date.setDate(date.getDate() + 1); // próximo dia
+                        date.setDate(date.getDate() + 1);
                     }
-                    if (date > now && date <= maxFuture) return date;
+                    date = new Date(date.getTime() + brazilOffsetMs);
+                    if (date > now && date <= maxFuture) return new Date(date.getTime() - brazilOffsetMs);
                     return null;
                 }
 
@@ -216,17 +223,17 @@ createResponder({
                         case "d": case "dia": case "dias":
                             totalMs += value * 24 * 60 * 60 * 1000; break;
                         case "w": case "semana": case "semanas":
-                            totalMs += value * 7 * 24 * 60 * 60 * 1000; break;
+                            totalMs += value * 7 * 24 * 60 * 1000; break;
                     }
                 }
 
                 if (totalMs > 0) {
                     const date = new Date(now.getTime() + totalMs);
-                    if (date > now && date <= maxFuture) return date;
+                    if (date > now && date <= maxFuture) return new Date(date.getTime() - brazilOffsetMs); // Retorna em UTC
                     return null;
                 }
 
-                return null; // formato inválido
+                return null;
             }
 
             function parseWinnersRequired(input: string): number | null {

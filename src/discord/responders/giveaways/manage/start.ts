@@ -3,7 +3,7 @@ import { prisma, redis } from "#database";
 import { icon, res, resv2, scheduleGiveaway } from "#functions";
 import { menus } from "#menus";
 import { GiveawayManageDataInfo } from "#types/giveawayManageDataType.js";
-import { channelMention, Client, Guild } from "discord.js";
+import { channelMention, Client } from "discord.js";
 import crypto from "crypto";
 import { GuildGiveaway, RoleMultipleEntry } from "#prisma";
 
@@ -99,7 +99,6 @@ createResponder({
         ): Promise<(RoleMultipleEntry & { roleName: string })[]> {
             return Promise.all(roleEntries.map(async (roleEntry) => {
                 // Tentar encontrar em qual guild essa role pertence
-                let roleGuild: Guild | null = null;
                 let role: any = null;
 
                 // Procurar a guild que tem essa role
@@ -110,7 +109,6 @@ createResponder({
                     // Primeiro tenta no cache
                     role = guild.roles.cache.get(roleEntry.roleId);
                     if (role) {
-                        roleGuild = guild;
                         break;
                     }
 
@@ -118,7 +116,6 @@ createResponder({
                     try {
                         role = await guild.roles.fetch(roleEntry.roleId);
                         if (role) {
-                            roleGuild = guild;
                             break;
                         }
                     } catch (error) {

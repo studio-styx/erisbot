@@ -6,7 +6,7 @@ import { GuildGiveaway, RoleMultipleEntry } from "#prisma";
 import { GiveawayManageDataInfo } from "#types/giveawayManageDataType.js";
 import { createRow, limitText } from "@magicyan/discord";
 import { ApplicationCommandOptionType, ApplicationCommandType, AutocompleteInteraction, ButtonBuilder, ButtonStyle, channelMention, ChannelType, Client, Guild, TextChannel, userMention } from "discord.js";
-import { getSolicitationsByGuildScan } from "functions/giveaway/getSolicitationsByGuild.js";
+import { getSolicitationsByGuildScan } from "#functions";
 import crypto from "crypto"
 
 async function handleGiveawayToRerollAutocomplete(interaction: AutocompleteInteraction<"cached">, focused: string) {
@@ -461,13 +461,6 @@ createCommand({
     defaultMemberPermissions: ["ManageEvents"],
     async run(interaction) {
         const { user, options, member, guild, client } = interaction;
-        
-        const avaibleGuilds = ["1395383469210865694", "1338980027529957396"];
-
-        if (!avaibleGuilds.includes(guild.id)) {
-            interaction.reply(res.danger(`${icon.denied} | Esse é um recurso alpha exclusivo apenas para servidores selecionados! algum dia esse recurso será disponibilizado para todos os servers poderem usar livremente.`))
-            return;
-        }
 
         const hasPerms = member.permissions.has("ManageEvents");
 
@@ -814,7 +807,6 @@ createCommand({
                     ): Promise<(RoleMultipleEntry & { roleName: string })[]> {
                         return Promise.all(roleEntries.map(async (roleEntry) => {
                             // Tentar encontrar em qual guild essa role pertence
-                            let roleGuild: Guild | null = null;
                             let role: any = null;
 
                             // Procurar a guild que tem essa role
@@ -825,17 +817,12 @@ createCommand({
                                 // Primeiro tenta no cache
                                 role = guild.roles.cache.get(roleEntry.roleId);
                                 if (role) {
-                                    roleGuild = guild;
                                     break;
                                 }
 
                                 // Se não achou no cache, tenta fetch
                                 try {
                                     role = await guild.roles.fetch(roleEntry.roleId);
-                                    if (role) {
-                                        roleGuild = guild;
-                                        break;
-                                    }
                                 } catch (error) {
                                     // Role não existe nessa guild, continua procurando
                                     continue;

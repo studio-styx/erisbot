@@ -13,7 +13,8 @@ export async function getMutualGuilds(client: Client, userId: string) {
 
     const mutualGuilds: MutualGuilds = []
     for (const guild of guilds) {
-        const member = await guild.members.fetch(userId);
+        let member = guild.members.cache.get(userId) || null;
+        if (!member) member = await guild.members.fetch(userId).catch(() => null);
         if (member) {
             mutualGuilds.push({
                 name: guild.name,

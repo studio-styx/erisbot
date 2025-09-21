@@ -3,8 +3,8 @@ import { menus } from "#menus";
 import { Giveaway, GuildGiveaway, GuildSettings, RoleMultipleEntry, UserGiveaway } from "#prisma";
 import { Client, userMention, TextChannel } from "discord.js";
 import { selectWinner } from "./selectWinner.js";
-import { resv2 } from "functions/utils/embed.js";
-import { icon } from "functions/utils/emojis.js";
+import { resv2 } from "#functions";
+import { icon } from "#functions";
 
 type GiveawayPayload = Giveaway & { 
     connectedGuilds: (GuildGiveaway & { guild: GuildSettings })[], 
