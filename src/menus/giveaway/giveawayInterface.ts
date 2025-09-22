@@ -42,6 +42,11 @@ export function giveawayInterfaceMenu<R>(data: (Giveaway & { roleEntries: (RoleM
         new ButtonBuilder({
             customId: `giveaway/entry/${data.id}`,
             label: `Entrar (${data.participants.length})`,
+            style: ButtonStyle.Primary,
+        }),
+        new ButtonBuilder({
+            customId: `giveaway/participants/${data.id}`,
+            label: `Participantes`,
             style: ButtonStyle.Secondary,
         })
     )
