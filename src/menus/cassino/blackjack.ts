@@ -2,7 +2,7 @@ import { Store } from "#base";
 import { BlackjackIA, getBlackjackGame, icon, resv2 } from "#functions";
 import { settings } from "#settings";
 import { brBuilder, createContainer, createRow, createSeparator } from "@magicyan/discord";
-import { ButtonBuilder, ButtonStyle, type InteractionReplyOptions } from "discord.js";
+import { ButtonBuilder, ButtonStyle, UserSelectMenuBuilder, type InteractionReplyOptions } from "discord.js";
 
 const userGames = new Store<number>()
 
@@ -61,6 +61,15 @@ export function blackjackMenu<R>(userId: string, amount: number, game?: Blackjac
                     label: "Pesadelo",
                     style: ButtonStyle.Danger,
                     disabled: games >= 14
+                })
+            ),
+            createRow(
+                new UserSelectMenuBuilder({
+                    customId: `blackjack/start/other/${userId}/${amount}`,
+                    placeholder: "Jogar contra outro jogador",
+                    minValues: 1,
+                    maxValues: 1,
+                    disabled: games >= 4
                 })
             )
         ];

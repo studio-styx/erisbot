@@ -104,7 +104,7 @@ createEvent({
                 ])
 
                 // Definir limites
-                const rateLimitWindow = hasValidToken ? 4_000 : 20_000; 
+                const rateLimitWindow = hasValidToken ? 4_000 : 20_000;
                 const patternHistoryLimit = 20;
                 const varianceThreshold = 1000;
 
@@ -192,15 +192,25 @@ createEvent({
             }
 
             req.application = { data: application, tokenHash: hash256 };
+        });
 
-            await prisma.requisition.create({
-                data: {
-                    applicationId: application.id,
-                    url: req.url,
-                },
-            }).catch(e => {
-                logger.error('Erro ao salvar requisition:', e);
-            });
+        app.addHook('onSend', async (request, _reply, payload) => {
+            const application = request.application?.data;
+            if (!application) return payload;
+
+            try {
+                await prisma.requisition.create({
+                    data: {
+                        applicationId: application.id,
+                        url: request.url,
+                    },
+                });
+            } catch (error) {
+                logger.error('Erro ao salvar requisition:', error);
+                // Não lance o erro para não afetar a resposta ao cliente
+            }
+
+            return payload; 
         });
 
         // Função para validar o token (mantida, usando Prisma apenas para app)

@@ -123,7 +123,7 @@ export async function economyTransferCommand(interaction: ChatInputCommandIntera
     });
     const row = createRow(
         new ButtonBuilder({
-            customId: `transfer/${authorId}/0/${targetId}/0/${value}/${transaction.id}`,
+            customId: `transfer/${authorId}/0/${targetId}/0/${transaction.id}`,
             emoji: icon.paid,
             label: "Confirmar ( 0/2 )",
             style: ButtonStyle.Success

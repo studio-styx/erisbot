@@ -22,3 +22,6 @@ export * from './giveaway/verifyUserRequirements.js'
 export * from './giveaway/scheduleEndGiveaway.js'
 export * from './giveaway/getSolicitationsByGuild.js'
 export * from './minigames/wordle/createImage.js'
+export * from './words/pipeline.js';
+export * from './words/getWords.js';
+export * from './blackjackMultiplayer/defaults.js'

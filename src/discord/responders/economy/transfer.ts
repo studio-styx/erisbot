@@ -9,7 +9,7 @@ import { ButtonBuilder, ButtonStyle, userMention } from "discord.js";
 const trys = new Store<number>()
 
 createResponder({
-    customId: "transfer/:authorId/:authorAccepted/:targetId/:targetAccepted//:transactionId",
+    customId: "transfer/:authorId/:authorAccepted/:targetId/:targetAccepted/:transactionId",
     types: [ResponderType.Button], cache: "cached",
     parse(params) {
         return {
@@ -78,6 +78,7 @@ createResponder({
         // Se ambos aceitaram, processa a transação
         if (newAuthorAccepted && newTargetAccepted) {
             await interaction.deferUpdate();
+            await interaction.editReply(res.warning(`${icon.waiting_white} | Processando a transação...`));
 
             const transaction = await prisma.transaction.findUniqueOrThrow({
                 where: { id: transactionId },

@@ -1,5 +1,6 @@
 import { botInfoMenu } from "./botInfo.js";
 import { blackjackMenu } from "./cassino/blackjack.js";
+import { blackjackMultiplayerMenu } from "./cassino/blackjackMultiplayer.js";
 import { commandsMenu } from "./commandsMenu.js";
 import { devDashboardMenu } from "./dev/dashboard.js";
 import { addQuestionMenu } from "./dev/tryvia/addQuestion.js";
@@ -45,6 +46,7 @@ export const menus = {
     botinfo: botInfoMenu,
     cassino: {
         blackjack: blackjackMenu,
+        blackjackMultiplayer: blackjackMultiplayerMenu
     },
     xpSystem: {
         rank: rankMenu

@@ -135,7 +135,7 @@ createResponder({
             redis.setex(`wordle:${interaction.user.id}`, 60 * 30, JSON.stringify(game)),
             prisma.log.create({
                 data: {
-                    message: `Fez a tentativa da palavra: **${response.toUpperCase()}** de termo no servidor **${interaction.guild.name}** (palavra: ${game.word})`,
+                    message: `Fez a tentativa da palavra: **${response.toUpperCase()}** de termo no servidor **${interaction.guild.name}**`,
                     type: "info",
                     userId: interaction.user.id,
                     level: 1,

@@ -115,7 +115,7 @@ createEvent({
             currentIndex++;
             setNextPresence();
         }
-        setNextPresence()
+        setNextPresence();
     }
 });
 

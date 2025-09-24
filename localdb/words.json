@@ -1,0 +1,1940 @@
+{
+    "ptbr": {
+        "words": [
+            {
+                "word": "eris",
+                "length": 4,
+                "category": "mythology",
+                "language": "pt-br"
+            },
+            {
+                "word": "esqui",
+                "length": 5,
+                "category": "sports",
+                "language": "pt-br"
+            },
+            {
+                "word": "zâmbia",
+                "length": 7,
+                "category": "countries",
+                "language": "pt-br"
+            },
+            {
+                "word": "renas",
+                "length": 5,
+                "category": "animals",
+                "language": "pt-br"
+            },
+            {
+                "word": "lontra",
+                "length": 6,
+                "category": "animals",
+                "language": "pt-br"
+            },
+            {
+                "word": "cuco",
+                "length": 4,
+                "category": "birds",
+                "language": "pt-br"
+            },
+            {
+                "word": "peru",
+                "length": 4,
+                "category": "birds",
+                "language": "pt-br"
+            },
+            {
+                "word": "ganso",
+                "length": 5,
+                "category": "birds",
+                "language": "pt-br"
+            },
+            {
+                "word": "mosca",
+                "length": 5,
+                "category": "animals",
+                "language": "pt-br"
+            },
+            {
+                "word": "vela",
+                "length": 4,
+                "category": "sports",
+                "language": "pt-br"
+            },
+            {
+                "word": "grécia",
+                "length": 7,
+                "category": "countries",
+                "language": "pt-br"
+            },
+            {
+                "word": "vaca",
+                "length": 4,
+                "category": "animals",
+                "language": "pt-br"
+            },
+            {
+                "word": "gâmbia",
+                "length": 7,
+                "category": "countries",
+                "language": "pt-br"
+            },
+            {
+                "word": "benin",
+                "length": 5,
+                "category": "countries",
+                "language": "pt-br"
+            },
+            {
+                "word": "malawi",
+                "length": 6,
+                "category": "countries",
+                "language": "pt-br"
+            },
+            {
+                "word": "sumô",
+                "length": 5,
+                "category": "sports",
+                "language": "pt-br"
+            },
+            {
+                "word": "abelha",
+                "length": 6,
+                "category": "animals",
+                "language": "pt-br"
+            },
+            {
+                "word": "cuba",
+                "length": 4,
+                "category": "countries",
+                "language": "pt-br"
+            },
+            {
+                "word": "congo",
+                "length": 5,
+                "category": "countries",
+                "language": "pt-br"
+            },
+            {
+                "word": "krill",
+                "length": 5,
+                "category": "animals",
+                "language": "pt-br"
+            },
+            {
+                "word": "arara",
+                "length": 5,
+                "category": "birds",
+                "language": "pt-br"
+            },
+            {
+                "word": "guiana",
+                "length": 6,
+                "category": "countries",
+                "language": "pt-br"
+            },
+            {
+                "word": "tuvalu",
+                "length": 6,
+                "category": "countries",
+                "language": "pt-br"
+            },
+            {
+                "word": "suécia",
+                "length": 7,
+                "category": "countries",
+                "language": "pt-br"
+            },
+            {
+                "word": "manati",
+                "length": 6,
+                "category": "animals",
+                "language": "pt-br"
+            },
+            {
+                "word": "falcão",
+                "length": 7,
+                "category": "animals",
+                "language": "pt-br"
+            },
+            {
+                "word": "chade",
+                "length": 5,
+                "category": "countries",
+                "language": "pt-br"
+            },
+            {
+                "word": "frango",
+                "length": 6,
+                "category": "animals",
+                "language": "pt-br"
+            },
+            {
+                "word": "tucano",
+                "length": 6,
+                "category": "birds",
+                "language": "pt-br"
+            },
+            {
+                "word": "guppy",
+                "length": 5,
+                "category": "animals",
+                "language": "pt-br"
+            },
+            {
+                "word": "pardal",
+                "length": 6,
+                "category": "birds",
+                "language": "pt-br"
+            },
+            {
+                "word": "tigre",
+                "length": 5,
+                "category": "animals",
+                "language": "pt-br"
+            },
+            {
+                "word": "squash",
+                "length": 6,
+                "category": "sports",
+                "language": "pt-br"
+            },
+            {
+                "word": "brunéi",
+                "length": 7,
+                "category": "countries",
+                "language": "pt-br"
+            },
+            {
+                "word": "burro",
+                "length": 5,
+                "category": "animals",
+                "language": "pt-br"
+            },
+            {
+                "word": "cavala",
+                "length": 6,
+                "category": "animals",
+                "language": "pt-br"
+            },
+            {
+                "word": "carpa",
+                "length": 5,
+                "category": "animals",
+                "language": "pt-br"
+            },
+            {
+                "word": "gato",
+                "length": 4,
+                "category": "animals",
+                "language": "pt-br"
+            },
+            {
+                "word": "belize",
+                "length": 6,
+                "category": "countries",
+                "language": "pt-br"
+            },
+            {
+                "word": "atum",
+                "length": 4,
+                "category": "animals",
+                "language": "pt-br"
+            },
+            {
+                "word": "cisne",
+                "length": 5,
+                "category": "birds",
+                "language": "pt-br"
+            },
+            {
+                "word": "zebra",
+                "length": 5,
+                "category": "animals",
+                "language": "pt-br"
+            },
+            {
+                "word": "canadá",
+                "length": 7,
+                "category": "countries",
+                "language": "pt-br"
+            },
+            {
+                "word": "baleia",
+                "length": 6,
+                "category": "animals",
+                "language": "pt-br"
+            },
+            {
+                "word": "moréia",
+                "length": 7,
+                "category": "animals",
+                "language": "pt-br"
+            },
+            {
+                "word": "coruja",
+                "length": 6,
+                "category": "birds",
+                "language": "pt-br"
+            },
+            {
+                "word": "leão",
+                "length": 5,
+                "category": "animals",
+                "language": "pt-br"
+            },
+            {
+                "word": "angola",
+                "length": 6,
+                "category": "countries",
+                "language": "pt-br"
+            },
+            {
+                "word": "tênis",
+                "length": 6,
+                "category": "sports",
+                "language": "pt-br"
+            },
+            {
+                "word": "polvo",
+                "length": 5,
+                "category": "animals",
+                "language": "pt-br"
+            },
+            {
+                "word": "yemen",
+                "length": 5,
+                "category": "countries",
+                "language": "pt-br"
+            },
+            {
+                "word": "beluga",
+                "length": 6,
+                "category": "animals",
+                "language": "pt-br"
+            },
+            {
+                "word": "cervo",
+                "length": 5,
+                "category": "animals",
+                "language": "pt-br"
+            },
+            {
+                "word": "panda",
+                "length": 5,
+                "category": "animals",
+                "language": "pt-br"
+            },
+            {
+                "word": "cobra",
+                "length": 5,
+                "category": "animals",
+                "language": "pt-br"
+            },
+            {
+                "word": "rugby",
+                "length": 5,
+                "category": "sports",
+                "language": "pt-br"
+            },
+            {
+                "word": "mofeta",
+                "length": 6,
+                "category": "animals",
+                "language": "pt-br"
+            },
+            {
+                "word": "egito",
+                "length": 5,
+                "category": "countries",
+                "language": "pt-br"
+            },
+            {
+                "word": "tritão",
+                "length": 7,
+                "category": "animals",
+                "language": "pt-br"
+            },
+            {
+                "word": "cabra",
+                "length": 5,
+                "category": "animals",
+                "language": "pt-br"
+            },
+            {
+                "word": "pombo",
+                "length": 5,
+                "category": "animals",
+                "language": "pt-br"
+            },
+            {
+                "word": "orca",
+                "length": 4,
+                "category": "animals",
+                "language": "pt-br"
+            },
+            {
+                "word": "mali",
+                "length": 4,
+                "category": "countries",
+                "language": "pt-br"
+            },
+            {
+                "word": "pega",
+                "length": 4,
+                "category": "birds",
+                "language": "pt-br"
+            },
+            {
+                "word": "gorila",
+                "length": 6,
+                "category": "animals",
+                "language": "pt-br"
+            },
+            {
+                "word": "rali",
+                "length": 4,
+                "category": "sports",
+                "language": "pt-br"
+            },
+            {
+                "word": "pato",
+                "length": 4,
+                "category": "birds",
+                "language": "pt-br"
+            }
+        ]
+    },
+    "en": {
+        "words": [
+            {
+                "word": "eris",
+                "length": 4,
+                "category": "mythology",
+                "language": "es"
+            },
+            {
+                "word": "baize",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "chief",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "imido",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "zulus",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "clons",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "joker",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "wrick",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "mazel",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "dwell",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "marry",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "leeze",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "swopt",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "enemy",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "enate",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "weave",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "fleek",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "pollo",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "goras",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "gumbo",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "cysts",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "areca",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "yucky",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "walty",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "chave",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "unred",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "beaks",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "renga",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "loves",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "mucic",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "cloak",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "wilis",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "nuffs",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "zesty",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "aruhe",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "schwa",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "perls",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "faurd",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "vocab",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "dunch",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "pulls",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "mawed",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "hoops",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "bomor",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "indol",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "curse",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "quawk",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "gaths",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "snyes",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "maill",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "tutes",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "mewls",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "epoch",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "morel",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "ecads",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "arete",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "shoes",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "recit",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "cyano",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "evert",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "ombre",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "boson",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "creme",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "bring",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "dahls",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "gynos",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "soler",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "ruby",
+                "length": 4,
+                "category": "programming_languages",
+                "language": "en"
+            },
+            {
+                "word": "quito",
+                "length": 5,
+                "category": "capitals_of_countries",
+                "language": "en"
+            },
+            {
+                "word": "cides",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "hiper",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "pures",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "shoed",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "fents",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "laari",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "atony",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "moats",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "snarf",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "bever",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "resto",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "gipon",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "curds",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "teets",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "plaur",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "musts",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "vagus",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "bingy",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "apple",
+                "length": 5,
+                "category": "companies",
+                "language": "en"
+            },
+            {
+                "word": "anear",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "unode",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "baric",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "pasta",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "lakhs",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "dairy",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "kraal",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "osier",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "nigga",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "ataxy",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "drony",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "yarrs",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "sorex",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "abuts",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "spelk",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "zupan",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "avast",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "sarvo",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "appuy",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "roted",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "sonny",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "taler",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "foyer",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "burrs",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "agros",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "amias",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "sorns",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "papas",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "yince",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "melos",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "vault",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "claps",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "clans",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "dhaka",
+                "length": 5,
+                "category": "capitals_of_countries",
+                "language": "en"
+            },
+            {
+                "word": "sooey",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "urson",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "toaze",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "ebbet",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "mangs",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "gilia",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "visto",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "pinax",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "mormo",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "kugel",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "ganch",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "qatar",
+                "length": 5,
+                "category": "countries",
+                "language": "en"
+            },
+            {
+                "word": "snipe",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "dobra",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "toons",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "pavan",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "rakia",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "slews",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "stows",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "fritt",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "ryijy",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "rafiq",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "races",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "kembo",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "furan",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "hight",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "zupas",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "fears",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "puppy",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "boygs",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "dedal",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "daris",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "daven",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "whups",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "satin",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "acker",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "tuart",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "netty",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "ohone",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "obese",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "circs",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "molas",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "volet",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "rives",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "medii",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "zines",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "actus",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "sesey",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "ervil",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "macka",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "chica",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "soras",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "natak",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "shims",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "brios",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "apayd",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "kabul",
+                "length": 5,
+                "category": "capitals_of_countries",
+                "language": "en"
+            },
+            {
+                "word": "barra",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "haick",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "tacky",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "skeps",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "eigne",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "imply",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "bruvs",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "silty",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "quich",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "carex",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            },
+            {
+                "word": "rames",
+                "length": 5,
+                "category": "wordle",
+                "language": "en"
+            }
+        ]
+    },
+    "es": {
+        "words": [
+            {
+                "word": "eris",
+                "length": 4,
+                "category": "mythology",
+                "language": "eris"
+            },
+            {
+                "word": "pato",
+                "length": 4,
+                "category": "birds",
+                "language": "es"
+            },
+            {
+                "word": "cuervo",
+                "length": 6,
+                "category": "animals",
+                "language": "es"
+            },
+            {
+                "word": "ratón",
+                "length": 6,
+                "category": "animals",
+                "language": "es"
+            },
+            {
+                "word": "sapo",
+                "length": 4,
+                "category": "animals",
+                "language": "es"
+            },
+            {
+                "word": "morena",
+                "length": 6,
+                "category": "animals",
+                "language": "es"
+            },
+            {
+                "word": "mónaco",
+                "length": 7,
+                "category": "countries",
+                "language": "es"
+            },
+            {
+                "word": "guyana",
+                "length": 6,
+                "category": "countries",
+                "language": "es"
+            },
+            {
+                "word": "sudán",
+                "length": 6,
+                "category": "countries",
+                "language": "es"
+            },
+            {
+                "word": "pavo",
+                "length": 4,
+                "category": "birds",
+                "language": "es"
+            },
+            {
+                "word": "mono",
+                "length": 4,
+                "category": "animals",
+                "language": "es"
+            },
+            {
+                "word": "yibuti",
+                "length": 6,
+                "category": "countries",
+                "language": "es"
+            },
+            {
+                "word": "tenis",
+                "length": 5,
+                "category": "sports",
+                "language": "es"
+            },
+            {
+                "word": "japón",
+                "length": 6,
+                "category": "countries",
+                "language": "es"
+            },
+            {
+                "word": "nutria",
+                "length": 6,
+                "category": "animals",
+                "language": "es"
+            },
+            {
+                "word": "águila",
+                "length": 7,
+                "category": "animals",
+                "language": "es"
+            },
+            {
+                "word": "castor",
+                "length": 6,
+                "category": "animals",
+                "language": "es"
+            },
+            {
+                "word": "vaca",
+                "length": 4,
+                "category": "animals",
+                "language": "es"
+            },
+            {
+                "word": "remo",
+                "length": 4,
+                "category": "sports",
+                "language": "es"
+            },
+            {
+                "word": "conejo",
+                "length": 6,
+                "category": "animals",
+                "language": "es"
+            },
+            {
+                "word": "marlín",
+                "length": 7,
+                "category": "animals",
+                "language": "es"
+            },
+            {
+                "word": "panda",
+                "length": 5,
+                "category": "animals",
+                "language": "es"
+            },
+            {
+                "word": "manatí",
+                "length": 7,
+                "category": "animals",
+                "language": "es"
+            },
+            {
+                "word": "raya",
+                "length": 4,
+                "category": "animals",
+                "language": "es"
+            },
+            {
+                "word": "nepal",
+                "length": 5,
+                "category": "countries",
+                "language": "es"
+            },
+            {
+                "word": "líbano",
+                "length": 7,
+                "category": "countries",
+                "language": "es"
+            },
+            {
+                "word": "beluga",
+                "length": 6,
+                "category": "animals",
+                "language": "es"
+            },
+            {
+                "word": "fiyi",
+                "length": 4,
+                "category": "countries",
+                "language": "es"
+            },
+            {
+                "word": "suecia",
+                "length": 6,
+                "category": "countries",
+                "language": "es"
+            },
+            {
+                "word": "sambo",
+                "length": 5,
+                "category": "sports",
+                "language": "es"
+            },
+            {
+                "word": "gusano",
+                "length": 6,
+                "category": "animals",
+                "language": "es"
+            },
+            {
+                "word": "perro",
+                "length": 5,
+                "category": "animals",
+                "language": "es"
+            },
+            {
+                "word": "guppy",
+                "length": 5,
+                "category": "animals",
+                "language": "es"
+            },
+            {
+                "word": "kenia",
+                "length": 5,
+                "category": "countries",
+                "language": "es"
+            },
+            {
+                "word": "perú",
+                "length": 5,
+                "category": "countries",
+                "language": "es"
+            },
+            {
+                "word": "dardos",
+                "length": 6,
+                "category": "sports",
+                "language": "es"
+            },
+            {
+                "word": "manta",
+                "length": 5,
+                "category": "animals",
+                "language": "es"
+            },
+            {
+                "word": "gorila",
+                "length": 6,
+                "category": "animals",
+                "language": "es"
+            },
+            {
+                "word": "belice",
+                "length": 6,
+                "category": "countries",
+                "language": "es"
+            },
+            {
+                "word": "narval",
+                "length": 6,
+                "category": "animals",
+                "language": "es"
+            },
+            {
+                "word": "méxico",
+                "length": 7,
+                "category": "countries",
+                "language": "es"
+            },
+            {
+                "word": "guinea",
+                "length": 6,
+                "category": "countries",
+                "language": "es"
+            },
+            {
+                "word": "medusa",
+                "length": 6,
+                "category": "animals",
+                "language": "es"
+            },
+            {
+                "word": "milano",
+                "length": 6,
+                "category": "birds",
+                "language": "es"
+            },
+            {
+                "word": "kuwait",
+                "length": 6,
+                "category": "countries",
+                "language": "es"
+            },
+            {
+                "word": "panamá",
+                "length": 7,
+                "category": "countries",
+                "language": "es"
+            },
+            {
+                "word": "jirafa",
+                "length": 6,
+                "category": "animals",
+                "language": "es"
+            },
+            {
+                "word": "buitre",
+                "length": 6,
+                "category": "birds",
+                "language": "es"
+            },
+            {
+                "word": "túnez",
+                "length": 6,
+                "category": "countries",
+                "language": "es"
+            },
+            {
+                "word": "libia",
+                "length": 5,
+                "category": "countries",
+                "language": "es"
+            },
+            {
+                "word": "gallo",
+                "length": 5,
+                "category": "birds",
+                "language": "es"
+            },
+            {
+                "word": "zorro",
+                "length": 5,
+                "category": "animals",
+                "language": "es"
+            },
+            {
+                "word": "gambia",
+                "length": 6,
+                "category": "countries",
+                "language": "es"
+            },
+            {
+                "word": "ciervo",
+                "length": 6,
+                "category": "animals",
+                "language": "es"
+            },
+            {
+                "word": "pinzón",
+                "length": 7,
+                "category": "birds",
+                "language": "es"
+            },
+            {
+                "word": "pulpo",
+                "length": 5,
+                "category": "animals",
+                "language": "es"
+            },
+            {
+                "word": "benín",
+                "length": 6,
+                "category": "countries",
+                "language": "es"
+            },
+            {
+                "word": "halcón",
+                "length": 7,
+                "category": "birds",
+                "language": "es"
+            },
+            {
+                "word": "karate",
+                "length": 6,
+                "category": "sports",
+                "language": "es"
+            },
+            {
+                "word": "chad",
+                "length": 4,
+                "category": "countries",
+                "language": "es"
+            },
+            {
+                "word": "khokho",
+                "length": 6,
+                "category": "sports",
+                "language": "es"
+            },
+            {
+                "word": "cuba",
+                "length": 4,
+                "category": "countries",
+                "language": "es"
+            },
+            {
+                "word": "suma",
+                "length": 4,
+                "category": "sports",
+                "language": "es"
+            },
+            {
+                "word": "grecia",
+                "length": 6,
+                "category": "countries",
+                "language": "es"
+            }
+        ]
+    }
+}
