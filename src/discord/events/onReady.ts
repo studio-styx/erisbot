@@ -3,7 +3,7 @@ import { prisma } from "#database";
 import { icon, res, scheduleAllEndGiveaways, setAllServerSettings } from "#functions";
 import { settings } from "#settings";
 import { createRow } from "@magicyan/discord";
-import { ActivitiesOptions, ActivityType, ButtonBuilder, ButtonStyle } from "discord.js";
+import { ActivityType, ButtonBuilder, ButtonStyle } from "discord.js";
 
 const setExpiredTransactions = async () => {
     const oneDayAgo = new Date(Date.now() - 24 * 60 * 1000);

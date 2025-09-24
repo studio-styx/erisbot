@@ -1,5 +1,7 @@
 import { Interaction } from "discord.js";
 
+const commandsIds = new Map<string, string>();
+
 export const getCommandId = async (interaction: Interaction, commandName: string): Promise<string> => {
     // Ensure we're using the correct environment variable and it's properly parsed
     const isDevelopment = process.env.DEVELOPMENT === "true";
@@ -7,6 +9,7 @@ export const getCommandId = async (interaction: Interaction, commandName: string
 
     // Fetch commands to ensure the cache is up-to-date
     if (guildId) {
+
         // For guild commands
         try {
             // Fetch guild commands to ensure cache is updated
@@ -33,6 +36,10 @@ export const getCommandId = async (interaction: Interaction, commandName: string
         }
     } else {
         // For global commands
+        const cachedId = commandsIds.get(commandName);
+        if (cachedId) {
+            return cachedId;
+        }
         try {
             // Fetch global commands to ensure cache is updated
             await interaction.client.application?.commands.fetch();
@@ -43,6 +50,7 @@ export const getCommandId = async (interaction: Interaction, commandName: string
             );
 
             if (command) {
+                commandsIds.set(commandName, command.id);
                 return command.id;
             } else {
                 console.log(`Global command "${commandName}" not found`);
@@ -50,6 +58,7 @@ export const getCommandId = async (interaction: Interaction, commandName: string
                     [...interaction.client.application?.commands.cache.filter(cmd => !cmd.guildId).values()]
                         .map(cmd => cmd.name)
                 );
+                commandsIds.set(commandName, "command-not-found");
                 return "command-not-found";
             }
         } catch (error) {

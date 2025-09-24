@@ -97,9 +97,10 @@ export async function commandsMenu<R>(page: "economy" | "bot" | "user" | "modera
             break;
         }
         case "moderation": {
-            const [dashboardCommandId, xpCommandId] = await Promise.all([
+            const [dashboardCommandId, xpCommandId, giveawayCommandId] = await Promise.all([
                 getCommandId(interaction, "dashboard"),
-                getCommandId(interaction, "xp")
+                getCommandId(interaction, "xp"),
+                getCommandId(interaction, "giveaway")
             ])
             embed.addFields({
                 name: "",
@@ -109,6 +110,12 @@ export async function commandsMenu<R>(page: "economy" | "bot" | "user" | "modera
                     `**</xp remove:${xpCommandId}>** - Remover xp de um usuário`,
                     `**</xp reset user:${xpCommandId}>** - Resetar o xp de um usuário`,
                     `**</xp reset server:${xpCommandId}>** - Resetar o xp do server`,
+                    `**</giveaway create:${giveawayCommandId}>** - Criar um sorteio`,
+                    `**</giveaway edit:${giveawayCommandId}>** - Editar um sorteio`,
+                    `**</giveaway cancel:${giveawayCommandId}>** - Cancelar um sorteio`,
+                    `**</giveaway end:${giveawayCommandId}>** - Finalizar um sorteio mais cedo`,
+                    `**</giveaway reroll:${giveawayCommandId}>** - Substituir um ganhador`,
+                    `**</giveaway entry:${giveawayCommandId}>** - Colocar o server em um sorteio conectado`,
                 )
             })
             embed.setDescription(brBuilder(
@@ -126,7 +133,7 @@ export async function commandsMenu<R>(page: "economy" | "bot" | "user" | "modera
                     "> - Mensagem de aviso de levelUp",
                     "> - Cargos que o usuário receberá se subir de nivel",
                     "> - Canais que o usuário poderá ver se subir de nível",
-                    `Use já o meu dashboard! [Clique aqui!](${env.FRONT_BASE_URL}/guilds${interaction.guildId ? `/${interaction.guildId}` : ""})`
+                    ` Use já o meu dashboard! [Clique aqui!](${env.FRONT_BASE_URL}/guilds${interaction.guildId ? `/${interaction.guildId}` : ""})`
                 ))
             break;
         }

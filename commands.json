@@ -232,5 +232,41 @@
         "description": "Para o jogo de trivia",
         "siteAvaible": false,
         "category": "fun"
+    },
+    {
+        "name": "giveaway create",
+        "description": "Crie um sorteio",
+        "siteAvaible": false,
+        "category": "moderation"
+    },
+    {
+        "name": "giveaway edit",
+        "description": "Edita um sorteio",
+        "siteAvaible": false,
+        "category": "moderation"
+    },
+    {
+        "name": "giveaway cancel",
+        "description": "Cancela um sorteio",
+        "siteAvaible": false,
+        "category": "moderation"
+    },
+    {
+        "name": "giveaway end",
+        "description": "Finaliza um sorteio",
+        "siteAvaible": false,
+        "category": "moderation"
+    },
+    {
+        "name": "giveaway reroll",
+        "description": "Substitui um ganhador",
+        "siteAvaible": false,
+        "category": "moderation"
+    },
+    {
+        "name": "giveaway entry",
+        "description": "Colocar o server em um sorteio conectado",
+        "siteAvaible": false,
+        "category": "moderation"
     }
 ]
