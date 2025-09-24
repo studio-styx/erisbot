@@ -2,8 +2,8 @@ import { createResponder, ResponderType } from "#base";
 import { prisma, redis } from "#database";
 import { getCommandId, icon, res, wordleCreateImage } from "#functions";
 import { WordleGame } from "#types/wordleGame.js";
-import { createModalFields } from "@magicyan/discord";
-import { AttachmentBuilder, TextInputStyle } from "discord.js";
+import { createModalFields, createRow } from "@magicyan/discord";
+import { AttachmentBuilder, ButtonBuilder, ButtonStyle, TextInputStyle } from "discord.js";
 
 createResponder({
     customId: "wordle/writeWord/:userId",
@@ -64,10 +64,16 @@ createResponder({
             game.isWon = true;
             game.endedAt = new Date();
             await interaction.followUp(res.success(
-                `${icon.success} | Parabéns! Você adivinhou a palavra **${game.word.toUpperCase()}** corretamente em **${game.attempts.length}** tentativas!`
-            , {
-                files: [image],
-            }));
+                `${icon.success} | Parabéns! Você adivinhou a palavra **${game.word.toUpperCase()}** corretamente em **${game.attempts.length}** tentativas!`, { flags: [] }
+            ));
+            await interaction.editReply({ files: [image], components: [createRow(
+                new ButtonBuilder({
+                    label: "Fim de jogo",
+                    customId: `wordle/writeWord/${interaction.user.id}`,
+                    style: ButtonStyle.Success,
+                    disabled: true,
+                })
+            )] });
             await Promise.all([
                 redis.del(`wordle:${interaction.user.id}`),
                 prisma.$transaction([
@@ -93,10 +99,16 @@ createResponder({
             game.endedAt = new Date();
             game.isWon = false;
             await interaction.followUp(res.danger(
-                `${icon.denied} | Suas tentativas acabaram! A palavra correta era **${game.word.toUpperCase()}**.`
-            , {
-                files: [image],
-            }));
+                `${icon.denied} | Suas tentativas acabaram! A palavra correta era **${game.word.toUpperCase()}**.`, { flags: [] }
+            ));
+            await interaction.editReply({ files: [image], components: [createRow(
+                new ButtonBuilder({
+                    label: "Fim de jogo",
+                    customId: `wordle/writeWord/${interaction.user.id}`,
+                    style: ButtonStyle.Danger,
+                    disabled: true,
+                })
+            )] });
             await Promise.all([
                 redis.del(`wordle:${interaction.user.id}`),
                 prisma.$transaction([

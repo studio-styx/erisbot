@@ -69,10 +69,9 @@ createCommand({
                 "amores", "banhos", "carros", "dentes", "festas", "gentes", "hotéis", "igrejas", "jogais", "livros",
                 "mundos", "navios", "olhares", "praias", "quases", "rostos", "saberes", "tempos",
                 "acesso", "árvore", "beleza", "cantos", "casais", "chamas", "desejo", "escola",
-                "filtro", "futuro", "glória", "jardim", "letras", "luzes", "máxim", "nuvens", "passar", "poesia",
+                "filtro", "futuro", "glória", "jardim", "letras", "nuvens", "passar", "poesia",
                 "rápido", "risada", "sombra", "sonhos", "templo", "toques", "valores", "ventos", "versos", "viagem", 
-                "mágica", "mágico", "rápido", "rápida", "sábios", "sábias", "tórax", "tórax", "único", "única",
-                "banco", "branco", "cobrar", "dóceis", "fácil", "fáceis", "gírias", "hábito", "hábito", "júnior",
+                "mágica", "mágico", "rápido", "rápida", "sábios", "sábias", "branco", "cobrar", "dóceis", "fáceis", "gírias", "hábito", "hábito", "júnior",
                 "lápide", "lápides", "móveis", "público", "pública", "sólido", "sólida", "tímido", "tímida"
             ]
         };
