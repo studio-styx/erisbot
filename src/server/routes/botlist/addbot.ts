@@ -177,7 +177,7 @@ export default function addBotRoute(app: FastifyInstance, client: Client<true>) 
             description: brBuilder(
                 `Nova aplicação enviada por <@${discordUser.id}>`,
                 `**Nome:** \`${discordApp?.displayName || "Não encontrado"}\``,
-                server === "eris" && `**Analise cuidadosa?** \`${body.carefulAnalysis ? "Sim" : "Não"}\``,
+                server === "eris" ? `**Analise cuidadosa?** \`${body.carefulAnalysis ? "Sim" : "Não"}\`` : null,
                 `Agora ele espera a analise!`
             ),
             thumbnail: discordApp?.displayAvatarURL() || discordApp.avatarURL(),

@@ -1,5 +1,5 @@
 import { Cards } from "#functions";
-import { Interaction } from "discord.js";
+import { ButtonInteraction, UserSelectMenuInteraction } from "discord.js";
 
 export interface BlackjackMultiplayerGame {
     userId: string;
@@ -15,6 +15,6 @@ export interface BlackjackMultiplayerGame {
     passCount: number;
     rounds: number;
     remaningCards: Cards[];
-    userInteraction: Interaction;
-    targetInteraction: Interaction;
+    userInteraction: ButtonInteraction<"cached"> | UserSelectMenuInteraction<"cached">;
+    targetInteraction: ButtonInteraction<"cached"> | UserSelectMenuInteraction<"cached">;
 }

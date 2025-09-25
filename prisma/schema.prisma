@@ -11,7 +11,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+  url      = env("DEV_DATABASE_URL")
 }
 
 model User {
@@ -21,21 +21,24 @@ model User {
   xp                 Int            @default(0)
   company            Company?       @relation(fields: [companyId], references: [id], onDelete: SetNull)
   companyId          Int?
+  token              Json?
+  afkReasson         String?
+  afkTime            DateTime?
+  dmNotification     Boolean        @default(false)
+
   logs               Log[]
   cooldowns          Cooldown[]
   stocks             StockHolding[]
   mails              Mails[]        @relation("ReceivedMails")
   sendedMails        Mails[]        @relation("SentMails")
   mailsTagsIgnored   String[]       @default([])
-  dmNotification     Boolean        @default(false)
   applications       Application[]
-  token              Json?
-  afkReasson         String?
-  afkTime            DateTime?
   guilds             GuildMember[]
   transactionsSent   Transaction[]  @relation("UserTransactions")
   transactionsReceived Transaction[] @relation("TargetTransactions")
   giveaways          UserGiveaway[]
+  fishs              UserFish[]
+  fishingRods        UserFishingRod[]
 }
 
 model TryviaQuestions {
@@ -333,3 +336,54 @@ model RoleMultipleEntry {
   @@unique([giveawayId, roleId])
 }
 
+model UserFish {
+  id        Int @id @default(autoincrement())
+  userId    String
+  fishId    Int
+  createdAt DateTime   @default(now())
+  
+  fish      Fish @relation(fields: [fishId], references: [id], onDelete: Cascade)
+  user      User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Fish {
+  id        Int @id @default(autoincrement())
+  name      String
+  rarity    Rarity
+  price     Float
+  createdAt DateTime   @default(now())
+
+  owners    UserFish[]
+}
+
+enum Rarity {
+  LEGENDARY
+  EPIC
+  RARE
+  UNCOMUM
+  COMUM
+}
+
+model UserFishingRod {
+  id             Int   @id   @default(autoincrement())
+  fishingRodId   Int
+  userId         String
+  durability     Int
+  createdAt      DateTime   @default(now())
+  
+  user           User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  fishingRod     FishingRod   @relation(fields: [fishingRodId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, fishingRodId])
+}
+
+model FishingRod {
+  id              Int   @id   @default(autoincrement())
+  price           Float
+  name            String
+  rarity          Rarity
+  durability      Int
+  createdAt       DateTime   @default(now())
+
+  owners          UserFishingRod[]
+}

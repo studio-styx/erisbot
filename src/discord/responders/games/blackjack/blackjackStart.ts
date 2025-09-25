@@ -32,18 +32,18 @@ createResponder({
                 interaction.reply(res.danger(`${icon.denied} | Você não pode jogar contra você mesmo.`));
                 return;
             }
-            await interaction.deferUpdate();
-            await interaction.editReply(resv2.warning(`${icon.waiting_white} | Processando...`));
             const target = interaction.guild?.members.cache.get(targetId);
             if (!target) {
-                interaction.editReply(res.danger(`${icon.denied} | O jogador selecionado não está mais no servidor.`));
+                interaction.reply(res.danger(`${icon.denied} | O jogador selecionado não está mais no servidor.`));
                 return;
             }
             if (target.user.bot) {
-                interaction.editReply(res.danger(`${icon.denied} | Você não pode jogar contra um bot.`));
+                interaction.reply(res.danger(`${icon.denied} | Você não pode jogar contra um bot.`));
                 return;
             }
-
+            await interaction.deferUpdate();
+            await interaction.editReply(resv2.warning(`${icon.waiting_white} | Processando...`));
+            
             const [user, targetUser] = await prisma.$transaction([
                 prisma.user.upsert({
                     where: { id: userId },

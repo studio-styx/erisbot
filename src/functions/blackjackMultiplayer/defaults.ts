@@ -49,21 +49,31 @@ export function calculateHandValue(hand: Cards[]): number {
 }
 
 // sortear cartas
-export function drawCard(remaningCards: Cards[]): Cards {
-    return remaningCards[Math.floor(Math.random() * remaningCards.length)];
+export function drawCard(remaningCards: Cards[]) {
+    const index = Math.floor(Math.random() * remaningCards.length);
+    const card = remaningCards[index];
+    remaningCards.splice(index, 1);
+    return {
+        card,
+        remaningCards
+    };
 }
 
 // começar o jogo
 export function smufleCards() {
     let userCards: Cards[] = [];
     let targetCards: Cards[] = [];
-    const remaningCards = setDefaultDeck();
+    let remaningCards = setDefaultDeck();
     do {
-        userCards = [drawCard(remaningCards)];
+        const result = drawCard(remaningCards);
+        remaningCards = result.remaningCards;
+        userCards = [result.card];
     } while (calculateHandValue(userCards) === 21);
 
     do {
-        targetCards= [drawCard(remaningCards)];
+        const result = drawCard(remaningCards);
+        remaningCards = result.remaningCards;
+        targetCards= [result.card];
     } while (calculateHandValue(targetCards) === 21);
 
     return { userCards, targetCards, remaningCards };
@@ -81,6 +91,6 @@ export function getBlackjackGameMultiplayer(msgId: string) {
     return blackjackGames.get(msgId);
 }
 
-export function deleteBlackjackGame(msgId: string) {
+export function deleteBlackjackGameMultiplayer(msgId: string) {
     return blackjackGames.delete(msgId);
 }

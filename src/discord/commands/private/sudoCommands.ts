@@ -2,7 +2,7 @@ import { createCommand } from "#base";
 import { prisma } from "#database";
 import { stocksEventuals, res, icon, processApiQuestions } from "#functions";
 import { menus } from "#menus";
-import { Mails } from "#prisma";
+import { Mails, Rarity } from "#prisma";
 import { settings } from "#settings";
 import { brBuilder, createContainer, createSeparator } from "@magicyan/discord";
 import { ApplicationCommandOptionType, ApplicationCommandType, time } from "discord.js";
@@ -316,6 +316,92 @@ createCommand({
             case "test": {
                 await interaction.deferReply()
 
+                const fishesByRarity: Record<Rarity, { names: string[], priceRange: [number, number] }> = {
+                    COMUM: {
+                        names: ['Tilápia', 'Sardinha', 'Lambari', 'Bagre'],
+                        priceRange: [10, 20],
+                    },
+                    UNCOMUM: {
+                        names: ['Pacu', 'Tambaqui', 'Carpa'],
+                        priceRange: [25, 45],
+                    },
+                    RARE: {
+                        names: ['Dourado', 'Atum', 'Salmão'],
+                        priceRange: [50, 110],
+                    },
+                    EPIC: {
+                        names: ['Peixe-Espada', 'Polvo Gigante', 'Arraia'],
+                        priceRange: [250, 500],
+                    },
+                    LEGENDARY: {
+                        names: ['Lula Colossal', 'Peixe-Dragão', 'Leviatã'],
+                        priceRange: [800, 1500],
+                    },
+                }
+
+                const rodsByRarity: Record<Rarity, { names: string[], priceRange: [number, number], durability: [number, number] }> = {
+                    COMUM: {
+                        names: ['Vara Simples', 'Vara de Bambu'],
+                        priceRange: [100, 200],
+                        durability: [25, 35],
+                    },
+                    UNCOMUM: {
+                        names: ['Vara Reforçada', 'Vara de Madeira Polida'],
+                        priceRange: [200, 400],
+                        durability: [40, 60],
+                    },
+                    RARE: {
+                        names: ['Vara de Fibra de Carbono', 'Vara Profissional'],
+                        priceRange: [350, 600],
+                        durability: [70, 90],
+                    },
+                    EPIC: {
+                        names: ['Vara Encantada', 'Vara Real'],
+                        priceRange: [800, 1300],
+                        durability: [100, 140],
+                    },
+                    LEGENDARY: {
+                        names: ['Vara Divina', 'Vara do Leviatã'],
+                        priceRange: [1300, 2000],
+                        durability: [180, 220],
+                    },
+                }
+
+                function randomInRange([min, max]: [number, number]) {
+                    return Math.floor(Math.random() * (max - min + 1)) + min
+                }
+
+                async function main() {
+                    interaction.editReply(res.warning(`${icon.waiting_white} | Iniciando seed...`))
+                    for (const [rarity, data] of Object.entries(fishesByRarity)) {
+                        for (const name of data.names) {
+                            await prisma.fish.create({
+                                data: {
+                                    name,
+                                    rarity: rarity as Rarity,
+                                    price: randomInRange(data.priceRange),
+                                },
+                            })
+                        }
+                    }
+
+                    interaction.editReply(res.warning(`${icon.waiting_white} | Peixes criados, agora criando varas...`))
+                    for (const [rarity, data] of Object.entries(rodsByRarity)) {
+                        for (const name of data.names) {
+                            await prisma.fishingRod.create({
+                                data: {
+                                    name,
+                                    rarity: rarity as Rarity,
+                                    price: randomInRange(data.priceRange),
+                                    durability: randomInRange(data.durability),
+                                },
+                            })
+                        }
+                    }
+                }
+
+                await main();
+
                 /*
                 const [application, company, guildMember, guildSettings, mails, stock, stockHistory, stockHolding, user, tryviaQuestions] = await prisma.$transaction([
                     prisma.application.findMany(),
@@ -346,7 +432,7 @@ createCommand({
                     }, null, 2)
                 )
                     */
-                interaction.editReply("definido com sucesso")
+                interaction.editReply(res.success("Database povoada! concluído"))
                 return;
             }
             case "force-stock-variation": {

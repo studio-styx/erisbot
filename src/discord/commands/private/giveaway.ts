@@ -1,6 +1,6 @@
 import { createCommand } from "#base";
 import { prisma, redis } from "#database";
-import { icon, res, selectWinner } from "#functions";
+import { icon, res, resv2, selectWinner } from "#functions";
 import { menus } from "#menus";
 import { GuildGiveaway, RoleMultipleEntry } from "#prisma";
 import { GiveawayManageDataInfo } from "#types/giveawayManageDataType.js";
@@ -620,10 +620,14 @@ createCommand({
                         let channel = guild.channels.cache.get(connectedGuild.channelId) || null;
                         if (!channel) channel = await guild.channels.fetch(connectedGuild.channelId);
                         if (!channel || !channel.isTextBased()) continue;
-                        const message = await channel.messages.fetch(connectedGuild.messageId).catch(_ => null);
-                        if (!message) continue
+                        const message = await channel.messages.fetch(connectedGuild.messageId).catch(() => null);
+                        if (!message) {
+                            await channel.send(resv2.warning(`${icon.warning} | O moderador: ${userMention(user.id)} refez o sorteio e o ganhador **\`${(client.users.cache.get(participant.userId)?.displayName) || userMention(participant.userId)}\`** foi substituido pelo: **${userMention(winner.userId)}**`))
+                            continue;
+                        }
 
                         await message.edit(menus.giveaway.giveawayEnd(newWinners.map(w => w.userId), giveaway))
+                        await message.reply(resv2.warning(`${icon.warning} | O moderador: ${userMention(user.id)} refez o sorteio e o ganhador **\`${(client.users.cache.get(participant.userId)?.displayName) || userMention(participant.userId)}\`** foi substituido pelo: **${userMention(winner.userId)}**`))
                     } catch (_) { }
                 }
 
