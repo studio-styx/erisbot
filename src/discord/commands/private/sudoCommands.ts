@@ -316,28 +316,48 @@ createCommand({
             case "test": {
                 await interaction.deferReply()
 
-                const fishesByRarity: Record<Rarity, { names: string[], priceRange: [number, number] }> = {
-                    COMUM: {
-                        names: ['Tilápia', 'Sardinha', 'Lambari', 'Bagre'],
-                        priceRange: [10, 20],
-                    },
-                    UNCOMUM: {
-                        names: ['Pacu', 'Tambaqui', 'Carpa'],
-                        priceRange: [25, 45],
-                    },
-                    RARE: {
-                        names: ['Dourado', 'Atum', 'Salmão'],
-                        priceRange: [50, 110],
-                    },
-                    EPIC: {
-                        names: ['Peixe-Espada', 'Polvo Gigante', 'Arraia'],
-                        priceRange: [250, 500],
-                    },
-                    LEGENDARY: {
-                        names: ['Lula Colossal', 'Peixe-Dragão', 'Leviatã'],
-                        priceRange: [800, 1500],
-                    },
-                }
+                const fishesByRarity: { name: string; rarity: Rarity; price: number; }[] = [
+                    // COMUNS
+                    { name: "Tilápia", rarity: "COMUM", price: 3 },
+                    { name: "Sardinha", rarity: "COMUM", price: 4 },
+                    { name: "Lambari", rarity: "COMUM", price: 2 },
+                    { name: "Bagre", rarity: "COMUM", price: 2 },
+                    { name: "Mandí", rarity: "COMUM", price: 5 },
+                    { name: "Jundiá", rarity: "COMUM", price: 6 },
+
+                    // UNCOMUNS
+                    { name: "Pacu", rarity: "UNCOMUM", price: 8 },
+                    { name: "Tambaqui", rarity: "UNCOMUM", price: 7 },
+                    { name: "Carpa", rarity: "UNCOMUM", price: 9 },
+                    { name: "Curimbatá", rarity: "UNCOMUM", price: 10 },
+                    { name: "Traíra", rarity: "UNCOMUM", price: 11 },
+                    { name: "Piraputanga", rarity: "UNCOMUM", price: 12 },
+
+                    // RARES
+                    { name: "Dourado", rarity: "RARE", price: 20 },
+                    { name: "Atum", rarity: "RARE", price: 25 },
+                    { name: "Salmão", rarity: "RARE", price: 18 },
+                    { name: "Tucunaré", rarity: "RARE", price: 22 },
+                    { name: "Robalo", rarity: "RARE", price: 28 },
+                    { name: "Garoupa", rarity: "RARE", price: 30 },
+
+                    // EPICS
+                    { name: "Peixe-Espada", rarity: "EPIC", price: 60 },
+                    { name: "Polvo Gigante", rarity: "EPIC", price: 65 },
+                    { name: "Arraia", rarity: "EPIC", price: 50 },
+                    { name: "Enguia Elétrica", rarity: "EPIC", price: 55 },
+                    { name: "Peixe-Lua", rarity: "EPIC", price: 70 },
+
+                    // LEGENDARIES
+                    { name: "Lula Colossal", rarity: "LEGENDARY", price: 200 },
+                    { name: "Peixe-Dragão", rarity: "LEGENDARY", price: 250 },
+                    { name: "Leviatã", rarity: "LEGENDARY", price: 300 },
+                    { name: "Serpente Marinha", rarity: "LEGENDARY", price: 280 },
+                    { name: "Koi Dourado", rarity: "LEGENDARY", price: 220 },
+                    { name: "Kraken Ancestral", rarity: "LEGENDARY", price: 350 }
+                ];
+
+
 
                 const rodsByRarity: Record<Rarity, { names: string[], priceRange: [number, number], durability: [number, number] }> = {
                     COMUM: {
@@ -357,12 +377,12 @@ createCommand({
                     },
                     EPIC: {
                         names: ['Vara Encantada', 'Vara Real'],
-                        priceRange: [800, 1300],
+                        priceRange: [700, 1000],
                         durability: [100, 140],
                     },
                     LEGENDARY: {
                         names: ['Vara Divina', 'Vara do Leviatã'],
-                        priceRange: [1300, 2000],
+                        priceRange: [1100, 1600],
                         durability: [180, 220],
                     },
                 }
@@ -373,17 +393,10 @@ createCommand({
 
                 async function main() {
                     interaction.editReply(res.warning(`${icon.waiting_white} | Iniciando seed...`))
-                    for (const [rarity, data] of Object.entries(fishesByRarity)) {
-                        for (const name of data.names) {
-                            await prisma.fish.create({
-                                data: {
-                                    name,
-                                    rarity: rarity as Rarity,
-                                    price: randomInRange(data.priceRange),
-                                },
-                            })
-                        }
-                    }
+                    await prisma.fish.deleteMany();
+                    await prisma.fish.createMany({
+                        data: fishesByRarity
+                    })
 
                     interaction.editReply(res.warning(`${icon.waiting_white} | Peixes criados, agora criando varas...`))
                     for (const [rarity, data] of Object.entries(rodsByRarity)) {

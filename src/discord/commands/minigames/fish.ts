@@ -97,8 +97,8 @@ createCommand({
         }
     ],
     nameLocalizations: {
-        "pt-BR": "pescar",
-        "es-ES": "pescar"
+        "pt-BR": "pescaria",
+        "es-ES": "pescaria"
     },
     descriptionLocalizations: {
         "pt-BR": "sair para pescar peixes",
@@ -127,19 +127,37 @@ createCommand({
                         fish: true
                     }
                 });
-                const choices = userFishs.map((userFish) => ({ name: `${userFish.fish.name} (Raridade: ${userFish.fish.rarity}) - Preço: ${userFish.fish.price.toFixed(2)} stx`, value: userFish.fishId.toString() }));
-                if (choices.length < 1) {
-                    interaction.respond([
+
+                if (userFishs.length < 1) {
+                    return interaction.respond([
                         { name: "Nenhum peixe encontrado", value: "0" }
                     ]);
-                    return;
                 }
 
-                return await interaction.respond([
-                    { name: `Vender todos os peixes (${choices.length})`, value: "all" },
+                // Agrupa por fishId
+                const grouped = userFishs.reduce((acc, uf) => {
+                    if (!acc[uf.fishId]) {
+                        acc[uf.fishId] = { ...uf.fish, quantity: 0 };
+                    }
+                    acc[uf.fishId].quantity++;
+                    return acc;
+                }, {} as Record<number, typeof userFishs[0]["fish"] & { quantity: number }>);
+
+                const choices = Object.values(grouped).map((fish) => {
+                    const totalPrice = fish.price * fish.quantity;
+                    return {
+                        name: `${fish.name} (${fish.quantity}x) (Raridade: ${fish.rarity}) - ` +
+                            `Unit: ${fish.price.toFixed(2)} stx | Total: ${totalPrice.toFixed(2)} stx`,
+                        value: fish.id.toString()
+                    };
+                });
+
+                return interaction.respond([
+                    { name: `Vender todos os peixes (${userFishs.length})`, value: "all" },
                     ...choices.slice(0, 24)
                 ]);
             }
+
             case "fishing_rod_buy": {
                 if (focusedOption.name !== "rod_id") return;
 
@@ -221,7 +239,7 @@ createCommand({
                 interaction.editReply(resv2.warning(
                     `${icon.warning} | Aperte o botão abaixo pra iniciar a pesca`,
                     new ButtonBuilder({
-                        customId: `fishing/start/${user.id}/${betterFishingRod.fishingRodId}`,
+                        customId: `fishing/start/${user.id}/${betterFishingRod.id}`,
                         label: "Iniciar",
                         style: ButtonStyle.Success,
                     })
@@ -267,7 +285,7 @@ createCommand({
                         })
                     ])
 
-                    interaction.editReply(res.success(`${icon.success} | Você vendeu todos os seus peixes por ${totalPrice.toFixed(2)} stx!`));
+                    interaction.editReply(res.success(`${icon.success} | Você vendeu todos os seus peixes por **${totalPrice.toFixed(2)}** stx!`));
                     return;
                 }
                 const id = Number(fishId);
@@ -318,33 +336,53 @@ createCommand({
 
                 const [userFishs, userFishingRods] = await prisma.$transaction([
                     prisma.userFish.findMany({
-                        where: {
-                            userId: user.id
-                        },
-                        include: {
-                            fish: true
-                        }
+                        where: { userId: user.id },
+                        include: { fish: true }
                     }),
                     prisma.userFishingRod.findMany({
-                        where: {
-                            userId: user.id
-                        },
-                        include: {
-                            fishingRod: true
-                        }
+                        where: { userId: user.id },
+                        include: { fishingRod: true }
                     })
                 ]);
 
                 if (userFishs.length < 1 && userFishingRods.length < 1) {
-                    interaction.editReply(res.danger(`${icon.error} | Você não possui nenhum peixe ou vara de pesca!`));
+                    interaction.editReply(
+                        res.danger(`${icon.error} | Você não possui nenhum peixe ou vara de pesca!`)
+                    );
                     return;
                 }
 
-                const fishList = userFishs.map((userFish) => `\`${userFish.fishId}\` - **${userFish.fish.name}** (Raridade: **${userFish.fish.rarity}**) - Preço: **${userFish.fish.price.toFixed(2)}** stx`).join("\n");
-                const fishingRodList = userFishingRods.map((userRod) => `\`${userRod.fishingRodId}\` - **${userRod.fishingRod.name}** (Raridade: **${userRod.fishingRod.rarity}**) - Durabilidade: **${userRod.durability}/${userRod.fishingRod.durability}**`).join("\n");
+                // Agrupar peixes por ID
+                const groupedFish = userFishs.reduce((acc, uf) => {
+                    const id = uf.fishId;
+                    if (!acc[id]) {
+                        acc[id] = { ...uf, quantity: 1 };
+                    } else {
+                        acc[id].quantity++;
+                    }
+                    return acc;
+                }, {} as Record<number, typeof userFishs[number] & { quantity: number }>);
+
+                // Ordenar raridades
+                const rarityOrder = ["COMUM", "UNCOMUM", "RARE", "EPIC", "LEGENDARY"];
+
+                const fishList = rarityOrder.map(rarity => {
+                    const fishes = Object.values(groupedFish).filter(f => f.fish.rarity === rarity);
+                    if (fishes.length === 0) return null;
+
+                    const rarityBlock = fishes.map(f =>
+                        `\`${f.fishId}\` - **${f.fish.name}** (${f.quantity}x) (Raridade: **${f.fish.rarity}**) - Preço: **${f.fish.price.toFixed(2)}** stx`
+                    ).join("\n");
+
+                    return `__${rarity}:__\n${rarityBlock}`;
+                }).filter(Boolean).join("\n\n");
+
+                const fishingRodList = userFishingRods.map(userRod =>
+                    `\`${userRod.fishingRodId}\` - **${userRod.fishingRod.name}** (Raridade: **${userRod.fishingRod.rarity}**) - Durabilidade: **${userRod.durability}/${userRod.fishingRod.durability}**`
+                ).join("\n");
 
                 interaction.editReply(resv2.success(
-                    `## ${icon.info} | Inventário de ${interaction.user.username}\n\n${userFishingRods.length > 0 ? `\n\n**Varas de Pesca:**\n${fishingRodList}` : ""}`,
+                    `## ${icon.info} | Inventário de ${interaction.user.displayName}`,
                     createSeparator(),
                     userFishs.length > 0 ? `**Peixes:**\n${fishList}` : "Nenhum peixe",
                     createSeparator(),
@@ -352,6 +390,7 @@ createCommand({
                 ));
                 return;
             }
+
             case "fishing_rod_buy": {
                 const fishingRodId = Number(options.getString("rod_id", true));
                 if (isNaN(fishingRodId)) {

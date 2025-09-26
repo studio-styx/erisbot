@@ -108,7 +108,7 @@ export async function economyDailyCommand(interaction: ChatInputCommandInteracti
             where: { id },
             create: { id },
             update: {
-                money: { increment: new Prisma.Decimal(dailyValue) }
+                money: { increment: dailyValue }
             }
         })
     ])

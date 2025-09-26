@@ -1,6 +1,6 @@
 import { createResponder, ResponderType } from "#base";
 import { prisma, redis } from "#database";
-import { icon, res, resv2, setFishTimeout } from "#functions";
+import { icon, registerLog, res, resv2, setFishTimeout } from "#functions";
 import { menus } from "#menus";
 import { Rarity } from "#prisma";
 import { ContainerComponent, TextDisplayComponent } from "discord.js";
@@ -43,7 +43,7 @@ createResponder({
                         decrement: 1
                     }
                 }
-            });
+            }).catch(() => null);
 
             if (!fishingRod) {
                 interaction.editReply(resv2.danger(`${icon.Eris_cry} | Parece que sua vara de pesca sumiu derrepente enquanto pescava!`))
@@ -51,12 +51,19 @@ createResponder({
             }
 
             if (fishingRod.durability < 1) {
+                await prisma.userFishingRod.delete({
+                    where: {
+                        id: rodId,
+                        userId
+                    }
+                })
                 interaction.editReply(resv2.danger(`${icon.Eris_cry} | Sua vara de pesca quebrou após selecionar o local errado do lago!`))
                 return;
             }
 
             await interaction.followUp(resv2.danger(`${icon.denied} | Você apertou em um botão errado ou antes da hora! sua vara de pesca diminuiu 1 ponto de durabilidade`))
-            interaction.editReply(menus.minigames.fishing(userId, rodId))
+            interaction.editReply(menus.minigames.fishing(userId, rodId, round + 1));
+            setFishTimeout(interaction, round + 1, Math.floor(Math.random() * 10000) + 1000);
             return;
         }
 
@@ -66,22 +73,22 @@ createResponder({
 
             // quanto mais rápido, maior o boost em raridades altas
             let weights = {
-                LEGENDARY: 4,
-                EPIC: 10,
+                LEGENDARY: 2,
+                EPIC: 12,
                 RARE: 30,
                 UNCOMUM: 40,
-                COMUM: 60
+                COMUM: 70
             };
 
-            if (seconds <= 0.3) { // clicou muito rápido
-                weights.LEGENDARY += 10;
-                weights.EPIC += 5;
-                weights.COMUM -= 10;
-            } else if (seconds <= 1) { // rápido
-                weights.LEGENDARY += 5;
-                weights.EPIC += 3;
+            if (seconds <= 0.3) {
+                weights.LEGENDARY += 4;
+                weights.EPIC += 6; 
                 weights.COMUM -= 5;
-            } else if (seconds > 3) { // lento
+            } else if (seconds <= 1) {
+                weights.LEGENDARY += 2;
+                weights.EPIC += 3;
+                weights.COMUM -= 3;
+            } else if (seconds > 3) {
                 weights.LEGENDARY -= 2;
                 weights.EPIC -= 2;
                 weights.COMUM += 5;
@@ -202,10 +209,21 @@ createResponder({
             return;
         }
         await redis.setex(key, 60 * 30, fishs - 1)
+        if (fishs - 1 < 1) {
+            interaction.editReply(resv2.danger(`${icon.Eris_cry} | Você pescou o peixe: **${selectedFish.name}** (raridade: ${selectedFish.rarity}) que custa: **${selectedFish.price}** stx. E todos os peixes do lago foram pescados!`))
+            return;
+        }
 
         await interaction.editReply(menus.minigames.fishing(userId, rodId, round + 1));
-        await interaction.followUp(res.success(`${icon.Eris_happy} | Você pescou o peixe: **${selectedFish.name}** (raridade: ${selectedFish.rarity}) que custa: **${selectedFish.price}**`))
+        await interaction.followUp(res.success(`${icon.Eris_happy} | Você pescou o peixe: **${selectedFish.name}** (raridade: ${selectedFish.rarity}) que custa: **${selectedFish.price}** stx`))
         setFishTimeout(interaction, round + 1, Math.floor(Math.random() * 10000) + 1000);
+        await registerLog({
+            level: rarity === "LEGENDARY" ? 5 : rarity === "EPIC" ? 4 : rarity === "RARE" ? 3 : rarity === "UNCOMUM" ? 2 : 1,
+            message: `Pescou o peixe: **${selectedFish.name}** (raridade: ${selectedFish.rarity}) que custa: **${selectedFish.price}** stx`,
+            user: user.id,
+            type: "info",
+            tags: ["fishing", "fish", rarity]
+        })
         return;
     },
 });

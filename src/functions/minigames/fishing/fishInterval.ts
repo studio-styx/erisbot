@@ -3,7 +3,8 @@ import { ButtonInteraction, ContainerComponent, TextDisplayComponent } from "dis
 
 export function setFishTimeout(interaction: ButtonInteraction<"cached">, round: number, timeToEnd: number) {
     setTimeout(async () => {
-        const messageContainer = interaction.message.components[0] as ContainerComponent
+        const channel = interaction.channel
+        const messageContainer = channel?.messages.cache.get(interaction.message.id)?.components[0] as ContainerComponent
         const rodId = messageContainer.components[0].id!;
         const messageRound = Number((messageContainer.components[0] as TextDisplayComponent).content.split("|")[1]);
 

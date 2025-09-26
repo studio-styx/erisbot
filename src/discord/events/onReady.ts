@@ -92,6 +92,26 @@ createEvent({
                     name: "Novo sistema de sorteios!",
                     time: 25,
                     type: ActivityType.Playing
+                },
+                {
+                    name: "Jogue agora uma partida de termo! use /termo",
+                    time: 30,
+                },
+                {
+                    name: "Agora é possivel jogar blackjack contra seu amigo! use /cassino blackjack",
+                    time: 50
+                },
+                {
+                    name: "Comece a pescar! use /pescaria pescar",
+                    time: 26
+                },
+                {
+                    name: "Spoiler: versão 2.0.0 vai ter sistema de pets!",
+                    time: 60
+                },
+                {
+                    name: "Jogue uma partida de quiz! use /tryvia",
+                    time: 15
                 }
             ];
 
@@ -99,7 +119,7 @@ createEvent({
             if (currentIndex >= presences.length) {
                 // Define a atividade como indefinida e espera 12 segundos
                 client.user.setActivity(undefined);
-                await new Promise(resolve => setTimeout(resolve, 12000)); // Espera 12 segundos :cite[5]
+                await new Promise(resolve => setTimeout(resolve, 12000)); // Espera 12 segundos
                 currentIndex = 0; // Reinicia o índice
                 return setNextPresence(); // Chama a função novamente para recomeçar o ciclo
             }
