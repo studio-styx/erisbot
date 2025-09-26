@@ -28,7 +28,7 @@ export async function economyBalanceCommand(interaction: ChatInputCommandInterac
             bank: true
         },
         create: {
-            id: interaction.user.id
+            id
         },
         update: {}
     });

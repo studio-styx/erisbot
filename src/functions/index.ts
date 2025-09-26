@@ -25,3 +25,4 @@ export * from './minigames/wordle/createImage.js'
 export * from './words/pipeline.js';
 export * from './words/getWords.js';
 export * from './blackjackMultiplayer/defaults.js'
+export * from './minigames/fishing/fishInterval.js'

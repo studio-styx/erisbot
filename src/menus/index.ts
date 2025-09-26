@@ -19,6 +19,7 @@ import { rankingMenu } from "./leaderboard/ranking.js";
 import { startRankingMenu } from "./leaderboard/startRanking.js";
 import { ignoreTagMenu } from "./mail/ignoreTag.js";
 import { userMailsMenu } from "./mail/userMails.js";
+import { fishMenu } from "./minigames/fish.js";
 import { dashboardMenu } from "./settings/dashboard.js";
 import { questionMenu } from "./tryviaGame/question.js";
 import { userLogsMenu } from "./userLogs.js";
@@ -71,5 +72,8 @@ export const menus = {
         giveawayEnd: giveawayEndMenu,
         giveawayManage: giveawayManageMenu,
         giveawayInterface: giveawayInterfaceMenu
+    },
+    minigames: {
+        fishing: fishMenu
     }
 }

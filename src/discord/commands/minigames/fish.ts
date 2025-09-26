@@ -1,8 +1,8 @@
 import { createCommand } from "#base";
-import { prisma } from "#database";
+import { prisma, redis } from "#database";
 import { icon, res, resv2 } from "#functions";
 import { createSeparator } from "@magicyan/discord";
-import { ApplicationCommandOptionType, ApplicationCommandType } from "discord.js";
+import { ApplicationCommandOptionType, ApplicationCommandType, ButtonBuilder, ButtonStyle } from "discord.js";
 
 createCommand({
     name: "fishing",
@@ -108,7 +108,7 @@ createCommand({
         const { options, user } = interaction;
         const subcommand = options.getSubcommand();
         const focusedOption = options.getFocused(true);
-        
+
         switch (subcommand) {
             case "sell": {
                 if (focusedOption.name !== "fish_id") return;
@@ -165,11 +165,69 @@ createCommand({
             }
         }
     },
-    async run(interaction){
+    async run(interaction) {
         const { user, options } = interaction;
         const subcommand = options.getSubcommand();
 
         switch (subcommand) {
+            case "fish": {
+                await interaction.deferReply();
+
+                const userFishingRods = await prisma.userFishingRod.findMany({
+                    where: {
+                        userId: user.id,
+                        durability: {
+                            gt: 0
+                        }
+                    },
+                    include: {
+                        fishingRod: true
+                    }
+                })
+
+                const rarityOrder = {
+                    LEGENDARY: 5,
+                    EPIC: 4,
+                    RARE: 3,
+                    UNCOMUM: 2,
+                    COMUM: 1
+                };
+
+                const betterFishingRod = userFishingRods
+                    .sort((a, b) => {
+                        const rarityDiff = rarityOrder[b.fishingRod.rarity] - rarityOrder[a.fishingRod.rarity];
+                        if (rarityDiff !== 0) return rarityDiff;
+                        return b.durability - a.durability;
+                    })[0] ?? null;
+
+                if (!betterFishingRod) {
+                    interaction.editReply(res.danger(`${icon.error} | Você não possui uma vara de pesca! Compre uma na loja!`));
+                    return;
+                }
+
+                const key = `fishing:fishs:${user.id}`;
+                const avaibleFishs = await redis.get(key);
+                let fishs: number = 20;
+                if (avaibleFishs) {
+                    fishs = Number(avaibleFishs);
+                } else {
+                    await redis.setex(key, 60 * 30, "20");
+                }
+                if (fishs < 1) {
+                    interaction.editReply(res.danger(`${icon.error} | Todos os peixes foram pescados! Espere um pouco para tentar novamente!`));
+                    return;
+                }
+
+                interaction.editReply(resv2.warning(
+                    `${icon.warning} | Aperte o botão abaixo pra iniciar a pesca`,
+                    new ButtonBuilder({
+                        customId: `fishing/start/${user.id}/${betterFishingRod.fishingRodId}`,
+                        label: "Iniciar",
+                        style: ButtonStyle.Success,
+                    })
+                ));
+                return;
+            }
             case "sell": {
                 const fishId = options.getString("fish_id", true);
 
@@ -338,7 +396,7 @@ createCommand({
                         }
                     }
                 });
-                
+
                 if (userHasRod) {
                     interaction.editReply(res.danger(`${icon.error} | Você já possui essa vara de pesca!`));
                     return;

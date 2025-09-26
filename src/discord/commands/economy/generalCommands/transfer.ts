@@ -102,17 +102,24 @@ export async function economyTransferCommand(interaction: ChatInputCommandIntera
         return;
     }
 
-    const transaction = await prisma.transaction.create({
-        data: {
-            amount: value,
-            userId: authorId,
-            targetId: targetId,
-            type: "USER",
-            guildId: interaction.guildId,
-            channelId: interaction.channelId,
-        },
-        select: { id: true }
-    })
+    const [_target, transaction] = await prisma.$transaction([
+        prisma.user.upsert({
+            where: { id: targetId },
+            create: { id: targetId },
+            update: {}
+        }),
+        prisma.transaction.create({
+            data: {
+                amount: value,
+                userId: authorId,
+                targetId: targetId,
+                type: "USER",
+                guildId: interaction.guildId,
+                channelId: interaction.channelId,
+            },
+            select: { id: true }
+        })
+    ])
 
     const embed = createEmbed({
         title: `Transferência`,
