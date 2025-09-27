@@ -152,8 +152,10 @@ export async function commandsMenu<R>(page: "economy" | "bot" | "user" | "modera
             break;
         }
         case "fun": {
-            const [tryvia] = await Promise.all([
-                getCommandId(interaction, "tryvia")
+            const [tryvia, fishing, wordle] = await Promise.all([
+                getCommandId(interaction, "tryvia"),
+                getCommandId(interaction, "fishing"),
+                getCommandId(interaction, "wordle"),
             ])
 
             embed.addFields({
@@ -161,6 +163,11 @@ export async function commandsMenu<R>(page: "economy" | "bot" | "user" | "modera
                 value: brBuilder(
                     `**</tryvia start:${tryvia}>** - Começar um jogo de trivia no canal atual`,
                     `**</tryvia close:${tryvia}>** - Finaliza um jogo de trivia antecipadamente no canal \`(requer perms: gerenciar servidor ou gerenciar canais, ou ser o dono do jogo)\``,
+                    `**</fishing fish:${fishing}>** - Começar a pescar`,
+                    `**</fishing inventory:${fishing}>** - Ver o inventário de peixes`,
+                    `**</fishing sell:${fishing}>** - Vender um peixe do inventário`,
+                    `**</fishing fishing_rod_buy:${fishing}>** - Comprar uma vara de pesca`,
+                    `**</wordle:${wordle}>** - Começar uma partida de termo`
                 )
             })
             break;
@@ -178,7 +185,7 @@ export async function commandsMenu<R>(page: "economy" | "bot" | "user" | "modera
                     { label: "Usuário", value: "user", emoji: icon.investment_graph, default: page === "user" },
                     { label: "Moderação", value: "moderation", emoji: icon.security, default: page === "moderation" },
                     { label: "Utilidades", value: "utility", emoji: icon.key, default: page === "utility" },
-                    { label: "Diversão", value: "fun", emoji: icon.key, default: page === "fun" }
+                    { label: "Diversão", value: "fun", emoji: icon.Eris_happy, default: page === "fun" }
                 ]
             })
         )

@@ -268,5 +268,35 @@
         "description": "Colocar o server em um sorteio conectado",
         "siteAvaible": false,
         "category": "moderation"
+    },
+    {
+        "name": "fishing fish",
+        "description": "Começar a pescar",
+        "siteAvaible": false,
+        "category": "fun"
+    },
+    {
+        "name": "fishing sell",
+        "description": "Vender seus peixes pescados",
+        "siteAvaible": false,
+        "category": "fun"
+    },
+    {
+        "name": "fishing inventory",
+        "description": "Ver seu inventário de peixes",
+        "siteAvaible": false,
+        "category": "fun"
+    },
+    {
+        "name": "fishing fishing_rod_buy",
+        "description": "Comprar uma vara de pesca",
+        "siteAvaible": false,
+        "category": "fun"
+    },
+    {
+        "name": "wordle",
+        "description": "Jogue uma partida de termo",
+        "siteAvaible": false,
+        "category": "fun"
     }
 ]
