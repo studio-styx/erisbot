@@ -74,6 +74,6 @@ export const menus = {
         giveawayInterface: giveawayInterfaceMenu
     },
     minigames: {
-        fishing: fishMenu
+        fishing: fishMenu,
     }
 }

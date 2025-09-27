@@ -1,7 +1,6 @@
 import { Store } from "#base";
 import { prisma } from "#database";
 import { icon, res, registerLog } from "#functions";
-import { Prisma } from "#prisma";
 import { ChatInputCommandInteraction, time } from "discord.js";
 
 const trys = new Store<{ attempts: number; cooldown: Date }>();

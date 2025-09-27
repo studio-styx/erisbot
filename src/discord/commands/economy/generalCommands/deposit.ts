@@ -7,17 +7,12 @@ export async function economyDepositCommand(interaction: ChatInputCommandInterac
     await interaction.deferReply({ flags: ["Ephemeral"] });
 
     const id = interaction.user.id;
-    let userData = await prisma.user.findUnique({
+    const userData = await prisma.user.upsert({
         where: { id },
+        create: { id },
+        update: {},
         select: { money: true, bank: true },
     });
-
-    if (!userData) {
-        userData = await prisma.user.create({
-            data: { id },
-            select: { money: true, bank: true }
-        });
-    }
 
     if (value > userData.money.toNumber()) {
         value = userData.money.toNumber();
