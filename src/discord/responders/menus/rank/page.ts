@@ -19,33 +19,30 @@ createResponder({
 
         if (area === "guild") {
             if (type === "stx") {
-                const ranking = await prisma.user.findMany({
-                    orderBy: [
-                        {
-                            money: "desc"
-                        },
-                        {
-                            bank: "desc"
-                        }
-                    ],
-                    select: {
-                        id: true,
-                        money: true,
-                        bank: true
-                    },
-                    take: 100
-                });
+                // Define interface for raw query result
+                interface RankingResult {
+                    id: string;
+                    total: bigint;
+                }
+
+                // Raw query: Top 100 in this guild by total STX (money + bank)
+                const ranking = await prisma.$queryRaw<RankingResult[]>`
+            SELECT u.id, (u.money + u.bank) as total
+            FROM "User" u
+            INNER JOIN "GuildMember" gm ON gm.id = u.id AND gm."guildId" = ${interaction.guildId}
+            ORDER BY total DESC
+            LIMIT 100
+        `;
 
                 if (ranking.length === 0) {
                     interaction.followUp(res.danger(`${icon.error} | Não foi possível obter usuários para mostrar o ranking`));
                     return;
                 }
 
-                // Obter IDs dos usuários
+                // Fetch members (same as before)
                 const ids = ranking.map(user => user.id);
                 let fetchedMembers: Collection<string, GuildMember>;
                 try {
-                    // Buscar membros do servidor apenas para os IDs retornados
                     fetchedMembers = await interaction.guild!.members.fetch({ user: ids, withPresences: false });
                 } catch (error) {
                     console.error(error);
@@ -56,7 +53,7 @@ createResponder({
 
                 for (const user of ranking) {
                     const member = fetchedMembers.get(user.id);
-                    if (!member) continue; // Pular se o usuário não está no servidor
+                    if (!member) continue;
 
                     users.push({
                         user: {
@@ -64,7 +61,7 @@ createResponder({
                             name: member.displayName || "desconhecido",
                             avatarUrl: member.displayAvatarURL() || interaction.client.user.displayAvatarURL()
                         },
-                        amount: user.money.add(user.bank).toNumber()
+                        amount: Number(user.total)  // Convert BigInt to number
                     });
                 }
 
@@ -136,22 +133,19 @@ createResponder({
             }
         } else {
             if (type === "stx") {
-                const ranking = await prisma.user.findMany({
-                    orderBy: [
-                        {
-                            money: "desc"
-                        },
-                        {
-                            bank: "desc"
-                        }
-                    ],
-                    select: {
-                        id: true,
-                        money: true,
-                        bank: true
-                    },
-                    take: 100
-                });
+                // Define interface for raw query result
+                interface RankingResult {
+                    id: string;
+                    total: bigint;
+                }
+
+                // Raw query: Top 100 global by total STX (money + bank)
+                const ranking = await prisma.$queryRaw<RankingResult[]>`
+            SELECT id, (money + bank) as total
+            FROM "User"
+            ORDER BY total DESC
+            LIMIT 100
+        `;
 
                 if (ranking.length === 0) {
                     interaction.followUp(res.danger(`${icon.error} | Não foi possível obter usuários para mostrar o ranking`));
@@ -166,7 +160,7 @@ createResponder({
                         discordUser = interaction.client.users.cache.get(user.id) || await interaction.client.users.fetch(user.id);
                     } catch (error) {
                         console.error(error);
-                        continue; // Pular se o usuário não existir mais
+                        continue;
                     }
 
                     users.push({
@@ -175,7 +169,7 @@ createResponder({
                             name: discordUser?.displayName || "desconhecido",
                             avatarUrl: discordUser?.displayAvatarURL() || interaction.client.user.displayAvatarURL()
                         },
-                        amount: user.money.add(user.bank).toNumber()
+                        amount: Number(user.total)  // Convert BigInt to number
                     });
                 }
 

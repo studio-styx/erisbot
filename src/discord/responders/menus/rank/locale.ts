@@ -24,22 +24,20 @@ createResponder({
             const area = params[1] as "guild" | "global";
             if (area === "guild") {
                 if (type === "stx") {
-                    const ranking = await prisma.user.findMany({
-                        orderBy: [
-                            {
-                                money: "desc"
-                            },
-                            {
-                                bank: "desc"
-                            }
-                        ],
-                        select: {
-                            id: true,
-                            money: true,
-                            bank: true
-                        },
-                        take: 30
-                    });
+                    // Definir interface para o resultado da consulta crua
+                    interface RankingResult {
+                        id: string;
+                        total: bigint;
+                    }
+
+                    // Consulta crua: Top 100 no servidor por STX total (money + bank)
+                    const ranking = await prisma.$queryRaw<RankingResult[]>`
+                        SELECT u.id, (u.money + u.bank) as total
+                        FROM "User" u
+                        INNER JOIN "GuildMember" gm ON gm.id = u.id AND gm."guildId" = ${interaction.guildId}
+                        ORDER BY total DESC
+                        LIMIT 100
+                    `;
 
                     if (ranking.length === 0) {
                         interaction.followUp(res.danger(`${icon.error} | Não foi possível obter usuários para mostrar o ranking`));
@@ -50,7 +48,6 @@ createResponder({
                     const ids = ranking.map(user => user.id);
                     let fetchedMembers: Collection<string, GuildMember>;
                     try {
-                        // Buscar membros do servidor apenas para os IDs retornados
                         fetchedMembers = await interaction.guild!.members.fetch({ user: ids, withPresences: false });
                     } catch (error) {
                         console.error(error);
@@ -69,7 +66,7 @@ createResponder({
                                 name: member.displayName || "desconhecido",
                                 avatarUrl: member.displayAvatarURL() || interaction.client.user.displayAvatarURL()
                             },
-                            amount: user.money.add(user.bank).toNumber()
+                            amount: Number(user.total) // Converter BigInt para número
                         });
                     }
 
@@ -83,6 +80,7 @@ createResponder({
                     interaction.editReply(menus.leaderboard.ranking("Guild", type, filteredUsers, interaction.user.id));
                     return;
                 } else {
+                    // Sua lógica existente para outros tipos no ranking local (sem alterações)
                     const ranking = await prisma.guildMember.findMany({
                         where: {
                             guildId: interaction.guildId!
@@ -141,22 +139,19 @@ createResponder({
                 }
             } else {
                 if (type === "stx") {
-                    const ranking = await prisma.user.findMany({
-                        orderBy: [
-                            {
-                                money: "desc"
-                            },
-                            {
-                                bank: "desc"
-                            }
-                        ],
-                        select: {
-                            id: true,
-                            money: true,
-                            bank: true
-                        },
-                        take: 30
-                    });
+                    // Definir interface para o resultado da consulta crua
+                    interface RankingResult {
+                        id: string;
+                        total: bigint;
+                    }
+
+                    // Consulta crua: Top 100 global por STX total (money + bank)
+                    const ranking = await prisma.$queryRaw<RankingResult[]>`
+                        SELECT id, (money + bank) as total
+                        FROM "User"
+                        ORDER BY total DESC
+                        LIMIT 100
+                    `;
 
                     if (ranking.length === 0) {
                         interaction.followUp(res.danger(`${icon.error} | Não foi possível obter usuários para mostrar o ranking`));
@@ -180,7 +175,7 @@ createResponder({
                                 name: discordUser?.displayName || "desconhecido",
                                 avatarUrl: discordUser?.displayAvatarURL() || interaction.client.user.displayAvatarURL()
                             },
-                            amount: user.money.add(user.bank).toNumber()
+                            amount: Number(user.total) // Converter BigInt para número
                         });
                     }
 
@@ -194,6 +189,7 @@ createResponder({
                     interaction.editReply(menus.leaderboard.ranking("Global", type, filteredUsers, interaction.user.id));
                     return;
                 } else {
+                    // Sua lógica existente para outros tipos no ranking global (sem alterações)
                     const ranking = await prisma.guildMember.groupBy({
                         by: ['id'],
                         _sum: {

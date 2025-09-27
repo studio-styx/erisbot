@@ -5,7 +5,7 @@ import { ButtonBuilder, ButtonStyle, StringSelectMenuBuilder, type InteractionRe
 export function rankingMenu<R>(area: "Guild" | "Global", type: "stx" | "xp" | "tryviaGames" | "tryviaWins" | "tryviaPoints", ranking: { user: { id: string; name: string; avatarUrl: string; }; amount: number; }[], authorId: string, page: number = 0): R {
     const inicial = page * 10;
     const final = inicial + 10;
-    
+
     const rankingFormatted = ranking.slice(inicial, final).map((u, index) => `**${inicial + index + 1}. ${u.user.name} - ${u.amount} ${type === "stx" ? "Stx" : type === "tryviaGames" ? "Jogos" : type === "tryviaWins" ? "Vitórias" : type === "tryviaPoints" ? "Pontos" : "Xp"}**${u.user.id === authorId ? ' **`(você)`**' : ''}`).join('\n');
     const container = createContainer(settings.colors.azoxo,
         brBuilder(
@@ -20,13 +20,13 @@ export function rankingMenu<R>(area: "Guild" | "Global", type: "stx" | "xp" | "t
         createSeparator(),
         createRow(
             new ButtonBuilder({
-                customId: `leaderboard/rank/${page - 1}/${area}/${type}`,
+                customId: `leaderboard/rank/${page - 1}/${area.toLowerCase()}/${type}`,
                 label: "Voltar",
                 disabled: page === 0,
                 style: ButtonStyle.Primary
             }),
             new ButtonBuilder({
-                customId: `leaderboard/rank/${page + 1}/${area}/${type}`,
+                customId: `leaderboard/rank/${page + 1}/${area.toLowerCase()}/${type}`,
                 label: "Avançar",
                 disabled: final >= ranking.length,
                 style: ButtonStyle.Primary
