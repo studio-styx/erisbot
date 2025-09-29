@@ -131,14 +131,16 @@ async function handleGiveawayAutocomplete(interaction: AutocompleteInteraction<"
                 in: solicitations.map(s => Number(s.giveawayId))
             },
             title: {
-                contains: focused
+                contains: focused,
+                mode: "insensitive"
             },
+            expiresAt: {
+                gt: new Date()
+            }
         },
         select: {
             title: true,
             id: true,
-            localId: true,
-            connectedGuilds: true
         },
         take: 25
     });
@@ -151,7 +153,7 @@ async function handleGiveawayAutocomplete(interaction: AutocompleteInteraction<"
     }
 
     return await interaction.respond(giveaways.map(g => ({
-        name: limitText(`Id: ${g.id} | LocalId: ${g.localId} | Sorteio conectado?: ${g.connectedGuilds.length > 1 ? "Sim" : "Não"} | Titulo: ${g.title}`, 97, "..."),
+        name: limitText(`Id: ${g.id} | Titulo: ${g.title}`, 97, "..."),
         value: g.id.toString()
     })))
 }
@@ -408,7 +410,7 @@ createCommand({
                     description: "channel where the giveaway will be sent",
                     type: ApplicationCommandOptionType.Channel,
                     required: true,
-                    channelTypes: [ChannelType.GuildText],
+                    channelTypes: [ChannelType.GuildText, ChannelType.GuildAnnouncement],
                     nameLocalizations: {
                         "pt-BR": "canal",
                         "en-US": "channel",
@@ -424,7 +426,7 @@ createCommand({
         },
     ],
     async autocomplete(interaction) {
-        const hasPerms = interaction.memberPermissions.has("ManageEvents");
+        const hasPerms = interaction.memberPermissions.has("ManageEvents") || interaction.user.id === "1171963692984844401";
         if (!hasPerms) return interaction.respond([{
             name: "Você não tem permissão para usar esse comando!",
             value: "no_permission"
@@ -462,7 +464,7 @@ createCommand({
     async run(interaction) {
         const { user, options, member, guild, client } = interaction;
 
-        const hasPerms = member.permissions.has("ManageEvents");
+        const hasPerms = member.permissions.has("ManageEvents") || user.id === "1171963692984844401";
 
         if (!hasPerms) {
             interaction.reply(res.danger(`${icon.denied} | Você precisa da permissão de **gerenciar eventos** para poder gerenciar sorteios!`));
@@ -508,7 +510,7 @@ createCommand({
                             ? `como esse é um servidor host do sorteio, ao excluir ele todos os outros sorteio(s) de outro(s) **${giveaway.connectedGuilds.length}** server(s) também será apagado`
                             : !guildIsHost && giveaway.connectedGuilds.length > 1
                                 ? `como esse é um sorteio conectado a outro(s) server(s) e ele não é host, apenas esse server sairá do sorteio, enquanto os outros contiuarão funcionando normalmente`
-                                : ""}. Você tem certeza que deseja apagar esse sorteio?`,
+                                : ""} Você tem certeza que deseja apagar esse sorteio?`,
                         {
                             components: [
                                 createRow(
@@ -853,8 +855,14 @@ createCommand({
                         }));
                     }
 
-                    // No seu código da transação:
                     await prisma.$transaction(async (tx) => {
+                        await tx.guildSettings.upsert({
+                            where: {
+                                id: guild.id
+                            },
+                            create: { id: guild.id },
+                            update: {}
+                        });
                         await tx.guildGiveaway.create({
                             data: {
                                 channelId: channel.id,

@@ -5,6 +5,37 @@ import { WordleGame } from "#types/wordleGame.js";
 import { createModalFields, createRow } from "@magicyan/discord";
 import { AttachmentBuilder, ButtonBuilder, ButtonStyle, TextInputStyle } from "discord.js";
 
+// Função para normalizar letras (remove acentos, exceto para ç)
+const normalizeLetter = (letter: string): string => {
+    const accentMap: { [key: string]: string } = {
+        'á': 'a', 'à': 'a', 'ã': 'a', 'â': 'a', 'ä': 'a',
+        'é': 'e', 'è': 'e', 'ê': 'e', 'ë': 'e',
+        'í': 'i', 'ì': 'i', 'î': 'i', 'ï': 'i',
+        'ó': 'o', 'ò': 'o', 'õ': 'o', 'ô': 'o', 'ö': 'o',
+        'ú': 'u', 'ù': 'u', 'û': 'u', 'ü': 'u',
+    };
+    return accentMap[letter.toLowerCase()] || letter.toLowerCase();
+};
+
+// Função para lidar com o caso especial do ç
+const handleCedilla = (attemptLetter: string, wordLetter: string, word: string): string => {
+    if (attemptLetter.toLowerCase() === 'c' && wordLetter.toLowerCase() === 'ç') {
+        return 'ç'; // Trata 'c' como 'ç' se a palavra-alvo tem 'ç' na posição
+    }
+    if (attemptLetter.toLowerCase() === 'c' && word.includes('ç') && !word.includes('c')) {
+        return 'ç'; // Se só há 'ç' na palavra, trata 'c' como 'ç'
+    }
+    return attemptLetter.toLowerCase(); // Mantém a letra original
+};
+
+// Função para normalizar uma palavra completa
+const normalizeWord = (word: string, targetWord: string): string => {
+    return word.split('').map((letter, i) => {
+        const wordLetter = targetWord[i] || '';
+        return handleCedilla(letter, wordLetter, targetWord);
+    }).map(normalizeLetter).join('');
+};
+
 createResponder({
     customId: "wordle/writeWord/:userId",
     types: [ResponderType.Button, ResponderType.ModalComponent], cache: "cached",
@@ -59,7 +90,12 @@ createResponder({
 
         game.attempts.push(response);
         game.lastAttemptAt = new Date();
-        if (response === game.word) {
+
+        // Normalizar response e game.word para verificar vitória
+        const normalizedResponse = normalizeWord(response, game.word);
+        const normalizedWord = normalizeWord(game.word, game.word);
+
+        if (normalizedResponse === normalizedWord) {
             game.isOver = true;
             game.isWon = true;
             game.endedAt = new Date();
@@ -92,7 +128,7 @@ createResponder({
                         }
                     })
                 ])
-            ])
+            ]);
             return;
         } else if (game.attempts.length >= game.maxAttempts) {
             game.isOver = true;
@@ -127,7 +163,7 @@ createResponder({
                         }
                     })
                 ])
-            ])
+            ]);
             return;
         }
 

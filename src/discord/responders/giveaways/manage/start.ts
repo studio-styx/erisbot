@@ -185,6 +185,7 @@ createResponder({
                     update: {
                         blackListRoles: giveawayData.blackListRoles,
                         xpRequired: giveawayData.xpRequired,
+                        channelId: giveawayData.channelId,
                     },
                     create: {
                         guildId: guild.id,

@@ -56,6 +56,29 @@ export async function wordleCreateImage(word: string, attempts: string[]): Promi
             throw new Error("Número inválido de letras.");
     }
 
+    // Função para normalizar letras (remove acentos, exceto para ç)
+    const normalizeLetter = (letter: string): string => {
+        const accentMap: { [key: string]: string } = {
+            'á': 'a', 'à': 'a', 'ã': 'a', 'â': 'a', 'ä': 'a',
+            'é': 'e', 'è': 'e', 'ê': 'e', 'ë': 'e',
+            'í': 'i', 'ì': 'i', 'î': 'i', 'ï': 'i',
+            'ó': 'o', 'ò': 'o', 'õ': 'o', 'ô': 'o', 'ö': 'o',
+            'ú': 'u', 'ù': 'u', 'û': 'u', 'ü': 'u',
+        };
+        return accentMap[letter.toLowerCase()] || letter.toLowerCase();
+    };
+
+    // Função para lidar com o caso especial do ç
+    const handleCedilla = (attemptLetter: string, wordLetter: string, word: string): string => {
+        if (attemptLetter.toLowerCase() === 'c' && wordLetter.toLowerCase() === 'ç') {
+            return 'ç'; // Trata 'c' como 'ç' se a palavra-alvo tem 'ç' na posição
+        }
+        if (attemptLetter.toLowerCase() === 'c' && word.includes('ç') && !word.includes('c')) {
+            return 'ç'; // Se só há 'ç' na palavra, trata 'c' como 'ç'
+        }
+        return attemptLetter.toLowerCase(); // Mantém a letra original
+    };
+
     // Função para desenhar caixas
     const drawRoundedBox = (
         x: number,
@@ -105,24 +128,33 @@ export async function wordleCreateImage(word: string, attempts: string[]): Promi
         // Contar ocorrências de cada letra na palavra-alvo
         const letterCounts: { [key: string]: number } = {};
         for (const letter of wordArray) {
-            letterCounts[letter] = (letterCounts[letter] || 0) + 1;
+            letterCounts[letter.toLowerCase()] = (letterCounts[letter.toLowerCase()] || 0) + 1;
         }
 
         // Passo 1: Identificar letras na posição correta
         for (let i = 0; i < boxPerLine; i++) {
-            if (attempt[i] && attempt[i] === word[i]) {
+            if (!attempt[i]) continue;
+            const attemptLetter = handleCedilla(attempt[i], wordArray[i], word);
+            const wordLetter = wordArray[i].toLowerCase();
+            const normalizedAttempt = normalizeLetter(attemptLetter);
+            const normalizedWord = normalizeLetter(wordLetter);
+            if (normalizedAttempt === normalizedWord) {
                 types[i] = "success";
-                letterCounts[attempt[i]]--;
+                letterCounts[wordLetter]--;
                 wordArray[i] = "";
             }
         }
 
         // Passo 2: Identificar letras na palavra, mas na posição errada
         for (let i = 0; i < boxPerLine; i++) {
-            if (attempt[i] && types[i] !== "success" && wordArray.includes(attempt[i]) && letterCounts[attempt[i]] > 0) {
+            if (!attempt[i] || types[i] === "success") continue;
+            const attemptLetter = handleCedilla(attempt[i], wordArray[i], word);
+            const normalizedAttempt = normalizeLetter(attemptLetter);
+            const wordLetter = wordArray.find(letter => letter && normalizeLetter(letter) === normalizedAttempt);
+            if (wordLetter && letterCounts[wordLetter.toLowerCase()] > 0) {
                 types[i] = "different";
-                letterCounts[attempt[i]]--;
-                wordArray[wordArray.indexOf(attempt[i])] = "";
+                letterCounts[wordLetter.toLowerCase()]--;
+                wordArray[wordArray.indexOf(wordLetter)] = "";
             }
         }
 

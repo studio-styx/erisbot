@@ -15,17 +15,17 @@ createResponder({
 
         const [raw, commandId] = await Promise.all([
             redis.get(`wordle:${interaction.user.id}`),
-            getCommandId(interaction, "termo"),
+            getCommandId(interaction, "wordle"),
         ]);
 
         if (!raw) {
-            await interaction.editReply(resv2.danger(`${icon.denied} | Você não está em uma partida de termo! Inicie uma com </termo:${commandId}>`));
+            await interaction.editReply(resv2.danger(`${icon.denied} | Você não está em uma partida de termo! Inicie uma com </wordle:${commandId}>`));
             return;
         }
         
         await redis.del(`wordle:${interaction.user.id}`);
         
-        await interaction.editReply(resv2.success(`${icon.success} | Sua partida de termo foi deletada com sucesso! Você pode iniciar uma nova com </termo:${commandId}>`));
+        await interaction.editReply(resv2.success(`${icon.success} | Sua partida de termo foi deletada com sucesso! Você pode iniciar uma nova com </wordle:${commandId}>`));
         return;
     },
 });

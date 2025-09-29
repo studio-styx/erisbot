@@ -4,7 +4,7 @@ import { getMutualGuilds, icon, res, resv2 } from "#functions";
 import { menus } from "#menus";
 import { GiveawayManageDataInfo } from "#types/giveawayManageDataType.js";
 import { brBuilder, createModalFields } from "@magicyan/discord";
-import { TextInputStyle } from "discord.js";
+import { ContainerComponent, TextDisplayComponent, TextInputStyle } from "discord.js";
 
 createResponder({
     customId: "giveaway/manage/main/:userId/:part",
@@ -26,55 +26,101 @@ createResponder({
 
         if (interaction.isStringSelectMenu()) {
             const option = interaction.values[0];
+
+            const fieldMap: Record<string, {
+                field: string;       // o texto que aparece depois de ###
+                label: string;       // o rótulo exibido no modal
+                placeholder?: string;
+                maxLength?: number;
+                style?: TextInputStyle;
+            }> = {
+                title: {
+                    field: "Título",
+                    label: "Título",
+                    placeholder: "sorteio de 1... sonhos...",
+                    maxLength: 70,
+                    style: TextInputStyle.Short,
+                },
+                description: {
+                    field: "Descrição",
+                    label: "Descrição",
+                    placeholder: "o ganhador ganhará ...",
+                    maxLength: 400,
+                    style: TextInputStyle.Paragraph,
+                },
+                channelId: {
+                    field: "Canal do sorteio",
+                    label: "Canal do sorteio",
+                },
+                blacklistRoles: {
+                    field: "Cargos de BlackList",
+                    label: "Cargos de BlackList",
+                },
+                xpRequired: {
+                    field: "Xp exigido",
+                    label: "Xp exigido",
+                    placeholder: "5000",
+                    maxLength: 50,
+                    style: TextInputStyle.Short,
+                },
+                roleEntries: {
+                    field: "Multiplas entradas",
+                    label: "Multiplas entradas",
+                },
+                expiresAt: {
+                    field: "Expira em",
+                    label: "Termina em",
+                    placeholder: "ex: (13/07/2023 15:00), (24h)",
+                    maxLength: 50,
+                    style: TextInputStyle.Short,
+                },
+                connectedGuilds: {
+                    field: "Servers conectados",
+                    label: "Servers conectados",
+                },
+                stayInServerRequire: {
+                    field: "É necessário estar em todos os servers para participar do sorteio?",
+                    label: "Requisito de servers",
+                },
+                winners: {
+                    field: "Quantidade de ganhadores",
+                    label: "Ganhadores",
+                    placeholder: "3",
+                    maxLength: 50,
+                    style: TextInputStyle.Short,
+                },
+            };
+
+            const getValue = (field: string, content: string): string | null => {
+                const regex = new RegExp(`### ${field}:\\s*([\\s\\S]*?)(?=###|$)`, "i");
+                const match = content.match(regex);
+                return match ? match[1].trim() : null;
+            };
+
+
+            const component = (message.components[0] as ContainerComponent).components[2] as TextDisplayComponent;
+            const content = component.content;
+
             if (option !== "channelId" && option !== "blacklistRoles" && option !== "roleEntries" && option !== "connectedGuilds" && option !== "stayInServerRequire") {
+                const config = fieldMap[option];
+                const value = config ? getValue(config.field, content) : undefined;
+
                 interaction.showModal({
                     customId: `giveaway/manage/main/${userId}/${option}`,
-                    title: option === "title"
-                        ? "titulo"
-                        : option === "description"
-                            ? "descrição"
-                            : option === "expiresAt"
-                                ? "termina em"
-                                : option === "xpRequired"
-                                    ? "xp exigido"
-                                    : option === "winners"
-                                        ? "ganhadores"
-                                        : option,
+                    title: config?.label ?? option,
                     components: createModalFields({
                         response: {
-                            label: (option === "title"
-                                ? "titulo"
-                                : option === "description"
-                                    ? "descrição"
-                                    : option === "expiresAt"
-                                        ? "data de termino"
-                                        : option === "xpRequired"
-                                            ? "xp exigido"
-                                            : option === "winners"
-                                                ? "ganhadores"
-                                                : option) + " do sorteio",
-                            placeholder: option === "title"
-                                ? "sorteio de 1... sonhos..."
-                                : option === "description"
-                                    ? "o ganhador ganhará ..."
-                                    : option === "expiresAt"
-                                        ? "ex: (13/07/2023 15:00), (24h)"
-                                        : option === "xpRequired"
-                                            ? "5000"
-                                            : option === "winners"
-                                                ? "3"
-                                                : option,
-                            style: option === "description" ? TextInputStyle.Paragraph : TextInputStyle.Short,
+                            label: `${config?.label ?? option} do sorteio`,
+                            placeholder: config?.placeholder ?? "...",
+                            style: config?.style ?? TextInputStyle.Short,
                             required: true,
                             minLength: 1,
-                            maxLength: option === "title"
-                                ? 70
-                                : option === "description"
-                                    ? 300
-                                    : 50
+                            maxLength: config?.maxLength ?? 50,
+                            value: value ?? undefined,
                         },
                     }),
                 });
+
                 return;
             } else if (option === "stayInServerRequire") {
                 await interaction.deferUpdate();

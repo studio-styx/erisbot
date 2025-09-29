@@ -157,7 +157,7 @@ export function giveawayManageMenu<R>(userId: string, data: GiveawayManageDataIn
                 placeholder: "Canal onde ocorrerá o sorteio",
                 minValues: 1,
                 maxValues: 1,
-                channelTypes: [ChannelType.GuildText]
+                channelTypes: [ChannelType.GuildText, ChannelType.GuildAnnouncement]
             })
         )
     )

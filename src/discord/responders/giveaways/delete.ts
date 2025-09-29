@@ -1,6 +1,6 @@
 import { createResponder, ResponderType } from "#base";
 import { prisma } from "#database";
-import { icon, res, resv2 } from "#functions";
+import { deleteKeysByGiveawayId, icon, res, resv2 } from "#functions";
 import { brBuilder } from "@magicyan/discord";
 import { channelMention, userMention } from "discord.js";
 
@@ -28,7 +28,7 @@ createResponder({
         }
 
         await interaction.deferUpdate();
-        await interaction.editReply(res.warning(`${icon.waiting_white} | Aguarde... processando`));
+        await interaction.editReply(res.warning(`${icon.waiting_white} | Aguarde... processando`, { components: [] }));
 
         const giveaway = await prisma.giveaway.findUnique({
             where: {
@@ -83,15 +83,18 @@ createResponder({
                 `O moderador: ${userMention(user.id)} removeu esse server do sorteio!`
             )).catch(_ => null)
 
-            interaction.editReply(res.success(`${icon.success} | Sucesso ao remover o server do sorteio!`))
+            interaction.editReply(res.success(`${icon.success} | Sucesso ao remover o server do sorteio!`, { components: [] }))
         } else {
             const errors: { guildId: string; error: string; guildName: string }[] = []
             
-            await prisma.giveaway.delete({
-                where: {
-                    id: giveawayId
-                }
-            })
+            await Promise.all([
+                prisma.giveaway.delete({
+                    where: {
+                        id: giveawayId
+                    }
+                }),
+                deleteKeysByGiveawayId(giveawayId.toString())
+            ])
 
             for (const connectedGuild of giveaway.connectedGuilds) {
                 const cnnGuild = client.guilds.cache.get(connectedGuild.guildId);
@@ -147,7 +150,10 @@ createResponder({
                         `No entando ocorreu **${errors.length}** erros!`,
                         errors.map(e => `**\`${e.guildName}\`**: ${e.error}`)
                     ) : null
-                )
+                ),
+                {
+                    components: []
+                }
             ))
         }
         return;
