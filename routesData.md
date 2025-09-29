@@ -3,14 +3,14 @@
 ## 🔗 Base URL
 
 ```
-https://apieris.squareweb.com/v1/economy
+https://apieris.squareweb.com/v1/
 ```
 
 ---
 
 ## 📌 Endpoints
 
-### 1. **`POST /give-stx`**
+### 1. **`POST /economy/give-stx`**
 
 Dá uma quantia de **stx** a um usuário.
 
@@ -41,7 +41,7 @@ Dá uma quantia de **stx** a um usuário.
 
 ---
 
-### 2. **`POST /take-stx`**
+### 2. **`POST /economy/take-stx`**
 
 Solicita a retirada de **stx** de um usuário. O usuário precisa confirmar ou cancelar a transação em até **1 minuto**.
 
@@ -75,7 +75,7 @@ Solicita a retirada de **stx** de um usuário. O usuário precisa confirmar ou c
 
 ---
 
-### 3. **`GET /balance/:userId`**
+### 3. **`GET /economy/balance/:userId`**
 
 Consulta o saldo de um usuário.
 
@@ -92,7 +92,7 @@ Consulta o saldo de um usuário.
 
 ---
 
-### 4. **`POST /transactions/:userId`**
+### 4. **`POST /economy/transactions/:userId`**
 
 Lista as transações de um usuário.
 
@@ -134,15 +134,9 @@ Lista as transações de um usuário.
 
 # 📖 API da Botlist – Éris
 
-## 🔗 Base URL
-
-```
-https://apieris.squareweb.com/v1/botlist
-```
-
 ---
 
-### 5. **`GET /votes`**
+### 5. **`GET /v1/botlist/votes`**
 
 Obtém informações sobre os votos da aplicação.
 
@@ -154,9 +148,61 @@ Obtém informações sobre os votos da aplicação.
 | 404    | `{ "message": "Application not found" }` | Aplicação não encontrada                  |
 
 ---
+### 6. **`GET /v1/tryvia/generateToken`
+
+Retorna um token de seção que evita retornar perguntas repitidas.
+
+#### 📤 Resposta
+
+| Status | Resposta                                 | Descrição                                 |
+| ------ | ---------------------------------------- | ----------------------------------------- |
+| 201    | `{ "token": "token" }`                   | Retorna o token de acesso                 |
+
+
+---
+### 7. **`GET /v1/tryvia/questions`
+
+Retorna as perguntas de tryvia
+
+#### 📤 Querys
+
+sessionToken: string;
+tags: "football+mbappe+...";
+difficulty: "easy" | "medium" | "hard";
+amount: number;
+type: "multiple" | "boolean" | "writeinchat";
+
+
+#### 📤 Respostas
+
+```json
+{
+  "warnings": ["Your sessionToken has all the questions stored in the database.", "There are no questions based on these criteria, or your sessionToken has already stored all questions based on this criterion.", "It was not possible to obtain all 20 questions based on the provided criteria, found: 2"],
+  "questions": [
+    {
+      "tags": ["football", "mbappe"],
+      "difficulty": "easy" | "medium" | "hard",
+      "type": "MULTIPLE" | "BOOLEAN" | "WRITEINCHAT",
+      "id": 3,
+      "question": "Qual seleção joga Mbappé?",
+      "correct": boolean | null, // aqui é para caso seja uma pergunta de sim ou não, se for verdadeira será true, se for falsa será false
+      "correctAnswer": "França",
+      "correctAnswersVariation": ["Franca"],
+      "explanation": "A nacionalidade de Mbappé é francesa, ele nasceu na França em Paris",
+      "incorrectAnswers": ["Noruega", "Espanha", "Argentina"],
+      "createdAt": Date,
+      "updatedAt": Date,
+  }
+  ]
+}
+```
+
+
+| Status | Resposta                                 | Descrição                                 |
+| ------ | ---------------------------------------- | ----------------------------------------- |
+| 200    | `warnings: string[] questions: [...],` | Retorna o token de acesso                 |
 
 ## ⚠️ Observações Importantes
 
-* Todas as rotas (exceto a `/votes`) estão sob o prefixo `/v1/economy`.
 * A API depende do Discord.js, Prisma e permissões adequadas no servidor para envio de mensagens.
 * Algumas transações (como `/take-stx`) exigem **confirmação do usuário via interação no Discord**.
