@@ -30,7 +30,7 @@ const setExpiredTransactions = async () => {
 
 createEvent({
     name: "ready",
-    event: "ready",
+    event: "clientReady",
     async run(client) {
         await setAllServerSettings(client);
         setInterval(async () => {
