@@ -26,3 +26,5 @@ export * from './words/pipeline.js';
 export * from './words/getWords.js';
 export * from './blackjackMultiplayer/defaults.js'
 export * from './minigames/fishing/fishInterval.js'
+export * from './utils/getRandomValue.js'
+export * from './pets/verifyPetName.js'
