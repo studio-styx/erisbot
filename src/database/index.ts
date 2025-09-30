@@ -1,12 +1,24 @@
 import { PrismaClient } from "#prisma";
+import { env } from "#settings";
 import { Redis } from "ioredis";
-
+/*
+import { readFileSync } from "fs"
+import { dirname, join } from "path";
+import { fileURLToPath } from "url";
+*/
 export const prisma = new PrismaClient();
 export * from "./erisHelper.js";
 export * from "./devzone.js";
 
 // Usar rediss:// com usuário e senha
-const redisUrl = process.env.REDIS_URL!;
+const redisUrl = env.REDIS_URL;
+
+/*
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+const certificate = readFileSync(join(__dirname, `../../certs/certificate.pem`));
+*/
 
 export const redis = new Redis(redisUrl, {
     maxRetriesPerRequest: 100, // Mais tentativas
@@ -20,8 +32,13 @@ export const redis = new Redis(redisUrl, {
     enableOfflineQueue: true, // Fila comandos enquanto offline
     enableReadyCheck: true, // Verifica estado ready
     lazyConnect: true, // Conectar manualmente
+    /*
     tls: {
-        rejectUnauthorized: false, // Ignorar certificados autoassinados (teste)
+        rejectUnauthorized: true, // Ignorar certificados autoassinados (teste)
         // Em produção, use rejectUnauthorized: true e forneça CA se necessário
+        ca: certificate,
+        key: certificate,
+        cert: certificate,
     },
+    */
 });
