@@ -81,7 +81,83 @@ createCommand({
                 "es-ES": "ver detalles de una mascota",
                 "pt-BR": "veja detalhes de um pet"
             }
+        },
+        {
+            name: "care",
+            nameLocalizations: {
+                "pt-BR": "cuidar",
+                "es-ES": "cuidar"
+            },
+            description: "take care of your pet",
+            descriptionLocalizations: {
+                "pt-BR": "cuidar de seu pet",
+                "es-ES": "cuidar de tu mascota"
+            },
+            type: ApplicationCommandOptionType.Subcommand,
+            options: [
+                {
+                    name: "pet",
+                    nameLocalizations: {
+                        "pt-BR": "pet",
+                        "es-ES": "mascota"
+                    },
+                    description: "pet to take care of",
+                    descriptionLocalizations: {
+                        "pt-BR": "pet para cuidar",
+                        "es-ES": "mascota para cuidar"
+                    },
+                    type: ApplicationCommandOptionType.String,
+                    autocomplete: true,
+                    required: true
+                }
+            ]
+        },
+        {
+            name: "breed",
+            nameLocalizations: {
+                "pt-BR": "reproduzir",
+                "es-ES": "reproducir"
+            },
+            description: "breed two pets",
+            descriptionLocalizations: {
+                "pt-BR": "reproduzir dois pets",
+                "es-ES": "reproducir dos mascotas"
+            },
+            type: ApplicationCommandOptionType.Subcommand,
+            options: [
+                {
+                    name: "pet1",
+                    nameLocalizations: {
+                        "pt-BR": "pet1",
+                        "es-ES": "mascota1"
+                    },
+                    description: "first pet to breed",
+                    descriptionLocalizations: {
+                        "pt-BR": "primeiro pet para reproduzir",
+                        "es-ES": "primera mascota para reproducir"
+                    },
+                    type: ApplicationCommandOptionType.String,
+                    autocomplete: true,
+                    required: true
+                },
+                {
+                    name: "pet2",
+                    nameLocalizations: {
+                        "pt-BR": "pet2",
+                        "es-ES": "mascota2"
+                    },
+                    description: "second pet to breed (if it doesn’t appear then it’s not compatible)",
+                    descriptionLocalizations: {
+                        "pt-BR": "segundo pet para reproduzir (se não aparecer então não é compatível)",
+                        "es-ES": "segunda mascota para reproducir (si no aparece entonces no es compatible)"
+                    },
+                    type: ApplicationCommandOptionType.String,
+                    autocomplete: true,
+                    required: true
+                }
+            ]
         }
+
     ],
     nameLocalizations: {
         "es-ES": "mascota",
@@ -94,7 +170,7 @@ createCommand({
     async autocomplete(interaction) {
         const { user, options } = interaction;
         const focused = options.getFocused(true);
-        // const subcommand = options.getSubcommand();
+        const subcommand = options.getSubcommand();
 
         if (focused.name === "pet") {
             const pets = await prisma.userPet.findMany({
@@ -108,10 +184,86 @@ createCommand({
                 select: {
                     id: true,
                     name: true
-                }
+                },
+                take: 25
             });
             await interaction.respond(pets.map(pet => ({ name: pet.name, value: pet.id.toString() })));
             return;
+        }
+
+        switch (subcommand) {
+            case "breed": {
+                if (focused.name === "pet1") {
+                    const pets = await prisma.userPet.findMany({
+                        where: {
+                            userId: user.id,
+                            name: {
+                                contains: focused.value,
+                                mode: "insensitive"
+                            },
+                            pregnantEndAt: null,
+                            isPregnant: false,
+                            adoption: null,
+                            isDead: false,
+                        },
+                        select: {
+                            id: true,
+                            name: true
+                        },
+                        take: 25
+                    });
+                    
+                    if (pets.length < 1) {
+                        return await interaction.respond([{ name: "não existe pets disponiveis!", value: "null" }])
+                    }
+
+                    await interaction.respond(pets.map(pet => ({ name: pet.name, value: pet.id.toString() })));
+                } else {
+                    const pet1Id = Number(options.getString("pet1"));
+
+                    const pet1Info = await prisma.userPet.findUnique({
+                        where: { id: pet1Id },
+                        include: {
+                            pet: true
+                        }
+                    });
+
+                    if (!pet1Info) {
+                        return await interaction.respond([{ name: "pet 1 inválido!", value: "null" }])
+                    }
+
+                    const pets = await prisma.userPet.findMany({
+                        where: {
+                            userId: user.id,
+                            id: { not: pet1Id },
+                            name: {
+                                contains: focused.value,
+                                mode: "insensitive"
+                            },
+                            gender: { not: pet1Info.gender },
+                            pet: {
+                                animal: pet1Info.pet.animal
+                            },
+                            pregnantEndAt: null,
+                            isPregnant: false,
+                            adoption: null,
+                            isDead: false,
+                        },
+                        select: {
+                            id: true,
+                            name: true
+                        },
+                        take: 25
+                    });
+
+                    if (pets.length < 1) {
+                        return await interaction.respond([{ name: "não existe pets disponiveis!", value: "null" }])
+                    }
+
+                    await interaction.respond(pets.map(pet => ({ name: pet.name, value: pet.id.toString() })));
+                }
+                return;
+            }
         }
 
         return await interaction.respond([{ name: "Essa função ainda não foi implementada", value: "null" }]);

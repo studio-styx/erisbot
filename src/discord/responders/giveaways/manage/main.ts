@@ -116,7 +116,7 @@ createResponder({
                             required: true,
                             minLength: 1,
                             maxLength: config?.maxLength ?? 50,
-                            value: value ?? undefined,
+                            value: value ? value.length < 1 ? undefined : value : undefined
                         },
                     }),
                 });

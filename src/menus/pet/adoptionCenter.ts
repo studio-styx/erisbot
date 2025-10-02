@@ -58,7 +58,7 @@ export function adoptionCenterMenu<R>(allPets: (AdoptionCenter & { userPet: (Use
         )
     )
 
-    const container = createContainer(settings.colors.azoxo, ...components);
+    const container = createContainer(settings.colors.fuchsia, ...components);
 
     return ({
         flags: ["Ephemeral", "IsComponentsV2"],
