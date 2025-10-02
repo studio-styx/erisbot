@@ -413,6 +413,11 @@ model UserPet {
   isDead    Boolean   @default(false)
   createdAt DateTime  @default(now())
   gender    Gender
+  isPregnant Boolean  @default(false)
+  pregnantEndAt DateTime?
+  personality UserPetPersonality[]
+  humor      String   @default("normal")
+  updatedAt DateTime  @updatedAt()
 
   // Hereditariedade
   parent1Id Int?
@@ -429,6 +434,25 @@ model UserPet {
   pet      Pet       @relation(fields: [petId], references: [id], onDelete: Cascade)
   skills   UserPetSkill[]
   adoption AdoptionCenter?
+}
+
+model PersonalityTrait {
+  id   Int    @id @default(autoincrement())
+  name String @unique
+
+  isDominant    Boolean @default(false)
+  isRecessive Boolean @default(false)
+
+  userPetPersonalities UserPetPersonality[]
+}
+
+model UserPetPersonality {
+  id        Int @id @default(autoincrement())
+  userPetId Int
+  traitId   Int
+
+  userPet  UserPet         @relation(fields: [userPetId], references: [id])
+  trait    PersonalityTrait @relation(fields: [traitId], references: [id])
 }
 
 model Genetics {

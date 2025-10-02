@@ -20,6 +20,7 @@ import { startRankingMenu } from "./leaderboard/startRanking.js";
 import { ignoreTagMenu } from "./mail/ignoreTag.js";
 import { userMailsMenu } from "./mail/userMails.js";
 import { fishMenu } from "./minigames/fish.js";
+import { adoptionCenterMenu } from "./pet/adoptionCenter.js";
 import { dashboardMenu } from "./settings/dashboard.js";
 import { questionMenu } from "./tryviaGame/question.js";
 import { userLogsMenu } from "./userLogs.js";
@@ -75,5 +76,8 @@ export const menus = {
     },
     minigames: {
         fishing: fishMenu,
+    },
+    pets: {
+        adoptionCenter: adoptionCenterMenu
     }
 }

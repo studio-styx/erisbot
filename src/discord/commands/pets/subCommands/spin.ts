@@ -1,6 +1,6 @@
 import { prisma } from "#database";
-import { getRandomValue, icon, res, resv2 } from "#functions";
-import { Animal, Gender, Rarity } from "#prisma";
+import { getRandomValue, icon, petAnimalFormatted, petRarityFormatted, res, resv2 } from "#functions";
+import { Gender, Rarity } from "#prisma";
 import { brBuilder, createRow, createSeparator } from "@magicyan/discord";
 import { ButtonBuilder, ButtonStyle, ChatInputCommandInteraction, time } from "discord.js";
 
@@ -28,30 +28,11 @@ const randomNames: Record<Gender, string[]> = {
     ]
 };
 
-const petRarityFormatted: Record<Rarity, string> = {
-    COMUM: "Comum",
-    UNCOMUM: "Incomum",
-    RARE: "Raro",
-    EPIC: "Épico",
-    LEGENDARY: "Lendário"
-};
-
-const petAnimalFormatted: Record<Animal, string> = {
-    CAT: "Gato",
-    DOG: "Cachorro",
-    RABBIT: "Coelho",
-    BIRD: "Pássaro",
-    DRAGON: "Dragão",
-    HAMSTER: "Hamster",
-    JAGUAR: "Onça",
-    LION: "Leão"
-};
-
 function getRandomRarity(): Rarity {
     const weights = Object.entries(rarityWeights) as [Rarity, number][];
     const totalWeight = weights.reduce((sum, [, weight]) => sum + weight, 0);
     const cumulativeWeights = weights.reduce((acc, [rarity, weight], i) => {
-        acc.push([rarity, (acc[i-1]?.[1] || 0) + weight]);
+        acc.push([rarity, (acc[i - 1]?.[1] || 0) + weight]);
         return acc;
     }, [] as [Rarity, number][]);
 
@@ -78,18 +59,30 @@ async function createUserPet(
     gender: Gender,
     name: string
 ) {
-    const geneticsCatalog = await prisma.genetics.findMany({ where: { petId } });
-    const possibleSkills = await prisma.petSkill.findMany();
-    
+    const [geneticsCatalog, possibleSkills, possibleTraits] = await prisma.$transaction([
+        prisma.genetics.findMany({ where: { petId } }),
+        prisma.petSkill.findMany(),
+        prisma.personalityTrait.findMany()
+    ])
+
+    // Criar genética
     const userPetGenetics = geneticsCatalog.map(gene => ({
         geneId: gene.id,
         inheritedFromParent1: false,
         inheritedFromParent2: false
     }));
 
+    // Chance de 40% de começar com uma skill
     const userPetSkills = Math.random() <= 0.4 && possibleSkills.length > 0
         ? [{ skillId: getRandomValue(possibleSkills).id, level: 1 }]
         : [];
+
+    // Escolher 1–2 personalidades (ajustável)
+    const shuffled = [...possibleTraits].sort(() => Math.random() - 0.5);
+    const selectedTraits = shuffled.slice(0, Math.random() < 0.3 ? 2 : 1); 
+    const userPetPersonalities = selectedTraits.map(trait => ({
+        traitId: trait.id
+    }));
 
     const [_, userPet] = await prisma.$transaction([
         prisma.user.upsert({
@@ -104,17 +97,20 @@ async function createUserPet(
                 gender,
                 name,
                 genetics: { create: userPetGenetics },
-                skills: { create: userPetSkills }
+                skills: { create: userPetSkills },
+                personality: { create: userPetPersonalities }
             },
             include: {
                 genetics: true,
-                skills: { include: { skill: true } }
+                skills: { include: { skill: true } },
+                personality: { include: { trait: true } }
             }
         })
     ]);
 
     return userPet;
 }
+
 
 async function setCooldown(userId: string) {
     const cooldownEnd = new Date(Date.now() + 1000 * 60 * 120); // 2 horas

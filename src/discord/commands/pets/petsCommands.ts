@@ -2,6 +2,10 @@ import { createCommand } from "#base";
 import { ApplicationCommandType, ApplicationCommandOptionType } from "discord.js";
 import { petSpin } from "./subCommands/spin.js";
 import { icon, res } from "#functions";
+import { adoptPetCommand } from "./subCommands/adopt.js";
+import { realeasePetCommand } from "./subCommands/release.js";
+import { prisma } from "#database";
+import { petInfoCommand } from "./subCommands/petInfo.js";
 
 createCommand({
     name: "pet",
@@ -19,28 +23,6 @@ createCommand({
             descriptionLocalizations: {
                 "es-ES": "gira y consigue una mascota aleatoria",
                 "pt-BR": "gire a roleta e consiga um pet aleatório"
-            }
-        },
-        {
-            name: "dashboard",
-            description: "pet dashboard",
-            type: ApplicationCommandOptionType.Subcommand,
-            options: [
-                {
-                    name: "pet",
-                    description: "pet id",
-                    type: ApplicationCommandOptionType.String,
-                    required: false,
-                    autocomplete: true
-                }
-            ],
-            nameLocalizations: {
-                "es-ES": "panel",
-                "pt-BR": "painel"
-            },
-            descriptionLocalizations: {
-                "es-ES": "panel de mascota",
-                "pt-BR": "painel de pets"
             }
         },
         {
@@ -109,6 +91,31 @@ createCommand({
         "es-ES": "comandos de mascota",
         "pt-BR": "comandos de pet"
     },
+    async autocomplete(interaction) {
+        const { user, options } = interaction;
+        const focused = options.getFocused(true);
+        // const subcommand = options.getSubcommand();
+
+        if (focused.name === "pet") {
+            const pets = await prisma.userPet.findMany({
+                where: {
+                    userId: user.id,
+                    name: {
+                        contains: focused.value,
+                        mode: "insensitive"
+                    }
+                },
+                select: {
+                    id: true,
+                    name: true
+                }
+            });
+            await interaction.respond(pets.map(pet => ({ name: pet.name, value: pet.id.toString() })));
+            return;
+        }
+
+        return await interaction.respond([{ name: "Essa função ainda não foi implementada", value: "null" }]);
+    },
     async run(interaction) {
         const { options } = interaction;
         const subcommand = options.getSubcommand();
@@ -116,6 +123,18 @@ createCommand({
         switch (subcommand) {
             case "spin": {
                 await petSpin(interaction);
+                break;
+            }
+            case "adopt": {
+                await adoptPetCommand(interaction);
+                break;
+            }
+            case "release": {
+                await realeasePetCommand(interaction);
+                break;
+            }
+            case "info": {
+                await petInfoCommand(interaction);
                 break;
             }
             default: {
