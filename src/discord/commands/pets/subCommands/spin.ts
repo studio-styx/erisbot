@@ -125,25 +125,26 @@ async function setCooldown(userId: string) {
 export async function petSpin(interaction: ChatInputCommandInteraction<"cached">) {
     const { user } = interaction;
     await interaction.deferReply();
-
+    
     // Verificar cooldown
     const cooldown = await prisma.cooldown.findUnique({
         where: { userId_name: { userId: user.id, name: "petSpin" } }
     });
-
+    
     if (cooldown && cooldown.willEndIn > new Date()) {
         await interaction.editReply(res.danger(
-            `${icon.denied} | Você está em cooldown! Você pode girar pets em ${time(cooldown.willEndIn, "R")}`
+            `${icon.denied} | Você está em cooldown! Você pode girar pets novamente ${time(cooldown.willEndIn, "R")}`
         ));
         return;
     }
-
+    
     // Sortear raridade e pet
+    await interaction.editReply(resv2.warning(`${icon.waiting_white} | Girando roleta...`))
     const rarity = getRandomRarity();
     const pet = await getRandomPet(rarity);
 
     if (!pet) {
-        await interaction.editReply(res.danger(
+        await interaction.editReply(resv2.danger(
             `${icon.error} | Não foi possível encontrar um pet adequado! Desculpe-me, isso é um erro meu! ${icon.Eris_cry}`
         ));
         return;

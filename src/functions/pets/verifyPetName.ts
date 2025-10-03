@@ -1,13 +1,19 @@
 export function verifyPetName(name: string): string[] {
     const errors: string[] = [];
 
+    if (/^@everyone$|^@here$/i.test(name.trim())) {
+        errors.push("O nome contém menções proibidas (@everyone/@here).");
+    }
+
+
     // Lista negra expandida
     const blacklistNames = [
         "eris", "éris", "porra", "desgraça", "fdp", "puta", "puto", "merda", "merdinha",
         "caralho", "nazista", "nazismo", "narcizista", "desgraçado", "putinha", "diabo",
         "deus", "jesus", "demonio", "demônio", "deusa", "foda", "bosta", "cabrao", "cabra",
         "bicha", "viado", "bucha", "cacete", "filho da puta", "piranha", "idiota", "burro",
-        "imbecil", "maldito", "diabinho", "inferno", "putaqueopariu", "@everyone", "@here"
+        "imbecil", "maldito", "diabinho", "inferno", "putaqueopariu", "@everyone", "@here",
+        "god", "hitler", "stalin", "trump", "bolsonaro", "boso", "lula"
     ];
 
     // Normaliza o nome: remove acentos, deixa minúsculo e retira números e caracteres especiais

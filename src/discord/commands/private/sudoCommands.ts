@@ -2,7 +2,7 @@ import { createCommand } from "#base";
 import { prisma } from "#database";
 import { stocksEventuals, res, icon, processApiQuestions } from "#functions";
 import { menus } from "#menus";
-import { Mails, Rarity } from "#prisma";
+import { GeneType, Mails, PetGeneticsColorPart, Rarity } from "#prisma";
 import { settings } from "#settings";
 import { brBuilder, createContainer, createSeparator } from "@magicyan/discord";
 import { ApplicationCommandOptionType, ApplicationCommandType, time } from "discord.js";
@@ -21,11 +21,6 @@ createCommand({
             name: "test",
             description: "test function",
             type: ApplicationCommandOptionType.Subcommand,
-        },
-        {
-            name: "giveawaystress",
-            description: "make a giveaway stress",
-            type: ApplicationCommandOptionType.Subcommand
         },
         {
             name: "force-stock-variation",
@@ -117,6 +112,11 @@ createCommand({
             name: "force-pipeline",
             description: "force pipeline",
             type: ApplicationCommandOptionType.Subcommand,
+        },
+        {
+            name: "povoar",
+            description: "povoar",
+            type: ApplicationCommandOptionType.Subcommand
         }
     ],
     async autocomplete(interaction) {
@@ -677,474 +677,162 @@ createCommand({
                 interaction.reply(menus.dev.dashboard())
                 return;
             }
-            /*
-            case "giveawaystress": {
+            case "povoar": {
                 await interaction.deferReply();
+                await interaction.editReply(res.warning(`${icon.waiting_white} | Iniciando povoamento...`));
 
-                const giveawaysExpiresAt = new Date(Date.now() + 1000 * 60 * 4); // 4 minutos
-                const staggeredExpiresAt = new Date(giveawaysExpiresAt.getTime() + 1000 * 30); // 30s depois
+                const TIMEOUT_MS = 30_000; // 30 segundos
 
-                await interaction.editReply(res.warning(`${icon.waiting_white} | Fazendo estresse para o horário ${time(giveawaysExpiresAt, "D")}`));
+                try {
+                    // Promise que rejeita após TIMEOUT_MS
+                    const timeoutPromise = new Promise((_, reject) =>
+                        setTimeout(() => reject(new Error("TIMEOUT")), TIMEOUT_MS)
+                    );
 
-                const giveawaysToDate = 30;
-                const ids = [
-                    { channelId: "1397264957736882196", guildId: "1397263644315750411" },
-                    { channelId: "1418740291736961124", guildId: "1397263644315750411" },
-                    { channelId: "1397264968520433755", guildId: "1397263644315750411" },
-                    { channelId: "1397264957736882196", guildId: "1397263644315750411" },
-                    { channelId: "1397263817049636884", guildId: "1397263644315750411" },
-                    { guildId: "1395383469210865694", channelId: "1395418989911478362" },
-                    { guildId: "1172930138770526248", channelId: "1172930138770526251" },
-                    { guildId: "1172930138770526248", channelId: "1178024982887014470" },
-                ];
-
-                // IDs únicos de guilds para sorteios conectados
-                const uniqueGuildIds = [...new Set(ids.map(id => id.guildId))];
-                console.log(`DEBUG: Guilds únicas disponíveis: ${uniqueGuildIds.length} - ${uniqueGuildIds.join(', ')}`);
-
-                let localId = 110;
-                let successCount = 0;
-                let errorCount = 0;
-
-                // PRIMEIRO LOOP: 30 sorteios principais
-                console.log(`🔄 Criando ${giveawaysToDate} sorteios principais...`);
-                for (let i = 0; i < giveawaysToDate; i++) {
-                    try {
-                        const isConnectedGiveaway = Math.random() < 0.3; // 30% de chance de ser conectado
-                        const isUniversalGiveaway = i === 0; // Primeiro sorteio é universal (conectado a todos)
-
-                        // Dados base do sorteio
-                        const giveawayData = {
-                            expiresAt: giveawaysExpiresAt,
-                            title: `Sorteio de Estresse ${i + 1}`,
-                            description: `Sorteio de teste de estresse - ${isConnectedGiveaway ? 'CONECTADO' : 'SIMPLES'} ${isUniversalGiveaway ? '(UNIVERSAL)' : ''}`,
-                            localId: localId + i,
-                            serverStayRequired: false, // Simplificado para testes
-                            usersWins: 1
-                        };
-
-                        // Criar sorteio no banco
-                        const giveawayCreated = await prisma.giveaway.create({
-                            data: giveawayData
-                        });
-
-                        let connectedGuildCount = 0;
-
-                        if (isConnectedGiveaway || isUniversalGiveaway) {
-                            // Sorteio conectado - conectar a múltiplas guilds
-                            const guildsToConnect = isUniversalGiveaway
-                                ? uniqueGuildIds // Todos os servers
-                                : uniqueGuildIds.slice(0, Math.floor(Math.random() * 3) + 1); // 1-3 servers aleatórios
-
-                            console.log(`DEBUG: Sorteio ${giveawayCreated.id} será conectado a ${guildsToConnect.length} guilds`);
-
-                            // Criar conexões para cada guild
-                            const guildConnections = guildsToConnect.map(async (guildId, index) => {
-                                const id = ids.find(item => item.guildId === guildId);
-                                if (!id) return null;
-
-                                const guild = interaction.client.guilds.cache.get(guildId);
-                                if (!guild) return null;
-
-                                const channel = guild.channels.cache.get(id.channelId);
-                                if (!channel || !channel.isTextBased()) return null;
-
-                                // Criar mensagem placeholder para messageId
-                                const placeholderMessageId = `placeholder_${giveawayCreated.id}_${guildId}`;
-
-                                const connectionData = {
-                                    giveawayId: giveawayCreated.id,
-                                    channelId: channel.id,
-                                    guildId: guild.id,
-                                    messageId: placeholderMessageId,
-                                    blackListRoles: [],
-                                    xpRequired: null,
-                                    isHost: index === 0 // Primeira guild é host
-                                };
-
-                                return {
-                                    data: connectionData,
-                                    channel,
-                                    guildName: guild.name
-                                };
+                    // Promise com a transação
+                    const txPromise = (async () => {
+                        await prisma.$transaction(async (tx) => {
+                            // 1) Pets (muito mais entradas)
+                            await interaction.editReply(res.warning(`${icon.waiting_white} | Criando pets...`));
+                            await tx.pet.createMany({
+                                data: [
+                                    { name: "Gato Siamês", rarity: "COMUM", price: 200, animal: "CAT", specie: "Siamese" },
+                                    { name: "Gato Persa", rarity: "RARE", price: 450, animal: "CAT", specie: "Persian" },
+                                    { name: "Gato de Rua", rarity: "COMUM", price: 80, animal: "CAT", specie: "Street" },
+                                    { name: "Cachorro Labrador", rarity: "RARE", price: 500, animal: "DOG", specie: "Labrador" },
+                                    { name: "Cachorro Husky", rarity: "EPIC", price: 1500, animal: "DOG", specie: "Husky" },
+                                    { name: "Cachorro Pug", rarity: "UNCOMUM", price: 300, animal: "DOG", specie: "Pug" },
+                                    { name: "Papagaio", rarity: "UNCOMUM", price: 350, animal: "BIRD", specie: "Parrot" },
+                                    { name: "Canário", rarity: "COMUM", price: 90, animal: "BIRD", specie: "Canary" },
+                                    { name: "Hamster Sírio", rarity: "COMUM", price: 100, animal: "HAMSTER", specie: "Syrian" },
+                                    { name: "Hamster Anão", rarity: "UNCOMUM", price: 140, animal: "HAMSTER", specie: "Dwarf" },
+                                    { name: "Coelho Branco", rarity: "UNCOMUM", price: 250, animal: "RABBIT", specie: "White" },
+                                    { name: "Coelho Selvagem", rarity: "COMUM", price: 110, animal: "RABBIT", specie: "Wild" },
+                                    { name: "Dragão Verde", rarity: "LEGENDARY", price: 5000, animal: "DRAGON", specie: "Emerald" },
+                                    { name: "Dragão de Fogo", rarity: "LEGENDARY", price: 5500, animal: "DRAGON", specie: "Inferno" },
+                                    { name: "Dragão Ancião", rarity: "EPIC", price: 3000, animal: "DRAGON", specie: "Elder" },
+                                    { name: "Leão Africano", rarity: "EPIC", price: 2000, animal: "LION", specie: "African" },
+                                    { name: "Leão Branco", rarity: "RARE", price: 1800, animal: "LION", specie: "White" },
+                                    { name: "Jaguar Preto", rarity: "EPIC", price: 2500, animal: "JAGUAR", specie: "Black" },
+                                    { name: "Jaguar das Selvas", rarity: "RARE", price: 1600, animal: "JAGUAR", specie: "Jungle" },
+                                    { name: "Fênix", rarity: "LEGENDARY", price: 6000, animal: "BIRD", specie: "Phoenix" },
+                                    { name: "Gato Selvagem", rarity: "RARE", price: 700, animal: "CAT", specie: "Wildcat" },
+                                    { name: "Cão Pastor", rarity: "UNCOMUM", price: 400, animal: "DOG", specie: "Shepherd" },
+                                    { name: "Pássaro do Paraíso", rarity: "EPIC", price: 2200, animal: "BIRD", specie: "Paradise" },
+                                    { name: "Coelho Lunar", rarity: "RARE", price: 900, animal: "RABBIT", specie: "Lunar" }
+                                ]
                             });
 
-                            const validConnections = (await Promise.all(guildConnections)).filter(Boolean);
-                            connectedGuildCount = validConnections.length;
-
-                            if (connectedGuildCount > 0) {
-                                // Criar todas as conexões em uma transação
-                                await prisma.$transaction([
-                                    ...validConnections.map(({ data }) => prisma.guildGiveaway.create({ data })),
-                                    // Adicionar participante
-                                    prisma.userGiveaway.create({
-                                        data: {
-                                            giveawayId: giveawayCreated.id,
-                                            userId: "1171963692984844401",
-                                            isWinner: false
-                                        }
-                                    })
-                                ]);
-
-                                // Enviar mensagens para todas as guilds conectadas
-                                const messagePromises = validConnections.map(async ({ channel, guildName }) => {
-                                    try {
-                                        const dbConnectedGuilds = await prisma.guildGiveaway.findMany({
-                                            where: { giveawayId: giveawayCreated.id, guildId: guild.id }
-                                        });
-
-                                        const connectedGuildsWithNames = dbConnectedGuilds.map(g => ({
-                                            ...g,
-                                            guildName: guild.name
-                                        }));
-
-                                        const completeData = {
-                                            ...giveawayCreated,
-                                            roleEntries: [],
-                                            connectedGuilds: connectedGuildsWithNames.map(g => ({ ...g, guildName: guild.name })),
-                                            participants: [{
-                                                userId: "1171963692984844401",
-                                                isWinner: false,
-                                                giveawayId: giveawayCreated.id,
-                                                id: 0,
-                                                createdAt: new Date()
-                                            }]
-                                        };
-                                        const message = await channel.send(
-                                            menus.giveaway.giveawayInterface(completeData, channel.guildId)
-                                        );
-
-                                        // Atualizar messageId real
-                                        await prisma.guildGiveaway.updateMany({
-                                            where: {
-                                                giveawayId: giveawayCreated.id,
-                                                guildId: channel.guildId,
-                                                messageId: { startsWith: `placeholder_${giveawayCreated.id}` }
-                                            },
-                                            data: { messageId: message.id }
-                                        });
-
-                                        console.log(`✅ Mensagem enviada para ${guildName} (${channel.id})`);
-                                        return true;
-                                    } catch (error) {
-                                        console.error(`❌ Erro ao enviar mensagem para ${guildName}:`, error);
-                                        return false;
-                                    }
-                                });
-
-                                const messageResults = await Promise.all(messagePromises);
-                                const successMessages = messageResults.filter(Boolean).length;
-
-                                console.log(`🎯 Sorteio ${giveawayCreated.id} conectado: ${successMessages}/${connectedGuildCount} mensagens enviadas`);
-                            }
-                        } else {
-                            // Sorteio simples - apenas uma guild
-                            const id = ids[Math.floor(Math.random() * ids.length)];
-                            const guild = interaction.client.guilds.cache.get(id.guildId);
-
-                            if (guild) {
-                                const channel = guild.channels.cache.get(id.channelId);
-                                if (channel && channel.isTextBased()) {
-                                    // Criar conexão simples
-                                    await prisma.$transaction([
-                                        prisma.guildGiveaway.create({
-                                            data: {
-                                                giveawayId: giveawayCreated.id,
-                                                channelId: channel.id,
-                                                guildId: guild.id,
-                                                messageId: `placeholder_${giveawayCreated.id}`,
-                                                blackListRoles: [],
-                                                xpRequired: null
-                                            }
-                                        }),
-                                        // Adicionar participante
-                                        prisma.userGiveaway.create({
-                                            data: {
-                                                giveawayId: giveawayCreated.id,
-                                                userId: "1171963692984844401",
-                                                isWinner: false
-                                            }
-                                        })
-                                    ]);
-
-                                    try {
-                                        const dbConnectedGuilds = await prisma.guildGiveaway.findMany({
-                                            where: { giveawayId: giveawayCreated.id, guildId: guild.id }
-                                        });
-
-                                        const connectedGuildsWithNames = dbConnectedGuilds.map(g => ({
-                                            ...g,
-                                            guildName: guild.name
-                                        }));
-
-                                        const completeData = {
-                                            ...giveawayCreated,
-                                            roleEntries: [],
-                                            connectedGuilds: connectedGuildsWithNames.map(g => ({ ...g, guildName: guild.name })),
-                                            participants: [{
-                                                userId: "1171963692984844401",
-                                                isWinner: false,
-                                                giveawayId: giveawayCreated.id,
-                                                id: 0,
-                                                createdAt: new Date()
-                                            }]
-                                        };
-
-                                        const message = await channel.send(
-                                            menus.giveaway.giveawayInterface(completeData, guild.id)
-                                        );
-
-                                        // Atualizar messageId real
-                                        await prisma.guildGiveaway.update({
-                                            where: {
-                                                guildId_giveawayId: {
-                                                    guildId: guild.id,
-                                                    giveawayId: giveawayCreated.id
-                                                }
-                                            },
-                                            data: { messageId: message.id }
-                                        });
-
-                                        connectedGuildCount = 1;
-                                        console.log(`✅ Sorteio simples ${giveawayCreated.id} criado em ${guild.name}`);
-                                    } catch (error) {
-                                        console.error(`❌ Erro ao criar sorteio simples ${giveawayCreated.id}:`, error);
-                                    }
-                                }
-                            }
-                        }
-
-                        if (connectedGuildCount > 0) {
-                            successCount++;
-                            // Agendar finalização se for sorteio curto
-                            if (giveawayCreated.expiresAt.getTime() <= Date.now() + 1000 * 60 * 12) {
-                                console.log(`⏰ Agendando finalização imediata para sorteio ${giveawayCreated.id}`);
-                                // Aqui você pode chamar scheduleGiveaway se quiser testar o agendamento
-                            }
-                        } else {
-                            errorCount++;
-                            // Cleanup: deletar sorteio sem conexões
-                            await prisma.giveaway.delete({ where: { id: giveawayCreated.id } }).catch(() => { });
-                        }
-
-                    } catch (error) {
-                        console.error(`❌ Erro ao criar sorteio ${i + 1}:`, error);
-                        errorCount++;
-                    }
-                }
-
-                // SEGUNDO LOOP: 10 sorteios escalonados (expiram 30s depois)
-                console.log(`\n🔄 Criando 10 sorteios escalonados...`);
-                const staggeredGiveaways = 10;
-                let staggeredSuccess = 0;
-
-                for (let i = 0; i < staggeredGiveaways; i++) {
-                    try {
-                        const staggeredExpiresAtOffset = new Date(staggeredExpiresAt.getTime() + (i * 1000 * 5)); // 5s entre cada
-                        const isStaggeredConnected = Math.random() < 0.4; // 40% chance de conectado
-
-                        const giveawayData = {
-                            expiresAt: staggeredExpiresAtOffset,
-                            title: `Sorteio Escal. ${i + 1}`,
-                            description: `Sorteio escalonado de teste - Expira ${time(staggeredExpiresAtOffset, "R")}s`,
-                            localId: localId + giveawaysToDate + i,
-                            serverStayRequired: false,
-                            usersWins: 1
-                        };
-
-                        const giveawayCreated = await prisma.giveaway.create({
-                            data: giveawayData
-                        });
-
-                        let connectedGuildCount = 0;
-
-                        if (isStaggeredConnected) {
-                            // Conectar a 1-2 guilds aleatórias
-                            const guildsToConnect = uniqueGuildIds.slice(0, Math.floor(Math.random() * 2) + 1);
-
-                            const validConnections = guildsToConnect.map(async (guildId) => {
-                                const id = ids.find(item => item.guildId === guildId);
-                                if (!id) return null;
-
-                                const guild = interaction.client.guilds.cache.get(guildId);
-                                if (!guild) return null;
-
-                                const channel = guild.channels.cache.get(id.channelId);
-                                if (!channel || !channel.isTextBased()) return null;
-
-                                const placeholderMessageId = `staggered_${giveawayCreated.id}_${guildId}`;
-
-                                await prisma.guildGiveaway.create({
-                                    data: {
-                                        giveawayId: giveawayCreated.id,
-                                        channelId: channel.id,
-                                        guildId: guild.id,
-                                        messageId: placeholderMessageId,
-                                        blackListRoles: [],
-                                        xpRequired: null
-                                    }
-                                });
-
-                                await prisma.userGiveaway.create({
-                                    data: {
-                                        giveawayId: giveawayCreated.id,
-                                        userId: "1171963692984844401",
-                                        isWinner: false
-                                    }
-                                });
-
-                                const dbConnectedGuilds = await prisma.guildGiveaway.findMany({
-                                    where: { giveawayId: giveawayCreated.id, guildId: guild.id }
-                                });
-
-                                const connectedGuildsWithNames = dbConnectedGuilds.map(g => ({
-                                    ...g,
-                                    guildName: guild.name
-                                }));
-
-                                const completeData = {
-                                    ...giveawayCreated,
-                                    roleEntries: [],
-                                    connectedGuilds: connectedGuildsWithNames.map(g => ({ ...g, guildName: guild.name })),
-                                    participants: [{
-                                        userId: "1171963692984844401",
-                                        isWinner: false,
-                                        giveawayId: giveawayCreated.id,
-                                        id: 0,
-                                        createdAt: new Date()
-                                    }]
-                                };
-
-                                const message = await channel.send(
-                                    menus.giveaway.giveawayInterface(completeData, guild.id)
-                                );
-
-                                await prisma.guildGiveaway.update({
-                                    where: {
-                                        guildId_giveawayId: {
-                                            guildId: guild.id,
-                                            giveawayId: giveawayCreated.id
-                                        }
-                                    },
-                                    data: { messageId: message.id }
-                                });
-
-                                return { guild: guild.name, channel: channel.id };
+                            // 2) Personality traits (com geneType variados)
+                            await interaction.editReply(res.warning(`${icon.waiting_white} | Criando personalidades...`));
+                            await tx.personalityTrait.createMany({
+                                data: [
+                                    { name: "calm", geneType: "NEUTRAL" },
+                                    { name: "playful", geneType: "CODOMINANT" },
+                                    { name: "curious", geneType: "CODOMINANT" },
+                                    { name: "shy", geneType: "RECESSIVE" },
+                                    { name: "brave", geneType: "DOMINANT" },
+                                    { name: "loyal", geneType: "DOMINANT" },
+                                    { name: "aggressive", geneType: "DOMINANT" },
+                                    { name: "lazy", geneType: "RECESSIVE" },
+                                    { name: "friendly", geneType: "CODOMINANT" },
+                                    { name: "stubborn", geneType: "RECESSIVE" },
+                                    { name: "gentle", geneType: "NEUTRAL" },
+                                    { name: "energetic", geneType: "CODOMINANT" },
+                                    { name: "protective", geneType: "DOMINANT" },
+                                    { name: "independent", geneType: "NEUTRAL" },
+                                    { name: "clingy", geneType: "RECESSIVE" },
+                                    { name: "timid", geneType: "RECESSIVE" },
+                                    { name: "mischievous", geneType: "CODOMINANT" },
+                                    { name: "patient", geneType: "NEUTRAL" },
+                                    { name: "dominant", geneType: "DOMINANT" },
+                                    { name: "submissive", geneType: "RECESSIVE" }
+                                ]
                             });
 
-                            const results = await Promise.all(validConnections);
-                            connectedGuildCount = results.filter(r => r !== null).length;
+                            // 3) Skills (mais opções)
+                            await interaction.editReply(res.warning(`${icon.waiting_white} | Criando skills...`));
+                            await tx.petSkill.createMany({
+                                data: [
+                                    { name: "daily_bonus" },
+                                    { name: "daily_cooldown_reduction" },
+                                    { name: "work_bonus" },
+                                    { name: "work_xp_bonus" },
+                                    { name: "job_interview_bonus" },
+                                    { name: "work_challenge_avoid" },
+                                    { name: "work_challenge_easier" },
+                                    { name: "slots_luck" },
+                                    { name: "coinflip_luck" },
+                                    { name: "horse_racing_luck" },
+                                    { name: "lottery_luck" },
+                                    { name: "training_discount" },
+                                    { name: "shop_discount" },
+                                    { name: "faster_cooldowns" },
+                                    { name: "extra_inventory_space" },
+                                    { name: "double_rewards_chance" },
+                                    { name: "event_rewards_bonus" },
+                                    { name: "friendship_boost" },
+                                    { name: "pet_synergy" }
+                                ]
+                            });
 
-                            if (connectedGuildCount > 0) {
-                                staggeredSuccess++;
-                                console.log(`✅ Sorteio escalonado ${giveawayCreated.id} criado (${connectedGuildCount} guilds)`);
+
+                            // 4) Genetics: criar várias traits por pet (muito mais geneticsData)
+                            await interaction.editReply(res.warning(`${icon.waiting_white} | Criando genéticas (múltiplas por espécie)...`));
+                            const allPets = await tx.pet.findMany();
+
+                            const geneticsData: { petId: number; trait: string; colorPart: PetGeneticsColorPart; geneType: GeneType; }[] = allPets.flatMap((p) => ([
+                                // olhos
+                                { petId: p.id, trait: "Olhos Azuis", colorPart: "EYE", geneType: "DOMINANT" },
+                                { petId: p.id, trait: "Olhos Verdes", colorPart: "EYE", geneType: "RECESSIVE" },
+                                { petId: p.id, trait: "Olhos Dourados", colorPart: "EYE", geneType: "CODOMINANT" },
+                                { petId: p.id, trait: "Olhos Pretos", colorPart: "EYE", geneType: "NEUTRAL" },
+
+                                // pelagem - primary
+                                { petId: p.id, trait: "Pelo Branco", colorPart: "COLOR1", geneType: "RECESSIVE" },
+                                { petId: p.id, trait: "Pelo Preto", colorPart: "COLOR1", geneType: "DOMINANT" },
+                                { petId: p.id, trait: "Pelo Dourado", colorPart: "COLOR1", geneType: "CODOMINANT" },
+                                { petId: p.id, trait: "Pelo Acinzentado", colorPart: "COLOR1", geneType: "NEUTRAL" },
+
+                                // pelagem - secondary / padrões
+                                { petId: p.id, trait: "Manchas", colorPart: "COLOR2", geneType: "CODOMINANT" },
+                                { petId: p.id, trait: "Listras", colorPart: "COLOR2", geneType: "NEUTRAL" },
+                                { petId: p.id, trait: "Patas Marrons", colorPart: "COLOR2", geneType: "NEUTRAL" },
+                                { petId: p.id, trait: "Sobrancelha Escura", colorPart: "COLOR2", geneType: "NEUTRAL" },
+
+                                // extras / especiais
+                                { petId: p.id, trait: "Sobrancelha Dourada", colorPart: "COLOR2", geneType: "RECESSIVE" },
+                                { petId: p.id, trait: "Pelo Listrado", colorPart: "COLOR2", geneType: "CODOMINANT" },
+                                { petId: p.id, trait: "Marca de Estrela", colorPart: "COLOR2", geneType: "NEUTRAL" },
+                                { petId: p.id, trait: "Olhos Luminosos", colorPart: "EYE", geneType: "DOMINANT" }
+                            ]));
+
+                            // Inserir todas as genetics
+                            // Para evitar problemas de limite por createMany, quebramos em chunks de 500
+                            const chunkSize = 500;
+                            for (let i = 0; i < geneticsData.length; i += chunkSize) {
+                                const chunk = geneticsData.slice(i, i + chunkSize);
+                                await tx.genetics.createMany({ data: chunk });
                             }
-                        } else {
-                            // Sorteio simples escalonado
-                            const id = ids[Math.floor(Math.random() * ids.length)];
-                            const guild = interaction.client.guilds.cache.get(id.guildId);
 
-                            if (guild) {
-                                const channel = guild.channels.cache.get(id.channelId);
-                                if (channel && channel.isTextBased()) {
-                                    await prisma.$transaction([
-                                        prisma.guildGiveaway.create({
-                                            data: {
-                                                giveawayId: giveawayCreated.id,
-                                                channelId: channel.id,
-                                                guildId: guild.id,
-                                                messageId: `staggered_${giveawayCreated.id}`,
-                                                blackListRoles: [],
-                                                xpRequired: null
-                                            }
-                                        }),
-                                        prisma.userGiveaway.create({
-                                            data: {
-                                                giveawayId: giveawayCreated.id,
-                                                userId: "1171963692984844401",
-                                                isWinner: false
-                                            }
-                                        })
-                                    ]);
+                            await interaction.editReply(res.warning(`${icon.waiting_white} | Genéticas criadas para ${allPets.length} pets.`));
+                        });
+                    })();
 
-                                    // Fetch the connectedGuilds from the database to get all required fields
-                                    const dbConnectedGuilds = await prisma.guildGiveaway.findMany({
-                                        where: { giveawayId: giveawayCreated.id, guildId: guild.id }
-                                    });
+                    // Roda transação com timeout
+                    await Promise.race([txPromise, timeoutPromise]);
 
-                                    const connectedGuildsWithNames = dbConnectedGuilds.map(g => ({
-                                        ...g,
-                                        guildName: guild.name
-                                    }));
-
-                                    const completeData = {
-                                        ...giveawayCreated,
-                                        roleEntries: [],
-                                        connectedGuilds: connectedGuildsWithNames.map(g => ({ ...g, guildName: guild.name })),
-                                        participants: [{
-                                            userId: "1171963692984844401",
-                                            isWinner: false,
-                                            giveawayId: giveawayCreated.id,
-                                            id: 0,
-                                            createdAt: new Date()
-                                        }]
-                                    };
-
-                                    const message = await channel.send(
-                                        menus.giveaway.giveawayInterface(completeData, guild.id)
-                                    );
-
-                                    await prisma.guildGiveaway.update({
-                                        where: {
-                                            guildId_giveawayId: {
-                                                guildId: guild.id,
-                                                giveawayId: giveawayCreated.id
-                                            }
-                                        },
-                                        data: { messageId: message.id }
-                                    });
-
-                                    connectedGuildCount = 1;
-                                    staggeredSuccess++;
-                                    console.log(`✅ Sorteio escalonado simples ${giveawayCreated.id} em ${guild.name}`);
-                                }
-                            }
-                        }
-
-                        if (connectedGuildCount === 0) {
-                            await prisma.giveaway.delete({ where: { id: giveawayCreated.id } }).catch(() => { });
-                        }
-
-                    } catch (error) {
-                        console.error(`❌ Erro ao criar sorteio escalonado ${i + 1}:`, error);
+                    await interaction.editReply(res.success(`${icon.success} | Povoamento concluído com sucesso!`));
+                } catch (err: any) {
+                    if (err.message === "TIMEOUT") {
+                        await interaction.editReply(res.danger(`${icon.error} | Tempo limite de 30 segundos atingido durante o povoamento.`));
+                    } else {
+                        await interaction.editReply(res.danger(`${icon.error} | Erro ao povoar: ${err.message}`));
                     }
                 }
-
-                // Relatório final
-                const totalCreated = successCount + staggeredSuccess;
-                const totalErrors = errorCount + (staggeredGiveaways - staggeredSuccess);
-
-                await interaction.editReply(res.success(
-                    `✅ **Estresse de Sorteios Concluído!**\n` +
-                    `📊 **Estatísticas:**\n` +
-                    `• ${successCount}/30 sorteios principais criados\n` +
-                    `• ${staggeredSuccess}/10 sorteios escalonados criados\n` +
-                    `• ${totalCreated} sorteios totais\n` +
-                    `• ${totalErrors} erros\n` +
-                    `⏰ Expiração principal: ${time(giveawaysExpiresAt, "d")}\n` +
-                    `⏰ Expiração escalonada: ${time(staggeredExpiresAt, "d")}`
-                ));
-
-                console.log(`\n🎉 RESUMO FINAL:\n` +
-                    `✅ ${successCount} sorteios principais OK\n` +
-                    `✅ ${staggeredSuccess} sorteios escalonados OK\n` +
-                    `❌ ${totalErrors} erros\n` +
-                    `⏰ Todos expiram em ${time(giveawaysExpiresAt, "d")}`);
-
-                scheduleAllEndGiveaways(interaction.client)
                 break;
             }
-            */
+
         }
     },
 });

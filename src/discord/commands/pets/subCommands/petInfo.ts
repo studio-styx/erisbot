@@ -60,6 +60,7 @@ export async function petInfoCommand(interaction: ChatInputCommandInteraction<"c
             `**Fome:** ${pet.hungry}/100`,
             `**Vida:** ${pet.life}/100`,
             `**Felicidade:** ${pet.happiness}/100`,
+            `**Energia:** ${pet.energy}/100`,
             `**Personalidades**: ${pet.personality.map(p => p.trait.name).join(", ")}`,
             `**Humor:** ${pet.humor}`,
             `**Habilidades:** ${pet.skills.length > 0 ? pet.skills.map(skill => `${skill.skill.name} - Nível ${skill.level}`).join(", ") : "Nenhuma"}`,
@@ -71,7 +72,7 @@ export async function petInfoCommand(interaction: ChatInputCommandInteraction<"c
                         : g.inheritedFromParent2
                             ? "Mãe"
                             : "Espécie";
-                    const dom = gene.isDominant ? "Dominante" : gene.isRecessive ? "Recessivo" : "—";
+                    const dom = gene.geneType === "DOMINANT" ? "Dominante" : gene.geneType === "CODOMINANT" ? "Codominante" : "recessivo";
                     return `${gene.trait} (${gene.colorPart}) [${dom}, herdado de ${origem}]`;
                 }).join("\n")
                 : "Nenhuma informação genética"

@@ -6,6 +6,8 @@ import { adoptPetCommand } from "./subCommands/adopt.js";
 import { realeasePetCommand } from "./subCommands/release.js";
 import { prisma } from "#database";
 import { petInfoCommand } from "./subCommands/petInfo.js";
+import { petCareCommand } from "./subCommands/petCare.js";
+import { petReproductionCommand } from "./subCommands/petReproduction.js";
 
 createCommand({
     name: "pet",
@@ -287,6 +289,14 @@ createCommand({
             }
             case "info": {
                 await petInfoCommand(interaction);
+                break;
+            }
+            case "care": {
+                await petCareCommand(interaction);
+                break;
+            }
+            case "breed": {
+                await petReproductionCommand(interaction);
                 break;
             }
             default: {

@@ -1,8 +1,24 @@
 import { createResponder, ResponderType } from "#base";
 import { prisma } from "#database";
-import { icon, res, resv2, verifyPetName } from "#functions";
+import { getRandomValue, icon, res, resv2, verifyPetName } from "#functions";
+import { Gender } from "#prisma";
 import { createModalFields } from "@magicyan/discord";
 import { TextInputStyle } from "discord.js";
+
+const randomNames: Record<Gender, string[]> = {
+    MALE: [
+        "Rex", "Bolt", "Max", "Thor", "Simba", "Leo", "Rocky", "Spike", "Odin", "Zeus",
+        "Milo", "Apollo", "Charlie", "Finn", "Hunter", "Shadow", "Toby", "Rusty", "Buster", "Ace",
+        "Duke", "Sammy", "Tiger", "Jack", "Lucky", "Bear", "Scout", "King", "Gizmo", "Cosmo",
+        "Ranger", "Blaze", "Samson", "Jasper", "Chico", "Bandit", "Oscar", "Hercules", "Finnick", "Arlo"
+    ],
+    FEMALE: [
+        "Luna", "Bella", "Mia", "Nala", "Athena", "Daisy", "Cleo", "Ruby", "Sophie", "Chloe",
+        "Lily", "Zoe", "Molly", "Rosie", "Willow", "Harper", "Stella", "Ivy", "Ella", "Jasmine",
+        "Sadie", "Penny", "Lucy", "Maya", "Roxy", "Nina", "Aurora", "Ginger", "Hazel", "Olivia",
+        "Fiona", "Flora", "Maisie", "Trixie", "Violet", "Mimi", "Coco", "Pepper", "Lacey", "Dottie"
+    ]
+};
 
 createResponder({
     customId: "pet/spin/:action/:userId/:petId",
@@ -27,7 +43,7 @@ createResponder({
             // verificar se o nome possui algo de errado
             const errors = verifyPetName(name);
             if (errors.length > 0) {
-                interaction.reply(res.danger(`${icon.denied} | ${errors.map(e => `**\`${e}\`**`).join(", ")}**`))
+                interaction.reply(res.danger(`${icon.denied} | ${errors.map(e => `**\`${e}\`**`).join(", ")}`))
             } else {
                 await interaction.deferUpdate();
                 try {
@@ -51,10 +67,10 @@ createResponder({
                     customId: `pet/spin/name/${userId}/${petId}`,
                     title: "Nome do pet",
                     components: createModalFields({
-                        response: {
+                        name: {
                             label: "Coloque o nome de seu pet",
-                            placeholder: "Bella..",
-                            style: TextInputStyle.Paragraph,
+                            placeholder: `${getRandomValue(randomNames[getRandomValue(["MALE", "FEMALE"]) as Gender])}...`,
+                            style: TextInputStyle.Short,
                             required: true,
                         },
                     }),

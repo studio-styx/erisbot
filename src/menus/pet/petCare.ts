@@ -1,4 +1,4 @@
-import { petsFood } from "#functions";
+import { petPlays, petsFood } from "#functions";
 import { Pet, UserPet } from "#prisma";
 import { settings } from "#settings";
 import { brBuilder, createContainer, createRow, createSeparator } from "@magicyan/discord";
@@ -13,6 +13,7 @@ export function petCareMenu<R>(userId: string, pet: UserPet & { personality: { t
         brBuilder(
             `**Fome:** ${pet.hungry}/100`,
             `**Felicidade:** ${pet.happiness}/100`,
+            `**Energia:** ${pet.energy}/100`,
             `**Humor:** ${pet.humor}`,
             `**Gênero:** ${pet.gender === "MALE" ? "Macho" : "Fêmea"}`,
             `**Personalidade:** ${pet.personality.map(p => p.trait.name).join(", ")}`
@@ -20,19 +21,23 @@ export function petCareMenu<R>(userId: string, pet: UserPet & { personality: { t
         createSeparator(),
         createRow(
             new ButtonBuilder({
-                customId: `pet/care/feed/${userId}/${pet.id}`,
+                customId: `pet/care/feed/button/${userId}/${pet.id}`,
                 label: "Alimentar",
                 style: ButtonStyle.Success,
                 disabled: !!page || pet.hungry === 100,
             }),
             new ButtonBuilder({
-                customId: `pet/care/play/${userId}/${pet.id}`,
+                customId: `pet/care/play/button/${userId}/${pet.id}`,
                 label: "Brincar",
                 style: ButtonStyle.Success,
-                disabled: !!page || pet.happiness === 100 ? (pet.humor === "happy" || pet.humor === "veryHappy" || pet.humor === "playful") ? true : false : true,
+                disabled: !!page
+                    || pet.happiness >= 100
+                    || pet.energy < 1
+                    || ["happy", "veryHappy", "playful"].includes(pet.humor),
+
             }),
             new ButtonBuilder({
-                customId: `pet/care/return/${userId}/${pet.id}`,
+                customId: `pet/care/return/button/${userId}/${pet.id}`,
                 label: "Voltar",
                 style: ButtonStyle.Secondary,
                 disabled: !!!page
@@ -45,16 +50,31 @@ export function petCareMenu<R>(userId: string, pet: UserPet & { personality: { t
             components.push(
                 createSeparator(),
                 new StringSelectMenuBuilder({
-                    customId: `pet/care/feed/${userId}/${pet.id}`,
+                    customId: `pet/care/feed/select/${userId}/${pet.id}`,
+                    placeholder: "Escolha a comida",
                     options: petsFood[pet.pet.animal].map(f => ({
                         label: f.name,
-                        value: f.name,
+                        value: f.id,
+                        description: `Preço: ${f.price} stx, recupera: ${f.points} de fome`
+                    }))
+                })
+            )
+        } else {
+            components.push(
+                createSeparator(),
+                new StringSelectMenuBuilder({
+                    customId: `pet/care/play/select/${userId}/${pet.id}`,
+                    placeholder: "Escolha uma brincadeira",
+                    options: petPlays[pet.pet.animal].map(p => ({
+                        label: p.name,
+                        value: p.id,
+                        description: `Diversão: ${p.fun}, energia: ${p.energy}`
                     }))
                 })
             )
         }
     }
-    
+
     const container = createContainer(settings.colors.fuchsia, ...components);
 
     return ({

@@ -20,7 +20,12 @@ createResponder({
             include: {
                 userPet: {
                     include: {
-                        pet: true
+                        pet: true,
+                        personality: {
+                            include: {
+                                trait: true
+                            }
+                        }
                     }
                 }
             }

@@ -1,0 +1,121 @@
+import { createResponder, ResponderType } from "#base";
+import { prisma } from "#database";
+import { getValidUserPet, icon, petPlays, petsFood, res } from "#functions";
+import { menus } from "#menus";
+import { Prisma } from "#prisma";
+
+createResponder({
+    customId: "pet/care/:action/:responderType/:userId/:petId",
+    types: [ResponderType.Button, ResponderType.StringSelect], cache: "cached",
+    parse(params) {
+        return {
+            action: params.action as "feed" | "play" | "return",
+            userId: params.userId as string,
+            petId: parseInt(params.petId)
+        }
+    },
+    async run(interaction, { action, userId, petId }) {
+        const { user } = interaction;
+        if (user.id !== userId) {
+            interaction.reply(`${icon.denied} | Não foi você que executou esse comando! não venha roubar pet dos outros!`)
+            return;
+        }
+        await interaction.deferUpdate();
+        const pet = await getValidUserPet(petId, user.id, {
+            include: {
+                personality: {
+                    include: {
+                        trait: true
+                    }
+                },
+                pet: true
+            }
+        });
+
+        if (!pet) {
+            interaction.reply(`${icon.error} | Eu não consegui encontrar esse pet!`);
+            return;
+        }
+
+        switch (action) {
+            case "feed": {
+                if (interaction.isButton()) {
+                    interaction.editReply(menus.pets.care(userId, pet, "feed"))
+                } else {
+                    const foodId = interaction.values[0];
+                    const food = petsFood[pet.pet.animal].find(f => f.id === foodId);
+
+                    if (!food) {
+                        interaction.followUp(res.danger(`${icon.error} | Eu não consegui encontrar essa comida!`));
+                        return;
+                    }
+
+                    if (pet.hungry === 100) {
+                        interaction.followUp(res.danger(`${icon.denied} | Seu pet não está com fome!`))
+                        return;
+                    }
+
+                    const newHungry = Math.min(pet.hungry + food.points, 100);
+
+                    const userMoney = (await prisma.user.findUnique({
+                        where: { id: user.id },
+                        select: { money: true }
+                    }) ?? { money: new Prisma.Decimal(0) }).money.toNumber();
+
+                    if (userMoney < food.price) {
+                        interaction.followUp(res.success(`${icon.denied} | Você não tem dinheiro suficiente para comprar essa comida! você precisa de: **${food.price}** stx para esse alimento!`));
+                        return;
+                    }
+
+                    await prisma.$transaction([
+                        prisma.user.update({
+                            where: { id: user.id },
+                            data: { money: { decrement: food.price } }
+                        }),
+                        prisma.userPet.update({
+                            where: { id: pet.id },
+                            data: { hungry: newHungry }
+                        })
+                    ]);
+
+                    interaction.followUp(res.success(`${icon.success} | Você alimentou seu pet! agora ele sua fome está em: **${newHungry}/100**`))
+                    interaction.editReply(menus.pets.care(userId, pet))
+                }
+                return;
+            }
+            case "play": {
+                if (interaction.isButton()) {
+                    interaction.editReply(menus.pets.care(userId, pet, "play"))
+                } else {
+                    const playId = interaction.values[0];
+                    const play = petPlays[pet.pet.animal].find(p => p.id === playId);
+
+                    if (!play) {
+                        interaction.followUp(res.danger(`${icon.error} | Eu não consegui encontrar dados dessa brincadeira!`));
+                        return;
+                    }
+
+                    if (pet.energy < play.energy) {
+                        interaction.followUp(res.danger(`${icon.denied} | Seu pet não tem energia suficiente para brincar dessa brincadeira!`))
+                        return;
+                    }
+
+                    const newFun = Math.min(pet.happiness + play.fun, 100);
+                    const newEnergy = Math.max(pet.energy - play.energy, 0);
+
+                    await prisma.userPet.update({
+                        where: { id: pet.id },
+                        data: { happiness: newFun, energy: newEnergy }
+                    });
+
+                    interaction.followUp(res.success(`${icon.success} | Você brincou com seu pet! agora ele sua felicidade está em: **${newFun}/100**`))
+                    interaction.editReply(menus.pets.care(userId, pet))
+                }
+            }
+            case "return": {
+                interaction.editReply(menus.pets.care(userId, pet))
+                return;
+            }
+        }
+    },
+});

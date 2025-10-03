@@ -1,6 +1,6 @@
 import { createEvent } from "#base";
 import { prisma } from "#database";
-import { icon, res, scheduleAllEndGiveaways, setAllServerSettings } from "#functions";
+import { icon, res, scheduleAllEndGiveaways, scheduleReproductionsDate, setAllServerSettings } from "#functions";
 import { settings } from "#settings";
 import { createRow } from "@magicyan/discord";
 import { ActivityType, ButtonBuilder, ButtonStyle } from "discord.js";
@@ -64,10 +64,14 @@ createEvent({
                 } catch (_) { }
             }
         }, 1000 * 60 * 60)
-        scheduleAllEndGiveaways(client),
-            setInterval(async () => {
-                await scheduleAllEndGiveaways(client)
-            }, 1000 * 60 * 10);
+        scheduleAllEndGiveaways(client);
+        setInterval(async () => {
+            await scheduleAllEndGiveaways(client)
+        }, 1000 * 60 * 10);
+
+        setInterval(async () => {
+            await scheduleReproductionsDate();
+        }, 1000 * 60 * 30)
 
         let currentIndex = 0;
 
