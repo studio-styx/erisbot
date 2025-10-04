@@ -25,6 +25,8 @@ model User {
   afkReasson         String?
   afkTime            DateTime?
   dmNotification     Boolean        @default(false)
+  activePetId        Int?           @unique
+  activePet          UserPet?       @relation("ActivePetRelation", fields: [activePetId], references: [id], onDelete: SetNull)
 
   logs               Log[]
   cooldowns          Cooldown[]
@@ -39,7 +41,7 @@ model User {
   giveaways          UserGiveaway[]
   fishs              UserFish[]
   fishingRods        UserFishingRod[]
-  pets               UserPet[]
+  pets               UserPet[]      @relation("UserPetsRelation")
 }
 
 model TryviaQuestions {
@@ -431,10 +433,11 @@ model UserPet {
   childsAsParent2 UserPet[] @relation("Parent2Relation")
 
   // Relações
+  activeUser User? @relation("ActivePetRelation")
+  user       User  @relation("UserPetsRelation", fields: [userId], references: [id], onDelete: Cascade)
   spouse    UserPet?  @relation("SpouseRelation", fields: [spouseId], references: [id])
   spouseOf  UserPet?  @relation("SpouseRelation")
   genetics PetGenetics[]
-  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   pet      Pet       @relation(fields: [petId], references: [id], onDelete: Cascade)
   skills   UserPetSkill[]
   adoption AdoptionCenter?

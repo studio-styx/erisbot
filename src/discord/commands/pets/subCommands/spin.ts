@@ -1,5 +1,5 @@
 import { prisma } from "#database";
-import { calculateProbability, getRandomValue, icon, petAnimalFormatted, petRarityFormatted, res, resv2 } from "#functions";
+import { calculateProbability, getRandomValue, icon, petAnimalFormatted, petRarityFormatted, resv2 } from "#functions";
 import { Gender, Rarity } from "#prisma";
 import { brBuilder, createRow, createSeparator } from "@magicyan/discord";
 import { ButtonBuilder, ButtonStyle, ChatInputCommandInteraction, time } from "discord.js";

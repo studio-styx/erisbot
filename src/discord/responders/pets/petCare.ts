@@ -1,6 +1,6 @@
 import { createResponder, ResponderType } from "#base";
-import { prisma } from "#database";
-import { getValidUserPet, icon, petPlays, petsFood, res } from "#functions";
+import { prisma, redis } from "#database";
+import { convertTime, getValidUserPet, icon, petPlays, petsFood, res } from "#functions";
 import { menus } from "#menus";
 import { Prisma } from "#prisma";
 
@@ -67,6 +67,17 @@ createResponder({
                         return;
                     }
 
+                    // Aplica efeito temporário de humor
+                    let moodEffect = "happy";
+                    if (newHungry >= 95) {
+                        moodEffect = "very full";
+                    } else if (newHungry <= 30) {
+                        moodEffect = "still hungry";
+                    }
+
+                    const moodEffectKey = `pet:mood_effect:${pet.id}`;
+                    await redis.setex(moodEffectKey, convertTime({ time: "30m", to: "seconds" }), moodEffect);
+
                     const [_user, newPet] = await prisma.$transaction([
                         prisma.user.update({
                             where: { id: user.id },
@@ -74,7 +85,10 @@ createResponder({
                         }),
                         prisma.userPet.update({
                             where: { id: pet.id },
-                            data: { hungry: newHungry },
+                            data: {
+                                hungry: newHungry,
+                                humor: moodEffect
+                            },
                             include: {
                                 personality: {
                                     include: {
@@ -86,7 +100,7 @@ createResponder({
                         })
                     ]);
 
-                    interaction.followUp(res.success(`${icon.success} | Você alimentou seu pet! agora ele sua fome está em: **${newHungry}/100**`))
+                    interaction.followUp(res.success(`${icon.success} | Você alimentou seu pet! agora ele está **${moodEffect}** e sua fome está em: **${newHungry}/100**`))
                     interaction.editReply(menus.pets.care(userId, newPet))
                 }
                 return;
@@ -111,9 +125,26 @@ createResponder({
                     const newFun = Math.min(pet.happiness + play.fun, 100);
                     const newEnergy = Math.max(pet.energy - play.energy, 0);
 
+                    // Determina humor baseado no estado após brincar
+                    let moodEffect = "playful";
+                    if (newEnergy <= 20) {
+                        moodEffect = "tired";
+                    } else if (newFun >= 85) {
+                        moodEffect = "very happy";
+                    } else if (newEnergy <= 50 && newFun >= 70) {
+                        moodEffect = "excited but tired";
+                    }
+
+                    const moodEffectKey = `pet:mood_effect:${pet.id}`;
+                    await redis.setex(moodEffectKey, convertTime({ time: "60m", to: "seconds" }), moodEffect);
+
                     const newPet = await prisma.userPet.update({
                         where: { id: pet.id },
-                        data: { happiness: newFun, energy: newEnergy },
+                        data: {
+                            happiness: newFun,
+                            energy: newEnergy,
+                            humor: moodEffect
+                        },
                         include: {
                             personality: {
                                 include: {
@@ -124,7 +155,7 @@ createResponder({
                         }
                     });
 
-                    interaction.followUp(res.success(`${icon.success} | Você brincou com seu pet! agora ele sua felicidade está em: **${newFun}/100**`))
+                    interaction.followUp(res.success(`${icon.success} | Você brincou com seu pet! agora ele está **${moodEffect}** e sua felicidade está em: **${newFun}/100**`))
                     interaction.editReply(menus.pets.care(userId, newPet))
                 }
                 return;

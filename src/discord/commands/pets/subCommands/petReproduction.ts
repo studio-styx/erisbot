@@ -109,6 +109,12 @@ export async function petReproductionCommand(interaction: ChatInputCommandIntera
         return;
     }
 
+    // verificar se tem mais de 5 filhos
+    if ([...pet1.childsAsParent1, ...pet1.childsAsParent2].length >= 5 || [...pet2.childsAsParent1, ...pet2.childsAsParent2].length >= 5) {
+        interaction.editReply(res.danger(`${icon.denied} | Um pet não pode ter mais que 5 filhos!`));
+        return;
+    }
+
     const female = pet1.gender === "FEMALE" ? pet1 : pet2;
     const male = pet1.gender === "MALE" ? pet1 : pet2;
 
@@ -138,6 +144,14 @@ export async function petReproductionCommand(interaction: ChatInputCommandIntera
             where: { id: male.id },
             data: {
                 spouseId: female.id
+            }
+        }),
+        prisma.log.create({
+            data: {
+                userId: user.id,
+                message: `Acasalou seu pet **${male.name}** com **${female.name}**`,
+                level: 6,
+                tags: ["pet", "breed", "reproduction", "reproduction pet", male.id.toString(), female.id.toString()]
             }
         })
     ]);

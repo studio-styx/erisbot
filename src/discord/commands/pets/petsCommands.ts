@@ -1,13 +1,18 @@
-import { createCommand } from "#base";
+import { createCommand, Store } from "#base";
 import { ApplicationCommandType, ApplicationCommandOptionType } from "discord.js";
 import { petSpin } from "./subCommands/spin.js";
-import { icon, res } from "#functions";
+import { getValidUserPet, icon, res, verifyPetName } from "#functions";
 import { adoptPetCommand } from "./subCommands/adopt.js";
 import { realeasePetCommand } from "./subCommands/release.js";
 import { prisma } from "#database";
 import { petInfoCommand } from "./subCommands/petInfo.js";
 import { petCareCommand } from "./subCommands/petCare.js";
 import { petReproductionCommand } from "./subCommands/petReproduction.js";
+import { UserPet } from "#prisma";
+import { changePetName } from "./subCommands/changePetName.js";
+import { setActivePet } from "./subCommands/setActivePet.js";
+
+const cache = new Store<UserPet>();
 
 createCommand({
     name: "pet",
@@ -158,8 +163,82 @@ createCommand({
                     required: true
                 }
             ]
+        },
+        {
+            name: "change_name",
+            type: ApplicationCommandOptionType.Subcommand,
+            nameLocalizations: {
+                "pt-BR": "mudar_nome",
+                "es-ES": "cambiar_nombre"
+            },
+            description: "change your pet name",
+            descriptionLocalizations: {
+                "pt-BR": "mude o nome do seu pet",
+                "es-ES": "cambie el nombre de su mascota"
+            },
+            options: [
+                {
+                    name: "pet",
+                    type: ApplicationCommandOptionType.String,
+                    autocomplete: true,
+                    required: true,
+                    nameLocalizations: {
+                        "pt-BR": "pet",
+                        "es-ES": "mascota"
+                    },
+                    description: "pet to change name",
+                    descriptionLocalizations: {
+                        "pt-BR": "pet para mudar nome",
+                        "es-ES": "mascota para cambiar nombre"
+                    }
+                },
+                {
+                    name: "name",
+                    type: ApplicationCommandOptionType.String,
+                    required: true,
+                    autocomplete: true,
+                    nameLocalizations: {
+                        "pt-BR": "nome",
+                        "es-ES": "nombre"
+                    },
+                    description: "new name",
+                    descriptionLocalizations: {
+                        "pt-BR": "novo nome",
+                        "es-ES": "nuevo nombre"
+                    }
+                }
+            ]
+        },
+        {
+            name: "set_active_pet",
+            description: "set your active pet",
+            type: ApplicationCommandOptionType.Subcommand,
+            options: [
+                {
+                    name: "pet",
+                    description: "pet to set as active",
+                    type: ApplicationCommandOptionType.String,
+                    required: true,
+                    autocomplete: true,
+                    nameLocalizations: {
+                        "pt-BR": "pet",
+                        "es-ES": "mascota"
+                    },
+                    descriptionLocalizations: {
+                        "pt-BR": "pet para ativar",
+                        "es-ES": "mascota para activar"
+                    }
+                }
+            ],
+            nameLocalizations: {
+                "es-ES": "activar_mascota",
+                "pt-BR": "ativar_pet"
+            },
+            descriptionLocalizations: {
+                "es-ES": "activar una mascota",
+                "pt-BR": "ativar um pet"
+            }
         }
-
     ],
     nameLocalizations: {
         "es-ES": "mascota",
@@ -185,11 +264,12 @@ createCommand({
                 },
                 select: {
                     id: true,
-                    name: true
+                    name: true,
+                    pet: { select: { animal: true, specie: true } }
                 },
                 take: 25
             });
-            await interaction.respond(pets.map(pet => ({ name: pet.name, value: pet.id.toString() })));
+            await interaction.respond(pets.map(pet => ({ name: `${pet.name} - (${pet.pet.animal} - ${pet.pet.specie})`, value: pet.id.toString() })));
             return;
         }
 
@@ -210,21 +290,28 @@ createCommand({
                         },
                         select: {
                             id: true,
-                            name: true
+                            name: true,
+                            pet: { select: { animal: true, specie: true } }
                         },
                         take: 25
                     });
-                    
+
                     if (pets.length < 1) {
                         return await interaction.respond([{ name: "não existe pets disponiveis!", value: "null" }])
                     }
 
-                    await interaction.respond(pets.map(pet => ({ name: pet.name, value: pet.id.toString() })));
+                    await interaction.respond(pets.map(pet => ({ name: `${pet.name} - (${pet.pet.animal} - ${pet.pet.specie})`, value: pet.id.toString() })));
                 } else {
                     const pet1Id = Number(options.getString("pet1"));
 
                     const pet1Info = await prisma.userPet.findUnique({
-                        where: { id: pet1Id },
+                        where: {
+                            id: pet1Id,
+                            pregnantEndAt: null,
+                            isPregnant: false,
+                            adoption: null,
+                            isDead: false,
+                        },
                         include: {
                             pet: true
                         }
@@ -289,7 +376,8 @@ createCommand({
                         },
                         select: {
                             id: true,
-                            name: true
+                            name: true,
+                            pet: { select: { animal: true, specie: true } }
                         },
                         take: 25
                     });
@@ -298,9 +386,40 @@ createCommand({
                         return await interaction.respond([{ name: "não existe pets disponiveis!", value: "null" }])
                     }
 
-                    await interaction.respond(pets.map(pet => ({ name: pet.name, value: pet.id.toString() })));
+                    await interaction.respond(pets.map(pet => ({ name: `${pet.name} - (${pet.pet.animal} - ${pet.pet.specie})`, value: pet.id.toString() })));
                 }
                 return;
+            }
+            case "change_name": {
+                if (focused.name === "name") {
+                    const petId = Number(options.getString("pet"));
+                    const getPet = async (petId: number) => {
+                        const cachedPet = cache.get(`${petId}`);
+                        if (cachedPet) return cachedPet;
+
+                        const pet = await getValidUserPet(petId, user.id)
+                        if (!pet) return null;
+                        cache.set(`${petId}`, pet, { time: 1000 * 60 * 5 });
+                        return pet;
+                    }
+                    const pet = await getPet(petId);
+                    if (!pet) {
+                        return await interaction.respond([{ name: "pet inválido!", value: "null" }])
+                    }
+
+                    const newName = focused.value;
+                    if (!newName) {
+                        return await interaction.respond([{ name: "o nome não pode ser vazio!", value: "null" }]);
+                    }
+                    if (pet.name === newName) {
+                        return await interaction.respond([{ name: "o nome não pode ser igual ao nome atual!", value: "null" }]);
+                    }
+                    const errorName = verifyPetName(newName);
+                    if (errorName.length > 0) {
+                        return await interaction.respond(errorName.map((error, index) => ({ name: error, value: `null-${index}` })));
+                    }
+                    return await interaction.respond([{ name: newName, value: newName }]);
+                }
             }
         }
 
@@ -333,6 +452,14 @@ createCommand({
             }
             case "breed": {
                 await petReproductionCommand(interaction);
+                break;
+            }
+            case "change_name": {
+                await changePetName(interaction);
+                break;
+            }
+            case "set_active_pet": {
+                await setActivePet(interaction);
                 break;
             }
             default: {
