@@ -445,8 +445,8 @@ model UserPetPersonality {
   userPetId Int
   traitId   Int
 
-  userPet  UserPet         @relation(fields: [userPetId], references: [id])
-  trait    PersonalityTrait @relation(fields: [traitId], references: [id])
+  userPet  UserPet         @relation(fields: [userPetId], references: [id], onDelete: Cascade)
+  trait    PersonalityTrait @relation(fields: [traitId], references: [id], onDelete: Cascade)
 }
 
 model Genetics {

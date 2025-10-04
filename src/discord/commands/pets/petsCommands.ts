@@ -71,7 +71,7 @@ createCommand({
                     name: "pet",
                     description: "pet id",
                     type: ApplicationCommandOptionType.String,
-                    required: false,
+                    required: true,
                     autocomplete: true
                 }
             ],
@@ -245,6 +245,42 @@ createCommand({
                             gender: { not: pet1Info.gender },
                             pet: {
                                 animal: pet1Info.pet.animal
+                            },
+                            parent1: {
+                                id: { not: pet1Id },
+                                childsAsParent1: {
+                                    none: {
+                                        id: pet1Id
+                                    }
+                                },
+                                childsAsParent2: {
+                                    none: {
+                                        id: pet1Id
+                                    }
+                                }
+                            },
+                            parent2: {
+                                id: { not: pet1Id },
+                                childsAsParent1: {
+                                    none: {
+                                        id: pet1Id
+                                    }
+                                },
+                                childsAsParent2: {
+                                    none: {
+                                        id: pet1Id
+                                    }
+                                }
+                            },
+                            childsAsParent1: {
+                                none: {
+                                    id: pet1Id
+                                }
+                            },
+                            childsAsParent2: {
+                                none: {
+                                    id: pet1Id
+                                }
                             },
                             pregnantEndAt: null,
                             isPregnant: false,

@@ -69,6 +69,7 @@ createEvent({
             await scheduleAllEndGiveaways(client)
         }, 1000 * 60 * 10);
 
+        scheduleReproductionsDate();
         setInterval(async () => {
             await scheduleReproductionsDate();
         }, 1000 * 60 * 30)

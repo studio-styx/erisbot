@@ -67,19 +67,27 @@ createResponder({
                         return;
                     }
 
-                    await prisma.$transaction([
+                    const [_user, newPet] = await prisma.$transaction([
                         prisma.user.update({
                             where: { id: user.id },
                             data: { money: { decrement: food.price } }
                         }),
                         prisma.userPet.update({
                             where: { id: pet.id },
-                            data: { hungry: newHungry }
+                            data: { hungry: newHungry },
+                            include: {
+                                personality: {
+                                    include: {
+                                        trait: true
+                                    }
+                                },
+                                pet: true
+                            }
                         })
                     ]);
 
                     interaction.followUp(res.success(`${icon.success} | Você alimentou seu pet! agora ele sua fome está em: **${newHungry}/100**`))
-                    interaction.editReply(menus.pets.care(userId, pet))
+                    interaction.editReply(menus.pets.care(userId, newPet))
                 }
                 return;
             }
@@ -103,14 +111,23 @@ createResponder({
                     const newFun = Math.min(pet.happiness + play.fun, 100);
                     const newEnergy = Math.max(pet.energy - play.energy, 0);
 
-                    await prisma.userPet.update({
+                    const newPet = await prisma.userPet.update({
                         where: { id: pet.id },
-                        data: { happiness: newFun, energy: newEnergy }
+                        data: { happiness: newFun, energy: newEnergy },
+                        include: {
+                            personality: {
+                                include: {
+                                    trait: true
+                                }
+                            },
+                            pet: true
+                        }
                     });
 
                     interaction.followUp(res.success(`${icon.success} | Você brincou com seu pet! agora ele sua felicidade está em: **${newFun}/100**`))
-                    interaction.editReply(menus.pets.care(userId, pet))
+                    interaction.editReply(menus.pets.care(userId, newPet))
                 }
+                return;
             }
             case "return": {
                 interaction.editReply(menus.pets.care(userId, pet))

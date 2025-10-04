@@ -52,39 +52,41 @@ export async function petInfoCommand(interaction: ChatInputCommandInteraction<"c
         `## Informações do Pet`,
         createSeparator(),
         brBuilder(
-            `**Nome:** ${pet.name}`,
-            `**Animal:** ${petAnimalFormatted[pet.pet.animal]}`,
-            `**Raridade:** ${petRarityFormatted[pet.pet.rarity]}`,
-            `**Espécie:** ${pet.pet.specie}`,
-            `**Gênero:** ${pet.gender === "MALE" ? "Macho" : "Fêmea"}`,
+            `**Nome: \`${pet.name}\`**`,
+            `**Animal: \`${petAnimalFormatted[pet.pet.animal]}\`**`,
+            `**Raridade: \`${petRarityFormatted[pet.pet.rarity]}\`**`,
+            `**Espécie: \`${pet.pet.specie}\`**`,
+            `**Gênero: \`${pet.gender === "MALE" ? "Macho" : "Fêmea"}\`**`,
             `**Fome:** ${pet.hungry}/100`,
             `**Vida:** ${pet.life}/100`,
             `**Felicidade:** ${pet.happiness}/100`,
             `**Energia:** ${pet.energy}/100`,
-            `**Personalidades**: ${pet.personality.map(p => p.trait.name).join(", ")}`,
-            `**Humor:** ${pet.humor}`,
-            `**Habilidades:** ${pet.skills.length > 0 ? pet.skills.map(skill => `${skill.skill.name} - Nível ${skill.level}`).join(", ") : "Nenhuma"}`,
+            `**Personalidades**: ${pet.personality.map(p => `**\`${p.trait.name}\`**`).join(", ")}`,
+            `**Humor: \`${pet.humor}\`**`,
+            `**Habilidades:** ${pet.skills.length > 0 ? pet.skills.map(skill => `**\`${skill.skill.name}\`** - Nível **${skill.level}**`).join(", ") : "Nenhuma"}`,
             `**Genética:** ${pet.genetics.length > 0
                 ? pet.genetics.map(g => {
                     const gene = g.gene;
-                    const origem = g.inheritedFromParent1
+                    const origem = g.inheritedFromParent1 && g.inheritedFromParent2
+                        ? "Ambos"
+                        : g.inheritedFromParent1
                         ? "Pai"
                         : g.inheritedFromParent2
                             ? "Mãe"
                             : "Espécie";
-                    const dom = gene.geneType === "DOMINANT" ? "Dominante" : gene.geneType === "CODOMINANT" ? "Codominante" : "recessivo";
-                    return `${gene.trait} (${gene.colorPart}) [${dom}, herdado de ${origem}]`;
+                    const dom = gene.geneType === "DOMINANT" ? "`Dominante`" : gene.geneType === "CODOMINANT" ? "`Codominante`" : "`Recessivo`";
+                    return `**\`${gene.trait}\`** (${gene.colorPart}) [${dom}, herdado de **${origem}**]`;
                 }).join("\n")
                 : "Nenhuma informação genética"
             }`,
             `**Pais:** ${pet.parent1 || pet.parent2
                 ? [
-                    pet.parent1 ? `${pet.parent1.name} (${petAnimalFormatted[pet.parent1.pet.animal]})` : "Desconhecido",
-                    pet.parent2 ? `${pet.parent2.name} (${petAnimalFormatted[pet.parent2.pet.animal]})` : "Desconhecido"
+                    pet.parent1 ? `**\`${pet.parent1.name}\`**` : "Desconhecido",
+                    pet.parent2 ? `**\`${pet.parent2.name}\`**` : "Desconhecido"
                 ].join(" x ")
                 : "Nenhum (geração inicial)"}`,
             `**Filhos:** ${childs.length > 0
-                ? childs.map(f => `${f.name} (${petAnimalFormatted[f.pet.animal]})`).join(", ")
+                ? childs.map(f => `**\`${f.name}\`**`).join(", ")
                 : "Nenhum"
             }`,
             pet.gender === "FEMALE" ? `**Está grávida?**: ${pet.isPregnant === true ? `Sim, termina ${time(pet.pregnantEndAt!, "R")}` : "Não"}` : null

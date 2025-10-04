@@ -1,5 +1,5 @@
 import { prisma } from "#database";
-import { getRandomValue, icon, petAnimalFormatted, petRarityFormatted, res, resv2 } from "#functions";
+import { calculateProbability, getRandomValue, icon, petAnimalFormatted, petRarityFormatted, res, resv2 } from "#functions";
 import { Gender, Rarity } from "#prisma";
 import { brBuilder, createRow, createSeparator } from "@magicyan/discord";
 import { ButtonBuilder, ButtonStyle, ChatInputCommandInteraction, time } from "discord.js";
@@ -59,31 +59,67 @@ async function createUserPet(
     gender: Gender,
     name: string
 ) {
+    // Buscar catálogo de genes, skills e personalidades em uma transação
     const [geneticsCatalog, possibleSkills, possibleTraits] = await prisma.$transaction([
         prisma.genetics.findMany({ where: { petId } }),
         prisma.petSkill.findMany(),
         prisma.personalityTrait.findMany()
-    ])
+    ]);
 
-    // Criar genética
-    const userPetGenetics = geneticsCatalog.map(gene => ({
-        geneId: gene.id,
-        inheritedFromParent1: false,
-        inheritedFromParent2: false
-    }));
+    // Agrupar genes por colorPart
+    const parts: { [key: string]: any[] } = {};
+    geneticsCatalog.forEach(gene => {
+        if (!parts[gene.colorPart]) parts[gene.colorPart] = [];
+        parts[gene.colorPart].push(gene);
+    });
+
+    // Selecionar um gene por colorPart com pesos baseados em geneType
+    const userPetGenetics: { geneId: number; inheritedFromParent1: boolean; inheritedFromParent2: boolean }[] = [];
+    for (const part in parts) {
+        const candidates = parts[part];
+        if (candidates.length === 0) continue;
+
+        // Definir pesos por geneType
+        const weights = candidates.map(gene => {
+            switch (gene.geneType) {
+                case 'DOMINANT': return 50;
+                case 'CODOMINANT': return 30;
+                case 'NEUTRAL': return 15;
+                case 'RECESSIVE': return 5;
+                default: return 10;
+            }
+        });
+
+        const totalWeight = weights.reduce((sum, w) => sum + w, 0);
+        const random = Math.random() * totalWeight;
+        let cumulative = 0;
+
+        for (let i = 0; i < candidates.length; i++) {
+            cumulative += weights[i];
+            if (random <= cumulative) {
+                userPetGenetics.push({
+                    geneId: candidates[i].id,
+                    inheritedFromParent1: false, // Sem pais, geração inicial
+                    inheritedFromParent2: false
+                });
+                break;
+            }
+        }
+    }
 
     // Chance de 40% de começar com uma skill
     const userPetSkills = Math.random() <= 0.4 && possibleSkills.length > 0
         ? [{ skillId: getRandomValue(possibleSkills).id, level: 1 }]
         : [];
 
-    // Escolher 1–2 personalidades (ajustável)
-    const shuffled = [...possibleTraits].sort(() => Math.random() - 0.5);
-    const selectedTraits = shuffled.slice(0, Math.random() < 0.3 ? 2 : 1); 
+    // Escolher 1–2 personalidades
+    const shuffledTraits = [...possibleTraits].sort(() => Math.random() - 0.5);
+    const selectedTraits = shuffledTraits.slice(0, Math.random() < 0.3 ? 2 : 1);
     const userPetPersonalities = selectedTraits.map(trait => ({
         traitId: trait.id
     }));
 
+    // Criar usuário e pet em uma transação
     const [_, userPet] = await prisma.$transaction([
         prisma.user.upsert({
             where: { id: userId },
@@ -101,7 +137,7 @@ async function createUserPet(
                 personality: { create: userPetPersonalities }
             },
             include: {
-                genetics: true,
+                genetics: { include: { gene: true } },
                 skills: { include: { skill: true } },
                 personality: { include: { trait: true } }
             }
@@ -110,7 +146,6 @@ async function createUserPet(
 
     return userPet;
 }
-
 
 async function setCooldown(userId: string) {
     const cooldownEnd = new Date(Date.now() + 1000 * 60 * 120); // 2 horas
@@ -125,21 +160,23 @@ async function setCooldown(userId: string) {
 export async function petSpin(interaction: ChatInputCommandInteraction<"cached">) {
     const { user } = interaction;
     await interaction.deferReply();
-    
+
     // Verificar cooldown
+    /*
     const cooldown = await prisma.cooldown.findUnique({
         where: { userId_name: { userId: user.id, name: "petSpin" } }
     });
-    
+
     if (cooldown && cooldown.willEndIn > new Date()) {
         await interaction.editReply(res.danger(
             `${icon.denied} | Você está em cooldown! Você pode girar pets novamente ${time(cooldown.willEndIn, "R")}`
         ));
         return;
     }
-    
+    */
+
     // Sortear raridade e pet
-    await interaction.editReply(resv2.warning(`${icon.waiting_white} | Girando roleta...`))
+    await interaction.editReply(resv2.warning(`${icon.waiting_white} | Girando roleta...`));
     const rarity = getRandomRarity();
     const pet = await getRandomPet(rarity);
 
@@ -151,7 +188,7 @@ export async function petSpin(interaction: ChatInputCommandInteraction<"cached">
     }
 
     // Gerar dados do pet
-    const petGender = getRandomValue(["MALE", "FEMALE"]) as Gender;
+    const petGender = calculateProbability(50) ? "MALE" : "FEMALE" as Gender;
     const petName = getRandomValue(randomNames[petGender]);
 
     // Criar UserPet
@@ -170,8 +207,17 @@ export async function petSpin(interaction: ChatInputCommandInteraction<"cached">
             `**Nome:** ${userPet.name}`,
             `**Animal:** ${petAnimalFormatted[pet.animal]} (Espécie: **${pet.specie}**)`,
             `**Raridade:** ${petRarityFormatted[pet.rarity]}`,
+            `**Gênero:** ${petGender === "MALE" ? "Macho" : "Fêmea"}`,
+            `**Fome:** ${userPet.hungry}/100`,
+            `**Vida:** ${userPet.life}/100`,
+            `**Felicidade:** ${userPet.happiness}/100`,
+            `**Energia:** ${userPet.energy}/100`,
+            `**Personalidades:** ${userPet.personality.length > 0 ? userPet.personality.map(p => p.trait.name).join(", ") : "Nenhuma"}`,
+            `**Humor:** ${userPet.humor}`,
             `**Habilidades:** ${userPet.skills.length > 0 ? userPet.skills.map(skill => `${skill.skill.name} - Nível ${skill.level}`).join(", ") : "Nenhuma"}`,
-            `**Gênero:** ${petGender === "MALE" ? "Macho" : "Fêmea"}`
+            `**Genética:** ${userPet.genetics.length > 0 ? userPet.genetics.map(g => `${g.gene.trait} (${g.gene.colorPart}) [${g.gene.geneType}]`).join(", ") : "Nenhuma"}`,
+            `**Pais:** ${userPet.parent1Id || userPet.parent2Id ? "Tem pais" : "Nenhum (geração inicial)"}`,
+            `**Está grávida?:** ${userPet.isPregnant ? "Sim" : "Não"}`
         ),
         createSeparator(),
         brBuilder(
