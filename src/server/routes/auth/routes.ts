@@ -1,4 +1,4 @@
-import { API, generateJWT } from "#functions";
+import { API, convertTime, generateJWT } from "#functions";
 import { Client } from "discord.js";
 import { FastifyInstance } from "fastify";
 import { setAuth } from "#functions";
@@ -42,7 +42,7 @@ export default async function authRoutes(app: FastifyInstance, _client: Client<t
                 secure: process.env.ENV !== "dev", // só segura em produção
                 sameSite: "lax",
                 path: "/",
-                maxAge: 60 * 60 * 24 // 24 horas
+                maxAge: convertTime({ time: "7d", to: "seconds" })
             })
             .redirect(redirect);
 

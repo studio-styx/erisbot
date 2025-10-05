@@ -60,6 +60,7 @@ createEvent({
             console.log('Request:', req.url, 'method:', req.method);
 
             if (req.url.startsWith('/v1/bot/economy/ws/take-stx')) return;
+            if (req.url.startsWith('/topgg')) return;
             if (req.url === "/") return;
             if (req.url.startsWith('/auth')) return;
 
