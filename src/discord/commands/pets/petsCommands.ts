@@ -335,39 +335,9 @@ createCommand({
                             },
                             parent1: {
                                 id: { not: pet1Id },
-                                childsAsParent1: {
-                                    none: {
-                                        id: pet1Id
-                                    }
-                                },
-                                childsAsParent2: {
-                                    none: {
-                                        id: pet1Id
-                                    }
-                                }
                             },
                             parent2: {
                                 id: { not: pet1Id },
-                                childsAsParent1: {
-                                    none: {
-                                        id: pet1Id
-                                    }
-                                },
-                                childsAsParent2: {
-                                    none: {
-                                        id: pet1Id
-                                    }
-                                }
-                            },
-                            childsAsParent1: {
-                                none: {
-                                    id: pet1Id
-                                }
-                            },
-                            childsAsParent2: {
-                                none: {
-                                    id: pet1Id
-                                }
                             },
                             pregnantEndAt: null,
                             isPregnant: false,

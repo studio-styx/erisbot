@@ -758,21 +758,13 @@ createCommand({
                                     { name: "daily_cooldown_reduction" },
                                     { name: "work_bonus" },
                                     { name: "work_xp_bonus" },
-                                    { name: "job_interview_bonus" },
+                                    { name: "job_interview_easier" },
                                     { name: "work_challenge_avoid" },
                                     { name: "work_challenge_easier" },
                                     { name: "slots_luck" },
                                     { name: "coinflip_luck" },
                                     { name: "horse_racing_luck" },
                                     { name: "lottery_luck" },
-                                    { name: "training_discount" },
-                                    { name: "shop_discount" },
-                                    { name: "faster_cooldowns" },
-                                    { name: "extra_inventory_space" },
-                                    { name: "double_rewards_chance" },
-                                    { name: "event_rewards_bonus" },
-                                    { name: "friendship_boost" },
-                                    { name: "pet_synergy" }
                                 ]
                             });
 

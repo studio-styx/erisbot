@@ -5,8 +5,6 @@ import { icon, res } from "#functions";
 import { prisma } from "#database";
 
 export default async function topggWebhookRoute(app: FastifyInstance, client: Client<true>) {
-    app.register(import("@fastify/formbody"));
-
     app.post<{ Body: {
         bot: string;
         user: string;

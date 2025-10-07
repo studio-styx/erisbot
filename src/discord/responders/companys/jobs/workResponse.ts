@@ -1,10 +1,25 @@
 import { createResponder, ResponderType } from "#base";
+import { prisma } from "#database";
 import { clearCache, generateGeminiContent, getCache, icon, registerLog, res, resv2 } from "#functions";
-import { PrismaClient } from "#prisma";
+import { Rarity } from "#prisma";
 import { createModalFields } from "@magicyan/discord";
 import { TextInputStyle } from "discord.js";
 
-const prisma = new PrismaClient();
+function calculateSkillBonus({ rarity, level }: { rarity: Rarity, level: number }) {
+    const rarityMultipliers: Record<Rarity, number> = {
+        COMUM: 0.05,
+        UNCOMUM: 0.1,
+        RARE: 0.15,
+        EPIC: 0.25,
+        LEGENDARY: 0.4,
+    };
+
+    const rarityMultiplier = rarityMultipliers[rarity] ?? 0;
+    const levelMultiplier = level * 0.02; // ex: +2% por nível
+
+    // bônus total = (1 + raridade + level)
+    return 1 + rarityMultiplier + levelMultiplier;
+}
 
 createResponder({
     customId: "company/work/:userId",
@@ -46,7 +61,13 @@ createResponder({
                     id: interaction.user.id,
                 },
                 include: {
-                    company: true
+                    company: true,
+                    activePet: {
+                        include: {
+                            skills: { include: { skill: true } },
+                            pet: { select: { rarity: true } }
+                        }
+                    }
                 }
             })
             if (!user || !user.company) {
@@ -54,7 +75,7 @@ createResponder({
                 return;
             }
 
-            const { company } = user;
+            const { company, activePet } = user;
 
             const companyExpectations = (company?.expectations as string[] | { level: number, skill: string }[])
 
@@ -108,7 +129,40 @@ createResponder({
             const bonus = geminiResponse.bonus;
             const wage = company.wage.toNumber();
 
-            const payValue = wage * (1 + 0.1 * bonus);
+            const workXpBonus = activePet?.skills.find(s => s.skill.name === "work_xp_bonus");
+            const workWageBonus = activePet?.skills.find(s => s.skill.name === "work_bonus");
+
+            const payValue = wage * (1 + 0.1 * bonus) + (activePet && workWageBonus ? calculateSkillBonus({ rarity: activePet?.pet.rarity, level: workWageBonus.level }) : 0);
+
+            let xpGain = geminiResponse.bonus < 0
+                ? Math.floor(Math.random() * 11) * -1
+                : geminiResponse.bonus === 0
+                ? Math.floor(Math.random() * 11)
+                : Math.floor(Math.random() * 51) + 10;
+
+            if (workXpBonus && activePet?.pet.rarity) {
+                const multiplier = calculateSkillBonus({
+                    rarity: activePet?.pet.rarity,
+                    level: workXpBonus.level
+                });
+
+                const newXp = Math.floor(xpGain * multiplier);
+                xpGain = newXp;
+            }
+
+            await prisma.user.update({
+                where: {
+                    id: interaction.user.id
+                },
+                data: {
+                    money: {
+                        increment: payValue
+                    },
+                    xp: {
+                        increment: xpGain
+                    }
+                }
+            });
 
             if (geminiResponse.bonus < 0) {
                 interaction.editReply(resv2.danger(`${icon.Eris_cry} | Sua resposta foi insatisfatória, por isso recebeu menos! valor recebido: **Ꞩ ${payValue.toFixed(2)}** \n\n **Avaliação:** ${geminiResponse.reason}`))
@@ -139,25 +193,6 @@ createResponder({
                     tags: ["work", "job", "sum"]
                 })
             }
-            const xpGain = geminiResponse.bonus < 0
-                ? Math.floor(Math.random() * 11) * -1
-                : geminiResponse.bonus === 0
-                ? Math.floor(Math.random() * 11)
-                : Math.floor(Math.random() * 51) + 10; 
-
-            await prisma.user.update({
-                where: {
-                    id: interaction.user.id
-                },
-                data: {
-                    money: {
-                        increment: payValue
-                    },
-                    xp: {
-                        increment: xpGain
-                    }
-                }
-            });
 
             clearCache(`${userId}-situation`)
         }
