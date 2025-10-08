@@ -471,7 +471,8 @@ model PersonalityTrait {
   id   Int    @id @default(autoincrement())
   name String @unique
 
-  geneType  GeneType @default(NEUTRAL)  // Aplicado aqui também para consistência
+  geneType  GeneType @default(NEUTRAL)
+  personalityConflictNames  String[]
 
   userPetPersonalities UserPetPersonality[]
 }

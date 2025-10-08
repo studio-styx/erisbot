@@ -1,6 +1,6 @@
 import { prisma } from "#database";
 import { calculateProbability, getRandomValue, icon, petAnimalFormatted, petRarityFormatted, resv2 } from "#functions";
-import { Gender, Rarity } from "#prisma";
+import { Gender, PersonalityTrait, Rarity } from "#prisma";
 import { brBuilder, createRow, createSeparator } from "@magicyan/discord";
 import { ButtonBuilder, ButtonStyle, ChatInputCommandInteraction, time } from "discord.js";
 
@@ -112,9 +112,26 @@ async function createUserPet(
         ? [{ skillId: getRandomValue(possibleSkills).id, level: 1 }]
         : [];
 
-    // Escolher 1–2 personalidades
+    // Escolher 1–2 personalidades sem conflitos
     const shuffledTraits = [...possibleTraits].sort(() => Math.random() - 0.5);
-    const selectedTraits = shuffledTraits.slice(0, Math.random() < 0.3 ? 2 : 1);
+    const selectedTraits: PersonalityTrait[] = [];
+    let remainingSlots = Math.random() < 0.3 ? 2 : 1;
+
+    for (const trait of shuffledTraits) {
+        if (remainingSlots === 0) break;
+
+        // Verificar se a personalidade atual conflita com alguma já selecionada
+        const hasConflict = selectedTraits.some(selected =>
+            selected.personalityConflictNames.includes(trait.name) ||
+            trait.personalityConflictNames.includes(selected.name)
+        );
+
+        if (!hasConflict) {
+            selectedTraits.push(trait);
+            remainingSlots--;
+        }
+    }
+
     const userPetPersonalities = selectedTraits.map(trait => ({
         traitId: trait.id
     }));

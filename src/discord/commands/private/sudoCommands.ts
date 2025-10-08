@@ -774,8 +774,8 @@ createCommand({
                                     { name: "Gato de Rua", rarity: "COMUM", price: 80, animal: "CAT", specie: "Street" },
                                     { name: "Cachorro Labrador", rarity: "RARE", price: 500, animal: "DOG", specie: "Labrador" },
                                     { name: "Cachorro Husky", rarity: "EPIC", price: 1500, animal: "DOG", specie: "Husky" },
-                                    { name: "Cachorro Pug", rarity: "UNCOMUM", price: 300, animal: "DOG", specie: "Pug" },
-                                    { name: "Papagaio", rarity: "UNCOMUM", price: 350, animal: "BIRD", specie: "Parrot" },
+                                    { name: "Cachorro Pug", rarity: "COMUM", price: 300, animal: "DOG", specie: "Pug" },
+                                    { name: "Papagaio", rarity: "COMUM", price: 350, animal: "BIRD", specie: "Parrot" },
                                     { name: "Canário", rarity: "COMUM", price: 90, animal: "BIRD", specie: "Canary" },
                                     { name: "Hamster Sírio", rarity: "COMUM", price: 100, animal: "HAMSTER", specie: "Syrian" },
                                     { name: "Hamster Anão", rarity: "UNCOMUM", price: 140, animal: "HAMSTER", specie: "Dwarf" },
@@ -792,7 +792,32 @@ createCommand({
                                     { name: "Gato Selvagem", rarity: "RARE", price: 700, animal: "CAT", specie: "Wildcat" },
                                     { name: "Cão Pastor", rarity: "UNCOMUM", price: 400, animal: "DOG", specie: "Shepherd" },
                                     { name: "Pássaro do Paraíso", rarity: "EPIC", price: 2200, animal: "BIRD", specie: "Paradise" },
-                                    { name: "Coelho Lunar", rarity: "RARE", price: 900, animal: "RABBIT", specie: "Lunar" }
+                                    { name: "Coelho Lunar", rarity: "RARE", price: 900, animal: "RABBIT", specie: "Lunar" },
+                                    { name: "Gato Bengal", rarity: "RARE", price: 600, animal: "CAT", specie: "Bengal" },
+                                    { name: "Gato Maine Coon", rarity: "EPIC", price: 1200, animal: "CAT", specie: "MaineCoon" },
+                                    { name: "Cachorro Golden Retriever", rarity: "RARE", price: 550, animal: "DOG", specie: "GoldenRetriever" },
+                                    { name: "Cachorro Bulldog", rarity: "UNCOMUM", price: 350, animal: "DOG", specie: "Bulldog" },
+                                    { name: "Arara Azul", rarity: "EPIC", price: 1800, animal: "BIRD", specie: "BlueMacaw" },
+                                    { name: "Coruja", rarity: "RARE", price: 800, animal: "BIRD", specie: "Owl" },
+                                    { name: "Hamster Roborovski", rarity: "UNCOMUM", price: 120, animal: "HAMSTER", specie: "Roborovski" },
+                                    { name: "Hamster Chinês", rarity: "COMUM", price: 80, animal: "HAMSTER", specie: "Chinese" },
+                                    { name: "Coelho Holland Lop", rarity: "RARE", price: 300, animal: "RABBIT", specie: "HollandLop" },
+                                    { name: "Coelho Rex", rarity: "UNCOMUM", price: 200, animal: "RABBIT", specie: "Rex" },
+                                    { name: "Dragão de Gelo", rarity: "LEGENDARY", price: 5200, animal: "DRAGON", specie: "Ice" },
+                                    { name: "Dragão das Sombras", rarity: "EPIC", price: 2800, animal: "DRAGON", specie: "Shadow" },
+                                    { name: "Leão Asiático", rarity: "RARE", price: 1600, animal: "LION", specie: "Asiatic" },
+                                    { name: "Leão das Cavernas", rarity: "EPIC", price: 2200, animal: "LION", specie: "Cave" },
+                                    { name: "Jaguar Dourado", rarity: "LEGENDARY", price: 3000, animal: "JAGUAR", specie: "Golden" },
+                                    { name: "Jaguar Albino", rarity: "RARE", price: 2000, animal: "JAGUAR", specie: "Albino" },
+                                    { name: "Falcão Peregrino", rarity: "EPIC", price: 1500, animal: "BIRD", specie: "Falcon" },
+                                    { name: "Pinguim", rarity: "UNCOMUM", price: 400, animal: "BIRD", specie: "Penguin" },
+                                    { name: "Gato Sphynx", rarity: "EPIC", price: 1000, animal: "CAT", specie: "Sphynx" },
+                                    { name: "Cachorro Beagle", rarity: "COMUM", price: 250, animal: "DOG", specie: "Beagle" },
+                                    { name: "Coelho Angorá", rarity: "RARE", price: 350, animal: "RABBIT", specie: "Angora" },
+                                    { name: "Dragão Elétrico", rarity: "LEGENDARY", price: 5800, animal: "DRAGON", specie: "Electric" },
+                                    { name: "Leão Marinho", rarity: "UNCOMUM", price: 500, animal: "LION", specie: "Sea" },
+                                    { name: "Jaguar das Montanhas", rarity: "EPIC", price: 2400, animal: "JAGUAR", specie: "Mountain" },
+                                    { name: "Águia Real", rarity: "RARE", price: 900, animal: "BIRD", specie: "GoldenEagle" }
                                 ]
                             });
 
@@ -800,26 +825,26 @@ createCommand({
                             await interaction.editReply(res.warning(`${icon.waiting_white} | Criando personalidades...`));
                             await tx.personalityTrait.createMany({
                                 data: [
-                                    { name: "calm", geneType: "NEUTRAL" },
-                                    { name: "playful", geneType: "CODOMINANT" },
-                                    { name: "curious", geneType: "CODOMINANT" },
-                                    { name: "shy", geneType: "RECESSIVE" },
-                                    { name: "brave", geneType: "DOMINANT" },
-                                    { name: "loyal", geneType: "DOMINANT" },
-                                    { name: "aggressive", geneType: "DOMINANT" },
-                                    { name: "lazy", geneType: "RECESSIVE" },
-                                    { name: "friendly", geneType: "CODOMINANT" },
-                                    { name: "stubborn", geneType: "RECESSIVE" },
-                                    { name: "gentle", geneType: "NEUTRAL" },
-                                    { name: "energetic", geneType: "CODOMINANT" },
-                                    { name: "protective", geneType: "DOMINANT" },
-                                    { name: "independent", geneType: "NEUTRAL" },
-                                    { name: "clingy", geneType: "RECESSIVE" },
-                                    { name: "timid", geneType: "RECESSIVE" },
-                                    { name: "mischievous", geneType: "CODOMINANT" },
-                                    { name: "patient", geneType: "NEUTRAL" },
-                                    { name: "dominant", geneType: "DOMINANT" },
-                                    { name: "submissive", geneType: "RECESSIVE" }
+                                    { name: "calm", geneType: "NEUTRAL", personalityConflictNames: ["aggressive", "energetic", "mischievous"] },
+                                    { name: "playful", geneType: "CODOMINANT", personalityConflictNames: ["lazy", "timid", "submissive"] },
+                                    { name: "curious", geneType: "CODOMINANT", personalityConflictNames: ["shy", "stubborn", "patient"] },
+                                    { name: "shy", geneType: "RECESSIVE", personalityConflictNames: ["brave", "dominant", "protective"] },
+                                    { name: "brave", geneType: "DOMINANT", personalityConflictNames: ["timid", "submissive", "clingy"] },
+                                    { name: "loyal", geneType: "DOMINANT", personalityConflictNames: ["independent", "mischievous"] },
+                                    { name: "aggressive", geneType: "DOMINANT", personalityConflictNames: ["calm", "gentle", "patient"] },
+                                    { name: "lazy", geneType: "RECESSIVE", personalityConflictNames: ["energetic", "playful", "curious"] },
+                                    { name: "friendly", geneType: "CODOMINANT", personalityConflictNames: ["aggressive", "stubborn"] },
+                                    { name: "stubborn", geneType: "RECESSIVE", personalityConflictNames: ["submissive", "friendly", "gentle"] },
+                                    { name: "gentle", geneType: "NEUTRAL", personalityConflictNames: ["aggressive", "dominant"] },
+                                    { name: "energetic", geneType: "CODOMINANT", personalityConflictNames: ["lazy", "calm", "timid"] },
+                                    { name: "protective", geneType: "DOMINANT", personalityConflictNames: ["independent", "submissive"] },
+                                    { name: "independent", geneType: "NEUTRAL", personalityConflictNames: ["clingy", "loyal", "protective"] },
+                                    { name: "clingy", geneType: "RECESSIVE", personalityConflictNames: ["independent", "brave"] },
+                                    { name: "timid", geneType: "RECESSIVE", personalityConflictNames: ["brave", "energetic", "dominant"] },
+                                    { name: "mischievous", geneType: "CODOMINANT", personalityConflictNames: ["patient", "loyal", "calm"] },
+                                    { name: "patient", geneType: "NEUTRAL", personalityConflictNames: ["aggressive", "mischievous", "curious"] },
+                                    { name: "dominant", geneType: "DOMINANT", personalityConflictNames: ["submissive", "shy", "gentle"] },
+                                    { name: "submissive", geneType: "RECESSIVE", personalityConflictNames: ["dominant", "brave", "stubborn"] }
                                 ]
                             });
 
@@ -836,8 +861,9 @@ createCommand({
                                     { name: "work_challenge_easier" },
                                     { name: "slots_luck" },
                                     { name: "coinflip_luck" },
+                                    { name: "coinflip_bonus" },
                                     { name: "horse_racing_luck" },
-                                    { name: "lottery_luck" },
+                                    { name: "horse_racing_bonus" }
                                 ]
                             });
 
@@ -846,31 +872,173 @@ createCommand({
                             await interaction.editReply(res.warning(`${icon.waiting_white} | Criando genéticas (múltiplas por espécie)...`));
                             const allPets = await tx.pet.findMany();
 
-                            const geneticsData: { petId: number; trait: string; colorPart: PetGeneticsColorPart; geneType: GeneType; }[] = allPets.flatMap((p) => ([
-                                // olhos
-                                { petId: p.id, trait: "Olhos Azuis", colorPart: "EYE", geneType: "DOMINANT" },
-                                { petId: p.id, trait: "Olhos Verdes", colorPart: "EYE", geneType: "RECESSIVE" },
-                                { petId: p.id, trait: "Olhos Dourados", colorPart: "EYE", geneType: "CODOMINANT" },
-                                { petId: p.id, trait: "Olhos Pretos", colorPart: "EYE", geneType: "NEUTRAL" },
+                            const geneticsData: { petId: number; trait: string; colorPart: PetGeneticsColorPart; geneType: GeneType; }[] = allPets.flatMap((p) => {
+                                const baseTraits = [
+                                    // olhos comuns
+                                    { trait: "Olhos Azuis", colorPart: "EYE", geneType: "DOMINANT" },
+                                    { trait: "Olhos Verdes", colorPart: "EYE", geneType: "RECESSIVE" },
+                                    { trait: "Olhos Dourados", colorPart: "EYE", geneType: "CODOMINANT" },
+                                    { trait: "Olhos Pretos", colorPart: "EYE", geneType: "NEUTRAL" },
+                                ];
 
-                                // pelagem - primary
-                                { petId: p.id, trait: "Pelo Branco", colorPart: "COLOR1", geneType: "RECESSIVE" },
-                                { petId: p.id, trait: "Pelo Preto", colorPart: "COLOR1", geneType: "DOMINANT" },
-                                { petId: p.id, trait: "Pelo Dourado", colorPart: "COLOR1", geneType: "CODOMINANT" },
-                                { petId: p.id, trait: "Pelo Acinzentado", colorPart: "COLOR1", geneType: "NEUTRAL" },
+                                const animalSpecificTraits = (() => {
+                                    switch (p.animal) {
+                                        case "CAT":
+                                            return [
+                                                // pelagem - primary para gatos
+                                                { trait: "Pelo Cinza", colorPart: "COLOR1", geneType: "NEUTRAL" },
+                                                { trait: "Pelo Laranja", colorPart: "COLOR1", geneType: "CODOMINANT" },
+                                                { trait: "Pelo Branco", colorPart: "COLOR1", geneType: "RECESSIVE" },
+                                                { trait: "Pelo Preto", colorPart: "COLOR1", geneType: "DOMINANT" },
+                                                // pelagem - secondary / padrões para gatos
+                                                { trait: "Manchas Brancas", colorPart: "COLOR2", geneType: "CODOMINANT" },
+                                                { trait: "Listras Tabby", colorPart: "COLOR2", geneType: "NEUTRAL" },
+                                                { trait: "Patas Pretas", colorPart: "COLOR2", geneType: "NEUTRAL" },
+                                                { trait: "Orelhas Pontudas", colorPart: "COLOR2", geneType: "RECESSIVE" },
+                                                // extras para gatos
+                                                { trait: "Cauda Curta", colorPart: "COLOR2", geneType: "RECESSIVE" },
+                                                { trait: "Bigodes Longos", colorPart: "COLOR2", geneType: "CODOMINANT" },
+                                                { trait: "Pelo Curto", colorPart: "COLOR1", geneType: "DOMINANT" },
+                                                { trait: "Pelo Longo", colorPart: "COLOR1", geneType: "RECESSIVE" },
+                                            ];
+                                        case "DOG":
+                                            return [
+                                                // pelagem - primary para cães
+                                                { trait: "Pelo Marrom", colorPart: "COLOR1", geneType: "NEUTRAL" },
+                                                { trait: "Pelo Dourado", colorPart: "COLOR1", geneType: "CODOMINANT" },
+                                                { trait: "Pelo Branco", colorPart: "COLOR1", geneType: "RECESSIVE" },
+                                                { trait: "Pelo Preto", colorPart: "COLOR1", geneType: "DOMINANT" },
+                                                // pelagem - secondary / padrões para cães
+                                                { trait: "Manchas Pretas", colorPart: "COLOR2", geneType: "CODOMINANT" },
+                                                { trait: "Listras Brindle", colorPart: "COLOR2", geneType: "NEUTRAL" },
+                                                { trait: "Colar Branco", colorPart: "COLOR2", geneType: "NEUTRAL" },
+                                                { trait: "Orelhas Caídas", colorPart: "COLOR2", geneType: "RECESSIVE" },
+                                                // extras para cães
+                                                { trait: "Cauda Enrolada", colorPart: "COLOR2", geneType: "CODOMINANT" },
+                                                { trait: "Focinho Curto", colorPart: "COLOR2", geneType: "RECESSIVE" },
+                                                { trait: "Pelo Ondulado", colorPart: "COLOR1", geneType: "CODOMINANT" },
+                                                { trait: "Pelo Liso", colorPart: "COLOR1", geneType: "DOMINANT" },
+                                            ];
+                                        case "BIRD":
+                                            return [
+                                                // pelagem (penas) - primary para pássaros
+                                                { trait: "Penas Azuis", colorPart: "COLOR1", geneType: "DOMINANT" },
+                                                { trait: "Penas Verdes", colorPart: "COLOR1", geneType: "RECESSIVE" },
+                                                { trait: "Penas Amarelas", colorPart: "COLOR1", geneType: "CODOMINANT" },
+                                                { trait: "Penas Pretas", colorPart: "COLOR1", geneType: "NEUTRAL" },
+                                                // pelagem - secondary / padrões para pássaros
+                                                { trait: "Manchas Coloridas", colorPart: "COLOR2", geneType: "CODOMINANT" },
+                                                { trait: "Listras nas Asas", colorPart: "COLOR2", geneType: "NEUTRAL" },
+                                                { trait: "Bico Curvo", colorPart: "COLOR2", geneType: "NEUTRAL" },
+                                                { trait: "Crista Alta", colorPart: "COLOR2", geneType: "DOMINANT" },
+                                                // extras para pássaros
+                                                { trait: "Asas Longas", colorPart: "COLOR2", geneType: "CODOMINANT" },
+                                                { trait: "Penas Iridescentes", colorPart: "COLOR1", geneType: "RECESSIVE" },
+                                                { trait: "Cauda Bifurcada", colorPart: "COLOR2", geneType: "NEUTRAL" },
+                                                { trait: "Olhos Vermelhos", colorPart: "EYE", geneType: "RECESSIVE" },
+                                            ];
+                                        case "HAMSTER":
+                                            return [
+                                                // pelagem - primary para hamsters
+                                                { trait: "Pelo Cinza Claro", colorPart: "COLOR1", geneType: "NEUTRAL" },
+                                                { trait: "Pelo Marrom", colorPart: "COLOR1", geneType: "DOMINANT" },
+                                                { trait: "Pelo Branco", colorPart: "COLOR1", geneType: "RECESSIVE" },
+                                                { trait: "Pelo Dourado", colorPart: "COLOR1", geneType: "CODOMINANT" },
+                                                // pelagem - secondary / padrões para hamsters
+                                                { trait: "Manchas Pretas", colorPart: "COLOR2", geneType: "CODOMINANT" },
+                                                { trait: "Listras Dorsais", colorPart: "COLOR2", geneType: "NEUTRAL" },
+                                                { trait: "Patas Rosadas", colorPart: "COLOR2", geneType: "NEUTRAL" },
+                                                { trait: "Orelhas Pequenas", colorPart: "COLOR2", geneType: "RECESSIVE" },
+                                                // extras para hamsters
+                                                { trait: "Cauda Curta", colorPart: "COLOR2", geneType: "DOMINANT" },
+                                                { trait: "Pelo Espesso", colorPart: "COLOR1", geneType: "CODOMINANT" },
+                                                { trait: "Bochechas Grandes", colorPart: "COLOR2", geneType: "NEUTRAL" },
+                                                { trait: "Olhos Negros", colorPart: "EYE", geneType: "DOMINANT" },
+                                            ];
+                                        case "RABBIT":
+                                            return [
+                                                // pelagem - primary para coelhos
+                                                { trait: "Pelo Branco", colorPart: "COLOR1", geneType: "RECESSIVE" },
+                                                { trait: "Pelo Cinza", colorPart: "COLOR1", geneType: "NEUTRAL" },
+                                                { trait: "Pelo Marrom", colorPart: "COLOR1", geneType: "DOMINANT" },
+                                                { trait: "Pelo Preto", colorPart: "COLOR1", geneType: "CODOMINANT" },
+                                                // pelagem - secondary / padrões para coelhos
+                                                { trait: "Manchas Negras", colorPart: "COLOR2", geneType: "CODOMINANT" },
+                                                { trait: "Listras Agouti", colorPart: "COLOR2", geneType: "NEUTRAL" },
+                                                { trait: "Orelhas Longas", colorPart: "COLOR2", geneType: "DOMINANT" },
+                                                { trait: "Patas Brancas", colorPart: "COLOR2", geneType: "RECESSIVE" },
+                                                // extras para coelhos
+                                                { trait: "Pelo Angorá", colorPart: "COLOR1", geneType: "RECESSIVE" },
+                                                { trait: "Nariz Rosa", colorPart: "COLOR2", geneType: "NEUTRAL" },
+                                                { trait: "Olhos Rubi", colorPart: "EYE", geneType: "RECESSIVE" },
+                                                { trait: "Cauda Fofa", colorPart: "COLOR2", geneType: "CODOMINANT" },
+                                            ];
+                                        case "DRAGON":
+                                            return [
+                                                // pelagem (escamas) - primary para dragões
+                                                { trait: "Escamas Verdes", colorPart: "COLOR1", geneType: "NEUTRAL" },
+                                                { trait: "Escamas Vermelhas", colorPart: "COLOR1", geneType: "DOMINANT" },
+                                                { trait: "Escamas Azuis", colorPart: "COLOR1", geneType: "RECESSIVE" },
+                                                { trait: "Escamas Douradas", colorPart: "COLOR1", geneType: "CODOMINANT" },
+                                                // pelagem - secondary / padrões para dragões
+                                                { trait: "Chifres Curvos", colorPart: "COLOR2", geneType: "DOMINANT" },
+                                                { trait: "Asas Membranosas", colorPart: "COLOR2", geneType: "NEUTRAL" },
+                                                { trait: "Espinhos Dorsais", colorPart: "COLOR2", geneType: "CODOMINANT" },
+                                                { trait: "Cauda Espinhosa", colorPart: "COLOR2", geneType: "RECESSIVE" },
+                                                // extras para dragões
+                                                { trait: "Olhos Flamejantes", colorPart: "EYE", geneType: "DOMINANT" },
+                                                { trait: "Escamas Iridescentes", colorPart: "COLOR1", geneType: "CODOMINANT" },
+                                                { trait: "Garras Afiadas", colorPart: "COLOR2", geneType: "NEUTRAL" },
+                                                { trait: "Respiração de Fogo", colorPart: "COLOR2", geneType: "LEGENDARY" }, // Nota: geneType deve ser um dos enums, assumindo NEUTRAL se não couber
+                                            ];
+                                        case "LION":
+                                            return [
+                                                // pelagem - primary para leões
+                                                { trait: "Juba Dourada", colorPart: "COLOR1", geneType: "DOMINANT" },
+                                                { trait: "Pelo Amarelo", colorPart: "COLOR1", geneType: "NEUTRAL" },
+                                                { trait: "Pelo Branco", colorPart: "COLOR1", geneType: "RECESSIVE" },
+                                                { trait: "Pelo Preto", colorPart: "COLOR1", geneType: "CODOMINANT" },
+                                                // pelagem - secondary / padrões para leões
+                                                { trait: "Manchas no Corpo", colorPart: "COLOR2", geneType: "CODOMINANT" },
+                                                { trait: "Listras na Cauda", colorPart: "COLOR2", geneType: "NEUTRAL" },
+                                                { trait: "Juba Espessa", colorPart: "COLOR2", geneType: "DOMINANT" },
+                                                { trait: "Patas Grandes", colorPart: "COLOR2", geneType: "NEUTRAL" },
+                                                // extras para leões
+                                                { trait: "Olhos Âmbar", colorPart: "EYE", geneType: "CODOMINANT" },
+                                                { trait: "Garras Retráteis", colorPart: "COLOR2", geneType: "DOMINANT" },
+                                                { trait: "Rugido Alto", colorPart: "COLOR2", geneType: "NEUTRAL" },
+                                                { trait: "Cauda com Tufo", colorPart: "COLOR2", geneType: "RECESSIVE" },
+                                            ];
+                                        case "JAGUAR":
+                                            return [
+                                                // pelagem - primary para jaguares
+                                                { trait: "Pelo Amarelo", colorPart: "COLOR1", geneType: "NEUTRAL" },
+                                                { trait: "Pelo Preto", colorPart: "COLOR1", geneType: "DOMINANT" },
+                                                { trait: "Pelo Manchado", colorPart: "COLOR1", geneType: "CODOMINANT" },
+                                                { trait: "Pelo Albino", colorPart: "COLOR1", geneType: "RECESSIVE" },
+                                                // pelagem - secondary / padrões para jaguares
+                                                { trait: "Rosetas Pretas", colorPart: "COLOR2", geneType: "DOMINANT" },
+                                                { trait: "Listras nas Patas", colorPart: "COLOR2", geneType: "NEUTRAL" },
+                                                { trait: "Cauda Longa", colorPart: "COLOR2", geneType: "CODOMINANT" },
+                                                { trait: "Orelhas Arredondadas", colorPart: "COLOR2", geneType: "RECESSIVE" },
+                                                // extras para jaguares
+                                                { trait: "Olhos Verdes", colorPart: "EYE", geneType: "DOMINANT" },
+                                                { trait: "Mandíbula Forte", colorPart: "COLOR2", geneType: "NEUTRAL" },
+                                                { trait: "Pelo Lustroso", colorPart: "COLOR1", geneType: "CODOMINANT" },
+                                                { trait: "Garras Curvas", colorPart: "COLOR2", geneType: "DOMINANT" },
+                                            ];
+                                        default:
+                                            return [];
+                                    }
+                                })();
 
-                                // pelagem - secondary / padrões
-                                { petId: p.id, trait: "Manchas", colorPart: "COLOR2", geneType: "CODOMINANT" },
-                                { petId: p.id, trait: "Listras", colorPart: "COLOR2", geneType: "NEUTRAL" },
-                                { petId: p.id, trait: "Patas Marrons", colorPart: "COLOR2", geneType: "NEUTRAL" },
-                                { petId: p.id, trait: "Sobrancelha Escura", colorPart: "COLOR2", geneType: "NEUTRAL" },
-
-                                // extras / especiais
-                                { petId: p.id, trait: "Sobrancelha Dourada", colorPart: "COLOR2", geneType: "RECESSIVE" },
-                                { petId: p.id, trait: "Pelo Listrado", colorPart: "COLOR2", geneType: "CODOMINANT" },
-                                { petId: p.id, trait: "Marca de Estrela", colorPart: "COLOR2", geneType: "NEUTRAL" },
-                                { petId: p.id, trait: "Olhos Luminosos", colorPart: "EYE", geneType: "DOMINANT" }
-                            ]));
+                                return [...baseTraits, ...animalSpecificTraits].map(trait => ({
+                                    petId: p.id,
+                                    trait: trait.trait,
+                                    colorPart: trait.colorPart as PetGeneticsColorPart,
+                                    geneType: trait.geneType as GeneType,
+                                }));
+                            });
 
                             // Inserir todas as genetics
                             // Para evitar problemas de limite por createMany, quebramos em chunks de 500
