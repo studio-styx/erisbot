@@ -1,6 +1,6 @@
 import { createResponder, ResponderType } from "#base";
 import { prisma, redis } from "#database";
-import { convertTime, getValidUserPet, icon, petPlays, petsFood, res } from "#functions";
+import { convertTime, getRandomNumber, getValidUserPet, icon, petPlays, petsFood, res } from "#functions";
 import { menus } from "#menus";
 import { Prisma } from "#prisma";
 
@@ -75,6 +75,9 @@ createResponder({
                         moodEffect = "still hungry";
                     }
 
+                    const newHappiness = Math.min(pet.happiness + getRandomNumber(1, 4), 100);
+                    const newEnergy = Math.min(pet.energy + getRandomNumber(1, 4), 100);
+
                     const moodEffectKey = `pet:mood_effect:${pet.id}`;
                     await redis.setex(moodEffectKey, convertTime({ time: "30m", to: "seconds" }), moodEffect);
 
@@ -87,7 +90,9 @@ createResponder({
                             where: { id: pet.id },
                             data: {
                                 hungry: newHungry,
-                                humor: moodEffect
+                                happiness: newHappiness,
+                                humor: moodEffect,
+                                energy: newEnergy
                             },
                             include: {
                                 personality: {

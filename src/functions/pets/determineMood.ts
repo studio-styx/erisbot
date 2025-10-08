@@ -1,6 +1,5 @@
 import { prisma, redis } from "#database";
 import { UserPet } from "#prisma";
-import { convertTime } from "#functions";
 
 export async function determineMood(pet: UserPet) {
     const { hungry, energy, happiness } = pet;
@@ -33,28 +32,26 @@ export async function determineMood(pet: UserPet) {
 }
 
 export async function determineMoodInterval() {
-    setInterval(async () => {
-        const allPets = await prisma.userPet.findMany({
-            where: {
-                isDead: false,
-                adoption: null
-            }
-        });
+    const allPets = await prisma.userPet.findMany({
+        where: {
+            isDead: false,
+            adoption: null
+        }
+    });
 
-        const promises = allPets.map(pet => (async () => {
-            const moodEffectKey = `pet:mood_effect:${pet.id}`;
-            const hasActiveEffect = await redis.exists(moodEffectKey);
+    const promises = allPets.map(pet => (async () => {
+        const moodEffectKey = `pet:mood_effect:${pet.id}`;
+        const hasActiveEffect = await redis.exists(moodEffectKey);
 
-            // Só atualiza se não houver efeito temporário ativo
-            if (!hasActiveEffect) {
-                const currentMood = await determineMood(pet);
-                await prisma.userPet.update({
-                    where: { id: pet.id },
-                    data: { humor: currentMood }
-                });
-            }
-        })())
+        // Só atualiza se não houver efeito temporário ativo
+        if (!hasActiveEffect) {
+            const currentMood = await determineMood(pet);
+            await prisma.userPet.update({
+                where: { id: pet.id },
+                data: { humor: currentMood }
+            });
+        }
+    })())
 
-        await Promise.all(promises);
-    }, convertTime({ time: "30m", to: "milliseconds" }))
+    await Promise.all(promises);
 }

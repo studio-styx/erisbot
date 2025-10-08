@@ -508,7 +508,8 @@ model UserPetSkill {
   id        Int @id @default(autoincrement())
   userPetId Int
   skillId   Int
-  level     Int
+  level     Int @default(1)
+  xp        Int @default(0)
   createdAt DateTime @default(now())
   
   userPet UserPet @relation(fields: [userPetId], references: [id], onDelete: Cascade)

@@ -1,6 +1,9 @@
 import { createEvent } from "#base";
 import { prisma } from "#database";
-import { determineMoodInterval, icon, res, scheduleAllEndGiveaways, scheduleReproductionsDate, setAllServerSettings } from "#functions";
+import { determineMoodInterval, icon, res, scheduleAllEndGiveaways, scheduleReproductionsDate, 
+    setAllPetsStats, 
+    setAllServerSettings 
+} from "#functions";
 import { settings } from "#settings";
 import { createRow } from "@magicyan/discord";
 import { ActivityType, ButtonBuilder, ButtonStyle } from "discord.js";
@@ -73,7 +76,12 @@ createEvent({
         setInterval(async () => {
             await scheduleReproductionsDate();
         }, 1000 * 60 * 30)
-        determineMoodInterval();
+        setInterval(async () => {
+            await determineMoodInterval();
+        }, 1000 * 60 * 30);
+        setInterval(async () => {
+            await setAllPetsStats();
+        }, 1000 * 60 * 60)
 
         let currentIndex = 0;
 
