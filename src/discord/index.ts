@@ -1,6 +1,7 @@
 import { Store, setupCreators } from "#base";
 import { prisma } from "#database";
-import { defaultServerSettings, getCommandId, getServerSettings, icon, res, resv2 } from "#functions";
+import { getCommandId, getServerSettings, icon, isBlacklisted, PrismaBlacklistValue, res, resv2 } from "#functions";
+import { brBuilder } from "@magicyan/discord";
 import { channelMention, Interaction, time } from "discord.js";
 
 const cooldown = new Store<Date>();
@@ -32,15 +33,39 @@ export const { createCommand, createEvent, createResponder } = setupCreators({
         },
         async middleware(interaction, block) {
             console.log(`Comando usado no server: ${interaction.guild?.name} pelo usuário: ${interaction.user.displayName} o comando: ${interaction.commandName}, data: ${new Date().toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo" })}`)
+            
+            const blacklisted = isBlacklisted(interaction.user.id);
+            if (blacklisted) {
+                await interaction.deferReply({ flags })
+                const user = await prisma.user.findUnique({
+                    where: {
+                        id: interaction.user.id
+                    },
+                    select: {
+                        blacklist: true
+                    }
+                });
+                const blacklist = user!.blacklist as unknown as PrismaBlacklistValue;
+                interaction.editReply(res.danger(brBuilder(
+                    `${icon.error} | Você está banido de usar as funções da **Éris**!`,
+                    `> Você está banido desde ${blacklist.bannedAt}`,
+                    `> Pelo motivo: ${blacklist.reason}`,
+                    `> E termina em: ${blacklist.endAt ? time(blacklist.endAt, "R") : "Nunca"}`
+                )))
+                block();
+                return;
+            }
+
             if (cooldown.has(interaction.user.id)) {
                 interaction.reply(res.danger(`${icon.error} | Acalme-se! você está sendo muito rápido, por favor aguarde ${time(cooldown.get(interaction.user.id)!, "R")} para usar comandos novamente!`));
                 block()
                 return;
             }
+
             if (!interaction.guildId) return;
+
             const serverSettings = getServerSettings(interaction.guildId)
-                || await prisma.guildSettings.findUnique({ where: { id: interaction.guildId } })
-                || defaultServerSettings;
+                || await prisma.guildSettings.upsert({ where: { id: interaction.guildId }, create: { id: interaction.user.id }, update: {}} );
 
             const channelId = interaction.channelId;
             if (serverSettings.channelsCommandDisabledIsHabilited && serverSettings.channelsCommandDisabled.includes(channelId) && !interaction.memberPermissions?.has("Administrator")) {
@@ -109,6 +134,28 @@ export const { createCommand, createEvent, createResponder } = setupCreators({
             }
         },
         async middleware(interaction, block) {
+            const blacklisted = isBlacklisted(interaction.user.id);
+            if (blacklisted) {
+                await interaction.deferReply({ flags })
+                const user = await prisma.user.findUnique({
+                    where: {
+                        id: interaction.user.id
+                    },
+                    select: {
+                        blacklist: true
+                    }
+                });
+                const blacklist = user!.blacklist as unknown as PrismaBlacklistValue;
+                interaction.editReply(res.danger(brBuilder(
+                    `${icon.error} | Você está banido de usar as funções da **Éris**!`,
+                    `> Você está banido desde ${blacklist.bannedAt}`,
+                    `> Pelo motivo: ${blacklist.reason}`,
+                    `> E termina em: ${blacklist.endAt ? time(blacklist.endAt, "R") : "Nunca"}`
+                )))
+                block();
+                return;
+            }
+
             if (cooldown.has(interaction.user.id)) {
                 interaction.reply(res.danger(`${icon.error} | Acalme-se! você está sendo muito rápido, por favor aguarde ${time(cooldown.get(interaction.user.id)!, "R")} para usar comandos novamente!`));
                 block()

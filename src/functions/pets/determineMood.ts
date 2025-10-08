@@ -1,6 +1,6 @@
 import { prisma, redis } from "#database";
 import { UserPet } from "#prisma";
-import { convertTime } from "functions/utils/convertTime.js";
+import { convertTime } from "#functions";
 
 export async function determineMood(pet: UserPet) {
     const { hungry, energy, happiness } = pet;

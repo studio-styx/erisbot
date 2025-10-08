@@ -76,7 +76,7 @@ function parseTimeString(timeString: string): ParsedTime {
     return result;
 }
 
-function calculateTotalMilliseconds(parsedTime: ParsedTime): number {
+export function calculateTotalMilliseconds(parsedTime: ParsedTime): number {
     const { days, hours, minutes, seconds } = parsedTime;
 
     const totalMilliseconds =

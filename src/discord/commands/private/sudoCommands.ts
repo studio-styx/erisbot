@@ -1,6 +1,6 @@
 import { createCommand } from "#base";
 import { prisma } from "#database";
-import { stocksEventuals, res, icon, processApiQuestions } from "#functions";
+import { stocksEventuals, res, icon, processApiQuestions, removeFromBlacklist, addToBlacklist, convertTime } from "#functions";
 import { menus } from "#menus";
 import { GeneType, Mails, PetGeneticsColorPart, Rarity } from "#prisma";
 import { settings } from "#settings";
@@ -21,6 +21,51 @@ createCommand({
             name: "test",
             description: "test function",
             type: ApplicationCommandOptionType.Subcommand,
+        },
+        {
+            name: "blacklist",
+            description: "manage blacklist",
+            type: ApplicationCommandOptionType.SubcommandGroup,
+            options: [
+                {
+                    name: "add",
+                    description: "add user to blacklist",
+                    type: ApplicationCommandOptionType.Subcommand,
+                    options: [
+                        {
+                            name: "user",
+                            description: "user to add to the blacklist",
+                            type: ApplicationCommandOptionType.User,
+                            required: true
+                        },
+                        {
+                            name: "reason",
+                            description: "reason for adding the user to the blacklist",
+                            type: ApplicationCommandOptionType.String,
+                            required: true
+                        },
+                        {
+                            name: "endat",
+                            description: "end at",
+                            type: ApplicationCommandOptionType.String,
+                            required: false
+                        }
+                    ]
+                },
+                {
+                    name: "remove",
+                    description: "remove user from blacklist",
+                    type: ApplicationCommandOptionType.Subcommand,
+                    options: [
+                        {
+                            name: "user",
+                            description: "user to remove from the blacklist",
+                            type: ApplicationCommandOptionType.User,
+                            required: true
+                        }
+                    ]
+                }
+            ]
         },
         {
             name: "force-stock-variation",
@@ -176,7 +221,35 @@ createCommand({
             interaction.reply(res.danger("You are not allowed to use this command!"));
             return;
         }
-        const subcommand = interaction.options.getSubcommand();
+        const { options } = interaction;
+        const subcommand = options.getSubcommand();
+        const subCommandGroup = options.getSubcommandGroup();
+
+        if (subCommandGroup) {
+            switch (subCommandGroup) {
+                case "blacklist": {
+                    await interaction.deferReply();
+                    const user = options.getUser("user", true);
+                    switch (subcommand) {
+                        case "add": {
+                            const reason = options.getString("reason", true);
+                            const endAt = options.getString("endat");
+
+                            await addToBlacklist(user.id, { reason, endAt: endAt ? new Date(Date.now() + convertTime({ time: endAt as any, to: "milliseconds" })) : null, bannedAt: new Date(), responsibleId: interaction.user.id });
+                            break;
+                        }
+                        case "remove": {
+                            await removeFromBlacklist(user.id);
+                            break;
+                        }
+                    }
+
+                    interaction.editReply(res.success(`${icon.success} | Sucesso ao ${subcommand === "add" ? "adicionar" : "remover"} o usuário ${user.displayName} da blacklist`))
+                    break;
+                }
+            }
+            return;
+        }
 
         switch (subcommand) {
             case "database": {

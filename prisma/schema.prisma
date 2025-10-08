@@ -27,6 +27,7 @@ model User {
   dmNotification     Boolean        @default(false)
   activePetId        Int?           @unique
   activePet          UserPet?       @relation("ActivePetRelation", fields: [activePetId], references: [id], onDelete: SetNull)
+  blacklist          Json?
 
   logs               Log[]
   cooldowns          Cooldown[]
