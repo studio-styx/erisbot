@@ -1,5 +1,5 @@
 import { prisma } from "#database";
-import { calculateProbability, getRandomNumber, getRandomValue, petAnimalFormatted, petRarityFormatted } from "#functions";
+import { calculateProbability, getRandomValue, petAnimalFormatted, petRarityFormatted } from "#functions";
 import { Gender, GeneType, PetGeneticsColorPart } from "#prisma";
 import { brBuilder } from "@magicyan/discord";
 
@@ -120,7 +120,7 @@ export async function setEndReproduction(petId: number) {
     }
 
     // Gerar 1 a 3 filhos
-    const offspringCount = getRandomNumber(1, 3);
+    const offspringCount = calculateProbability(60) ? 1 : calculateProbability(30) ? 2 : 3;
 
     // Puxar catálogos em uma única transação
     const [catalogGenes, allPersonalityTraits, allSkills] = await prisma.$transaction([

@@ -162,6 +162,11 @@ createCommand({
             name: "povoar",
             description: "povoar",
             type: ApplicationCommandOptionType.Subcommand
+        },
+        {
+            name: "clear",
+            description: "clear a table",
+            type: ApplicationCommandOptionType.Subcommand,
         }
     ],
     async autocomplete(interaction) {
@@ -989,7 +994,7 @@ createCommand({
                                                 { trait: "Olhos Flamejantes", colorPart: "EYE", geneType: "DOMINANT" },
                                                 { trait: "Escamas Iridescentes", colorPart: "COLOR1", geneType: "CODOMINANT" },
                                                 { trait: "Garras Afiadas", colorPart: "COLOR2", geneType: "NEUTRAL" },
-                                                { trait: "Respiração de Fogo", colorPart: "COLOR2", geneType: "LEGENDARY" }, // Nota: geneType deve ser um dos enums, assumindo NEUTRAL se não couber
+                                                { trait: "Respiração de Fogo", colorPart: "COLOR2", geneType: "NEUTRAL" },
                                             ];
                                         case "LION":
                                             return [
@@ -1057,6 +1062,7 @@ createCommand({
 
                     await interaction.editReply(res.success(`${icon.success} | Povoamento concluído com sucesso!`));
                 } catch (err: any) {
+                    console.error(err)
                     if (err.message === "TIMEOUT") {
                         await interaction.editReply(res.danger(`${icon.error} | Tempo limite de 30 segundos atingido durante o povoamento.`));
                     } else {
@@ -1065,7 +1071,26 @@ createCommand({
                 }
                 break;
             }
+            case "clear": {
+                await interaction.deferReply();
+                await prisma.$transaction([
+                    prisma.userPet.deleteMany(),
+                    prisma.petSkill.deleteMany(),
+                    prisma.pet.deleteMany(),
+                    prisma.personalityTrait.deleteMany(),
+                    prisma.genetics.deleteMany(),
+                    prisma.userPetPersonality.deleteMany(),
+                    prisma.petGenetics.deleteMany(),
+                    prisma.user.updateMany({
+                        data: {
+                            activePetId: null
+                        }
+                    })
+                ])
 
+                await interaction.editReply(res.success(`${icon.success} | Sucesso ao limpar as tabelas de pet!`))
+                return;
+            }
         }
     },
 });

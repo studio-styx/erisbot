@@ -1,5 +1,5 @@
 import { prisma } from "#database";
-import { calculateProbability, getRandomValue, icon, petAnimalFormatted, petRarityFormatted, petSkillNameFormatted, resv2 } from "#functions";
+import { calculateProbability, getRandomValue, icon, petAnimalFormatted, petRarityFormatted, petSkillNameFormatted, res, resv2 } from "#functions";
 import { Gender, PersonalityTrait, Rarity } from "#prisma";
 import { brBuilder, createRow, createSeparator } from "@magicyan/discord";
 import { ButtonBuilder, ButtonStyle, ChatInputCommandInteraction, time } from "discord.js";
@@ -179,7 +179,6 @@ export async function petSpin(interaction: ChatInputCommandInteraction<"cached">
     await interaction.deferReply();
 
     // Verificar cooldown
-    /*
     const cooldown = await prisma.cooldown.findUnique({
         where: { userId_name: { userId: user.id, name: "petSpin" } }
     });
@@ -190,7 +189,6 @@ export async function petSpin(interaction: ChatInputCommandInteraction<"cached">
         ));
         return;
     }
-    */
 
     // Sortear raridade e pet
     await interaction.editReply(resv2.warning(`${icon.waiting_white} | Girando roleta...`));
