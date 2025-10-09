@@ -1,4 +1,6 @@
 import { prisma } from "#database";
+import { brBuilder } from "@magicyan/discord";
+import { petAnimalFormatted } from "./formatteds.js";
 
 // Definir multiplicadores por humor (maior impacto)
 const multiplyerByHumor: Record<string, { hungry: number; energy: number; happiness: number }> = {
@@ -43,6 +45,7 @@ export async function setAllPetsStats() {
         },
         include: {
             personality: { include: { trait: true } },
+            pet: true
         },
     });
 
@@ -92,7 +95,7 @@ export async function setAllPetsStats() {
         const newHappiness = Math.max(0, Math.min(100, pet.happiness + combinedMultipliers.happiness));
 
         // Verificar se o pet morreu
-        const isDead = newLife <= 0;
+        const isDead = newLife <= 0 || newHungry <= 0;
 
         // Atualizar o pet
         await prisma.userPet.update({
@@ -106,6 +109,18 @@ export async function setAllPetsStats() {
                 updatedAt: currentDate,
             },
         });
+
+        if (isDead) {
+            await prisma.mails.create({
+                data: {
+                    userId: pet.userId,
+                    content: brBuilder(
+                        `Sua pet **${pet.name}** (${petAnimalFormatted[pet.pet.animal]}) morreu de **${newLife <= 0 ? `velhice` : newHungry <= 0 ? "fome" : "desconhecido"}**!`
+                    ),
+                    whoSendId: "1171963692984844401"
+                }
+            })
+        }
     })());
 
     // Executar todas as atualizações em paralelo

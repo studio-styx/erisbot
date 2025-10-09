@@ -1,6 +1,7 @@
 import { prisma } from "#database";
-import { calculateProbability, getRandomNumber, getRandomValue } from "#functions";
+import { calculateProbability, getRandomNumber, getRandomValue, petAnimalFormatted, petRarityFormatted } from "#functions";
 import { Gender, GeneType, PetGeneticsColorPart } from "#prisma";
+import { brBuilder } from "@magicyan/discord";
 
 const randomNames: Record<Gender, string[]> = {
     MALE: [
@@ -134,6 +135,7 @@ export async function setEndReproduction(petId: number) {
     const ancestralTraits = ancestors.flatMap(a => a?.personality.map(p => p.trait) || []);
 
     await prisma.$transaction(async (tx) => {
+        const childsIds: number[] = [];
         for (let i = 1; i <= offspringCount; i++) {
             // Dados básicos do filho
             const gender = Math.random() < 0.5 ? 'MALE' : 'FEMALE';
@@ -530,16 +532,39 @@ export async function setEndReproduction(petId: number) {
                     data: offspringSkills.map(s => ({ ...s, userPetId: newOffspring.id })),
                 }),
             ]);
+
+            childsIds.push(newOffspring.id)
         }
 
+        const fetchedPets = await tx.userPet.findMany({
+            where: { id: { in: childsIds } },
+            include: {
+                pet: true,
+            }
+        })
+
         // Finaliza gravidez e remove cônjuge
-        await tx.userPet.update({
-            where: { id: mother.id },
-            data: { isPregnant: false, pregnantEndAt: null, spouseId: null },
-        });
-        await tx.userPet.update({
-            where: { id: father.id },
-            data: { spouseId: null },
-        });
+        await Promise.all([
+            tx.userPet.update({
+                where: { id: mother.id },
+                data: { isPregnant: false, pregnantEndAt: null, spouseId: null },
+            }),
+            tx.userPet.update({
+                where: { id: father.id },
+                data: { spouseId: null },
+            }),
+            tx.mails.create({
+                data: {
+                    userId: mother.userId,
+                    content: brBuilder(
+                        `Sua pet **${mother.name}** (${petAnimalFormatted[mother.pet.animal]}) acabou de parir **${offspringCount}** ${offspringCount === 1 ? 'filho' : 'filhos'} com seu cônjuge **${father.name}**!`,
+                        `Sendo eles:`,
+                        fetchedPets.map(p => `**${p.name}** (${p.pet.specie}) - **${petRarityFormatted[p.pet.rarity].toUpperCase()}** **\`${p.gender === "MALE" ? "MACHO" : "FÊMEA"}\`**`)
+                    ),
+                    whoSendId: "1171963692984844401"
+                }
+            })
+        ])
     });
+
 }

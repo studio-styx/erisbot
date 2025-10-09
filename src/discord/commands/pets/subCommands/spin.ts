@@ -1,5 +1,5 @@
 import { prisma } from "#database";
-import { calculateProbability, getRandomValue, icon, petAnimalFormatted, petRarityFormatted, resv2 } from "#functions";
+import { calculateProbability, getRandomValue, icon, petAnimalFormatted, petRarityFormatted, petSkillNameFormatted, resv2 } from "#functions";
 import { Gender, PersonalityTrait, Rarity } from "#prisma";
 import { brBuilder, createRow, createSeparator } from "@magicyan/discord";
 import { ButtonBuilder, ButtonStyle, ChatInputCommandInteraction, time } from "discord.js";
@@ -227,7 +227,7 @@ export async function petSpin(interaction: ChatInputCommandInteraction<"cached">
             `**Gênero:** ${petGender === "MALE" ? "Macho" : "Fêmea"}`,
             `**Personalidades:** ${userPet.personality.length > 0 ? userPet.personality.map(p => p.trait.name).join(", ") : "Nenhuma"}`,
             `**Humor:** ${userPet.humor}`,
-            `**Habilidades:** ${userPet.skills.length > 0 ? userPet.skills.map(skill => `**\`${skill.skill.name}\`** - Nível **${skill.level}**`).join(", ") : "Nenhuma"}`,
+            `**Habilidades:** ${userPet.skills.length > 0 ? userPet.skills.map(skill => `**\`${petSkillNameFormatted[skill.skill.name] || skill.skill.name}\`** - Nível **${skill.level}**`).join(", ") : "Nenhuma"}`,
             `**Genética:** ${userPet.genetics.length > 0 ? userPet.genetics.map(g => `**\`${g.gene.trait}\` - \`(${g.gene.colorPart})\`** [**${g.gene.geneType}**]`).join(", ") : "Nenhuma"}`,
             `**Pais:** ${userPet.parent1Id || userPet.parent2Id ? "Tem pais" : "Nenhum (geração inicial)"}`,
             `**Está grávida?:** ${userPet.isPregnant ? "Sim" : "Não"}`

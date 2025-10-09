@@ -203,6 +203,8 @@ export const { createCommand, createEvent, createResponder } = setupCreators({
                 // verificar pets no fim da vida
                 const deadPets = pets.filter(pet => pet.life < 10);
 
+                if (hungryPets.length === 0 && sadPets.length === 0 && tiredPets.length === 0 && deadPets.length === 0) return;
+
                 try {
                     await interaction.followUp(resv2.danger(
                         brBuilder(

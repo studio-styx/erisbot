@@ -1,4 +1,4 @@
-import { getValidUserPet, icon, petAnimalFormatted, petRarityFormatted, res, resv2 } from "#functions";
+import { getValidUserPet, icon, petAnimalFormatted, petRarityFormatted, petSkillNameFormatted, res, resv2 } from "#functions";
 import { brBuilder, createSeparator } from "@magicyan/discord";
 import { ChatInputCommandInteraction, time } from "discord.js";
 
@@ -63,7 +63,7 @@ export async function petInfoCommand(interaction: ChatInputCommandInteraction<"c
             `**Energia:** ${pet.energy}/100`,
             `**Personalidades**: ${pet.personality.map(p => `**\`${p.trait.name}\`**`).join(", ")}`,
             `**Humor: \`${pet.humor}\`**`,
-            `**Habilidades:** ${pet.skills.length > 0 ? pet.skills.map(skill => `**\`${skill.skill.name}\`** - Nível **${skill.level}**`).join(", ") : "Nenhuma"}`,
+            `**Habilidades:** ${pet.skills.length > 0 ? pet.skills.map(skill => `**\`${petSkillNameFormatted[skill.skill.name] || skill.skill.name}\`** - Nível **${skill.level}**`).join(", ") : "Nenhuma"}`,
             `**Genética:**`,
             `${pet.genetics.length > 0
                 ? pet.genetics.map(g => {
