@@ -25,7 +25,6 @@
 		"rootDir": "./src",
 
 		// Path mapping Options
-		"ignoreDeprecations": "6.0",
 		"baseUrl": "./src",
 		"paths": {
 			"#database": ["./database/index.ts"],

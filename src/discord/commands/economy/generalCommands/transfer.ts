@@ -1,6 +1,6 @@
 import { Store } from "#base";
 import { prisma } from "#database";
-import { res, icon } from "#functions";
+import { res, icon, calculateDate } from "#functions";
 import { settings } from "#settings";
 import { createEmbed, brBuilder, createRow, createContainer, createSeparator } from "@magicyan/discord";
 import { ButtonBuilder, ButtonStyle, ChatInputCommandInteraction, time, userMention, UserSelectMenuBuilder } from "discord.js";
@@ -116,6 +116,7 @@ export async function economyTransferCommand(interaction: ChatInputCommandIntera
                 type: "USER",
                 guildId: interaction.guildId,
                 channelId: interaction.channelId,
+                expiresAt: calculateDate({ time: "1d", typeCalc: "increment" })
             },
             select: { id: true }
         })

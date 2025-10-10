@@ -96,6 +96,7 @@ model Application {
   ownerId    String
   owner      User            @relation(fields: [ownerId], references: [id])
   requisitions Requisition[]
+  permissions       String[] @default([])
 }
 
 model Requisition {
@@ -131,6 +132,7 @@ model Transaction {
   
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt()
+  expiresAt DateTime?
   
   guildId   String? 
   guild     GuildSettings?   @relation(fields: [guildId], references: [id], onDelete: Cascade)

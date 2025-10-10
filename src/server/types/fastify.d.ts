@@ -14,3 +14,4 @@ declare module '@fastify/websocket' {
 }
 
 export {};
+

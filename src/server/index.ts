@@ -16,7 +16,7 @@ export const reservedToken = crypto.randomBytes(16).toString("hex")
 
 createEvent({
     name: "Start Fastify Server",
-    event: "ready", once: true,
+    event: "clientReady", once: true,
     async run(client) {
         const app = fastify();
 
@@ -50,8 +50,8 @@ createEvent({
         });
 
         await app.register(import('@fastify/rate-limit'), {
-            max: 50,
-            timeWindow: '1 minute',
+            max: 20,
+            timeWindow: '30s',
         });
 
 
