@@ -3,7 +3,7 @@ import { env, settings } from "#settings";
 import { brBuilder, createRow } from "@magicyan/discord";
 import { EmbedBuilder, StringSelectMenuBuilder, type InteractionReplyOptions, Interaction } from "discord.js";
 
-export async function commandsMenu<R>(page: "economy" | "bot" | "user" | "moderation" | "utility" | "fun", interaction: Interaction): Promise<R> {
+export async function commandsMenu<R>(page: "economy" | "bot" | "user" | "moderation" | "utility" | "fun" | "pet", interaction: Interaction): Promise<R> {
     const embed = new EmbedBuilder({
         title: "Commands",
         color: parseInt(settings.colors.fuchsia.replace("#", ""), 16),
@@ -172,6 +172,25 @@ export async function commandsMenu<R>(page: "economy" | "bot" | "user" | "modera
             })
             break;
         }
+        case "pet": {
+            const [pet] = await Promise.all([
+                getCommandId(interaction, "pet")
+            ])
+
+            embed.addFields({
+                name: "",
+                value: brBuilder(
+                    `**</pet spin:${pet}>** - Girar a roleta para cair algum pet`,
+                    `**</pet adopt:${pet}>** - Adote algum pet`,
+                    `**</pet release:${pet}>** - Mande algum pet para a adoção`,
+                    `**</pet info:${pet}>** - Veja as informações de um pet`,
+                    `**</pet care:${pet}>** - Cuide de seu pet`,
+                    `**</pet breed:${pet}>** - Reproduza dois pets`,
+                    `**</pet change_name:${pet}>** - Mude o nome de seu pet`,
+                    `**</pet set_active_pet:${pet}>** - Defina seu pet como ativo`,
+                )
+            })
+        }
     }
 
     const components = [
@@ -185,7 +204,8 @@ export async function commandsMenu<R>(page: "economy" | "bot" | "user" | "modera
                     { label: "Usuário", value: "user", emoji: icon.investment_graph, default: page === "user" },
                     { label: "Moderação", value: "moderation", emoji: icon.security, default: page === "moderation" },
                     { label: "Utilidades", value: "utility", emoji: icon.key, default: page === "utility" },
-                    { label: "Diversão", value: "fun", emoji: icon.Eris_happy, default: page === "fun" }
+                    { label: "Diversão", value: "fun", emoji: icon.Eris_happy, default: page === "fun" },
+                    { label: "Pet", value: "pet", emoji: "🐶", default: page === "pet" }
                 ]
             })
         )

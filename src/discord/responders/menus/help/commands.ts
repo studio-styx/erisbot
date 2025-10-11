@@ -18,10 +18,13 @@ createResponder({
                     customId: "menu/help/commands",
                     placeholder: "Economy",
                     options: [
-                        { label: "Economy", value: "economy", emoji: icon.money_bag },
+                        { label: "Economia", value: "economy", emoji: icon.money_bag },
                         { label: "Bot", value: "bot", emoji: icon.bot },
-                        { label: "User", value: "user", emoji: icon.investment_graph },
-                        { label: "Moderation", value: "moderation", emoji: icon.lock }
+                        { label: "Usuário", value: "user", emoji: icon.investment_graph },
+                        { label: "Moderação", value: "moderation", emoji: icon.security },
+                        { label: "Utilidades", value: "utility", emoji: icon.key },
+                        { label: "Diversão", value: "fun", emoji: icon.Eris_happy },
+                        { label: "Pet", value: "pet", emoji: "🐶" }
                     ],
                     disabled: true
                 })

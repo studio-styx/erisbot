@@ -298,5 +298,53 @@
         "description": "Jogue uma partida de termo",
         "siteAvaible": false,
         "category": "fun"
+    },
+    {
+        "name": "pet spin",
+        "description": "Girar a roleta para cair algum pet",
+        "siteAvaible": false,
+        "category": "pet"
+    },
+    {
+        "name": "pet adopt",
+        "description": "Adote algum pet",
+        "siteAvaible": false,
+        "category": "pet"
+    },
+    {
+        "name": "pet release",
+        "description": "Mande algum pet para a adoção",
+        "siteAvaible": false,
+        "category": "pet"
+    }, 
+    {
+        "name": "pet info",
+        "description": "Veja as informações de um pet",
+        "siteAvaible": false,
+        "category": "pet"
+    },
+    {
+        "name": "pet care",
+        "description": "Cuide de seu pet",
+        "siteAvaible": false,
+        "category": "pet"
+    },
+    {
+        "name": "pet breed",
+        "description": "Reproduza dois pets",
+        "siteAvaible": false,
+        "category": "pet"
+    },
+    {
+        "name": "pet change_name",
+        "description": "Mude o nome de seu pet",
+        "siteAvaible": false,
+        "category": "pet"
+    },
+    {
+        "name": "pet set_active_pet",
+        "description": "Defina seu pet como ativo",
+        "siteAvaible": false,
+        "category": "pet"
     }
 ]
