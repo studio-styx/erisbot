@@ -1,11 +1,6 @@
 {
-<<<<<<< HEAD
-  "name": "eris",
-  "version": "1.5.3",
-=======
   "name": "erisbarry",
   "version": "1.6.1",
->>>>>>> canary
   "main": "src/index.ts",
   "type": "module",
   "license": "MIT",
