@@ -30,8 +30,24 @@ export default async function info(app: FastifyInstance, client: Client<true>) {
                 cooldowns: true,
                 company: true,
                 giveaways: true,
-                activePet: true,
-                pets: true,
+                activePet: {
+                    include: {
+                        genetics: { include: { gene: true } },
+                        skills: { include: { skill: true } },
+                        personality: { include: { trait: true } },
+                    }
+                },
+                pets: {
+                    where: {
+                        adoption: null,
+                        isDead: false,
+                    },
+                    include: {
+                        genetics: { include: { gene: true } },
+                        skills: { include: { skill: true } },
+                        personality: { include: { trait: true } },
+                    }
+                },
             }
         });
 
