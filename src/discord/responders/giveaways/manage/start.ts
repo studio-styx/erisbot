@@ -151,6 +151,11 @@ createResponder({
 
         try {
             await prisma.$transaction(async (tx) => {
+                await prisma.guildSettings.upsert({
+                    create: { id: guild.id },
+                    update: {},
+                    where: { id: guild.id }
+                });
                 const giveawayCreated = await tx.giveaway.upsert({
                     where: { id: giveawayData.id ?? 0 },
                     update: {

@@ -1,8 +1,8 @@
 import { createCommand } from "#base";
 import { prisma } from "#database";
-import { stocksEventuals, res, icon, processApiQuestions } from "#functions";
+import { stocksEventuals, res, icon, processApiQuestions, removeFromBlacklist, addToBlacklist, convertTime } from "#functions";
 import { menus } from "#menus";
-import { Mails, Rarity } from "#prisma";
+import { GeneType, Mails, PetGeneticsColorPart, Rarity } from "#prisma";
 import { settings } from "#settings";
 import { brBuilder, createContainer, createSeparator } from "@magicyan/discord";
 import { ApplicationCommandOptionType, ApplicationCommandType, time } from "discord.js";
@@ -23,9 +23,49 @@ createCommand({
             type: ApplicationCommandOptionType.Subcommand,
         },
         {
-            name: "giveawaystress",
-            description: "make a giveaway stress",
-            type: ApplicationCommandOptionType.Subcommand
+            name: "blacklist",
+            description: "manage blacklist",
+            type: ApplicationCommandOptionType.SubcommandGroup,
+            options: [
+                {
+                    name: "add",
+                    description: "add user to blacklist",
+                    type: ApplicationCommandOptionType.Subcommand,
+                    options: [
+                        {
+                            name: "user",
+                            description: "user to add to the blacklist",
+                            type: ApplicationCommandOptionType.User,
+                            required: true
+                        },
+                        {
+                            name: "reason",
+                            description: "reason for adding the user to the blacklist",
+                            type: ApplicationCommandOptionType.String,
+                            required: true
+                        },
+                        {
+                            name: "endat",
+                            description: "end at",
+                            type: ApplicationCommandOptionType.String,
+                            required: false
+                        }
+                    ]
+                },
+                {
+                    name: "remove",
+                    description: "remove user from blacklist",
+                    type: ApplicationCommandOptionType.Subcommand,
+                    options: [
+                        {
+                            name: "user",
+                            description: "user to remove from the blacklist",
+                            type: ApplicationCommandOptionType.User,
+                            required: true
+                        }
+                    ]
+                }
+            ]
         },
         {
             name: "force-stock-variation",
@@ -117,6 +157,16 @@ createCommand({
             name: "force-pipeline",
             description: "force pipeline",
             type: ApplicationCommandOptionType.Subcommand,
+        },
+        {
+            name: "povoar",
+            description: "povoar",
+            type: ApplicationCommandOptionType.Subcommand
+        },
+        {
+            name: "clear",
+            description: "clear a table",
+            type: ApplicationCommandOptionType.Subcommand,
         }
     ],
     async autocomplete(interaction) {
@@ -176,7 +226,35 @@ createCommand({
             interaction.reply(res.danger("You are not allowed to use this command!"));
             return;
         }
-        const subcommand = interaction.options.getSubcommand();
+        const { options } = interaction;
+        const subcommand = options.getSubcommand();
+        const subCommandGroup = options.getSubcommandGroup();
+
+        if (subCommandGroup) {
+            switch (subCommandGroup) {
+                case "blacklist": {
+                    await interaction.deferReply();
+                    const user = options.getUser("user", true);
+                    switch (subcommand) {
+                        case "add": {
+                            const reason = options.getString("reason", true);
+                            const endAt = options.getString("endat");
+
+                            await addToBlacklist(user.id, { reason, endAt: endAt ? new Date(Date.now() + convertTime({ time: endAt as any, to: "milliseconds" })) : null, bannedAt: new Date(), responsibleId: interaction.user.id });
+                            break;
+                        }
+                        case "remove": {
+                            await removeFromBlacklist(user.id);
+                            break;
+                        }
+                    }
+
+                    interaction.editReply(res.success(`${icon.success} | Sucesso ao ${subcommand === "add" ? "adicionar" : "remover"} o usuário ${user.displayName} da blacklist`))
+                    break;
+                }
+            }
+            return;
+        }
 
         switch (subcommand) {
             case "database": {
@@ -677,474 +755,342 @@ createCommand({
                 interaction.reply(menus.dev.dashboard())
                 return;
             }
-            /*
-            case "giveawaystress": {
+            case "povoar": {
                 await interaction.deferReply();
+                await interaction.editReply(res.warning(`${icon.waiting_white} | Iniciando povoamento...`));
 
-                const giveawaysExpiresAt = new Date(Date.now() + 1000 * 60 * 4); // 4 minutos
-                const staggeredExpiresAt = new Date(giveawaysExpiresAt.getTime() + 1000 * 30); // 30s depois
+                const TIMEOUT_MS = 30_000; // 30 segundos
 
-                await interaction.editReply(res.warning(`${icon.waiting_white} | Fazendo estresse para o horário ${time(giveawaysExpiresAt, "D")}`));
+                try {
+                    // Promise que rejeita após TIMEOUT_MS
+                    const timeoutPromise = new Promise((_, reject) =>
+                        setTimeout(() => reject(new Error("TIMEOUT")), TIMEOUT_MS)
+                    );
 
-                const giveawaysToDate = 30;
-                const ids = [
-                    { channelId: "1397264957736882196", guildId: "1397263644315750411" },
-                    { channelId: "1418740291736961124", guildId: "1397263644315750411" },
-                    { channelId: "1397264968520433755", guildId: "1397263644315750411" },
-                    { channelId: "1397264957736882196", guildId: "1397263644315750411" },
-                    { channelId: "1397263817049636884", guildId: "1397263644315750411" },
-                    { guildId: "1395383469210865694", channelId: "1395418989911478362" },
-                    { guildId: "1172930138770526248", channelId: "1172930138770526251" },
-                    { guildId: "1172930138770526248", channelId: "1178024982887014470" },
-                ];
-
-                // IDs únicos de guilds para sorteios conectados
-                const uniqueGuildIds = [...new Set(ids.map(id => id.guildId))];
-                console.log(`DEBUG: Guilds únicas disponíveis: ${uniqueGuildIds.length} - ${uniqueGuildIds.join(', ')}`);
-
-                let localId = 110;
-                let successCount = 0;
-                let errorCount = 0;
-
-                // PRIMEIRO LOOP: 30 sorteios principais
-                console.log(`🔄 Criando ${giveawaysToDate} sorteios principais...`);
-                for (let i = 0; i < giveawaysToDate; i++) {
-                    try {
-                        const isConnectedGiveaway = Math.random() < 0.3; // 30% de chance de ser conectado
-                        const isUniversalGiveaway = i === 0; // Primeiro sorteio é universal (conectado a todos)
-
-                        // Dados base do sorteio
-                        const giveawayData = {
-                            expiresAt: giveawaysExpiresAt,
-                            title: `Sorteio de Estresse ${i + 1}`,
-                            description: `Sorteio de teste de estresse - ${isConnectedGiveaway ? 'CONECTADO' : 'SIMPLES'} ${isUniversalGiveaway ? '(UNIVERSAL)' : ''}`,
-                            localId: localId + i,
-                            serverStayRequired: false, // Simplificado para testes
-                            usersWins: 1
-                        };
-
-                        // Criar sorteio no banco
-                        const giveawayCreated = await prisma.giveaway.create({
-                            data: giveawayData
-                        });
-
-                        let connectedGuildCount = 0;
-
-                        if (isConnectedGiveaway || isUniversalGiveaway) {
-                            // Sorteio conectado - conectar a múltiplas guilds
-                            const guildsToConnect = isUniversalGiveaway
-                                ? uniqueGuildIds // Todos os servers
-                                : uniqueGuildIds.slice(0, Math.floor(Math.random() * 3) + 1); // 1-3 servers aleatórios
-
-                            console.log(`DEBUG: Sorteio ${giveawayCreated.id} será conectado a ${guildsToConnect.length} guilds`);
-
-                            // Criar conexões para cada guild
-                            const guildConnections = guildsToConnect.map(async (guildId, index) => {
-                                const id = ids.find(item => item.guildId === guildId);
-                                if (!id) return null;
-
-                                const guild = interaction.client.guilds.cache.get(guildId);
-                                if (!guild) return null;
-
-                                const channel = guild.channels.cache.get(id.channelId);
-                                if (!channel || !channel.isTextBased()) return null;
-
-                                // Criar mensagem placeholder para messageId
-                                const placeholderMessageId = `placeholder_${giveawayCreated.id}_${guildId}`;
-
-                                const connectionData = {
-                                    giveawayId: giveawayCreated.id,
-                                    channelId: channel.id,
-                                    guildId: guild.id,
-                                    messageId: placeholderMessageId,
-                                    blackListRoles: [],
-                                    xpRequired: null,
-                                    isHost: index === 0 // Primeira guild é host
-                                };
-
-                                return {
-                                    data: connectionData,
-                                    channel,
-                                    guildName: guild.name
-                                };
+                    // Promise com a transação
+                    const txPromise = (async () => {
+                        await prisma.$transaction(async (tx) => {
+                            // 1) Pets (muito mais entradas)
+                            await interaction.editReply(res.warning(`${icon.waiting_white} | Criando pets...`));
+                            await tx.pet.createMany({
+                                data: [
+                                    { name: "Gato Siamês", rarity: "COMUM", price: 200, animal: "CAT", specie: "Siamese" },
+                                    { name: "Gato Persa", rarity: "RARE", price: 450, animal: "CAT", specie: "Persian" },
+                                    { name: "Gato de Rua", rarity: "COMUM", price: 80, animal: "CAT", specie: "Street" },
+                                    { name: "Cachorro Labrador", rarity: "RARE", price: 500, animal: "DOG", specie: "Labrador" },
+                                    { name: "Cachorro Husky", rarity: "EPIC", price: 1500, animal: "DOG", specie: "Husky" },
+                                    { name: "Cachorro Pug", rarity: "COMUM", price: 300, animal: "DOG", specie: "Pug" },
+                                    { name: "Papagaio", rarity: "COMUM", price: 350, animal: "BIRD", specie: "Parrot" },
+                                    { name: "Canário", rarity: "COMUM", price: 90, animal: "BIRD", specie: "Canary" },
+                                    { name: "Hamster Sírio", rarity: "COMUM", price: 100, animal: "HAMSTER", specie: "Syrian" },
+                                    { name: "Hamster Anão", rarity: "UNCOMUM", price: 140, animal: "HAMSTER", specie: "Dwarf" },
+                                    { name: "Coelho Branco", rarity: "UNCOMUM", price: 250, animal: "RABBIT", specie: "White" },
+                                    { name: "Coelho Selvagem", rarity: "COMUM", price: 110, animal: "RABBIT", specie: "Wild" },
+                                    { name: "Dragão Verde", rarity: "LEGENDARY", price: 5000, animal: "DRAGON", specie: "Emerald" },
+                                    { name: "Dragão de Fogo", rarity: "LEGENDARY", price: 5500, animal: "DRAGON", specie: "Inferno" },
+                                    { name: "Dragão Ancião", rarity: "EPIC", price: 3000, animal: "DRAGON", specie: "Elder" },
+                                    { name: "Leão Africano", rarity: "EPIC", price: 2000, animal: "LION", specie: "African" },
+                                    { name: "Leão Branco", rarity: "RARE", price: 1800, animal: "LION", specie: "White" },
+                                    { name: "Jaguar Preto", rarity: "EPIC", price: 2500, animal: "JAGUAR", specie: "Black" },
+                                    { name: "Jaguar das Selvas", rarity: "RARE", price: 1600, animal: "JAGUAR", specie: "Jungle" },
+                                    { name: "Fênix", rarity: "LEGENDARY", price: 6000, animal: "BIRD", specie: "Phoenix" },
+                                    { name: "Gato Selvagem", rarity: "RARE", price: 700, animal: "CAT", specie: "Wildcat" },
+                                    { name: "Cão Pastor", rarity: "UNCOMUM", price: 400, animal: "DOG", specie: "Shepherd" },
+                                    { name: "Pássaro do Paraíso", rarity: "EPIC", price: 2200, animal: "BIRD", specie: "Paradise" },
+                                    { name: "Coelho Lunar", rarity: "RARE", price: 900, animal: "RABBIT", specie: "Lunar" },
+                                    { name: "Gato Bengal", rarity: "RARE", price: 600, animal: "CAT", specie: "Bengal" },
+                                    { name: "Gato Maine Coon", rarity: "EPIC", price: 1200, animal: "CAT", specie: "MaineCoon" },
+                                    { name: "Cachorro Golden Retriever", rarity: "RARE", price: 550, animal: "DOG", specie: "GoldenRetriever" },
+                                    { name: "Cachorro Bulldog", rarity: "UNCOMUM", price: 350, animal: "DOG", specie: "Bulldog" },
+                                    { name: "Arara Azul", rarity: "EPIC", price: 1800, animal: "BIRD", specie: "BlueMacaw" },
+                                    { name: "Coruja", rarity: "RARE", price: 800, animal: "BIRD", specie: "Owl" },
+                                    { name: "Hamster Roborovski", rarity: "UNCOMUM", price: 120, animal: "HAMSTER", specie: "Roborovski" },
+                                    { name: "Hamster Chinês", rarity: "COMUM", price: 80, animal: "HAMSTER", specie: "Chinese" },
+                                    { name: "Coelho Holland Lop", rarity: "RARE", price: 300, animal: "RABBIT", specie: "HollandLop" },
+                                    { name: "Coelho Rex", rarity: "UNCOMUM", price: 200, animal: "RABBIT", specie: "Rex" },
+                                    { name: "Dragão de Gelo", rarity: "LEGENDARY", price: 5200, animal: "DRAGON", specie: "Ice" },
+                                    { name: "Dragão das Sombras", rarity: "EPIC", price: 2800, animal: "DRAGON", specie: "Shadow" },
+                                    { name: "Leão Asiático", rarity: "RARE", price: 1600, animal: "LION", specie: "Asiatic" },
+                                    { name: "Leão das Cavernas", rarity: "EPIC", price: 2200, animal: "LION", specie: "Cave" },
+                                    { name: "Jaguar Dourado", rarity: "LEGENDARY", price: 3000, animal: "JAGUAR", specie: "Golden" },
+                                    { name: "Jaguar Albino", rarity: "RARE", price: 2000, animal: "JAGUAR", specie: "Albino" },
+                                    { name: "Falcão Peregrino", rarity: "EPIC", price: 1500, animal: "BIRD", specie: "Falcon" },
+                                    { name: "Pinguim", rarity: "UNCOMUM", price: 400, animal: "BIRD", specie: "Penguin" },
+                                    { name: "Gato Sphynx", rarity: "EPIC", price: 1000, animal: "CAT", specie: "Sphynx" },
+                                    { name: "Cachorro Beagle", rarity: "COMUM", price: 250, animal: "DOG", specie: "Beagle" },
+                                    { name: "Coelho Angorá", rarity: "RARE", price: 350, animal: "RABBIT", specie: "Angora" },
+                                    { name: "Dragão Elétrico", rarity: "LEGENDARY", price: 5800, animal: "DRAGON", specie: "Electric" },
+                                    { name: "Leão Marinho", rarity: "UNCOMUM", price: 500, animal: "LION", specie: "Sea" },
+                                    { name: "Jaguar das Montanhas", rarity: "EPIC", price: 2400, animal: "JAGUAR", specie: "Mountain" },
+                                    { name: "Águia Real", rarity: "RARE", price: 900, animal: "BIRD", specie: "GoldenEagle" }
+                                ]
                             });
 
-                            const validConnections = (await Promise.all(guildConnections)).filter(Boolean);
-                            connectedGuildCount = validConnections.length;
+                            // 2) Personality traits (com geneType variados)
+                            await interaction.editReply(res.warning(`${icon.waiting_white} | Criando personalidades...`));
+                            await tx.personalityTrait.createMany({
+                                data: [
+                                    { name: "calm", geneType: "NEUTRAL", personalityConflictNames: ["aggressive", "energetic", "mischievous"] },
+                                    { name: "playful", geneType: "CODOMINANT", personalityConflictNames: ["lazy", "timid", "submissive"] },
+                                    { name: "curious", geneType: "CODOMINANT", personalityConflictNames: ["shy", "stubborn", "patient"] },
+                                    { name: "shy", geneType: "RECESSIVE", personalityConflictNames: ["brave", "dominant", "protective"] },
+                                    { name: "brave", geneType: "DOMINANT", personalityConflictNames: ["timid", "submissive", "clingy"] },
+                                    { name: "loyal", geneType: "DOMINANT", personalityConflictNames: ["independent", "mischievous"] },
+                                    { name: "aggressive", geneType: "DOMINANT", personalityConflictNames: ["calm", "gentle", "patient"] },
+                                    { name: "lazy", geneType: "RECESSIVE", personalityConflictNames: ["energetic", "playful", "curious"] },
+                                    { name: "friendly", geneType: "CODOMINANT", personalityConflictNames: ["aggressive", "stubborn"] },
+                                    { name: "stubborn", geneType: "RECESSIVE", personalityConflictNames: ["submissive", "friendly", "gentle"] },
+                                    { name: "gentle", geneType: "NEUTRAL", personalityConflictNames: ["aggressive", "dominant"] },
+                                    { name: "energetic", geneType: "CODOMINANT", personalityConflictNames: ["lazy", "calm", "timid"] },
+                                    { name: "protective", geneType: "DOMINANT", personalityConflictNames: ["independent", "submissive"] },
+                                    { name: "independent", geneType: "NEUTRAL", personalityConflictNames: ["clingy", "loyal", "protective"] },
+                                    { name: "clingy", geneType: "RECESSIVE", personalityConflictNames: ["independent", "brave"] },
+                                    { name: "timid", geneType: "RECESSIVE", personalityConflictNames: ["brave", "energetic", "dominant"] },
+                                    { name: "mischievous", geneType: "CODOMINANT", personalityConflictNames: ["patient", "loyal", "calm"] },
+                                    { name: "patient", geneType: "NEUTRAL", personalityConflictNames: ["aggressive", "mischievous", "curious"] },
+                                    { name: "dominant", geneType: "DOMINANT", personalityConflictNames: ["submissive", "shy", "gentle"] },
+                                    { name: "submissive", geneType: "RECESSIVE", personalityConflictNames: ["dominant", "brave", "stubborn"] }
+                                ]
+                            });
 
-                            if (connectedGuildCount > 0) {
-                                // Criar todas as conexões em uma transação
-                                await prisma.$transaction([
-                                    ...validConnections.map(({ data }) => prisma.guildGiveaway.create({ data })),
-                                    // Adicionar participante
-                                    prisma.userGiveaway.create({
-                                        data: {
-                                            giveawayId: giveawayCreated.id,
-                                            userId: "1171963692984844401",
-                                            isWinner: false
-                                        }
-                                    })
-                                ]);
+                            // 3) Skills (mais opções)
+                            await interaction.editReply(res.warning(`${icon.waiting_white} | Criando skills...`));
+                            await tx.petSkill.createMany({
+                                data: [
+                                    { name: "daily_bonus" },
+                                    { name: "daily_cooldown_reduction" },
+                                    { name: "work_bonus" },
+                                    { name: "work_xp_bonus" },
+                                    { name: "job_interview_easier" },
+                                    { name: "work_challenge_avoid" },
+                                    { name: "work_challenge_easier" },
+                                    { name: "slots_luck" },
+                                    { name: "coinflip_luck" },
+                                    { name: "coinflip_bonus" },
+                                    { name: "horse_racing_luck" },
+                                    { name: "horse_racing_bonus" }
+                                ]
+                            });
 
-                                // Enviar mensagens para todas as guilds conectadas
-                                const messagePromises = validConnections.map(async ({ channel, guildName }) => {
-                                    try {
-                                        const dbConnectedGuilds = await prisma.guildGiveaway.findMany({
-                                            where: { giveawayId: giveawayCreated.id, guildId: guild.id }
-                                        });
 
-                                        const connectedGuildsWithNames = dbConnectedGuilds.map(g => ({
-                                            ...g,
-                                            guildName: guild.name
-                                        }));
+                            // 4) Genetics: criar várias traits por pet (muito mais geneticsData)
+                            await interaction.editReply(res.warning(`${icon.waiting_white} | Criando genéticas (múltiplas por espécie)...`));
+                            const allPets = await tx.pet.findMany();
 
-                                        const completeData = {
-                                            ...giveawayCreated,
-                                            roleEntries: [],
-                                            connectedGuilds: connectedGuildsWithNames.map(g => ({ ...g, guildName: guild.name })),
-                                            participants: [{
-                                                userId: "1171963692984844401",
-                                                isWinner: false,
-                                                giveawayId: giveawayCreated.id,
-                                                id: 0,
-                                                createdAt: new Date()
-                                            }]
-                                        };
-                                        const message = await channel.send(
-                                            menus.giveaway.giveawayInterface(completeData, channel.guildId)
-                                        );
+                            const geneticsData: { petId: number; trait: string; colorPart: PetGeneticsColorPart; geneType: GeneType; }[] = allPets.flatMap((p) => {
+                                const baseTraits = [
+                                    // olhos comuns
+                                    { trait: "Olhos Azuis", colorPart: "EYE", geneType: "DOMINANT" },
+                                    { trait: "Olhos Verdes", colorPart: "EYE", geneType: "RECESSIVE" },
+                                    { trait: "Olhos Dourados", colorPart: "EYE", geneType: "CODOMINANT" },
+                                    { trait: "Olhos Pretos", colorPart: "EYE", geneType: "NEUTRAL" },
+                                ];
 
-                                        // Atualizar messageId real
-                                        await prisma.guildGiveaway.updateMany({
-                                            where: {
-                                                giveawayId: giveawayCreated.id,
-                                                guildId: channel.guildId,
-                                                messageId: { startsWith: `placeholder_${giveawayCreated.id}` }
-                                            },
-                                            data: { messageId: message.id }
-                                        });
-
-                                        console.log(`✅ Mensagem enviada para ${guildName} (${channel.id})`);
-                                        return true;
-                                    } catch (error) {
-                                        console.error(`❌ Erro ao enviar mensagem para ${guildName}:`, error);
-                                        return false;
+                                const animalSpecificTraits = (() => {
+                                    switch (p.animal) {
+                                        case "CAT":
+                                            return [
+                                                // pelagem - primary para gatos
+                                                { trait: "Pelo Cinza", colorPart: "COLOR1", geneType: "NEUTRAL" },
+                                                { trait: "Pelo Laranja", colorPart: "COLOR1", geneType: "CODOMINANT" },
+                                                { trait: "Pelo Branco", colorPart: "COLOR1", geneType: "RECESSIVE" },
+                                                { trait: "Pelo Preto", colorPart: "COLOR1", geneType: "DOMINANT" },
+                                                // pelagem - secondary / padrões para gatos
+                                                { trait: "Manchas Brancas", colorPart: "COLOR2", geneType: "CODOMINANT" },
+                                                { trait: "Listras Tabby", colorPart: "COLOR2", geneType: "NEUTRAL" },
+                                                { trait: "Patas Pretas", colorPart: "COLOR2", geneType: "NEUTRAL" },
+                                                { trait: "Orelhas Pontudas", colorPart: "COLOR2", geneType: "RECESSIVE" },
+                                                // extras para gatos
+                                                { trait: "Cauda Curta", colorPart: "COLOR2", geneType: "RECESSIVE" },
+                                                { trait: "Bigodes Longos", colorPart: "COLOR2", geneType: "CODOMINANT" },
+                                                { trait: "Pelo Curto", colorPart: "COLOR1", geneType: "DOMINANT" },
+                                                { trait: "Pelo Longo", colorPart: "COLOR1", geneType: "RECESSIVE" },
+                                            ];
+                                        case "DOG":
+                                            return [
+                                                // pelagem - primary para cães
+                                                { trait: "Pelo Marrom", colorPart: "COLOR1", geneType: "NEUTRAL" },
+                                                { trait: "Pelo Dourado", colorPart: "COLOR1", geneType: "CODOMINANT" },
+                                                { trait: "Pelo Branco", colorPart: "COLOR1", geneType: "RECESSIVE" },
+                                                { trait: "Pelo Preto", colorPart: "COLOR1", geneType: "DOMINANT" },
+                                                // pelagem - secondary / padrões para cães
+                                                { trait: "Manchas Pretas", colorPart: "COLOR2", geneType: "CODOMINANT" },
+                                                { trait: "Listras Brindle", colorPart: "COLOR2", geneType: "NEUTRAL" },
+                                                { trait: "Colar Branco", colorPart: "COLOR2", geneType: "NEUTRAL" },
+                                                { trait: "Orelhas Caídas", colorPart: "COLOR2", geneType: "RECESSIVE" },
+                                                // extras para cães
+                                                { trait: "Cauda Enrolada", colorPart: "COLOR2", geneType: "CODOMINANT" },
+                                                { trait: "Focinho Curto", colorPart: "COLOR2", geneType: "RECESSIVE" },
+                                                { trait: "Pelo Ondulado", colorPart: "COLOR1", geneType: "CODOMINANT" },
+                                                { trait: "Pelo Liso", colorPart: "COLOR1", geneType: "DOMINANT" },
+                                            ];
+                                        case "BIRD":
+                                            return [
+                                                // pelagem (penas) - primary para pássaros
+                                                { trait: "Penas Azuis", colorPart: "COLOR1", geneType: "DOMINANT" },
+                                                { trait: "Penas Verdes", colorPart: "COLOR1", geneType: "RECESSIVE" },
+                                                { trait: "Penas Amarelas", colorPart: "COLOR1", geneType: "CODOMINANT" },
+                                                { trait: "Penas Pretas", colorPart: "COLOR1", geneType: "NEUTRAL" },
+                                                // pelagem - secondary / padrões para pássaros
+                                                { trait: "Manchas Coloridas", colorPart: "COLOR2", geneType: "CODOMINANT" },
+                                                { trait: "Listras nas Asas", colorPart: "COLOR2", geneType: "NEUTRAL" },
+                                                { trait: "Bico Curvo", colorPart: "COLOR2", geneType: "NEUTRAL" },
+                                                { trait: "Crista Alta", colorPart: "COLOR2", geneType: "DOMINANT" },
+                                                // extras para pássaros
+                                                { trait: "Asas Longas", colorPart: "COLOR2", geneType: "CODOMINANT" },
+                                                { trait: "Penas Iridescentes", colorPart: "COLOR1", geneType: "RECESSIVE" },
+                                                { trait: "Cauda Bifurcada", colorPart: "COLOR2", geneType: "NEUTRAL" },
+                                                { trait: "Olhos Vermelhos", colorPart: "EYE", geneType: "RECESSIVE" },
+                                            ];
+                                        case "HAMSTER":
+                                            return [
+                                                // pelagem - primary para hamsters
+                                                { trait: "Pelo Cinza Claro", colorPart: "COLOR1", geneType: "NEUTRAL" },
+                                                { trait: "Pelo Marrom", colorPart: "COLOR1", geneType: "DOMINANT" },
+                                                { trait: "Pelo Branco", colorPart: "COLOR1", geneType: "RECESSIVE" },
+                                                { trait: "Pelo Dourado", colorPart: "COLOR1", geneType: "CODOMINANT" },
+                                                // pelagem - secondary / padrões para hamsters
+                                                { trait: "Manchas Pretas", colorPart: "COLOR2", geneType: "CODOMINANT" },
+                                                { trait: "Listras Dorsais", colorPart: "COLOR2", geneType: "NEUTRAL" },
+                                                { trait: "Patas Rosadas", colorPart: "COLOR2", geneType: "NEUTRAL" },
+                                                { trait: "Orelhas Pequenas", colorPart: "COLOR2", geneType: "RECESSIVE" },
+                                                // extras para hamsters
+                                                { trait: "Cauda Curta", colorPart: "COLOR2", geneType: "DOMINANT" },
+                                                { trait: "Pelo Espesso", colorPart: "COLOR1", geneType: "CODOMINANT" },
+                                                { trait: "Bochechas Grandes", colorPart: "COLOR2", geneType: "NEUTRAL" },
+                                                { trait: "Olhos Negros", colorPart: "EYE", geneType: "DOMINANT" },
+                                            ];
+                                        case "RABBIT":
+                                            return [
+                                                // pelagem - primary para coelhos
+                                                { trait: "Pelo Branco", colorPart: "COLOR1", geneType: "RECESSIVE" },
+                                                { trait: "Pelo Cinza", colorPart: "COLOR1", geneType: "NEUTRAL" },
+                                                { trait: "Pelo Marrom", colorPart: "COLOR1", geneType: "DOMINANT" },
+                                                { trait: "Pelo Preto", colorPart: "COLOR1", geneType: "CODOMINANT" },
+                                                // pelagem - secondary / padrões para coelhos
+                                                { trait: "Manchas Negras", colorPart: "COLOR2", geneType: "CODOMINANT" },
+                                                { trait: "Listras Agouti", colorPart: "COLOR2", geneType: "NEUTRAL" },
+                                                { trait: "Orelhas Longas", colorPart: "COLOR2", geneType: "DOMINANT" },
+                                                { trait: "Patas Brancas", colorPart: "COLOR2", geneType: "RECESSIVE" },
+                                                // extras para coelhos
+                                                { trait: "Pelo Angorá", colorPart: "COLOR1", geneType: "RECESSIVE" },
+                                                { trait: "Nariz Rosa", colorPart: "COLOR2", geneType: "NEUTRAL" },
+                                                { trait: "Olhos Rubi", colorPart: "EYE", geneType: "RECESSIVE" },
+                                                { trait: "Cauda Fofa", colorPart: "COLOR2", geneType: "CODOMINANT" },
+                                            ];
+                                        case "DRAGON":
+                                            return [
+                                                // pelagem (escamas) - primary para dragões
+                                                { trait: "Escamas Verdes", colorPart: "COLOR1", geneType: "NEUTRAL" },
+                                                { trait: "Escamas Vermelhas", colorPart: "COLOR1", geneType: "DOMINANT" },
+                                                { trait: "Escamas Azuis", colorPart: "COLOR1", geneType: "RECESSIVE" },
+                                                { trait: "Escamas Douradas", colorPart: "COLOR1", geneType: "CODOMINANT" },
+                                                // pelagem - secondary / padrões para dragões
+                                                { trait: "Chifres Curvos", colorPart: "COLOR2", geneType: "DOMINANT" },
+                                                { trait: "Asas Membranosas", colorPart: "COLOR2", geneType: "NEUTRAL" },
+                                                { trait: "Espinhos Dorsais", colorPart: "COLOR2", geneType: "CODOMINANT" },
+                                                { trait: "Cauda Espinhosa", colorPart: "COLOR2", geneType: "RECESSIVE" },
+                                                // extras para dragões
+                                                { trait: "Olhos Flamejantes", colorPart: "EYE", geneType: "DOMINANT" },
+                                                { trait: "Escamas Iridescentes", colorPart: "COLOR1", geneType: "CODOMINANT" },
+                                                { trait: "Garras Afiadas", colorPart: "COLOR2", geneType: "NEUTRAL" },
+                                                { trait: "Respiração de Fogo", colorPart: "COLOR2", geneType: "NEUTRAL" },
+                                            ];
+                                        case "LION":
+                                            return [
+                                                // pelagem - primary para leões
+                                                { trait: "Juba Dourada", colorPart: "COLOR1", geneType: "DOMINANT" },
+                                                { trait: "Pelo Amarelo", colorPart: "COLOR1", geneType: "NEUTRAL" },
+                                                { trait: "Pelo Branco", colorPart: "COLOR1", geneType: "RECESSIVE" },
+                                                { trait: "Pelo Preto", colorPart: "COLOR1", geneType: "CODOMINANT" },
+                                                // pelagem - secondary / padrões para leões
+                                                { trait: "Manchas no Corpo", colorPart: "COLOR2", geneType: "CODOMINANT" },
+                                                { trait: "Listras na Cauda", colorPart: "COLOR2", geneType: "NEUTRAL" },
+                                                { trait: "Juba Espessa", colorPart: "COLOR2", geneType: "DOMINANT" },
+                                                { trait: "Patas Grandes", colorPart: "COLOR2", geneType: "NEUTRAL" },
+                                                // extras para leões
+                                                { trait: "Olhos Âmbar", colorPart: "EYE", geneType: "CODOMINANT" },
+                                                { trait: "Garras Retráteis", colorPart: "COLOR2", geneType: "DOMINANT" },
+                                                { trait: "Rugido Alto", colorPart: "COLOR2", geneType: "NEUTRAL" },
+                                                { trait: "Cauda com Tufo", colorPart: "COLOR2", geneType: "RECESSIVE" },
+                                            ];
+                                        case "JAGUAR":
+                                            return [
+                                                // pelagem - primary para jaguares
+                                                { trait: "Pelo Amarelo", colorPart: "COLOR1", geneType: "NEUTRAL" },
+                                                { trait: "Pelo Preto", colorPart: "COLOR1", geneType: "DOMINANT" },
+                                                { trait: "Pelo Manchado", colorPart: "COLOR1", geneType: "CODOMINANT" },
+                                                { trait: "Pelo Albino", colorPart: "COLOR1", geneType: "RECESSIVE" },
+                                                // pelagem - secondary / padrões para jaguares
+                                                { trait: "Rosetas Pretas", colorPart: "COLOR2", geneType: "DOMINANT" },
+                                                { trait: "Listras nas Patas", colorPart: "COLOR2", geneType: "NEUTRAL" },
+                                                { trait: "Cauda Longa", colorPart: "COLOR2", geneType: "CODOMINANT" },
+                                                { trait: "Orelhas Arredondadas", colorPart: "COLOR2", geneType: "RECESSIVE" },
+                                                // extras para jaguares
+                                                { trait: "Olhos Verdes", colorPart: "EYE", geneType: "DOMINANT" },
+                                                { trait: "Mandíbula Forte", colorPart: "COLOR2", geneType: "NEUTRAL" },
+                                                { trait: "Pelo Lustroso", colorPart: "COLOR1", geneType: "CODOMINANT" },
+                                                { trait: "Garras Curvas", colorPart: "COLOR2", geneType: "DOMINANT" },
+                                            ];
+                                        default:
+                                            return [];
                                     }
-                                });
+                                })();
 
-                                const messageResults = await Promise.all(messagePromises);
-                                const successMessages = messageResults.filter(Boolean).length;
-
-                                console.log(`🎯 Sorteio ${giveawayCreated.id} conectado: ${successMessages}/${connectedGuildCount} mensagens enviadas`);
-                            }
-                        } else {
-                            // Sorteio simples - apenas uma guild
-                            const id = ids[Math.floor(Math.random() * ids.length)];
-                            const guild = interaction.client.guilds.cache.get(id.guildId);
-
-                            if (guild) {
-                                const channel = guild.channels.cache.get(id.channelId);
-                                if (channel && channel.isTextBased()) {
-                                    // Criar conexão simples
-                                    await prisma.$transaction([
-                                        prisma.guildGiveaway.create({
-                                            data: {
-                                                giveawayId: giveawayCreated.id,
-                                                channelId: channel.id,
-                                                guildId: guild.id,
-                                                messageId: `placeholder_${giveawayCreated.id}`,
-                                                blackListRoles: [],
-                                                xpRequired: null
-                                            }
-                                        }),
-                                        // Adicionar participante
-                                        prisma.userGiveaway.create({
-                                            data: {
-                                                giveawayId: giveawayCreated.id,
-                                                userId: "1171963692984844401",
-                                                isWinner: false
-                                            }
-                                        })
-                                    ]);
-
-                                    try {
-                                        const dbConnectedGuilds = await prisma.guildGiveaway.findMany({
-                                            where: { giveawayId: giveawayCreated.id, guildId: guild.id }
-                                        });
-
-                                        const connectedGuildsWithNames = dbConnectedGuilds.map(g => ({
-                                            ...g,
-                                            guildName: guild.name
-                                        }));
-
-                                        const completeData = {
-                                            ...giveawayCreated,
-                                            roleEntries: [],
-                                            connectedGuilds: connectedGuildsWithNames.map(g => ({ ...g, guildName: guild.name })),
-                                            participants: [{
-                                                userId: "1171963692984844401",
-                                                isWinner: false,
-                                                giveawayId: giveawayCreated.id,
-                                                id: 0,
-                                                createdAt: new Date()
-                                            }]
-                                        };
-
-                                        const message = await channel.send(
-                                            menus.giveaway.giveawayInterface(completeData, guild.id)
-                                        );
-
-                                        // Atualizar messageId real
-                                        await prisma.guildGiveaway.update({
-                                            where: {
-                                                guildId_giveawayId: {
-                                                    guildId: guild.id,
-                                                    giveawayId: giveawayCreated.id
-                                                }
-                                            },
-                                            data: { messageId: message.id }
-                                        });
-
-                                        connectedGuildCount = 1;
-                                        console.log(`✅ Sorteio simples ${giveawayCreated.id} criado em ${guild.name}`);
-                                    } catch (error) {
-                                        console.error(`❌ Erro ao criar sorteio simples ${giveawayCreated.id}:`, error);
-                                    }
-                                }
-                            }
-                        }
-
-                        if (connectedGuildCount > 0) {
-                            successCount++;
-                            // Agendar finalização se for sorteio curto
-                            if (giveawayCreated.expiresAt.getTime() <= Date.now() + 1000 * 60 * 12) {
-                                console.log(`⏰ Agendando finalização imediata para sorteio ${giveawayCreated.id}`);
-                                // Aqui você pode chamar scheduleGiveaway se quiser testar o agendamento
-                            }
-                        } else {
-                            errorCount++;
-                            // Cleanup: deletar sorteio sem conexões
-                            await prisma.giveaway.delete({ where: { id: giveawayCreated.id } }).catch(() => { });
-                        }
-
-                    } catch (error) {
-                        console.error(`❌ Erro ao criar sorteio ${i + 1}:`, error);
-                        errorCount++;
-                    }
-                }
-
-                // SEGUNDO LOOP: 10 sorteios escalonados (expiram 30s depois)
-                console.log(`\n🔄 Criando 10 sorteios escalonados...`);
-                const staggeredGiveaways = 10;
-                let staggeredSuccess = 0;
-
-                for (let i = 0; i < staggeredGiveaways; i++) {
-                    try {
-                        const staggeredExpiresAtOffset = new Date(staggeredExpiresAt.getTime() + (i * 1000 * 5)); // 5s entre cada
-                        const isStaggeredConnected = Math.random() < 0.4; // 40% chance de conectado
-
-                        const giveawayData = {
-                            expiresAt: staggeredExpiresAtOffset,
-                            title: `Sorteio Escal. ${i + 1}`,
-                            description: `Sorteio escalonado de teste - Expira ${time(staggeredExpiresAtOffset, "R")}s`,
-                            localId: localId + giveawaysToDate + i,
-                            serverStayRequired: false,
-                            usersWins: 1
-                        };
-
-                        const giveawayCreated = await prisma.giveaway.create({
-                            data: giveawayData
-                        });
-
-                        let connectedGuildCount = 0;
-
-                        if (isStaggeredConnected) {
-                            // Conectar a 1-2 guilds aleatórias
-                            const guildsToConnect = uniqueGuildIds.slice(0, Math.floor(Math.random() * 2) + 1);
-
-                            const validConnections = guildsToConnect.map(async (guildId) => {
-                                const id = ids.find(item => item.guildId === guildId);
-                                if (!id) return null;
-
-                                const guild = interaction.client.guilds.cache.get(guildId);
-                                if (!guild) return null;
-
-                                const channel = guild.channels.cache.get(id.channelId);
-                                if (!channel || !channel.isTextBased()) return null;
-
-                                const placeholderMessageId = `staggered_${giveawayCreated.id}_${guildId}`;
-
-                                await prisma.guildGiveaway.create({
-                                    data: {
-                                        giveawayId: giveawayCreated.id,
-                                        channelId: channel.id,
-                                        guildId: guild.id,
-                                        messageId: placeholderMessageId,
-                                        blackListRoles: [],
-                                        xpRequired: null
-                                    }
-                                });
-
-                                await prisma.userGiveaway.create({
-                                    data: {
-                                        giveawayId: giveawayCreated.id,
-                                        userId: "1171963692984844401",
-                                        isWinner: false
-                                    }
-                                });
-
-                                const dbConnectedGuilds = await prisma.guildGiveaway.findMany({
-                                    where: { giveawayId: giveawayCreated.id, guildId: guild.id }
-                                });
-
-                                const connectedGuildsWithNames = dbConnectedGuilds.map(g => ({
-                                    ...g,
-                                    guildName: guild.name
+                                return [...baseTraits, ...animalSpecificTraits].map(trait => ({
+                                    petId: p.id,
+                                    trait: trait.trait,
+                                    colorPart: trait.colorPart as PetGeneticsColorPart,
+                                    geneType: trait.geneType as GeneType,
                                 }));
-
-                                const completeData = {
-                                    ...giveawayCreated,
-                                    roleEntries: [],
-                                    connectedGuilds: connectedGuildsWithNames.map(g => ({ ...g, guildName: guild.name })),
-                                    participants: [{
-                                        userId: "1171963692984844401",
-                                        isWinner: false,
-                                        giveawayId: giveawayCreated.id,
-                                        id: 0,
-                                        createdAt: new Date()
-                                    }]
-                                };
-
-                                const message = await channel.send(
-                                    menus.giveaway.giveawayInterface(completeData, guild.id)
-                                );
-
-                                await prisma.guildGiveaway.update({
-                                    where: {
-                                        guildId_giveawayId: {
-                                            guildId: guild.id,
-                                            giveawayId: giveawayCreated.id
-                                        }
-                                    },
-                                    data: { messageId: message.id }
-                                });
-
-                                return { guild: guild.name, channel: channel.id };
                             });
 
-                            const results = await Promise.all(validConnections);
-                            connectedGuildCount = results.filter(r => r !== null).length;
-
-                            if (connectedGuildCount > 0) {
-                                staggeredSuccess++;
-                                console.log(`✅ Sorteio escalonado ${giveawayCreated.id} criado (${connectedGuildCount} guilds)`);
+                            // Inserir todas as genetics
+                            // Para evitar problemas de limite por createMany, quebramos em chunks de 500
+                            const chunkSize = 500;
+                            for (let i = 0; i < geneticsData.length; i += chunkSize) {
+                                const chunk = geneticsData.slice(i, i + chunkSize);
+                                await tx.genetics.createMany({ data: chunk });
                             }
-                        } else {
-                            // Sorteio simples escalonado
-                            const id = ids[Math.floor(Math.random() * ids.length)];
-                            const guild = interaction.client.guilds.cache.get(id.guildId);
 
-                            if (guild) {
-                                const channel = guild.channels.cache.get(id.channelId);
-                                if (channel && channel.isTextBased()) {
-                                    await prisma.$transaction([
-                                        prisma.guildGiveaway.create({
-                                            data: {
-                                                giveawayId: giveawayCreated.id,
-                                                channelId: channel.id,
-                                                guildId: guild.id,
-                                                messageId: `staggered_${giveawayCreated.id}`,
-                                                blackListRoles: [],
-                                                xpRequired: null
-                                            }
-                                        }),
-                                        prisma.userGiveaway.create({
-                                            data: {
-                                                giveawayId: giveawayCreated.id,
-                                                userId: "1171963692984844401",
-                                                isWinner: false
-                                            }
-                                        })
-                                    ]);
+                            await interaction.editReply(res.warning(`${icon.waiting_white} | Genéticas criadas para ${allPets.length} pets.`));
+                        });
+                    })();
 
-                                    // Fetch the connectedGuilds from the database to get all required fields
-                                    const dbConnectedGuilds = await prisma.guildGiveaway.findMany({
-                                        where: { giveawayId: giveawayCreated.id, guildId: guild.id }
-                                    });
+                    // Roda transação com timeout
+                    await Promise.race([txPromise, timeoutPromise]);
 
-                                    const connectedGuildsWithNames = dbConnectedGuilds.map(g => ({
-                                        ...g,
-                                        guildName: guild.name
-                                    }));
-
-                                    const completeData = {
-                                        ...giveawayCreated,
-                                        roleEntries: [],
-                                        connectedGuilds: connectedGuildsWithNames.map(g => ({ ...g, guildName: guild.name })),
-                                        participants: [{
-                                            userId: "1171963692984844401",
-                                            isWinner: false,
-                                            giveawayId: giveawayCreated.id,
-                                            id: 0,
-                                            createdAt: new Date()
-                                        }]
-                                    };
-
-                                    const message = await channel.send(
-                                        menus.giveaway.giveawayInterface(completeData, guild.id)
-                                    );
-
-                                    await prisma.guildGiveaway.update({
-                                        where: {
-                                            guildId_giveawayId: {
-                                                guildId: guild.id,
-                                                giveawayId: giveawayCreated.id
-                                            }
-                                        },
-                                        data: { messageId: message.id }
-                                    });
-
-                                    connectedGuildCount = 1;
-                                    staggeredSuccess++;
-                                    console.log(`✅ Sorteio escalonado simples ${giveawayCreated.id} em ${guild.name}`);
-                                }
-                            }
-                        }
-
-                        if (connectedGuildCount === 0) {
-                            await prisma.giveaway.delete({ where: { id: giveawayCreated.id } }).catch(() => { });
-                        }
-
-                    } catch (error) {
-                        console.error(`❌ Erro ao criar sorteio escalonado ${i + 1}:`, error);
+                    await interaction.editReply(res.success(`${icon.success} | Povoamento concluído com sucesso!`));
+                } catch (err: any) {
+                    console.error(err)
+                    if (err.message === "TIMEOUT") {
+                        await interaction.editReply(res.danger(`${icon.error} | Tempo limite de 30 segundos atingido durante o povoamento.`));
+                    } else {
+                        await interaction.editReply(res.danger(`${icon.error} | Erro ao povoar: ${err.message}`));
                     }
                 }
-
-                // Relatório final
-                const totalCreated = successCount + staggeredSuccess;
-                const totalErrors = errorCount + (staggeredGiveaways - staggeredSuccess);
-
-                await interaction.editReply(res.success(
-                    `✅ **Estresse de Sorteios Concluído!**\n` +
-                    `📊 **Estatísticas:**\n` +
-                    `• ${successCount}/30 sorteios principais criados\n` +
-                    `• ${staggeredSuccess}/10 sorteios escalonados criados\n` +
-                    `• ${totalCreated} sorteios totais\n` +
-                    `• ${totalErrors} erros\n` +
-                    `⏰ Expiração principal: ${time(giveawaysExpiresAt, "d")}\n` +
-                    `⏰ Expiração escalonada: ${time(staggeredExpiresAt, "d")}`
-                ));
-
-                console.log(`\n🎉 RESUMO FINAL:\n` +
-                    `✅ ${successCount} sorteios principais OK\n` +
-                    `✅ ${staggeredSuccess} sorteios escalonados OK\n` +
-                    `❌ ${totalErrors} erros\n` +
-                    `⏰ Todos expiram em ${time(giveawaysExpiresAt, "d")}`);
-
-                scheduleAllEndGiveaways(interaction.client)
                 break;
             }
-            */
+            case "clear": {
+                await interaction.deferReply();
+                await prisma.$transaction([
+                    prisma.userPet.deleteMany(),
+                    prisma.petSkill.deleteMany(),
+                    prisma.pet.deleteMany(),
+                    prisma.personalityTrait.deleteMany(),
+                    prisma.genetics.deleteMany(),
+                    prisma.userPetPersonality.deleteMany(),
+                    prisma.petGenetics.deleteMany(),
+                    prisma.user.updateMany({
+                        data: {
+                            activePetId: null
+                        }
+                    })
+                ])
+
+                await interaction.editReply(res.success(`${icon.success} | Sucesso ao limpar as tabelas de pet!`))
+                return;
+            }
         }
     },
 });

@@ -1,5 +1,6 @@
 import { prisma } from "#database";
 import { res, icon, registerLog } from "#functions";
+import { Rarity } from "#prisma";
 import { settings } from "#settings";
 import { createEmbed } from "@magicyan/discord";
 import { ChatInputCommandInteraction } from "discord.js";
@@ -10,7 +11,17 @@ export async function slotsCommand(interaction: ChatInputCommandInteraction<"cac
     let amount = options.getNumber("amount", true);
     await interaction.deferReply({ flags });
 
-    const user = await prisma.user.findUnique({ where: { id: author.id } });
+    const user = await prisma.user.findUnique({
+        where: { id: author.id },
+        include: {
+            activePet: {
+                include: {
+                    pet: true,
+                    skills: { include: { skill: true } }
+                }
+            }
+        }
+    });
 
     if (!user || user.money.toNumber() < 25) {
         interaction.editReply(res.danger(`${icon.denied} | Você não tem dinheiro suficiente para apostar.`));
@@ -19,9 +30,35 @@ export async function slotsCommand(interaction: ChatInputCommandInteraction<"cac
 
     if (user.money.toNumber() < amount) amount = user.money.toNumber();
 
+    const { activePet } = user;
+
+    const slotsLuckySkill = activePet?.skills.find(s => s.skill.name === "slots_luck");
+
+    // BÔNUS por raridade (valores adicionais)
+    const rarityBonus: Record<Rarity, number> = {
+        COMUM: 0.05,       // +5%
+        UNCOMUM: 0.1,      // +10%
+        RARE: 0.15,        // +15%
+        EPIC: 0.2,         // +20%
+        LEGENDARY: 0.25,   // +25%
+    }
+
     const slots = ["🍒", "🍊", "🍋", "🍉", "🍇", "🍓", "🍎", "🍐"];
-    const jackpotChance = 0.15;
-    const isForcedJackpot = Math.random() < jackpotChance;
+
+    // Chance base SEM pet
+    const baseChance = 0.15; // 15% base
+
+    // Calcula chance total
+    let totalChance = baseChance;
+
+    if (slotsLuckySkill && activePet) {
+        // Adiciona: bônus da raridade + bônus do nível da skill
+        totalChance += rarityBonus[activePet.pet.rarity] + (slotsLuckySkill.level * 0.05);
+    }
+
+    const finalChance = Math.min(totalChance, 0.6);
+
+    const isForcedJackpot = Math.random() < finalChance;
     let slot1: string, slot2: string, slot3: string;
 
     if (isForcedJackpot) {

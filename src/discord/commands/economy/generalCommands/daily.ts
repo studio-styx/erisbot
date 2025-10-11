@@ -1,7 +1,35 @@
 import { Store } from "#base";
 import { prisma } from "#database";
-import { icon, res, registerLog } from "#functions";
+import { icon, res, registerLog, getRandomNumber, calculateDate, getRandomValue } from "#functions";
+import { Rarity } from "#prisma";
 import { ChatInputCommandInteraction, time } from "discord.js";
+
+const rarityMultipliers: Record<Rarity, { bonus: number, cooldown: number }> = {
+    COMUM: { bonus: 1.0, cooldown: 1.0 },
+    UNCOMUM: { bonus: 1.2, cooldown: 0.9 },
+    RARE: { bonus: 1.5, cooldown: 0.8 },
+    EPIC: { bonus: 2.0, cooldown: 0.7 },
+    LEGENDARY: { bonus: 3.0, cooldown: 0.5 },
+};
+
+function calculateDailyMaxValue(baseMax: number, rarity: Rarity, skillLevel: number) {
+    const mult = rarityMultipliers[rarity]?.bonus ?? 1;
+    // A cada level da skill, dá +5% sobre o multiplicador base
+    const levelMult = 1 + (skillLevel * 0.05);
+    return Math.floor(baseMax * mult * levelMult);
+}
+
+function calculateDailyCooldown(rarity: Rarity, skillLevel: number) {
+    const baseHours = 24;
+    const mult = rarityMultipliers[rarity]?.cooldown ?? 1;
+    // Cada level reduz mais 2% do tempo, até um limite de 50% da base
+    const levelReduction = Math.min(skillLevel * 0.02, 0.5);
+    const finalMultiplier = mult - levelReduction;
+
+    const hours = Math.max(baseHours * finalMultiplier, 1); // nunca menos que 1h
+    return `${Math.floor(hours)}h`;
+}
+
 
 const trys = new Store<{ attempts: number; cooldown: Date }>();
 
@@ -83,9 +111,56 @@ export async function economyDailyCommand(interaction: ChatInputCommandInteracti
         return;
     }
 
-    const dailyValue = Math.max(5, Math.floor(Math.random() * 51));
+    const user = await prisma.user.findUnique({
+        where: { id },
+        select: {
+            money: true,
+            activePet: {
+                include: {
+                    skills: { include: { skill: true } },
+                    pet: { select: { rarity: true } }
+                }
+            }
+        }
+    });
 
-    const willEnd = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+    const hasDailyBonus = user?.activePet?.skills.some(s => s.skill.name === "daily_bonus");
+    const hasDailyDecrementCooldown = user?.activePet?.skills.some(s => s.skill.name === "daily_cooldown_reduction");
+
+    const baseMaxDaily = 50;
+    let maxDailyValue = baseMaxDaily;
+
+    if (user?.activePet) {
+        const rarity = user.activePet.pet.rarity;
+        const dailyBonusSkill = user.activePet.skills.find(s => s.skill.name === "daily_bonus");
+
+        if (dailyBonusSkill) {
+            maxDailyValue = calculateDailyMaxValue(
+                baseMaxDaily,
+                rarity,
+                dailyBonusSkill.level
+            );
+        }
+    }
+
+    const dailyValue = getRandomNumber(5, maxDailyValue);
+
+    // Cooldown
+    let cooldownTime = "24h";
+    const dailyCooldownSkill = user?.activePet?.skills.find(s => s.skill.name === "daily_cooldown_reduction");
+
+    if (dailyCooldownSkill) {
+        cooldownTime = calculateDailyCooldown(
+            user!.activePet!.pet.rarity,
+            dailyCooldownSkill.level
+        );
+    }
+
+    const willEnd = calculateDate({
+        typeCalc: "increment",
+        time: cooldownTime as any
+    });
+
 
     const [_a, _b, newUser] = await prisma.$transaction([
         prisma.user.upsert({
@@ -94,7 +169,7 @@ export async function economyDailyCommand(interaction: ChatInputCommandInteracti
             update: {}
         }),
         prisma.cooldown.upsert({
-            where: { 
+            where: {
                 userId_name: {
                     userId: id,
                     name: "daily"
@@ -112,7 +187,59 @@ export async function economyDailyCommand(interaction: ChatInputCommandInteracti
         })
     ])
 
-    interaction.editReply(res.fuchsia(`${icon.Eris_enchanted} | Parabéns! você pegou seu prêmio diário de **${dailyValue}** stx! agora você possui: **${newUser.money}** stx em sua carteira! ${icon.Eris_ok_left}`));
+    const petName = user?.activePet?.name ?? "seu pet";
+
+    const messages = {
+        petDailyBonus: [
+            `${icon.Eris_enchanted} | Você recebeu **${dailyValue}** stx no daily, incluindo um bônus trazido por **${petName}**! Agora você tem **${newUser.money}** stx. ${icon.Eris_ok_left}`,
+            `${icon.Eris_enchanted} | Daily coletado: **${dailyValue}** stx (com bônus de **${petName}**) 🐾 Saldo atual: **${newUser.money}** stx.`,
+            `${icon.Eris_enchanted} | Prêmio diário recebido (**${dailyValue}** stx)! **${petName}** deu aquela força extra. Total em carteira: **${newUser.money}** stx.`,
+            `${icon.Eris_enchanted} | **${petName}** achou umas moedinhas perdidas 🐾 Você recebeu **${dailyValue}** stx no daily! Saldo: **${newUser.money}** stx.`,
+            `${icon.Eris_enchanted} | Daily recebido: **${dailyValue}** stx ${icon.money_bag} **${petName}** até abriu a própria carteira 😎 Total: **${newUser.money}** stx.`,
+            `${icon.Eris_enchanted} | Daily + bônus de **${petName}** ativado! Você recebeu **${dailyValue}** stx ✨ Saldo atual: **${newUser.money}** stx.`,
+            `${icon.Eris_enchanted} | Até **${petName}** trabalha mais que você… Recebeu **${dailyValue}** stx (bônus incluso). Agora tem **${newUser.money}** stx 😏`,
+            `${icon.Eris_enchanted} | **${petName}** cavou o quintal e trouxe **${dailyValue}** stx. Você só ficou parado olhando ${icon.paid}`,
+            `${icon.Eris_enchanted} | Daily recebido: **${dailyValue}** stx. O bônus foi de **${petName}**, não seu. Total: **${newUser.money}** stx.`
+        ],
+        petDailyCooldownReduction: [
+            `${icon.Eris_enchanted} | Você recebeu **${dailyValue}** stx no daily! **${petName}** ainda reduziu o tempo de espera para o próximo ⏱️`,
+            `${icon.Eris_enchanted} | Daily coletado: **${dailyValue}** stx. **${petName}** agilizou o cooldown do próximo daily.`,
+            `${icon.Eris_enchanted} | Prêmio diário de **${dailyValue}** stx recebido! **${petName}** mexeu no tempo pra você 😉`,
+            `${icon.Eris_enchanted} | **${petName}** foi tão rápido que até o tempo ficou com inveja ⏳ Você recebeu **${dailyValue}** stx!`,
+            `${icon.Eris_enchanted} | Daily recebido: **${dailyValue}** stx ${icon.paid} Enquanto isso, **${petName}** hackeou o relógio 🐾⌛`,
+            `${icon.Eris_enchanted} | Você ganhou **${dailyValue}** stx e **${petName}** ainda deu um jeitinho no tempo 😎`,
+            `${icon.Eris_enchanted} | Daily recebido: **${dailyValue}** stx. Sorte que **${petName}** compensou sua lerdeza e cortou o cooldown 😏`,
+            `${icon.Eris_enchanted} | Enquanto você comemorava seus **${dailyValue}** stx, **${petName}** resolveu o relógio. Impressionante.`,
+            `${icon.Eris_enchanted} | **${petName}** reduziu o cooldown. Você só pegou os **${dailyValue}** stx. Equilíbrio perfeito 🙄`
+        ],
+        petDailyBonusAndCooldownReduction: [
+            `${icon.Eris_enchanted} | Você recebeu **${dailyValue}** stx (daily + bônus de **${petName}**) e ainda teve o cooldown reduzido 🐾 Saldo: **${newUser.money}** stx.`,
+            `${icon.Eris_enchanted} | Daily completo: **${dailyValue}** stx recebidos com bônus + cooldown reduzido graças a **${petName}**.`,
+            `${icon.Eris_enchanted} | Prêmio diário de **${dailyValue}** stx recebido com bônus extra e cooldown adiantado. **${petName}** foi incrível hoje.`,
+            `${icon.Eris_enchanted} | Jackpot de **${petName}** 🐶💸 Você recebeu **${dailyValue}** stx e o próximo daily vem mais cedo! Total: **${newUser.money}** stx.`,
+            `${icon.Eris_enchanted} | **${petName}** ativou modo turbo: **${dailyValue}** stx + bônus + cooldown reduzido 😳`,
+            `${icon.Eris_enchanted} | Daily recebido: **${dailyValue}** stx. **${petName}** fez tudo — só faltou te servir café ☕`,
+            `${icon.Eris_enchanted} | Nem você merecia tanto: **${dailyValue}** stx recebidos, bônus incluso, e cooldown cortado por **${petName}** 😏`,
+            `${icon.Eris_enchanted} | **${petName}** fez o trabalho pesado: dinheiro (**${dailyValue}** stx) e tempo. Você só clicou.`,
+            `${icon.Eris_enchanted} | Daily + bônus + cooldown reduzido = **${dailyValue}** stx ganhos. Se dependesse de você, não vinha nada 🐾`
+        ],
+        normal: [
+            `${icon.Eris_enchanted} | Você recebeu **${dailyValue}** stx no daily. Agora possui **${newUser.money}** stx na carteira. ${icon.Eris_ok_left}`,
+            `${icon.Eris_enchanted} | Daily coletado com sucesso: **${dailyValue}** stx. Saldo atual: **${newUser.money}** stx.`,
+            `${icon.Eris_enchanted} | Prêmio diário de **${dailyValue}** stx recebido ${icon.paid}`,
+            `${icon.Eris_enchanted} | Daily coletado ${icon.paid} Você recebeu **${dailyValue}** stx e saiu com o bolso mais feliz 😎`,
+            `${icon.Eris_enchanted} | Você deu aquela passada diária e recebeu **${dailyValue}** stx ${icon.money_bag} Total: **${newUser.money}** stx.`,
+            `${icon.Eris_enchanted} | A carteira sorriu 🤑 **${dailyValue}** stx direto pra sua conta.`,
+            `${icon.Eris_enchanted} | Parabéns… por existir. Aqui estão seus **${dailyValue}** stx 😏`
+        ]
+    }
+
+    interaction.editReply(res.fuchsia(
+        hasDailyBonus && hasDailyDecrementCooldown ? getRandomValue(messages.petDailyBonusAndCooldownReduction)
+            : hasDailyBonus ? getRandomValue(messages.petDailyBonus)
+                : hasDailyDecrementCooldown ? getRandomValue(messages.petDailyCooldownReduction)
+                    : getRandomValue(messages.normal)
+    ));
 
     await registerLog({
         level: 3,

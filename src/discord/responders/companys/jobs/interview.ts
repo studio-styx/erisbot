@@ -2,6 +2,7 @@ import { createResponder, ResponderType, Store } from "#base";
 import { prisma } from "#database";
 import { generateGeminiContent, getCommandId, getInterviewCooldown, getInterviewQuestions, icon, registerLog, resv2, setInterviewCooldown, setInterviewQuestions } from "#functions";
 import { menus } from "#menus";
+import { brBuilder } from "@magicyan/discord";
 import { time } from "discord.js";
 
 const simpleCooldown = new Store<Date>()
@@ -33,15 +34,27 @@ createResponder({
             },
         });
 
-        const user = await prisma.user.findUnique({
+        const user = await prisma.user.upsert({
             where: {
-                id: interaction.user.id,
+                id: interaction.user.id
             },
-        }) ?? await prisma.user.create({
-            data: {
-                id: interaction.user.id,
+            update: {},
+            create: {
+                id: interaction.user.id
             },
-        });
+            include: {
+                activePet: {
+                    include: {
+                        pet: true,
+                        skills: {
+                            include: {
+                                skill: true
+                            }
+                        }
+                    }
+                }
+            }
+        })
 
         if (!company) {
             interaction.reply(resv2.danger(`${icon.denied} | Empresa não encontrada!`));
@@ -71,8 +84,8 @@ createResponder({
                 companyExpectationsFormatted = companyExpectations.join(", ").replace(/, ([^,]*)$/, " e $1");
             } else {
                 companyExpectationsFormatted = companyExpectations
-                    .map((expectation) => 
-                        typeof expectation === "object" && "skill" in expectation 
+                    .map((expectation) =>
+                        typeof expectation === "object" && "skill" in expectation
                             ? `Habilidade: ${expectation.skill}, Nível: ${expectation.level}`
                             : "Expectativa inválida"
                     )
@@ -83,20 +96,29 @@ createResponder({
         }
 
         if (!questions) {
-            const prompt = `Você é um entrevistador de IA. Você irá entrevistar o candidato \"${interaction.user.displayName}\" para uma vaga na empresa \"${company.name}\".
+            const interviewEasier: boolean = !!user.activePet?.skills.some(s => s.skill.name === "job_interview_easier");
 
-            Descrição da empresa: ${company.description}
-
-            A empresa espera que seus funcionários tenham os seguintes valores e qualidades:
-            ${companyExpectationsFormatted}
-
-            A dificuldade da entrevista é ${company.difficulty}/10 (1 é muito fácil, 10 é extremamente difícil).
-
-            Gere exatamente 5 perguntas relevantes e desafiadoras para essa entrevista, levando em consideração o perfil da empresa e seus valores.
-            **Atenção:** se o nivel de dificuldade for 3 ou menos, as perguntas não devem conter perguntas como \"o que você fez\" e sim \"o que você faria\", porém se for superior adeque a dificuldade de acordo com o nível
-
-            Retorne **apenas** um array JSON **no formato exato**: [\"pergunta1\", \"pergunta2\", \"pergunta3\", \"pergunta4\", \"pergunta5\"]
-            Sem explicações ou texto adicional, apenas o array JSON.`;
+            const prompt: string = interviewEasier
+                ? brBuilder(
+                    `Você é um entrevistador de IA. Você irá entrevistar o candidato "${interaction.user.displayName}" para uma vaga na empresa "${company.name}".`,
+                    `Descrição da empresa: ${company.description}`,
+                    `A empresa espera que seus funcionários tenham os seguintes valores e qualidades: ${companyExpectationsFormatted}`,
+                    `A dificuldade da entrevista deve ser ajustada para ser mais fácil, pois o candidato possui a habilidade "job_interview_easier".`,
+                    `Gere exatamente 5 perguntas simples e relevantes para essa entrevista, levando em consideração o perfil da empresa e seus valores.`,
+                    `**Atenção:** as perguntas devem ser do tipo "o que você faria" e não "o que você fez", para manter a entrevista acessível.`,
+                    `Retorne **apenas** um array JSON **no formato exato**: ["pergunta1", "pergunta2", "pergunta3", "pergunta4", "pergunta5"]`,
+                    `Sem explicações ou texto adicional, apenas o array JSON.`
+                )
+                : brBuilder(
+                    `Você é um entrevistador de IA. Você irá entrevistar o candidato "${interaction.user.displayName}" para uma vaga na empresa "${company.name}".`,
+                    `Descrição da empresa: ${company.description}`,
+                    `A empresa espera que seus funcionários tenham os seguintes valores e qualidades: ${companyExpectationsFormatted}`,
+                    `A dificuldade da entrevista é ${company.difficulty}/10 (1 é muito fácil, 10 é extremamente difícil).`,
+                    `Gere exatamente 5 perguntas relevantes e desafiadoras para essa entrevista, levando em consideração o perfil da empresa e seus valores.`,
+                    `**Atenção:** se o nível de dificuldade for 3 ou menos, as perguntas não devem conter perguntas como "o que você fez" e sim "o que você faria". Para dificuldades superiores, adeque a dificuldade de acordo com o nível.`,
+                    `Retorne **apenas** um array JSON **no formato exato**: ["pergunta1", "pergunta2", "pergunta3", "pergunta4", "pergunta5"]`,
+                    `Sem explicações ou texto adicional, apenas o array JSON.`
+                );
 
             await registerLog({
                 message: `Começou uma entrevista com a empresa ${company.name}`,
@@ -108,14 +130,14 @@ createResponder({
 
             try {
                 const result = await generateGeminiContent(prompt);
-                
+
                 if (!result.success || !result.text) {
                     interaction.editReply(resv2.danger(`${icon.denied} | Não foi possível gerar as perguntas, tente novamente mais tarde.`));
                     console.error(result);
                     return;
                 }
                 let text = result.text.trim();
-                
+
                 // Remove bloco de código se existir
                 if (text.startsWith("```json")) {
                     text = text.slice(7);
@@ -129,7 +151,7 @@ createResponder({
                 const rawQuestions: string[] = JSON.parse(text) as string[];
                 questions = rawQuestions.map((question) => ({ question }));
                 await setInterviewQuestions(interaction.user.id, companyId, questions);
-                
+
                 await new Promise(resolve => setTimeout(resolve, 100));
             } catch (error) {
                 console.error(error)

@@ -11,7 +11,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+  url      = env("DEV_DATABASE_URL")
 }
 
 model User {
@@ -25,6 +25,9 @@ model User {
   afkReasson         String?
   afkTime            DateTime?
   dmNotification     Boolean        @default(false)
+  activePetId        Int?           @unique
+  activePet          UserPet?       @relation("ActivePetRelation", fields: [activePetId], references: [id], onDelete: SetNull)
+  blacklist          Json?
 
   logs               Log[]
   cooldowns          Cooldown[]
@@ -39,6 +42,7 @@ model User {
   giveaways          UserGiveaway[]
   fishs              UserFish[]
   fishingRods        UserFishingRod[]
+  pets               UserPet[]      @relation("UserPetsRelation")
 }
 
 model TryviaQuestions {
@@ -92,6 +96,7 @@ model Application {
   ownerId    String
   owner      User            @relation(fields: [ownerId], references: [id])
   requisitions Requisition[]
+  permissions       String[] @default([])
 }
 
 model Requisition {
@@ -127,6 +132,7 @@ model Transaction {
   
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt()
+  expiresAt DateTime?
   
   guildId   String? 
   guild     GuildSettings?   @relation(fields: [guildId], references: [id], onDelete: Cascade)
@@ -386,4 +392,160 @@ model FishingRod {
   createdAt       DateTime   @default(now())
 
   owners          UserFishingRod[]
+}
+
+model Pet {
+  id        Int       @id @default(autoincrement())
+  name      String
+  rarity    Rarity
+  price     Float
+  animal    Animal
+  specie    String
+  createdAt DateTime  @default(now())
+
+  userPets  UserPet[]
+  genetics  Genetics[] // catálogo de genes possíveis dessa espécie
+}
+
+model UserPet {
+  id        Int       @id @default(autoincrement())
+  userId    String
+  petId     Int
+  name      String
+  hungry    Int       @default(100)
+  life      Int       @default(100)
+  happiness Int       @default(100)
+  energy    Int       @default(100)
+  isDead    Boolean   @default(false)
+  createdAt DateTime  @default(now())
+  gender    Gender
+  isPregnant Boolean  @default(false)
+  pregnantEndAt DateTime?
+  personality UserPetPersonality[]
+  humor      String   @default("normal")
+  updatedAt DateTime  @updatedAt()
+  spouseId Int? @unique
+
+  // Hereditariedade
+  parent1Id Int?
+  parent2Id Int?
+
+  parent1   UserPet?  @relation("Parent1Relation", fields: [parent1Id], references: [id])
+  parent2   UserPet?  @relation("Parent2Relation", fields: [parent2Id], references: [id])
+  childsAsParent1 UserPet[] @relation("Parent1Relation")
+  childsAsParent2 UserPet[] @relation("Parent2Relation")
+
+  // Relações
+  activeUser User? @relation("ActivePetRelation")
+  user       User  @relation("UserPetsRelation", fields: [userId], references: [id], onDelete: Cascade)
+  spouse    UserPet?  @relation("SpouseRelation", fields: [spouseId], references: [id])
+  spouseOf  UserPet?  @relation("SpouseRelation")
+  genetics PetGenetics[]
+  pet      Pet       @relation(fields: [petId], references: [id], onDelete: Cascade)
+  skills   UserPetSkill[]
+  adoption AdoptionCenter?
+}
+
+model UserPetPersonality {
+  id        Int @id @default(autoincrement())
+  userPetId Int
+  traitId   Int
+
+  userPet  UserPet         @relation(fields: [userPetId], references: [id], onDelete: Cascade)
+  trait    PersonalityTrait @relation(fields: [traitId], references: [id], onDelete: Cascade)
+}
+
+model Genetics {
+  id        Int      @id @default(autoincrement())
+  petId     Int
+  trait     String   // Ex.: "Olhos Azuis", "Pelo Branco"
+  colorPart PetGeneticsColorPart
+  geneType  GeneType @default(NEUTRAL)  // Novo enum substituindo booleans
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt()
+
+  pet Pet @relation(fields: [petId], references: [id], onDelete: Cascade)
+  petGenetics PetGenetics[]
+}
+
+model PersonalityTrait {
+  id   Int    @id @default(autoincrement())
+  name String @unique
+
+  geneType  GeneType @default(NEUTRAL)
+  personalityConflictNames  String[]
+
+  userPetPersonalities UserPetPersonality[]
+}
+
+enum GeneType {
+  DOMINANT
+  RECESSIVE
+  CODOMINANT
+  NEUTRAL
+}
+
+model PetGenetics {
+  id        Int      @id @default(autoincrement())
+  userPetId Int
+  geneId    Int
+  inheritedFromParent1 Boolean?
+  inheritedFromParent2 Boolean?
+  createdAt DateTime @default(now())
+
+  userPet  UserPet  @relation(fields: [userPetId], references: [id], onDelete: Cascade)
+  gene     Genetics @relation(fields: [geneId], references: [id], onDelete: Cascade)
+}
+
+model PetSkill {
+  id        Int @id @default(autoincrement())
+  name      String
+  createdAt DateTime @default(now())
+
+  userPetSkills UserPetSkill[]
+}
+
+model UserPetSkill {
+  id        Int @id @default(autoincrement())
+  userPetId Int
+  skillId   Int
+  level     Int @default(1)
+  xp        Int @default(0)
+  createdAt DateTime @default(now())
+  
+  userPet UserPet @relation(fields: [userPetId], references: [id], onDelete: Cascade)
+  skill   PetSkill @relation(fields: [skillId], references: [id], onDelete: Cascade)
+}
+
+model AdoptionCenter {
+  id         Int @id @default(autoincrement())
+  userPetId  Int @unique
+  createdAt  DateTime @default(now())
+  deleteIn   DateTime
+  deletedAt  DateTime?
+
+  userPet UserPet @relation(fields: [userPetId], references: [id], onDelete: Cascade)
+}
+
+enum PetGeneticsColorPart {
+  COLOR1
+  COLOR2
+  EYE 
+}
+
+enum Animal {
+  CAT
+  DOG
+  BIRD
+  HAMSTER
+  RABBIT
+  DRAGON
+  LION
+  JAGUAR
+}
+
+enum Gender {
+  MALE
+  FEMALE
 }

@@ -1,6 +1,6 @@
 import { createResponder, ResponderType } from "#base";
 import { prisma } from "#database";
-import { getCommandId, icon, res } from "#functions";
+import { calculateDate, getCommandId, icon, res } from "#functions";
 import { settings } from "#settings";
 import { brBuilder, createContainer, createEmbed, createRow, createSeparator } from "@magicyan/discord";
 import { ButtonBuilder, ButtonStyle, GuildMember, userMention } from "discord.js";
@@ -137,6 +137,7 @@ createResponder({
                         amount,
                         guildId: interaction.guildId,
                         channelId: interaction.channelId,
+                        expiresAt: calculateDate({ time: "1d", typeCalc: "increment" }),
                         type: "USER",
                         status: "PENDING"
                     },

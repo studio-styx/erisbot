@@ -74,9 +74,9 @@ createResponder({
             // quanto mais rápido, maior o boost em raridades altas
             let weights = {
                 LEGENDARY: 2,
-                EPIC: 12,
-                RARE: 30,
-                UNCOMUM: 40,
+                EPIC: 10,
+                RARE: 26,
+                UNCOMUM: 35,
                 COMUM: 70
             };
 
