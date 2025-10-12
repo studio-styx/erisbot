@@ -1,11 +1,19 @@
-import { createCommand } from "#base";
-import { prisma } from "#database";
+import { createCommand, createResponder, ResponderType } from "#base";
+import { prisma, redis } from "#database";
 import { stocksEventuals, res, icon, processApiQuestions, removeFromBlacklist, addToBlacklist, convertTime } from "#functions";
 import { menus } from "#menus";
 import { GeneType, Mails, PetGeneticsColorPart, Rarity } from "#prisma";
 import { settings } from "#settings";
-import { brBuilder, createContainer, createSeparator } from "@magicyan/discord";
-import { ApplicationCommandOptionType, ApplicationCommandType, time } from "discord.js";
+import { brBuilder, createContainer, createLabel, createModalFields, createSeparator } from "@magicyan/discord";
+import { ApplicationCommandOptionType, ApplicationCommandType, StringSelectMenuBuilder, TextInputBuilder, TextInputStyle, time, UserSelectMenuBuilder } from "discord.js";
+import crypto from "node:crypto";
+
+function generateToken() {
+    const apiKey = `ErisApiKey-${crypto.randomBytes(16).toString("hex")}`;
+    const apiHash = crypto.createHash("sha256").update(apiKey).digest("hex");
+
+    return { key: apiKey, hash: apiHash };
+}
 
 createCommand({
     name: "sudo",
@@ -21,6 +29,58 @@ createCommand({
             name: "test",
             description: "test function",
             type: ApplicationCommandOptionType.Subcommand,
+        },
+        {
+            name: "apikey",
+            description: "manage apikeys",
+            type: ApplicationCommandOptionType.SubcommandGroup,
+            options: [
+                {
+                    name: "permissions",
+                    description: "manage apikey permissions",
+                    type: ApplicationCommandOptionType.Subcommand,
+                    options: [
+                        {
+                            name: "bot",
+                            description: "bot to manage the permissions",
+                            required: true,
+                            autocomplete: true,
+                            type: ApplicationCommandOptionType.String
+                        }
+                    ]
+                },
+                {
+                    name: "delete",
+                    description: "delete the bot",
+                    type: ApplicationCommandOptionType.Subcommand,
+                    options: [
+                        {
+                            name: "bot",
+                            description: "bot to delete",
+                            type: ApplicationCommandOptionType.String,
+                            required,
+                            autocomplete
+                        }
+                    ]
+                },
+                {
+                    name: "generate",
+                    description: "generate a new API key",
+                    type: ApplicationCommandOptionType.Subcommand,
+                },
+                {
+                    name: "regenerate",
+                    description: "regenerate an API key from a bot",
+                    type: ApplicationCommandOptionType.Subcommand,
+                    options: [
+                        {
+                            name: "bot",
+                            description: "regenerate a bot API key",
+                            type: ApplicationCommandOptionType.String,
+                        }
+                    ]
+                }
+            ]
         },
         {
             name: "blacklist",
@@ -171,54 +231,71 @@ createCommand({
     ],
     async autocomplete(interaction) {
         if (interaction.user.id !== "1171963692984844401") return;
-        const { options } = interaction;
-        const focused = options.getFocused();
+        const { options, client } = interaction;
+        const focused = options.getFocused(true);
+        const subCommandGroup = options.getSubcommandGroup();
         const subcommand = options.getSubcommand();
-        switch (subcommand) {
-            case "set-work": {
-                const companys = await prisma.company.findMany({
-                    where: {
-                        OR: [
-                            {
-                                name: {
-                                    contains: focused,
-                                    mode: "insensitive"
-                                }
-                            },
-                            {
-                                description: {
-                                    contains: focused,
-                                    mode: "insensitive"
-                                }
-                            },
-                            {
-                                id: {
-                                    equals: Number(focused),
+
+        if (subCommandGroup === "apikey") {
+            const getBotsNames = async () => {
+                const raw = await redis.get(`apikey:bots:cache:admin`);
+                if (!raw) {
+                    const bots = await prisma.application.findMany({});
+                    const names: { name: string; id: string }[] = [];
+                    await Promise.all(bots.map(async (bot) => {
+                        try {
+                            const discordBot = client.users.cache.get(bot.id);
+                            if (discordBot) {
+                                names.push({ name: discordBot.username, id: bot.id });
+                            } else {
+                                const fetchedBot = await client.users.fetch(bot.id).catch(() => null);
+                                if (fetchedBot) {
+                                    names.push({ name: fetchedBot.username, id: bot.id });
+                                } else {
+                                    await prisma.application.delete({
+                                        where: { id: bot.id }
+                                    });
                                 }
                             }
-                        ]
-                    },
-                    select: {
-                        name: true,
-                        id: true
-                    }
-                });
-
-                if (companys.length === 0) {
-                    await interaction.respond([
-                        {
-                            name: "Nenhuma empresa encontrada",
-                            value: "null"
+                        } catch (error) {
+                            console.error(error);
                         }
-                    ])
+                    }));
+                    await redis.set(`apikey:bots:cache:admin`, JSON.stringify(names));
+                    return names;
                 } else {
-                    await interaction.respond(companys.map(c => ({
-                        name: c.name,
-                        value: c.id.toString()
-                    })))
+                    return JSON.parse(raw) as { name: string; id: string }[];
                 }
+            };
+
+            if (focused.name === "bot") {
+                const bots = await getBotsNames();
+                await interaction.respond(bots.filter(bot => bot.name.toLowerCase().includes(focused.value.toLowerCase())).map(bot => ({
+                    name: bot.name,
+                    value: bot.id
+                })));
                 return;
             }
+        }
+
+        if (subcommand === "set-work") {
+            const companys = await prisma.company.findMany({
+                where: {
+                    OR: [
+                        { name: { contains: focused.value, mode: "insensitive" } },
+                        { description: { contains: focused.value, mode: "insensitive" } },
+                        { id: { equals: Number(focused.value) } }
+                    ]
+                },
+                select: { name: true, id: true }
+            });
+
+            if (companys.length === 0) {
+                await interaction.respond([{ name: "Nenhuma empresa encontrada", value: "null" }]);
+            } else {
+                await interaction.respond(companys.map(c => ({ name: c.name, value: c.id.toString() })));
+            }
+            return;
         }
     },
     async run(interaction): Promise<any> {
@@ -251,6 +328,120 @@ createCommand({
 
                     interaction.editReply(res.success(`${icon.success} | Sucesso ao ${subcommand === "add" ? "adicionar" : "remover"} o usuário ${user.displayName} da blacklist`))
                     break;
+                }
+                case "apikey": {
+                    switch (subcommand) {
+                        case "generate": {
+                            interaction.showModal({
+                                title: "Gerar um token",
+                                customId: "sudo/apikey/generate",
+                                components: createModalFields(
+                                    createLabel({
+                                        label: "Id do bot",
+                                        description: "Escreva o id do bot",
+                                        component: new TextInputBuilder({
+                                            customId: "botId",
+                                            required: true,
+                                            style: TextInputStyle.Short,
+                                            placeholder: "Digite o id do bot"
+                                        })
+                                    }),
+                                    createLabel({
+                                        label: "Id do dono do bot",
+                                        description: "Qual é o id do dono do bot",
+                                        component: new UserSelectMenuBuilder({
+                                            customId: "onwerId",
+                                            minValues: 1,
+                                            maxValues: 1,
+                                            required: true,
+                                        })
+                                    }),
+                                    createLabel({
+                                        label: "Permissões",
+                                        description: "As permissões que o bot obterá",
+                                        component: new StringSelectMenuBuilder({
+                                            customId: "permissions",
+                                            placeholder: "Selecione as permissões",
+                                            options: [
+                                                { label: "Ler a economia", value: "ECONOMY.READ" },
+                                                { label: "Ler informações de usuário", value: "USER.INFO.READ" },
+                                                { label: "Ler informações de sorteios", value: "GIVEAWAY.INFO.READ" },
+                                                { label: "Gerenciar stx", value: "ECONOMY.WRITE" },
+                                                { label: "TODAS", value: "ALL" }
+                                            ],
+                                            minValues: 1,
+                                            maxValues: 4,
+                                            required: true
+                                        })
+                                    })
+                                )
+                            });
+                            return;
+                        }
+                        case "permissions": {
+                            const botId = options.getString("bot", true);
+                            await interaction.deferReply();
+                            const bot = await prisma.application.findUnique({ where: { id: botId } });
+                            if (!bot) {
+                                interaction.editReply(res.danger(`${icon.error} | Bot não encontrado!`));
+                                return;
+                            }
+                            interaction.showModal({
+                                title: "Gerenciar permissões",
+                                customId: `sudo/apikey/permissions/${botId}`,
+                                components: createModalFields(
+                                    createLabel({
+                                        label: "Permissões",
+                                        description: "As permissões que o bot obterá",
+                                        component: new StringSelectMenuBuilder({
+                                            customId: "permissions",
+                                            placeholder: "Selecione as permissões",
+                                            options: [
+                                                { label: "Ler a economia", value: "ECONOMY.READ" },
+                                                { label: "Ler informações de usuário", value: "USER.INFO.READ" },
+                                                { label: "Ler informações de sorteios", value: "GIVEAWAY.INFO.READ" },
+                                                { label: "Gerenciar stx", value: "ECONOMY.WRITE" },
+                                                { label: "TODAS", value: "ALL" }
+                                            ],
+                                            minValues: 1,
+                                            maxValues: 4,
+                                            required: true
+                                        })
+                                    })
+                                )
+                            });
+                            return;
+                        }
+                        case "delete": {
+                            const botId = options.getString("bot", true);
+                            await interaction.deferReply();
+                            const bot = await prisma.application.findUnique({ where: { id: botId } });
+                            if (!bot) {
+                                interaction.editReply(res.danger(`${icon.error} | Bot não encontrado!`));
+                                return;
+                            }
+                            await prisma.application.delete({ where: { id: botId } });
+                            await redis.del(`apikey:bots:cache:admin`);
+                            interaction.editReply(res.success(`${icon.success} | Bot e token deletados com sucesso!`));
+                            return;
+                        }
+                        case "regenerate": {
+                            const botId = options.getString("bot", true);
+                            await interaction.deferReply();
+                            const bot = await prisma.application.findUnique({ where: { id: botId } });
+                            if (!bot) {
+                                interaction.editReply(res.danger(`${icon.error} | Bot não encontrado!`));
+                                return;
+                            }
+                            const newToken = generateToken();
+                            await prisma.application.update({
+                                where: { id: botId },
+                                data: { token: newToken.hash }
+                            });
+                            interaction.editReply(res.success(`${icon.success} | Novo token gerado: **\`${newToken.key}\`**`));
+                            return;
+                        }
+                    }
                 }
             }
             return;
@@ -1092,5 +1283,72 @@ createCommand({
                 return;
             }
         }
+    },
+});
+
+createResponder({
+    customId: "sudo/apikey/generate",
+    types: [ResponderType.Modal],
+    cache: "cached",
+    async run(interaction) {
+        if (interaction.user.id !== "1171963692984844401") {
+            interaction.reply(res.danger("Você não tem permissão para usar este comando!"));
+            return;
+        }
+        const { fields, client } = interaction;
+        const botId = fields.getTextInputValue("botId");
+        const selectedUsers = fields.getSelectedUsers("ownerId");
+        const permissions = fields.getStringSelectValues("permissions");
+
+        await interaction.deferReply();
+        const bot = await client.users.fetch(botId, { cache: true }).catch(() => null);
+        if (!bot || !bot.bot) {
+            interaction.editReply(res.danger(`${icon.error} | Esse id não pertence a um bot!`));
+            return;
+        }
+        if (!selectedUsers || selectedUsers.size === 0) {
+            interaction.editReply(res.danger(`${icon.error} | Selecione o dono do bot!`));
+            return;
+        }
+        const ownerId = selectedUsers.first()!.id;
+        const alreadyExist = await prisma.application.findUnique({
+            where: { id: bot.id },
+            select: { id: true }
+        });
+        if (alreadyExist) {
+            interaction.editReply(res.danger(`${icon.error} | Um bot com esse id já está registrado!`));
+            return;
+        }
+        const token = generateToken();
+        await prisma.application.create({
+            data: {
+                id: bot.id,
+                ownerId: ownerId, // Usa o ID do dono selecionado
+                token: token.hash,
+                permissions: [...permissions]
+            }
+        });
+        await redis.del(`apikey:bots:cache:admin`);
+        interaction.editReply(res.success(`${icon.success} | Token gerado com sucesso! \n\n \`\`\`${token.key}\`\`\``));
+    },
+});
+
+createResponder({
+    customId: "sudo/apikey/permissions/:botId",
+    types: [ResponderType.Modal],
+    cache: "cached",
+    async run(interaction, { botId }) {
+        if (interaction.user.id !== "1171963692984844401") {
+            interaction.reply(res.danger("Você não tem permissão para usar este comando!"));
+            return;
+        }
+        const permissions = interaction.fields.getStringSelectValues("permissions");
+
+        await interaction.deferReply();
+        await prisma.application.update({
+            where: { id: botId },
+            data: { permissions: [...permissions] }
+        });
+        interaction.editReply(res.success(`${icon.success} | Permissões atualizadas com sucesso!`));
     },
 });

@@ -3,13 +3,14 @@ import { prisma, redis } from "#database";
 import { convertTime, getRandomNumber, getValidUserPet, icon, petPlays, petsFood, res } from "#functions";
 import { menus } from "#menus";
 import { Prisma } from "#prisma";
+import { randomNumber } from "@magicyan/discord";
 
 createResponder({
     customId: "pet/care/:action/:responderType/:userId/:petId",
     types: [ResponderType.Button, ResponderType.StringSelect], cache: "cached",
     parse(params) {
         return {
-            action: params.action as "feed" | "play" | "return",
+            action: params.action as "feed" | "play" | "sleep" | "return",
             userId: params.userId as string,
             petId: parseInt(params.petId)
         }
@@ -163,6 +164,33 @@ createResponder({
                     interaction.followUp(res.success(`${icon.success} | Você brincou com seu pet! agora ele está **${moodEffect}** e sua felicidade está em: **${newFun}/100**`))
                     interaction.editReply(menus.pets.care(userId, newPet))
                 }
+                return;
+            }
+            case "sleep": {
+                if (!interaction.isButton()) return;
+                if (pet.energy === 100) {
+                    interaction.followUp(res.danger(`${icon.denied} | Seu pet já está com energia cheia!`))
+                    return;
+                }
+                const newEnergy = Math.min(pet.energy + randomNumber(10, 30), 100);
+
+                const newPet = await prisma.userPet.update({
+                    where: { id: pet.id },
+                    data: {
+                        energy: newEnergy
+                    },
+                    include: {
+                        personality: {
+                            include: {
+                                trait: true
+                            }
+                        },
+                        pet: true
+                    }
+                });
+
+                interaction.followUp(res.success(`${icon.success} | Você dormiu com seu pet! (lá ele) agora ele está com energia em: **${newEnergy}/100**`));
+                interaction.editReply(menus.pets.care(userId, newPet));
                 return;
             }
             case "return": {

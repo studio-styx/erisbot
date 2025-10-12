@@ -29,7 +29,7 @@ export default async function balance(app: FastifyInstance, client: Client<true>
         return reply.status(StatusCodes.OK).send({ money: user.money.toNumber(), bank: user.bank.toNumber() });
     });
     app.get("/balance", async (req, reply) => {
-        if (!req.application || req.application.data.permissions.includes("ALL") || !req.application.data.permissions.includes("ECONOMY.READ")) {
+        if (!req.application || (!req.application.data.permissions.includes("ALL") && !req.application.data.permissions.includes("ECONOMY.READ"))) {
             return reply.status(StatusCodes.FORBIDDEN).send({ message: "You do not have permission to have stx", success: false });
         }
 

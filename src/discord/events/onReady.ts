@@ -29,7 +29,7 @@ createEvent({
         }, 1000 * 60 * 30);
         setInterval(async () => {
             await setAllPetsStats();
-        }, 1000 * 60 * 60)
+        }, 1000 * 60 * 60 * 2)
 
         let currentIndex = 0;
 
@@ -68,12 +68,12 @@ createEvent({
                     time: 26
                 },
                 {
-                    name: "Spoiler: versão 2.0.0 vai ter sistema de pets!",
-                    time: 60
-                },
-                {
                     name: "Jogue uma partida de quiz! use /tryvia",
                     time: 15
+                },
+                {
+                    name: "Novo sistema de pets! use o comando /pet",
+                    time: 30
                 }
             ];
 

@@ -11,6 +11,7 @@ import fastifyAutoload from "@fastify/autoload";
 import path from "node:path";
 import cookie from "@fastify/cookie";
 import jwt from "jsonwebtoken"
+import fastifyFormbody from '@fastify/formbody';
 
 export const reservedToken = crypto.randomBytes(16).toString("hex")
 
@@ -20,6 +21,7 @@ createEvent({
     async run(client) {
         const app = fastify();
 
+        app.register(fastifyFormbody);
         // CORS e tratamento de erros
         app.register(cors, {
             origin: (origin, cb) => {
@@ -59,7 +61,6 @@ createEvent({
         app.addHook('onRequest', async (req, res) => {
             console.log('Request:', req.url, 'method:', req.method);
 
-            if (req.url.startsWith('/v1/bot/economy/ws/take-stx')) return;
             if (req.url.startsWith('/topgg')) return;
             if (req.url === "/") return;
             if (req.url.startsWith('/auth')) return;
@@ -179,6 +180,7 @@ createEvent({
             }
 
             const token = req.headers.authorization as string | undefined;
+
             if (!token) {
                 return res.status(StatusCodes.UNAUTHORIZED).send({ message: 'Unauthorized' });
             }
@@ -214,7 +216,7 @@ createEvent({
             return payload; 
         });
 
-        // Função para validar o token (mantida, usando Prisma apenas para app)
+        // Função para validar o token
         async function validateToken(token: string | undefined): Promise<boolean> {
             if (!token) return false;
             const hash256 = crypto.createHash('sha256').update(token).digest('hex');

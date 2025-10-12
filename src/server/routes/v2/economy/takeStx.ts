@@ -19,7 +19,7 @@ export default async function takeStx(app: FastifyInstance, client: Client<true>
             memberId: z.string().min(1),
             amount: z.number().min(1),
             reason: z.string().min(1).optional(),
-            expiresAt: z.enum(["1m", "5m", "10m", "20m", "30m", "60m", "1h", "2h", "4h", "8h", "12h", "24h"])
+            expiresAt: z.enum(["1m", "2m", "3m", "4m", "5m", "10m", "15m", "20m", "30m", "45m", "60m", "1h", "2h", "4h", "6h", "8h", "12h", "24h"])
         });
 
         try {

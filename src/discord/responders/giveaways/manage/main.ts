@@ -3,8 +3,8 @@ import { prisma, redis } from "#database";
 import { getMutualGuilds, icon, res, resv2 } from "#functions";
 import { menus } from "#menus";
 import { GiveawayManageDataInfo } from "#types/giveawayManageDataType.js";
-import { brBuilder, createModalFields } from "@magicyan/discord";
-import { ContainerComponent, TextDisplayComponent, TextInputStyle } from "discord.js";
+import { brBuilder, createLabel, createModalFields } from "@magicyan/discord";
+import { ContainerComponent, TextDisplayComponent, TextInputBuilder, TextInputStyle } from "discord.js";
 
 createResponder({
     customId: "giveaway/manage/main/:userId/:part",
@@ -108,17 +108,20 @@ createResponder({
                 interaction.showModal({
                     customId: `giveaway/manage/main/${userId}/${option}`,
                     title: config?.label ?? option,
-                    components: createModalFields({
-                        response: {
-                            label: `${config?.label ?? option} do sorteio`,
-                            placeholder: config?.placeholder ?? "...",
-                            style: config?.style ?? TextInputStyle.Short,
-                            required: true,
-                            minLength: 1,
-                            maxLength: config?.maxLength ?? 50,
-                            value: value ? value.length < 1 ? undefined : value : undefined
-                        },
-                    }),
+                    components: createModalFields(
+                        createLabel({
+                            label: config?.label ?? option,
+                            component: new TextInputBuilder({
+                                label: `${config?.label ?? option} do sorteio`,
+                                placeholder: config?.placeholder ?? "...",
+                                style: config?.style ?? TextInputStyle.Short,
+                                required: true,
+                                minLength: 1,
+                                maxLength: config?.maxLength ?? 50,
+                                value: value ? value.length < 1 ? undefined : value : undefined
+                            })
+                        })
+                    ),
                 });
 
                 return;

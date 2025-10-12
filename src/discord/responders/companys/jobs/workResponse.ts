@@ -2,8 +2,8 @@ import { createResponder, ResponderType } from "#base";
 import { prisma } from "#database";
 import { clearCache, generateGeminiContent, getCache, icon, registerLog, res, resv2 } from "#functions";
 import { Rarity } from "#prisma";
-import { createModalFields } from "@magicyan/discord";
-import { TextInputStyle } from "discord.js";
+import { createLabel, createModalFields } from "@magicyan/discord";
+import { TextInputBuilder, TextInputStyle } from "discord.js";
 
 function calculateSkillBonus({ rarity, level }: { rarity: Rarity, level: number }) {
     const rarityMultipliers: Record<Rarity, number> = {
@@ -41,14 +41,18 @@ createResponder({
             interaction.showModal({
                 customId: `company/work/${userId}`,
                 title: `Desafio`,
-                components: createModalFields({
-                    response: {
+                components: createModalFields(
+                    createLabel({
                         label: "Resposta para o desafio",
-                        placeholder: "Responda o desafio aqui",
-                        style: TextInputStyle.Paragraph,
-                        required: true,
-                    },
-                }),
+                        component: new TextInputBuilder({
+                            customId: "response",
+                            style: TextInputStyle.Paragraph,
+                            required: true,
+                            placeholder: "Digite sua resposta para o desafio",
+                            maxLength: 2000
+                        })
+                    })
+                ),
             });
         } else {
             const response = interaction.fields.getTextInputValue("response");

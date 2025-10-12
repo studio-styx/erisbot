@@ -37,6 +37,12 @@ export function petCareMenu<R>(userId: string, pet: UserPet & { personality: { t
 
             }),
             new ButtonBuilder({
+                customId: `pet/care/sleep/button/${userId}/${pet.id}`,
+                label: "Dormir",
+                style: ButtonStyle.Success,
+                disabled: !!page || pet.energy === 100,
+            }),
+            new ButtonBuilder({
                 customId: `pet/care/return/button/${userId}/${pet.id}`,
                 label: "Voltar",
                 style: ButtonStyle.Secondary,

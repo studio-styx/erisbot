@@ -2,8 +2,8 @@ import { createResponder, ResponderType, Store } from "#base";
 import { res, icon, resv2 } from "#functions";
 import { GiveawayManageDataInfo } from "#types/giveawayManageDataType.js";
 import { redis } from "#database";
-import { createModalFields } from "@magicyan/discord";
-import { roleMention, TextInputStyle } from "discord.js";
+import { createLabel, createModalFields } from "@magicyan/discord";
+import { roleMention, TextInputBuilder, TextInputStyle } from "discord.js";
 import { menus } from "#menus";
 
 const selectedRoles = new Store<string[]>()
@@ -31,20 +31,26 @@ createResponder({
                 interaction.showModal({
                     customId: `giveaway/manage/otherRole/roleEntries/${userId}`,
                     title: "Outro cargo",
-                    components: createModalFields({
-                        roleId: {
-                            label: "id do cargo que receberá mais entradas",
-                            placeholder: "1234567....",
-                            style: TextInputStyle.Short,
-                            required: true,
-                        },
-                        entries: {
-                            label: "quantidade de entradas",
-                            placeholder: "2 (0 para remover)",
-                            style: TextInputStyle.Short,
-                            required: true,
-                        }
-                    }),
+                    components: createModalFields(
+                        createLabel({
+                            label: "Cargo",
+                            component: new TextInputBuilder({
+                                customId: "roleId",
+                                style: TextInputStyle.Short,
+                                required: true,
+                                placeholder: "id do cargo",
+                            })
+                        }),
+                        createLabel({
+                            label: "Quantidade de entradas",
+                            component: new TextInputBuilder({
+                                customId: "entries",
+                                style: TextInputStyle.Short,
+                                required: true,
+                                placeholder: "2 (0 para remover)",
+                            })
+                        })
+                    ),
                 });
             } else if (interaction.isModalSubmit()) {
                 const roleId = interaction.fields.getTextInputValue("roleId");
@@ -155,14 +161,17 @@ createResponder({
                 interaction.showModal({
                     customId: `giveaway/manage/roleSelect/roleEntries/${userId}`,
                     title: "Quantidade de entradas",
-                    components: createModalFields({
-                        entries: {
-                            label: "quantidade de entradas",
-                            placeholder: "2 (0 para remover)",
-                            style: TextInputStyle.Short,
-                            required: true,
-                        }
-                    }),
+                    components: createModalFields(
+                        createLabel({
+                            label: "Quantidade de entradas",
+                            component: new TextInputBuilder({
+                                customId: "entries",
+                                style: TextInputStyle.Short,
+                                required: true,
+                                placeholder: "2 (0 para remover)",
+                            })
+                        })
+                    ),
                 });
             } else if (interaction.isModalSubmit()) {
                 try {

@@ -19,7 +19,7 @@ export default async function giveStx(app: FastifyInstance, client: Client<true>
             memberId: z.string().min(1),
             amount: z.number().min(1),
             reason: z.string().min(1).optional(),
-            expiresAt: z.enum(["1m", "5m", "10m", "20m", "30m", "60m", "1h", "2h", "4h", "8h", "12h", "24h"])
+            expiresAt: z.enum(["1m", "2m", "3m", "4m", "5m", "10m", "15m", "20m", "30m", "45m", "60m", "1h", "2h", "4h", "6h", "8h", "12h", "24h"])
         });
 
         try {
@@ -71,11 +71,18 @@ export default async function giveStx(app: FastifyInstance, client: Client<true>
                 return { message: "Not enough money", success: false };
             }
 
-            await prisma.user.upsert({
-                where: { id: memberId },
-                update: {},
-                create: { id: memberId }
-            })
+            await prisma.$transaction([
+                prisma.user.upsert({
+                    where: { id: req.application.data.id },
+                    update: {},
+                    create: { id: req.application.data.id }
+                }),
+                prisma.user.upsert({
+                    where: { id: memberId },
+                    update: {},
+                    create: { id: memberId }
+                })
+            ])
             const [_, transaction] = await Promise.all([
                 redis.setex(`tx:${application.data.id}:${memberId}`, Math.min(convertTime({ time: expiresAt, to: "seconds" }), 60 * 30), JSON.stringify({ expiresAt: Date.now() + 1000 * 61, confirm: null, amount })),
                 prisma.transaction.create({

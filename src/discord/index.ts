@@ -215,17 +215,14 @@ export const { createCommand, createEvent, createResponder } = setupCreators({
                             `### Pets com fome: **${hungryPets.length}**`,
                             hungryPets.map(p => `${p.name} - ${p.hungry}/100`)
                         ),
-                        hungryPets.length > 0 && createSeparator(),
                         sadPets.length > 0 && brBuilder(
                             `### Pets com felicidade baixa: **${sadPets.length}**`,
                             sadPets.map(p => `${p.name} - ${p.happiness}/100`)
                         ),
-                        (sadPets.length > 0 || hungryPets.length > 0) && createSeparator(),
                         tiredPets.length > 0 && brBuilder(
                             `### Pets com energia baixa: **${tiredPets.length}**`,
                             tiredPets.map(p => `${p.name} - ${p.energy}/100`)
                         ),
-                        (tiredPets.length > 0 || hungryPets.length > 0 || sadPets.length > 0) && createSeparator(),
                         deadPets.length > 0 && brBuilder(
                             `### Pets no fim da vida: **${deadPets.length}**`,
                             deadPets.map(p => `${p.name} - ${p.life}/100`),

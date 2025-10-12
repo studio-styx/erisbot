@@ -2,8 +2,8 @@ import { createResponder, ResponderType } from "#base";
 import { prisma } from "#database";
 import { clearInterviewQuestions, generateGeminiContent, getInterviewQuestions, icon, registerLog, removeInterviewCooldown, res, resv2, updateInterviewAnswer } from "#functions";
 import { menus } from "#menus";
-import { brBuilder, createModalFields } from "@magicyan/discord";
-import { TextInputStyle } from "discord.js";
+import { brBuilder, createLabel, createModalFields } from "@magicyan/discord";
+import { TextInputBuilder, TextInputStyle } from "discord.js";
 
 createResponder({
     customId: "company/:userid/interview/:page/:companyId",
@@ -19,14 +19,18 @@ createResponder({
         interaction.showModal({
             customId: `company/${userid}/modalInterview/${page}/${companyId}`,
             title: "Entrevista",
-            components: createModalFields({
-                response: {
+            components: createModalFields(
+                createLabel({
                     label: "Resposta para a pergunta",
-                    placeholder: "A resposta da pergunta aqui",
-                    style: TextInputStyle.Paragraph,
-                    required: true,
-                },
-            }),
+                    component: new TextInputBuilder({
+                        customId: "response",
+                        style: TextInputStyle.Paragraph,
+                        required: true,
+                        placeholder: "Digite sua resposta para a pergunta",
+                        maxLength: 2000
+                    })
+                })
+            ),
         });
         return;
     },

@@ -2,8 +2,8 @@ import { createResponder, ResponderType } from "#base";
 import { prisma } from "#database";
 import { getBlackjackGame, icon, removeBlackjackGame, resv2 } from "#functions";
 import { menus } from "#menus";
-import { createModal, createRow } from "@magicyan/discord";
-import { ButtonBuilder, ButtonStyle } from "discord.js";
+import { createLabel, createModalFields, createRow } from "@magicyan/discord";
+import { ButtonBuilder, ButtonStyle, TextInputBuilder, TextInputStyle } from "discord.js";
 
 createResponder({
     customId: "blackjack/delete/:action",
@@ -84,18 +84,21 @@ createResponder({
                 return;
             }
 
-            await interaction.showModal(createModal({
-                title: "Aposta",
+            await interaction.showModal({
                 customId: "blackjack/delete/start",
-                components: {
-                    amount: {
+                title: "Aposta",
+                components: createModalFields(
+                    createLabel({
                         label: "Quantia à apostar",
-                        minLength: 2,
-                        required: true,
-                        placeholder: "digite um valor acima de 50",
-                    }
-                }
-            }))
+                        component: new TextInputBuilder({
+                            customId: "amount",
+                            style: TextInputStyle.Short,
+                            required: true,
+                            placeholder: "digite um valor acima de 50",
+                        })
+                    })
+                )
+            })
             return;
         }
     },

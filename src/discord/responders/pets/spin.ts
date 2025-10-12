@@ -2,8 +2,8 @@ import { createResponder, ResponderType } from "#base";
 import { prisma } from "#database";
 import { getRandomValue, icon, res, resv2, verifyPetName } from "#functions";
 import { Gender } from "#prisma";
-import { createModalFields } from "@magicyan/discord";
-import { TextInputStyle } from "discord.js";
+import { createLabel, createModalFields } from "@magicyan/discord";
+import { TextInputBuilder, TextInputStyle } from "discord.js";
 
 const randomNames: Record<Gender, string[]> = {
     MALE: [
@@ -66,14 +66,17 @@ createResponder({
                 interaction.showModal({
                     customId: `pet/spin/name/${userId}/${petId}`,
                     title: "Nome do pet",
-                    components: createModalFields({
-                        name: {
-                            label: "Coloque o nome de seu pet",
-                            placeholder: `${getRandomValue(randomNames[getRandomValue(["MALE", "FEMALE"]) as Gender])}...`,
-                            style: TextInputStyle.Short,
-                            required: true,
-                        },
-                    }),
+                    components: createModalFields(
+                        createLabel({
+                            label: "Nome",
+                            component: new TextInputBuilder({
+                                label: "Coloque o nome de seu pet",
+                                placeholder: `${getRandomValue(randomNames[getRandomValue(["MALE", "FEMALE"]) as Gender])}...`,
+                                style: TextInputStyle.Short,
+                                required: true,
+                            })
+                        })
+                    ),
                 });
                 return;
             }

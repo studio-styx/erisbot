@@ -2,8 +2,8 @@ import { createResponder, ResponderType } from "#base";
 import { prisma, redis } from "#database";
 import { getCommandId, icon, res, wordleCreateImage } from "#functions";
 import { WordleGame } from "#types/wordleGame.js";
-import { createModalFields, createRow } from "@magicyan/discord";
-import { AttachmentBuilder, ButtonBuilder, ButtonStyle, TextInputStyle } from "discord.js";
+import { createLabel, createModalFields, createRow } from "@magicyan/discord";
+import { AttachmentBuilder, ButtonBuilder, ButtonStyle, TextInputBuilder, TextInputStyle } from "discord.js";
 
 // Função para normalizar letras (remove acentos, exceto para ç)
 const normalizeLetter = (letter: string): string => {
@@ -63,16 +63,19 @@ createResponder({
             interaction.showModal({
                 customId: `wordle/writeWord/${user.id}`,
                 title: "Termo",
-                components: createModalFields({
-                    response: {
+                components: createModalFields(
+                    createLabel({
                         label: "Palavra",
-                        placeholder: "Palavra para o jogo",
-                        style: TextInputStyle.Paragraph,
-                        required: true,
-                        minLength: game.word.length,
-                        maxLength: game.word.length,
-                    },
-                }),
+                        component: new TextInputBuilder({
+                            label: "Palavra",
+                            placeholder: "Palavra para o jogo",
+                            style: TextInputStyle.Paragraph,
+                            required: true,
+                            minLength: game.word.length,
+                            maxLength: game.word.length,
+                        })
+                    })
+                ),
             });
             return;
         }

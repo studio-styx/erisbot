@@ -1,6 +1,6 @@
 import { createResponder, ResponderType } from "#base";
-import { createModalFields } from "@magicyan/discord";
-import { TextInputStyle } from "discord.js";
+import { createLabel, createModalFields } from "@magicyan/discord";
+import { TextInputBuilder, TextInputStyle } from "discord.js";
 import { PrismaClient } from "#prisma"
 import { res, icon } from "#functions";
 
@@ -34,16 +34,19 @@ createResponder({
             interaction.showModal({
                 customId: `investment/buyStock/${stockId}`,
                 title: "Buy Stock",
-                components: createModalFields({
-                    response: {
-                        label: "amount",
-                        placeholder: "amount to buy here",
-                        style: TextInputStyle.Short,
-                        required: true,
-                        minLength: 1,
-                        maxLength: maxLength < 1 ? 1 : maxLength
-                    },
-                }),
+                components: createModalFields(
+                    createLabel({
+                        label: "Amount",
+                        component: new TextInputBuilder({
+                            label: "amount",
+                            placeholder: "amount to buy here",
+                            style: TextInputStyle.Short,
+                            required: true,
+                            minLength: 1,
+                            maxLength: maxLength < 1 ? 1 : maxLength
+                        })
+                    })
+                ),
             });
         } else {
             await interaction.deferReply({ flags });

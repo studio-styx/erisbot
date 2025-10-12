@@ -1,7 +1,7 @@
 import { createResponder, ResponderType } from "#base";
-import { AttachmentBuilder, ButtonBuilder, ButtonStyle, TextInputStyle } from "discord.js";
+import { AttachmentBuilder, ButtonBuilder, ButtonStyle, TextInputBuilder, TextInputStyle } from "discord.js";
 import { PrismaClient } from "#prisma";
-import { brBuilder, createContainer, createModalFields, createRow, createSeparator } from "@magicyan/discord";
+import { brBuilder, createContainer, createLabel, createModalFields, createRow, createSeparator } from "@magicyan/discord";
 import { createGraphic, generateGeminiContent, icon, registerLog, res } from "#functions";
 import { settings } from "#settings";
 const prisma = new PrismaClient();
@@ -105,14 +105,16 @@ createResponder({
                     interaction.showModal({
                         customId: `investment/manage/${stockId}/sell`,
                         title: "Vender ações",
-                        components: createModalFields({
-                            response: {
+                        components: createModalFields(
+                            createLabel({
                                 label: "Quantidade de ações",
-                                placeholder: "Quantidade de ações para vender",
-                                style: TextInputStyle.Short,
-                                required: true,
-                            },
-                        }),
+                                component: new TextInputBuilder({
+                                    customId: "response",
+                                    style: TextInputStyle.Short,
+                                    required: true,
+                                })
+                            })
+                        ),
                     });
                     return;
                 } else {
@@ -184,14 +186,16 @@ createResponder({
                     interaction.showModal({
                         customId: `investment/manage/${stockId}/buy`,
                         title: "Comprar ações",
-                        components: createModalFields({
-                            response: {
+                        components: createModalFields(
+                            createLabel({
                                 label: "Quantidade de ações",
-                                placeholder: "Quantidade de ações para comprar",
-                                style: TextInputStyle.Short,
-                                required: true,
-                            }
-                        })
+                                component: new TextInputBuilder({
+                                    customId: "response",
+                                    style: TextInputStyle.Short,
+                                    required: true,
+                                })
+                            })
+                        )
                     })
                 } else {
                     const amount = parseInt(interaction.fields.getTextInputValue("response"));
@@ -273,20 +277,24 @@ createResponder({
                     interaction.showModal({
                         customId: `investment/manage/${stockId}/IAOpinionToSell`,
                         title: "Perguntar a IA sobre vender",
-                        components: createModalFields({
-                            amount: {
+                        components: createModalFields(
+                            createLabel({
                                 label: "Quantidade de ações",
-                                placeholder: "Quantidade de ações para vender",
-                                style: TextInputStyle.Short,
-                                required: true,
-                            },
-                            answer: {
+                                component: new TextInputBuilder({
+                                    customId: "amount",
+                                    style: TextInputStyle.Short,
+                                    required: true,
+                                })
+                            }),
+                            createLabel({
                                 label: "Pergunta",
-                                placeholder: "Pergunta para a IA sobre vender",
-                                style: TextInputStyle.Paragraph,
-                                required: false,
-                            },
-                        })
+                                component: new TextInputBuilder({
+                                    customId: "answer",
+                                    style: TextInputStyle.Paragraph,
+                                    required: false,
+                                })
+                            })
+                        )
                     })
                     return;
                 }
@@ -407,20 +415,24 @@ createResponder({
                     interaction.showModal({
                         customId: `investment/manage/${stockId}/IAOpinionToBuy`,
                         title: "Perguntar à IA sobre comprar",
-                        components: createModalFields({
-                            amount: {
+                        components: createModalFields(
+                            createLabel({
                                 label: "Quantidade de ações",
-                                placeholder: "Quantidade de ações para comprar",
-                                style: TextInputStyle.Short,
-                                required: true,
-                            },
-                            answer: {
+                                component: new TextInputBuilder({
+                                    customId: "amount",
+                                    style: TextInputStyle.Short,
+                                    required: true,
+                                })
+                            }),
+                            createLabel({
                                 label: "Pergunta",
-                                placeholder: "Pergunta para a IA sobre comprar",
-                                style: TextInputStyle.Paragraph,
-                                required: false,
-                            },
-                        })
+                                component: new TextInputBuilder({
+                                    customId: "answer",
+                                    style: TextInputStyle.Paragraph,
+                                    required: false,
+                                })
+                            })
+                        )
                     });
                     return;
                 }

@@ -2,8 +2,8 @@ import { createResponder, ResponderType } from "#base";
 import { prisma, redis } from "#database";
 import { icon, resv2 } from "#functions";
 import { menus } from "#menus";
-import { createModalFields } from "@magicyan/discord";
-import { TextInputStyle } from "discord.js";
+import { createLabel, createModalFields } from "@magicyan/discord";
+import { TextInputBuilder, TextInputStyle } from "discord.js";
 
 createResponder({
     customId: "devMenu/tryvia/add/:field",
@@ -40,15 +40,18 @@ createResponder({
                     interaction.showModal({
                         customId: `devMenu/tryvia/add/question`,
                         title: "Editar Pergunta",
-                        components: createModalFields({
-                            questionI: {
+                        components: createModalFields(
+                            createLabel({
                                 label: "Nova pergunta",
-                                style: TextInputStyle.Short,
-                                required: true,
-                                placeholder: "Qual a pergunta?",
-                                value: question.question
-                            }
-                        })
+                                component: new TextInputBuilder({
+                                    customId: "question",
+                                    style: TextInputStyle.Paragraph,
+                                    required: true,
+                                    placeholder: "Qual a pergunta?",
+                                    value: question.question
+                                })
+                            })
+                        )
                     })
                     return;
                 }
@@ -73,15 +76,18 @@ createResponder({
                     interaction.showModal({
                         customId: `devMenu/tryvia/add/difficulty`,
                         title: "Editar Dificuldade",
-                        components: createModalFields({
-                            difficulty: {
+                        components: createModalFields(
+                            createLabel({
                                 label: "Nova dificuldade",
-                                style: TextInputStyle.Short,
-                                required: true,
-                                placeholder: "Qual a dificuldade?",
-                                value: question.difficulty
-                            }
-                        })
+                                component: new TextInputBuilder({
+                                    customId: "difficulty",
+                                    style: TextInputStyle.Short,
+                                    required: true,
+                                    placeholder: "Qual a dificuldade?",
+                                    value: question.difficulty
+                                })
+                            })
+                        )
                     })
                     return;
                 }
@@ -107,15 +113,18 @@ createResponder({
                     interaction.showModal({
                         customId: `devMenu/tryvia/add/tags`,
                         title: "Editar Tags",
-                        components: createModalFields({
-                            tags: {
+                        components: createModalFields(
+                            createLabel({
                                 label: "Novas tags",
-                                style: TextInputStyle.Short,
-                                required: true,
-                                placeholder: "Quais as tags?",
-                                value: question.tags.join(", ")
-                            }
-                        })
+                                component: new TextInputBuilder({
+                                    customId: "tags",
+                                    style: TextInputStyle.Paragraph,
+                                    required: true,
+                                    placeholder: "Quais as tags?",
+                                    value: question.tags.join(", ")
+                                })
+                            })
+                        )
                     })
                     return;
                 }
@@ -142,15 +151,18 @@ createResponder({
                     interaction.showModal({
                         customId: `devMenu/tryvia/add/correctAnswer`,
                         title: "Editar Resposta Correta",
-                        components: createModalFields({
-                            correctAnswer: {
-                                label: "Resposta correta",
-                                style: TextInputStyle.Short,
-                                required: true,
-                                placeholder: "Qual a resposta correta?",
-                                value: question.correctAnswer
-                            }
-                        })
+                        components: createModalFields(
+                            createLabel({
+                                label: "Nova resposta correta",
+                                component: new TextInputBuilder({
+                                    customId: "correctAnswer",
+                                    style: TextInputStyle.Paragraph,
+                                    required: true,
+                                    placeholder: "Qual a resposta correta?",
+                                    value: question.correctAnswer
+                                })
+                            })
+                        )
                     })
                     return;
                 }
@@ -176,15 +188,18 @@ createResponder({
                     interaction.showModal({
                         customId: `devMenu/tryvia/add/correctAnswersVariation`,
                         title: "Editar Variações da Resposta Correta",
-                        components: createModalFields({
-                            correctAnswersVariation: {
-                                label: "Variações da resposta correta",
-                                style: TextInputStyle.Short,
-                                required: true,
-                                placeholder: "Quais as variações da resposta correta?",
-                                value: question.correctAnswersVariation.join(", ")
-                            }
-                        })
+                        components: createModalFields(
+                            createLabel({
+                                label: "Novas variações da resposta correta",
+                                component: new TextInputBuilder({
+                                    customId: "correctAnswersVariation",
+                                    style: TextInputStyle.Paragraph,
+                                    required: true,
+                                    placeholder: "Quais as variações da resposta correta?",
+                                    value: question.correctAnswersVariation.join(", ")
+                                })
+                            })
+                        )
                     })
                     return;
                 }
@@ -210,15 +225,18 @@ createResponder({
                     interaction.showModal({
                         customId: `devMenu/tryvia/add/incorrectAnswers`,
                         title: "Editar Respostas Incorretas",
-                        components: createModalFields({
-                            incorrectAnswers: {
-                                label: "Respostas incorretas",
-                                style: TextInputStyle.Short,
-                                required: true,
-                                placeholder: "Quais as respostas incorretas?",
-                                value: question.incorrectAnswers.join(", ")
-                            }
-                        })
+                        components: createModalFields(
+                            createLabel({
+                                label: "Novas respostas incorretas",
+                                component: new TextInputBuilder({
+                                    customId: "incorrectAnswers",
+                                    style: TextInputStyle.Paragraph,
+                                    required: true,
+                                    placeholder: "Quais as respostas incorretas?",
+                                    value: question.incorrectAnswers.join(", ")
+                                })
+                            })
+                        )
                     })
                     return;
                 }
