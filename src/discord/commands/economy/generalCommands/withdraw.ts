@@ -1,10 +1,14 @@
 import { prisma } from "#database";
-import { res, icon, registerLog } from "#functions";
+import { res, registerLog } from "#functions";
+import { getLang, translate } from "#locale";
 import { ChatInputCommandInteraction } from "discord.js";
 
 export async function economyWithdrawCommand(interaction: ChatInputCommandInteraction<"cached">) {
     let value = interaction.options.getNumber("amount")!;
     await interaction.deferReply({ flags: ["Ephemeral"] });
+
+    const lang = getLang(interaction.locale);
+    const t = translate.commands.bankManage[lang].withdraw;
 
     const id = interaction.user.id;
     const userData = await prisma.user.upsert({
@@ -19,7 +23,7 @@ export async function economyWithdrawCommand(interaction: ChatInputCommandIntera
     }
 
     if (value <= 0) {
-        interaction.editReply(res.danger(`${icon.Eris_cry} | Parece que você não tem dinheiro suficiente para realizar essa transação.`));
+        interaction.editReply(res.danger(t.notEnoughMoney));
         return;
     }
 
@@ -31,11 +35,11 @@ export async function economyWithdrawCommand(interaction: ChatInputCommandIntera
         },
     });
 
-    interaction.editReply(res.fuchsia(`${icon.Eris_ok} | Saque de: **\`${value}\`** stx realizado com sucesso! agora você possui: **\`${user.money}\`** em sua carteira!`))
+    interaction.editReply(res.fuchsia(t.message(value, user.money.toNumber())))
     
     await registerLog({
         level: 3,
-        message: `Saque de ${value} stx da conta bancária`,
+        message: t.log(value),
         tags: ["economy", "withdraw"],
         type: "info",
         user: id

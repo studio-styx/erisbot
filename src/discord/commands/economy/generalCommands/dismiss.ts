@@ -1,9 +1,13 @@
 import { prisma } from "#database";
-import { res, icon, registerLog } from "#functions";
+import { res, registerLog } from "#functions";
+import { getLang, translate } from "#locale";
 import { ChatInputCommandInteraction } from "discord.js";
 
 export async function EconomyDismissCommand(interaction: ChatInputCommandInteraction<"cached">) {
     await interaction.deferReply({ flags });
+
+    const lang = getLang(interaction.locale);
+    const t = translate.commands.dismiss[lang];
 
     const user = await prisma.user.findUnique({
         where: { id: interaction.user.id },
@@ -11,7 +15,7 @@ export async function EconomyDismissCommand(interaction: ChatInputCommandInterac
     });
 
     if (!user || !user.companyId) {
-        await interaction.editReply(res.danger(`${icon.denied} | você não tem um emprego pra se demitir!`));
+        await interaction.editReply(res.danger(t.noHasWork));
         return;
     }
 
@@ -20,11 +24,11 @@ export async function EconomyDismissCommand(interaction: ChatInputCommandInterac
         data: { companyId: { set: null } }
     });
 
-    await interaction.editReply(res.danger(`${icon.success} | você saiu do seu emprego!`));
+    await interaction.editReply(res.danger(t.message));
 
     await registerLog({
         level: 7,
-        message: "Saiu de seu emprego",
+        message: t.log,
         tags: ["economy", "dismiss", "job"],
         type: "info",
         user: interaction.user.id

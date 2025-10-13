@@ -39,7 +39,8 @@
 			"#types/*": ["./@types/*"],
 			"#prisma": ["../prisma/eris/client.d.ts"],
 			"#asPrisma": ["../prisma/erishelper/client.d.ts"],
-			"#dzonePrisma": ["../prisma/devzone/client.d.ts"]
+			"#dzonePrisma": ["../prisma/devzone/client.d.ts"],
+			"#locale": ["./locale/index.ts"]
 		}
 	},
 	

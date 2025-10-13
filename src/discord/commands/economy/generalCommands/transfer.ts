@@ -1,17 +1,21 @@
 import { Store } from "#base";
 import { prisma } from "#database";
 import { res, icon, calculateDate } from "#functions";
+import { getLang, translate } from "#locale";
 import { settings } from "#settings";
-import { createEmbed, brBuilder, createRow, createContainer, createSeparator } from "@magicyan/discord";
-import { ButtonBuilder, ButtonStyle, ChatInputCommandInteraction, time, userMention, UserSelectMenuBuilder } from "discord.js";
+import { createEmbed, createRow, createContainer, createSeparator } from "@magicyan/discord";
+import { ButtonBuilder, ButtonStyle, ChatInputCommandInteraction, UserSelectMenuBuilder } from "discord.js";
 
 const cooldown = new Store<Date>();
 
 export async function economyTransferCommand(interaction: ChatInputCommandInteraction<"cached">) {
     const inCooldown = cooldown.get(interaction.user.id);
 
+    const lang = getLang(interaction.locale);
+    const t = translate.commands.transfer[lang];
+
     if (inCooldown && inCooldown > new Date()) {
-        interaction.reply(res.fuchsia(`**${icon.denied_pink} | Eu sei que distribuir dinheiro é legal, mas por favor aguarde um pouco, volte ${time(inCooldown)}**`));
+        interaction.reply(res.fuchsia(t.cooldown(inCooldown)));
         return;
     }
 
@@ -26,7 +30,7 @@ export async function economyTransferCommand(interaction: ChatInputCommandIntera
         const author = await prisma.user.findUnique({ where: { id: interaction.user.id } })
 
         if (!author) {
-            interaction.editReply(res.danger(`${icon.denied} | Ei! por quê você não tenta usar outros comandos? sua primeira vez aqui e já quer dar dinheiro pros outros! ${icon.Eris_Angry_left}`));
+            interaction.editReply(res.danger(t.firstUse));
             return;
         }
 
@@ -35,28 +39,18 @@ export async function economyTransferCommand(interaction: ChatInputCommandIntera
         }
 
         if (value < 15) {
-            interaction.editReply(res.danger(`${icon.denied} | Parece que você não tem dinheiro suficiente para realizar essa transação. ${icon.Eris_cry_left}`));
+            interaction.editReply(res.danger(t.notEnoughMoney));
             return;
         }
         const container = createContainer(settings.colors.bravery, [
-            brBuilder(
-                `## Transação`
-            ),
+            t.manyTransferContainer.title,
             createSeparator(),
-            brBuilder(
-                "Você não mencionou nenhum usuário para fazer a transação, por isso você pode escolher 1 ou mais usuários para transferir stx de maneira rápida e fácil!",
-                "",
-                "Os usuários escolhidos tem que aceitar a transação, o máximo de usuários para a transação é **10**, para evitar abusos, mas **atenção**: você precisa ter a quantidade de stx que irá distribuir pra cada usuário, ou seja, se vc quer distribuir 50 stx para 4 usuários, então você precisa ter 50 vezes 4 stx que é: 200",
-                "",
-                `Se o limite de usuários for menor que 10, significa que você não tem o dinheiro necessário para transferir **${value}** para 10 usuários`,
-                "",
-                "Por favor escolha os usuários para distribuir os seus stx!"
-            ),
+            t.manyTransferContainer.description(value),
             new UserSelectMenuBuilder({
                 customId: `manyTransfer/${interaction.user.id}/${value}`,
                 minValues: 1,
                 maxValues: Math.min(10, Math.floor(author.money.toNumber() / value)),
-                placeholder: "Usuários a transferir o dinheiro",
+                placeholder: t.manyTransferContainer.placeholder,
             })
         ])
 
@@ -69,15 +63,15 @@ export async function economyTransferCommand(interaction: ChatInputCommandIntera
     }
 
     if (user.id === interaction.user.id) {
-        interaction.reply(res.fuchsia(`**${icon.denied_pink} | Ei! por quê você está tentando dar dinheiro pra você mesmo? se for pra dá dinheiro dá pra mim!**`));
+        interaction.reply(res.fuchsia(t.ownTransfer));
         return;
     }
     if (user.id === interaction.client.user?.id) {
-        interaction.reply(res.fuchsia(`**${icon.denied_pink} | Eu queria tanto poder receber esse dinheiro! mas minhas regras não permitem isso! ${icon.Eris_cry_left}**`));
+        interaction.reply(res.fuchsia(t.erisTransfer));
         return;
     }
     if (user.bot) {
-        interaction.reply(res.fuchsia(`**${icon.denied_pink} | Ei! por quê você está tentando dar dinheiro pra um bot? se for pra dá dinheiro dá pra mim!**`));
+        interaction.reply(res.fuchsia(t.botTransfer));
         return;
     }
 
@@ -89,7 +83,7 @@ export async function economyTransferCommand(interaction: ChatInputCommandIntera
     const author = await prisma.user.findUnique({ where: { id: authorId } })
 
     if (!author) {
-        interaction.editReply(res.danger(`${icon.denied} | Ei! por quê você não tenta usar outros comandos? sua primeira vez aqui e já quer dar dinheiro pros outros! ${icon.Eris_Angry_left}`));
+        interaction.editReply(res.danger(t.firstUse));
         return;
     }
 
@@ -98,7 +92,7 @@ export async function economyTransferCommand(interaction: ChatInputCommandIntera
     }
 
     if (value < 15) {
-        interaction.editReply(res.danger(`${icon.denied} | Parece que você não tem dinheiro suficiente para realizar essa transação. ${icon.Eris_cry_left}`));
+        interaction.editReply(res.danger(t.notEnoughMoney));
         return;
     }
 
@@ -123,17 +117,16 @@ export async function economyTransferCommand(interaction: ChatInputCommandIntera
     ])
 
     const embed = createEmbed({
-        title: `Transferência`,
-        description: brBuilder(
-            `${icon.alarm} | ${userMention(authorId)} quer enviar **${value}** styx para ${userMention(targetId)}, ambos precisam apertar no botão abaixo para que a transferência seja concluida`,
-        ),
+        title: t.embed.title,
+        description: t.embed.description(authorId, targetId, value),
+        timestamp: new Date().toISOString(),
         color: settings.colors.success
     });
     const row = createRow(
         new ButtonBuilder({
             customId: `transfer/${authorId}/0/${targetId}/0/${transaction.id}`,
             emoji: icon.paid,
-            label: "Confirmar ( 0/2 )",
+            label: t.button,
             style: ButtonStyle.Success
         })
     )

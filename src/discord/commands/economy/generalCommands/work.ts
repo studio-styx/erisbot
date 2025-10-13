@@ -1,10 +1,11 @@
 import { Store } from "#base";
 import { prisma } from "#database";
-import { res, icon, getCache, getCommandId, resv2, generateGeminiContent, registerLog, setCache, calculateProbability, getRandomValue } from "#functions";
+import { res, getCache, getCommandId, resv2, generateGeminiContent, registerLog, setCache, calculateProbability, getRandomValue } from "#functions";
+import { getLang, LangCode, translate } from "#locale";
 import { Company, Rarity } from "#prisma";
 import { settings } from "#settings";
 import { createContainer, brBuilder, createSeparator, createTextDisplay, createRow } from "@magicyan/discord";
-import { ButtonBuilder, ButtonStyle, ChatInputCommandInteraction, time } from "discord.js";
+import { ButtonBuilder, ButtonStyle, ChatInputCommandInteraction } from "discord.js";
 
 const cooldowns = new Store<Date>();
 
@@ -24,9 +25,16 @@ function calculateSkillBonus({ rarity, level }: { rarity: Rarity, level: number 
     return 1 + rarityMultiplier + levelMultiplier;
 }
 
-function getWorkChallengePrompt({ userName, company, expectations, hasEasierSkill }: { userName: string, company: Company, expectations: string, hasEasierSkill: boolean }) {
+function getWorkChallengePrompt({ userName, company, expectations, hasEasierSkill, lang }: { userName: string, company: Company, expectations: string, hasEasierSkill: boolean, lang: LangCode}) {
+    const langPrompt = lang === "enus" 
+        ? "O prompt está todo em português, mas você deve retornar o conteúdo em INGLÊS, sem nenhuma palavra em algum idioma diferente"
+        : lang === "eses" 
+            ? "O prompt está todo em português, mas você deve retornar o conteúdo em ESPANHOL, sem nenhuma palavra em algum idioma diferente"
+            : "Responda em português:"
+    
     const basePrompts = [
         brBuilder(
+            `${langPrompt}`,
             `O usuário ${userName} está trabalhando em sua empresa.`,
             `Crie um desafio realista com base nas seguintes informações:`,
             ``,
@@ -101,15 +109,18 @@ function getWorkChallengePrompt({ userName, company, expectations, hasEasierSkil
 
 
 export async function EconomyWorkCommand(interaction: ChatInputCommandInteraction<"cached">) {
+    const lang = getLang(interaction.locale);
+    const t = translate.commands.work[lang];
+
     if (cooldowns.has(interaction.user.id)) {
-        interaction.reply(res.danger(`${icon.denied} | A ia está gerando uma responda pra você. tente novamente mais tarde`));
+        interaction.reply(res.danger(t.iaIsGenerating));
         return;
     }
 
     const situation: string | null | undefined = getCache(`${interaction.user.id}-situation`);
 
     if (situation) {
-        interaction.reply(res.danger(`${icon.denied} | Você está participando de um desafio, aguarde ele expirar ou termine ele pra poder usar esse comando novamente.`))
+        interaction.reply(res.danger(t.alreadyAsInASituation))
         return;
     }
     await interaction.deferReply();
@@ -133,7 +144,7 @@ export async function EconomyWorkCommand(interaction: ChatInputCommandInteractio
 
         if (!user || !user.companyId || !user.company) {
             const commandId = await getCommandId(interaction, "jobs")
-            interaction.editReply(res.danger(`${icon.Eris_shy} | Você não tem um emprego! use o comando **</jobs search:${commandId}>** para encontrar um emprego!`))
+            interaction.editReply(res.danger(t.doNotHaveWork(commandId)))
             return;
         }
 
@@ -142,7 +153,7 @@ export async function EconomyWorkCommand(interaction: ChatInputCommandInteractio
         const cooldown = user.cooldowns.find(cooldown => cooldown.name === "work");
 
         if (cooldown && cooldown.willEndIn > now) {
-            interaction.editReply(res.danger(`${icon.denied} | Você já trabalhou hoje. Tente novamente ${time(cooldown.willEndIn, "R")}`));
+            interaction.editReply(res.danger(t.cooldown(cooldown.willEndIn)));
             return;
         }
 
@@ -154,26 +165,10 @@ export async function EconomyWorkCommand(interaction: ChatInputCommandInteractio
 
         if (calculateProbability(percentage)) {
             cooldowns.set(interaction.user.id, new Date(Date.now() + 1000 * 60 * 4), { time: 1000 * 60 * 4 });
-            await interaction.editReply(resv2.warning(`${icon.waiting_white} | Um novo desafio apareceu! por favor aguarde um instante.`));
+            await interaction.editReply(resv2.warning(t.situationOccured));
 
             const companyExpectations = (company?.expectations as string[] | { level: number, skill: string }[]);
-            let companyExpectationsFormatted: string;
-
-            if (Array.isArray(companyExpectations)) {
-                if (typeof companyExpectations[0] === "string") {
-                    companyExpectationsFormatted = companyExpectations.join(", ").replace(/, ([^,]*)$/, " e $1");
-                } else {
-                    companyExpectationsFormatted = companyExpectations
-                        .map((expectation) =>
-                            typeof expectation === "object" && "skill" in expectation
-                                ? `Habilidade: ${expectation.skill}, Nível: ${expectation.level}`
-                                : `Não foi possivel formatar essa expectativa`
-                        )
-                        .join(", ");
-                }
-            } else {
-                companyExpectationsFormatted = `A empresa não tem expectativas definidas.`;
-            }
+            const companyExpectationsFormatted = t.expectationsFormatted(companyExpectations);
 
             const workChallengeEasier = activePet?.skills.some(s => s.skill.name === "work_challenge_easier");
 
@@ -181,7 +176,8 @@ export async function EconomyWorkCommand(interaction: ChatInputCommandInteractio
                 userName: interaction.user.displayName,
                 company,
                 expectations: companyExpectationsFormatted,
-                hasEasierSkill: !!workChallengeEasier
+                hasEasierSkill: !!workChallengeEasier,
+                lang
             });
 
 
@@ -192,20 +188,20 @@ export async function EconomyWorkCommand(interaction: ChatInputCommandInteractio
                     where: { id: interaction.user.id },
                     data: { money: { increment: company.wage } }
                 });
-                interaction.editReply(resv2.danger(`${icon.Eris_cry} | Ocorreu um erro ao gerar o desafio, por isso você recebeu o salário normal de: ${company.wage}`));
+                interaction.editReply(resv2.danger(t.apiErrorMessage(company.wage.toNumber())));
                 console.error(result.error);
 
                 await Promise.all([
                     registerLog({
                         level: 5,
-                        message: `Trabalhou e recebeu seu salário de: **${company.wage}**`,
+                        message: t.log(company.wage.toNumber()),
                         tags: ["economy", "work"],
                         type: "info",
                         user: interaction.user.id
                     }),
                     registerLog({
                         level: 999,
-                        message: "Ocorreu um erro ao fazer requisição a api do gemini",
+                        message: t.logApiError,
                         tags: ["economy", "work"],
                         type: "error",
                         user: interaction.user.id
@@ -220,17 +216,13 @@ export async function EconomyWorkCommand(interaction: ChatInputCommandInteractio
             const container = createContainer({
                 accentColor: settings.colors.warning,
                 components: [
-                    brBuilder(
-                        `## Um novo desafio surgiu! ${icon.Eris_enchanted_left}`,
-                        "Responda a pergunta abaixo, como você reagiria a essa situação?",
-                        "-# ╰ obs: se você responder corretamente pode até ganhar um aumento hoje!"
-                    ),
+                    t.situation.container.title,
                     createSeparator(),
                     createTextDisplay(response, 1),
                     createRow(
                         new ButtonBuilder({
                             customId: `company/work/${interaction.user.id}`,
-                            label: "Responder",
+                            label: t.situation.container.button,
                             style: ButtonStyle.Primary
                         })
                     )
@@ -286,20 +278,14 @@ export async function EconomyWorkCommand(interaction: ChatInputCommandInteractio
                 components: [
                     createContainer({
                         accentColor: settings.colors.success,
-                        components: [
-                            brBuilder(
-                                `## Você trabalhou e recebeu seu salário de: **${company.wage}** ${icon.Eris_ok_left}`,
-                                `> Você agora possui: **${newUser.money}** styx em sua carteira!`,
-                                `> E possui: **${newUser.xp}** xp!`,
-                            )
-                        ]
+                        components: [t.message(newUser.money.toNumber(), newUser.xp, wage)]
                     })
                 ]
             });
 
             await registerLog({
                 level: 5,
-                message: `Trabalhou e recebeu seu salário de: **${company.wage}**`,
+                message: t.log(wage),
                 tags: ["economy", "work"],
                 type: "info",
                 user: interaction.user.id
@@ -325,7 +311,7 @@ export async function EconomyWorkCommand(interaction: ChatInputCommandInteractio
         return;
     } catch (error) {
         console.error(error);
-        interaction.editReply(res.danger(`${icon.Eris_cry} | Ocorreu um erro ao usar esse comando.`));
+        interaction.editReply(res.danger(t.error));
         return;
     }
 }
