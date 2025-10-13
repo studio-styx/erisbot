@@ -1,9 +1,10 @@
-import balance from "./translate/commands/balance.js";
-import bankManage from "./translate/commands/bankManage.js";
-import daily from "./translate/commands/daily.js";
-import dismiss from "./translate/commands/dismiss.js";
-import transfer from "./translate/commands/transfer.js";
-import work from "./translate/commands/work.js";
+import blackjack from "./translate/commands/cassinoCommands/blackjack.js";
+import balance from "./translate/commands/generalEconomyCommands/balance.js";
+import bankManage from "./translate/commands/generalEconomyCommands/bankManage.js";
+import daily from "./translate/commands/generalEconomyCommands/daily.js";
+import dismiss from "./translate/commands/generalEconomyCommands/dismiss.js";
+import transfer from "./translate/commands/generalEconomyCommands/transfer.js";
+import work from "./translate/commands/generalEconomyCommands/work.js";
 
 export const translate = {
     commands: {
@@ -12,7 +13,8 @@ export const translate = {
         bankManage,
         dismiss,
         transfer,
-        work
+        work,
+        blackjack
     }
 }
 

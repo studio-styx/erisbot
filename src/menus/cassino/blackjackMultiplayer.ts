@@ -1,49 +1,37 @@
-import { calculateHandValue, icon } from "#functions";
+import { calculateHandValue } from "#functions";
+import { LangCode, translate } from "#locale";
 import { settings } from "#settings";
 import { BlackjackMultiplayerGame } from "#types/blackjackMultiplayerGame.js";
-import { brBuilder, createContainer, createRow, createSeparator } from "@magicyan/discord";
-import { ButtonBuilder, ButtonStyle, userMention, type InteractionReplyOptions } from "discord.js";
+import { createContainer, createRow, createSeparator } from "@magicyan/discord";
+import { ButtonBuilder, ButtonStyle, type InteractionReplyOptions } from "discord.js";
 
-export function blackjackMultiplayerMenu<R>(data: BlackjackMultiplayerGame, endGameReason?: string): R {
+export function blackjackMultiplayerMenu<R>(data: BlackjackMultiplayerGame, lang: LangCode, endGameReason?: string): R {
+    const t = translate.commands.blackjack[lang].menu.multiplayerGame;
+
     const container = createContainer(settings.colors.fuchsia,
-        brBuilder(
-            `## Partida de Blackjack Multiplayer`,
-            `**Jogador 1:** ${userMention(data.userId)}`,
-            `**Jogador 2:** ${userMention(data.targetId)}`,
-            `**Aposta:** ${data.amount} stx`,
-        ),
+        t.title(data.userId, data.targetId, data.amount),
         createSeparator(),
-        brBuilder(
-            `### ( ${icon.card_joker} ╺╸ Cartas de ${userMention(data.userId)}`,
-            data.userHand.map((c, index) => endGameReason ? `**\`${c.name}\`**` : index === 0 ? `**\`${c.name}\`**` : "**\`?\`**").join(", "),
-            endGameReason ? `**Valor da mão:** **${calculateHandValue(data.userHand)}**` : null
-        ),
+        t.userHand(data.userId, data.userHand, calculateHandValue(data.userHand), !!endGameReason),
         createSeparator(),
-        brBuilder(
-            `### ( ${icon.card_joker} ╺╸ Cartas de ${userMention(data.targetId)}`,
-            data.targetHand.map((c, index) => endGameReason ? `**\`${c.name}\`**` : index === 0 ? `**\`${c.name}\`**` : "**\`?\`**").join(", "),
-            endGameReason ? `**Valor da mão:** **${calculateHandValue(data.targetHand)}**` : null
-        ),
+        t.userHand(data.targetId, data.targetHand, calculateHandValue(data.targetHand), !!endGameReason),
         createSeparator(),
-        brBuilder(
-            endGameReason ? endGameReason : `**Turno de:** ${data.turn === "user" ? userMention(data.userId) : userMention(data.targetId)}`,
-        ),
+        t.turn(!!endGameReason, data.turn, data.userId, data.targetId),
         createRow(
             new ButtonBuilder({
                 customId: `blackjackMultiplayer/game/hit/${data.turn === "user" ? data.userId : data.targetId}`,
-                label: "Pegar uma carta",
+                label: t.buttons.hit,
                 style: ButtonStyle.Primary,
                 disabled: !!endGameReason,
             }),
             new ButtonBuilder({
                 customId: `blackjackMultiplayer/game/pass/${data.turn === "user" ? data.userId : data.targetId}`,
-                label: "Passar",
+                label: t.buttons.pass,
                 style: ButtonStyle.Secondary,
                 disabled: !!endGameReason,
             }),
             new ButtonBuilder({
                 customId: `blackjackMultiplayer/game/stand/${data.turn === "user" ? data.userId : data.targetId}`,
-                label: "Parar",
+                label: t.buttons.stand,
                 style: ButtonStyle.Danger,
                 disabled: !!endGameReason || data.rounds < 3,
             })

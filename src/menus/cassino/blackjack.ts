@@ -1,64 +1,65 @@
 import { Store } from "#base";
-import { BlackjackIA, getBlackjackGame, icon, resv2 } from "#functions";
+import { BlackjackIA, getBlackjackGame, resv2 } from "#functions";
+import { LangCode, translate } from "#locale";
 import { settings } from "#settings";
 import { brBuilder, createContainer, createRow, createSeparator } from "@magicyan/discord";
 import { ButtonBuilder, ButtonStyle, UserSelectMenuBuilder, type InteractionReplyOptions } from "discord.js";
 
 const userGames = new Store<number>()
 
-export function blackjackMenu<R>(userId: string, amount: number, game?: BlackjackIA, erisAction?: 'hit' | 'pass' | 'stand' | 'thinking', options?: {
+export function blackjackMenu<R>(userId: string, amount: number, lang: LangCode, game?: BlackjackIA, erisAction?: 'hit' | 'pass' | 'stand' | 'thinking', options?: {
     disableButtons?: boolean,
     wins?: "eris" | "user" | "draw",
     comentary?: string
 }): R {
+    const t = translate.commands.blackjack[lang];
+
     if (!game) {
         const aGameExist = getBlackjackGame(userId);
         if (aGameExist !== undefined) {
-            return (resv2.danger(`${icon.denied} | Você já está jogando uma partida, você deseja deletar ela?`, createRow(
+            return (resv2.danger(t.errors.alreadyInGame.text, createRow(
                 new ButtonBuilder({
                     customId: `blackjack/delete/delete`,
-                    label: "Sim",
+                    label: t.errors.alreadyInGame.button,
                     style: ButtonStyle.Danger
                 })
             )) satisfies InteractionReplyOptions) as R;
         }
         const games = userGames.get(userId) || 0;
 
+        const buttons = t.menu.start.buttons;
+
         const components = [
-            brBuilder(
-                "# BlackJack",
-                "Escolha um modo de jogo",
-                games >= 4 ? "> Alguns modos estão desativados pois você está jogando muito." : null
-            ),
+            t.menu.start.chooseGameMode(games),
             createSeparator(),
             createRow(
                 new ButtonBuilder({
                     customId: `blackjack/start/0/${userId}/${amount}`,
-                    label: "Dealer clássico",
+                    label: buttons.dealerClassic,
                     style: ButtonStyle.Secondary,
                     disabled: games >= 4
                 }),
                 new ButtonBuilder({
                     customId: `blackjack/start/1/${userId}/${amount}`,
-                    label: "Éris fácil",
+                    label: buttons.erisEasy,
                     style: ButtonStyle.Success,
                     disabled: games >= 4
                 }),
                 new ButtonBuilder({
                     customId: `blackjack/start/2/${userId}/${amount}`,
-                    label: "Éris normal",
+                    label: buttons.erisNormal,
                     style: ButtonStyle.Success,
                     disabled: games >= 6
                 }),
                 new ButtonBuilder({
                     customId: `blackjack/start/3/${userId}/${amount}`,
-                    label: "Éris dificil",
+                    label: buttons.erisDifficult,
                     style: ButtonStyle.Danger,
                     disabled: games >= 8
                 }),
                 new ButtonBuilder({
                     customId: `blackjack/start/4/${userId}/${amount}`,
-                    label: "Pesadelo",
+                    label: buttons.erisNighmare,
                     style: ButtonStyle.Danger,
                     disabled: games >= 14
                 })
@@ -66,10 +67,10 @@ export function blackjackMenu<R>(userId: string, amount: number, game?: Blackjac
             createRow(
                 new UserSelectMenuBuilder({
                     customId: `blackjack/start/other/${userId}/${amount}`,
-                    placeholder: "Jogar contra outro jogador",
+                    placeholder: buttons.otherPlayer,
                     minValues: 1,
                     maxValues: 1,
-                    disabled: games >= 4
+                    disabled: games >= 20
                 })
             )
         ];
@@ -85,61 +86,25 @@ export function blackjackMenu<R>(userId: string, amount: number, game?: Blackjac
         } satisfies InteractionReplyOptions) as R;
     }
 
+    const g = t.menu.game;
+
     if (options?.wins) {
         userGames.set(userId, (userGames.get(userId) || 0) + 1, { time: 1000 * 60 * 60 * 10 })
         const multiplier = game.getErisDifficulty() <= 1 ? 1.5 : game.getErisDifficulty() * 1.5;
         const humor = game.getErisHumor()
         const components = [
-            brBuilder(
-                "## 🃏 BlackJack",
-                `-# ╰ Dificuldade selecionada: ${game.getErisDifficulty() === 0 ? "Dealer comum" 
-                    : game.getErisDifficulty() === 1 ? "Fácil" 
-                        : game.getErisDifficulty() === 2 ? "Normal" 
-                            : game.getErisDifficulty() === 3 ? "Difícil" 
-                                : game.getErisDifficulty() === 4 ? "Pesadelo" 
-                                    : "?"}`
-            ),
+            g.title(game.getErisDifficulty()),
             createSeparator(),
-            brBuilder(
-                `### ( ${icon.card_joker} ╺╸ Cartas ${game.getErisDifficulty() === 0 ? "do Dealer" : "da Éris"}`,
-                game.getErisCards().map(c => `**\`${c.name}\`**`).join(", "),
-                `Mão: ${game.calculateHandValue(game.getErisCards())}`
-            ),
+            g.erisHand(game.getErisCards(), game.calculateHandValue(game.getErisCards()), game.getErisDifficulty(), false),
             createSeparator(),
-            brBuilder(
-                `### ( ${icon.card_joker} ╺╸ Suas cartas`,
-                game.getUserCards().map(c => `**\`${c.name}\`**`).join(", "),
-                `Mão: ${game.calculateHandValue(game.getUserCards())}`
-            ),
+            g.userHand(game.getUserCards(), game.calculateHandValue(game.getUserCards())),
             game.getErisDifficulty() !== 0 && createSeparator(),
             game.getErisDifficulty() !== 0 && brBuilder(
-                `### ( ${humor === "happy" ? icon.Eris_happy
-                    : humor === "angry" ? icon.Eris_Angry
-                        : humor === "sad" ? icon.Eris_cry
-                            : humor === "neutral" ? icon.Eris_thinking
-                                : humor === "scared" ? icon.Eris_shy
-                                    : humor === "surprised" ? icon.Eris_enchanted
-                                        : humor === "confused" ? icon.Eris_thinking
-                                            : "?"} ╺╸ Humor da Éris: ${humor === "happy" ? "Feliz"
-                                                : humor === "angry" ? "Furiosa"
-                                                    : humor === "sad" ? "Triste"
-                                                        : humor === "neutral" ? "Neutra"
-                                                            : humor === "scared" ? "Calma"
-                                                                : humor === "surprised" ? "Surpresa"
-                                                                    : humor === "confused" ? "Confusa"
-                                                                        : "?"}`,
+                g.humor(humor),
                 options?.comentary || null
             ),
             createSeparator(),
-            options.wins === "eris" ? 
-                `## Você apostou: ${game.amountAposted} stx e perdeu!`
-                : options.wins === "user" 
-                    ? `## Você apostou: ${game.amountAposted} stx e ganhou: ${
-                        (game.amountAposted * multiplier) % 1 === 0
-                            ? (game.amountAposted * multiplier)
-                            : (game.amountAposted * multiplier).toFixed(2)
-                    } stx!`
-                    : `## Você apostou: ${game.amountAposted} stx e a partida acabou em empate!`
+            g.winsMessage(options.wins, amount, multiplier),
         ];
 
         const container = createContainer({
@@ -154,68 +119,35 @@ export function blackjackMenu<R>(userId: string, amount: number, game?: Blackjac
     }
     const humor = game.getErisHumor()
     const components = [
-        brBuilder(
-            "## 🃏 BlackJack",
-             `-# ╰ Dificuldade selecionada: ${game.getErisDifficulty() === 0 ? "Dealer comum" 
-                    : game.getErisDifficulty() === 1 ? "Fácil" 
-                        : game.getErisDifficulty() === 2 ? "Normal" 
-                            : game.getErisDifficulty() === 3 ? "Difícil" 
-                                : game.getErisDifficulty() === 4 ? "Pesadelo" 
-                                    : "?"}`
-        ),
+        g.title(game.getErisDifficulty()),
         createSeparator(),
-        brBuilder(
-            `### ( ${icon.card_joker} ╺╸ Cartas ${game.getErisDifficulty() === 0 ? "do Dealer" : "da Éris"}`,
-            game.getErisCards().map((c, index) => index === 0 ? `**\`${c.name}\`**` : "**\`?\`**").join(", ")
-        ),
+        g.erisHand(game.getErisCards(), game.calculateHandValue(game.getErisCards()), game.getErisDifficulty()),
         createSeparator(),
-        brBuilder(
-            `### ( ${icon.card_joker} ╺╸ Suas cartas`,
-            game.getUserCards().map(c => `**\`${c.name}\`**`).join(", "),
-            `Mão: ${game.calculateHandValue(game.getUserCards())}`
-        ),
+        g.userHand(game.getUserCards(), game.calculateHandValue(game.getUserCards())),
         game.getErisDifficulty() !== 0 && createSeparator(),
         game.getErisDifficulty() !== 0 && brBuilder(
-            `### ( ${humor === "happy" ? icon.Eris_happy
-                : humor === "angry" ? icon.Eris_Angry
-                    : humor === "sad" ? icon.Eris_cry
-                        : humor === "neutral" ? icon.Eris_thinking
-                            : humor === "scared" ? icon.Eris_shy
-                                : humor === "surprised" ? icon.Eris_enchanted
-                                    : humor === "confused" ? icon.Eris_thinking
-                                        : "?"} ╺╸ Humor da Éris: ${humor === "happy" ? "Feliz"
-                                            : humor === "angry" ? "Furiosa"
-                                                : humor === "sad" ? "Triste"
-                                                    : humor === "neutral" ? "Neutra"
-                                                        : humor === "scared" ? "Assustada"
-                                                            : humor === "surprised" ? "Surpresa"
-                                                                : humor === "confused" ? "Confusa"
-                                                                    : "?"}`,
+            g.humor(humor),
             options?.comentary || null
         ),
         erisAction && createSeparator(),
-        erisAction && `Ação da éris: ${erisAction === "hit" ? "Pegou uma carta"
-            : erisAction === "pass" ? "Passou"
-                : erisAction === "stand" ? "Parou"
-                    : erisAction === "thinking" ? "Pensando"
-                        : "?"}`,
+        g.erisAction(erisAction),
         createSeparator(),
         createRow(
             new ButtonBuilder({
                 customId: `blackjack/game/hit/${userId}`,
-                label: "Pegar uma carta",
+                label: g.buttons.hit,
                 style: ButtonStyle.Primary,
                 disabled: options?.disableButtons
             }),
             new ButtonBuilder({
                 customId: `blackjack/game/pass/${userId}`,
-                label: "Passar",
+                label: g.buttons.pass,
                 style: ButtonStyle.Secondary,
                 disabled: options?.disableButtons
             }),
             new ButtonBuilder({
                 customId: `blackjack/game/stand/${userId}`,
-                label: "Parar",
+                label: g.buttons.stand,
                 style: ButtonStyle.Danger,
                 disabled: options?.disableButtons || game.turnCount <= 4
             })

@@ -1,6 +1,7 @@
 import { createResponder, ResponderType } from "#base";
 import { prisma } from "#database";
 import { BlackjackIA, getBlackjackGame, icon, res, resv2, setBlackjackGame, setBlackjackGameMultiplayer } from "#functions";
+import { getLang } from "#locale";
 import { menus } from "#menus";
 import { createRow } from "@magicyan/discord";
 import { ButtonBuilder, ButtonStyle } from "discord.js";
@@ -9,6 +10,8 @@ createResponder({
     customId: "blackjack/start/:difficulty/:userId/:amount",
     types: [ResponderType.Button, ResponderType.UserSelect], cache: "cached",
     async run(interaction, { userId, amount, difficulty }) {
+        const lang = getLang(interaction.locale);
+
         if (interaction.user.id !== userId) {
             interaction.reply(res.danger(`${icon.denied} | Eu sei que é legal jogar uma partida mas esse jogo não é seu!`))
             return;
@@ -109,7 +112,7 @@ createResponder({
         game.startGame();
         setBlackjackGame(userId, game)
 
-        interaction.editReply(menus.cassino.blackjack(userId, amountNumber, game));
+        interaction.editReply(menus.cassino.blackjack(userId, amountNumber, lang, game));
         return;
     },
 });

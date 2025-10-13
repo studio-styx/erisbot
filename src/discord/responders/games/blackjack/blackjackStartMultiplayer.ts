@@ -1,6 +1,7 @@
 import { createResponder, ResponderType } from "#base";
 import { prisma } from "#database";
 import { getBlackjackGameMultiplayer, icon, res, resv2, smufleCards, calculateHandValue, setBlackjackGameMultiplayer } from "#functions";
+import { getLang } from "#locale";
 import { menus } from "#menus";
 import { BlackjackMultiplayerGame } from "#types/blackjackMultiplayerGame.js";
 
@@ -15,6 +16,8 @@ createResponder({
         }
     },
     async run(interaction, { userId, targetId, amount }) {
+        const lang = getLang(interaction.locale);
+
         if (interaction.user.id === userId) {
             interaction.update(resv2.danger(`${icon.success} | Você cancelou o convite.`));
             return;
@@ -76,7 +79,7 @@ createResponder({
 
         setBlackjackGameMultiplayer(msg.id, game);
 
-        await interaction.editReply(menus.cassino.blackjackMultiplayer(game));
+        await interaction.editReply(menus.cassino.blackjackMultiplayer(game, lang));
         if (game.userInteraction.isAutocomplete()) return;
         await game.userInteraction.followUp(res.fuchsia(`${icon.success} | Suas cartas: ${game.userHand.map(c => `\`${c.name}\``).join(", ")}, valor da sua mão: **${calculateHandValue(game.userHand)}**`));
         if (game.targetInteraction.isAutocomplete()) return;

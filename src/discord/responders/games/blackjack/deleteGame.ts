@@ -1,6 +1,7 @@
 import { createResponder, ResponderType } from "#base";
 import { prisma } from "#database";
 import { getBlackjackGame, icon, removeBlackjackGame, resv2 } from "#functions";
+import { getLang } from "#locale";
 import { menus } from "#menus";
 import { createLabel, createModalFields, createRow } from "@magicyan/discord";
 import { ButtonBuilder, ButtonStyle, TextInputBuilder, TextInputStyle } from "discord.js";
@@ -9,6 +10,8 @@ createResponder({
     customId: "blackjack/delete/:action",
     types: [ResponderType.Button, ResponderType.ModalComponent], cache: "cached",
     async run(interaction, { action}) {
+        const lang = getLang(interaction.locale);
+
         if (action === "delete") {
             if (!interaction.isButton()) return;
             const game = getBlackjackGame(interaction.user.id);
@@ -69,7 +72,7 @@ createResponder({
                     return;
                 }
 
-                interaction.editReply(menus.cassino.blackjack(interaction.user.id, amount));
+                interaction.editReply(menus.cassino.blackjack(interaction.user.id, amount, lang));
                 return;
             }
             const game = getBlackjackGame(interaction.user.id);

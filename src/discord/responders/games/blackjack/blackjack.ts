@@ -1,6 +1,7 @@
 import { createResponder, ResponderType } from "#base";
 import { prisma } from "#database";
 import { getBlackjackGame, icon, removeBlackjackGame, res, setBlackjackGame } from "#functions";
+import { getLang } from "#locale";
 import { menus } from "#menus";
 
 createResponder({
@@ -8,6 +9,8 @@ createResponder({
     types: [ResponderType.Button],
     cache: "cached",
     async run(interaction, { userId, action }) {
+        const lang = getLang(interaction.locale);
+
         if (interaction.user.id !== userId) {
             await interaction.reply(res.danger(`${icon.denied} | Eu sei que é legal jogar uma partida mas esse jogo não é seu!`));
             return;
@@ -40,7 +43,7 @@ createResponder({
 
                     removeBlackjackGame(userId);
                     const comentary = game.erisComentary("user");
-                    interaction.editReply(menus.cassino.blackjack(userId, game.amountAposted, game, "thinking", { wins: "user", comentary }))
+                    interaction.editReply(menus.cassino.blackjack(userId, game.amountAposted, lang, game, "thinking", { wins: "user", comentary }))
                     return;
                 }
                 // eris ainda não perdeu
@@ -48,7 +51,7 @@ createResponder({
                 game.turnCount++;
                 game.passCount = 0;
                 setBlackjackGame(userId, game)
-                await interaction.editReply(menus.cassino.blackjack(userId, game.amountAposted, game, "hit", {
+                await interaction.editReply(menus.cassino.blackjack(userId, game.amountAposted, lang, game, "hit", {
                     comentary: game.getErisDifficulty() !== 0 ? comentary : undefined
                 }))
                 return;
@@ -58,7 +61,7 @@ createResponder({
             game.turnCount++;
             game.passCount++;
             setBlackjackGame(userId, game)
-            await interaction.editReply(menus.cassino.blackjack(userId, game.amountAposted, game, "pass", {
+            await interaction.editReply(menus.cassino.blackjack(userId, game.amountAposted, lang, game, "pass", {
                 comentary: game.getErisDifficulty() !== 0 ? comentary : undefined
             }))
             return;
@@ -82,13 +85,13 @@ createResponder({
                     removeBlackjackGame(userId);
 
                     const comentary = game.erisComentary("eris");
-                    interaction.editReply(menus.cassino.blackjack(userId, game.amountAposted, game, "thinking", { wins: "eris", comentary }))
+                    interaction.editReply(menus.cassino.blackjack(userId, game.amountAposted, lang, game, "thinking", { wins: "eris", comentary }))
                     return;
                 }
 
                 game.turnCount++;
                 game.passCount = 0;
-                await interaction.editReply(menus.cassino.blackjack(userId, game.amountAposted, game, "thinking", { disableButtons: true }));
+                await interaction.editReply(menus.cassino.blackjack(userId, game.amountAposted, lang, game, "thinking", { disableButtons: true }));
 
                 await new Promise(resolve => setTimeout(resolve, 2000));
 
@@ -126,11 +129,11 @@ createResponder({
                         comentary = game.erisComentary("push");
                     } // empate não faz nada com o saldo do usuário
 
-                    interaction.editReply(menus.cassino.blackjack(userId, game.amountAposted, game, "thinking", { wins: userWon, comentary }))
+                    interaction.editReply(menus.cassino.blackjack(userId, game.amountAposted, lang, game, "thinking", { wins: userWon, comentary }))
                     removeBlackjackGame(userId)
                     return;
                 }
-                await interaction.editReply(menus.cassino.blackjack(userId, game.amountAposted, game, "thinking", { disableButtons: true }));
+                await interaction.editReply(menus.cassino.blackjack(userId, game.amountAposted, lang, game, "thinking", { disableButtons: true }));
 
                 game.turnCount++;
                 game.passCount++;
@@ -170,7 +173,7 @@ createResponder({
                 } // empate não faz nada com o saldo do usuário
 
 
-                interaction.editReply(menus.cassino.blackjack(userId, game.amountAposted, game, "thinking", { wins: userWon, comentary }))
+                interaction.editReply(menus.cassino.blackjack(userId, game.amountAposted, lang, game, "thinking", { wins: userWon, comentary }))
                 removeBlackjackGame(userId)
                 return;
             }

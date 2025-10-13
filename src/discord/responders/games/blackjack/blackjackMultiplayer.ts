@@ -1,6 +1,7 @@
 import { createResponder, ResponderType } from "#base";
 import { prisma } from "#database";
 import { calculateHandValue, deleteBlackjackGameMultiplayer, drawCard, getBlackjackGameMultiplayer, icon, res, resv2, setBlackjackGameMultiplayer } from "#functions";
+import { getLang } from "#locale";
 import { menus } from "#menus";
 import { createRow } from "@magicyan/discord";
 import { ButtonBuilder, ButtonStyle, userMention } from "discord.js";
@@ -9,6 +10,8 @@ createResponder({
     customId: "blackjackMultiplayer/game/:action/:userId",
     types: [ResponderType.Button], cache: "cached",
     async run(interaction, { action, userId }) {
+        const lang = getLang(interaction.locale);
+
         if (interaction.user.id !== userId) {
             interaction.reply(res.danger(`${icon.denied} | Apenas ${userMention(userId)} pode usar esse botão.`));
             return;
@@ -50,7 +53,7 @@ createResponder({
                             }
                         })
                     ])
-                    interaction.editReply(menus.cassino.blackjackMultiplayer(game, `${icon.denied} | ${userMention(game.turn === "user" ? game.userId : game.targetId)} estourou! ${userMention(game.turn === "user" ? game.targetId : game.userId)} venceu a partida com **${calculateHandValue(game[game.turn === "user" ? "targetHand" : "userHand"])}** pontos e ganhou **${game.amount}** stx patrocinado por ${userMention(game.turn === "user" ? game.userId : game.targetId)}!`));
+                    interaction.editReply(menus.cassino.blackjackMultiplayer(game, lang, `${icon.denied} | ${userMention(game.turn === "user" ? game.userId : game.targetId)} estourou! ${userMention(game.turn === "user" ? game.targetId : game.userId)} venceu a partida com **${calculateHandValue(game[game.turn === "user" ? "targetHand" : "userHand"])}** pontos e ganhou **${game.amount}** stx patrocinado por ${userMention(game.turn === "user" ? game.userId : game.targetId)}!`));
                     return;
                 }
 
@@ -62,7 +65,7 @@ createResponder({
                     game[game.turn === "user" ? "userInteraction" : "targetInteraction"] = interaction;
                 }
                 setBlackjackGameMultiplayer(interaction.message.id, game);
-                interaction.update(menus.cassino.blackjackMultiplayer(game));
+                interaction.update(menus.cassino.blackjackMultiplayer(game, lang));
                 return;
             }
             case "pass": {
@@ -97,17 +100,17 @@ createResponder({
                     ])
 
                     if (userHandValue > targetHandValue) {
-                        interaction.editReply(menus.cassino.blackjackMultiplayer(game, `${icon.success} | Ambos os jogadores passaram a vez, ${userMention(game.userId)} venceu a partida com **${userHandValue}** contra **${targetHandValue}** de ${userMention(game.targetId)}! e ganhou **${game.amount}** stx patrocinado por ${userMention(game.targetId)}!`));
+                        interaction.editReply(menus.cassino.blackjackMultiplayer(game, lang, `${icon.success} | Ambos os jogadores passaram a vez, ${userMention(game.userId)} venceu a partida com **${userHandValue}** contra **${targetHandValue}** de ${userMention(game.targetId)}! e ganhou **${game.amount}** stx patrocinado por ${userMention(game.targetId)}!`));
                     } else if (targetHandValue > userHandValue) {
-                        interaction.editReply(menus.cassino.blackjackMultiplayer(game, `${icon.success} | Ambos os jogadores passaram a vez, ${userMention(game.targetId)} venceu a partida com **${targetHandValue}** contra **${userHandValue}** de ${userMention(game.userId)}! e ganhou **${game.amount}** stx patrocinado por ${userMention(game.userId)}!`));
+                        interaction.editReply(menus.cassino.blackjackMultiplayer(game, lang, `${icon.success} | Ambos os jogadores passaram a vez, ${userMention(game.targetId)} venceu a partida com **${targetHandValue}** contra **${userHandValue}** de ${userMention(game.userId)}! e ganhou **${game.amount}** stx patrocinado por ${userMention(game.userId)}!`));
                     } else {
-                        interaction.editReply(menus.cassino.blackjackMultiplayer(game, `${icon.warning} | Ambos os jogadores passaram a vez e empataram com **${userHandValue}** pontos! Ambos jogadores recuperam suas apostas!`));
+                        interaction.editReply(menus.cassino.blackjackMultiplayer(game, lang, `${icon.warning} | Ambos os jogadores passaram a vez e empataram com **${userHandValue}** pontos! Ambos jogadores recuperam suas apostas!`));
                     }
                     return;
                 }
                 game.turn = game.turn === "user" ? "target" : "user";
                 setBlackjackGameMultiplayer(interaction.message.id, game);
-                interaction.update(menus.cassino.blackjackMultiplayer(game));
+                interaction.update(menus.cassino.blackjackMultiplayer(game, lang));
                 return;
             }
             case "stand": {
@@ -137,7 +140,7 @@ createResponder({
                     game[game.turn === "user" ? "userInteraction" : "targetInteraction"] = interaction;
                 }
                 setBlackjackGameMultiplayer(interaction.message.id, game);
-                await interaction.update(menus.cassino.blackjackMultiplayer(game));
+                await interaction.update(menus.cassino.blackjackMultiplayer(game, lang));
                 await interaction.followUp(res.fuchsia(`${icon.success} | ${userMention(interaction.user.id)} decidiu continuar a partida!`, { flags: [] }));
                 return;
             }
@@ -172,11 +175,11 @@ createResponder({
                 ])
 
                 if (userHandValue > targetHandValue) {
-                    interaction.editReply(menus.cassino.blackjackMultiplayer(game, `${icon.success} | ${userMention(interaction.user.id)} decidiu parar a partida! ${userMention(game.userId)} venceu a partida com **${userHandValue}** contra **${targetHandValue}** de ${userMention(game.targetId)}! e ganhou **${game.amount}** stx patrocinado por ${userMention(game.targetId)}!`));
+                    interaction.editReply(menus.cassino.blackjackMultiplayer(game, lang, `${icon.success} | ${userMention(interaction.user.id)} decidiu parar a partida! ${userMention(game.userId)} venceu a partida com **${userHandValue}** contra **${targetHandValue}** de ${userMention(game.targetId)}! e ganhou **${game.amount}** stx patrocinado por ${userMention(game.targetId)}!`));
                 } else if (targetHandValue > userHandValue) {
-                    interaction.editReply(menus.cassino.blackjackMultiplayer(game, `${icon.success} | ${userMention(interaction.user.id)} decidiu parar a partida! ${userMention(game.targetId)} venceu a partida com **${targetHandValue}** contra **${userHandValue}** de ${userMention(game.userId)}! e ganhou **${game.amount}** stx patrocinado por ${userMention(game.userId)}!`));
+                    interaction.editReply(menus.cassino.blackjackMultiplayer(game, lang, `${icon.success} | ${userMention(interaction.user.id)} decidiu parar a partida! ${userMention(game.targetId)} venceu a partida com **${targetHandValue}** contra **${userHandValue}** de ${userMention(game.userId)}! e ganhou **${game.amount}** stx patrocinado por ${userMention(game.userId)}!`));
                 } else {
-                    interaction.editReply(menus.cassino.blackjackMultiplayer(game, `${icon.warning} | ${userMention(interaction.user.id)} decidiu parar a partida! Ambos os jogadores empataram com **${userHandValue}** pontos! Ambos jogadores recuperam suas apostas!`));
+                    interaction.editReply(menus.cassino.blackjackMultiplayer(game, lang, `${icon.warning} | ${userMention(interaction.user.id)} decidiu parar a partida! Ambos os jogadores empataram com **${userHandValue}** pontos! Ambos jogadores recuperam suas apostas!`));
                 }
                 return;
             }
