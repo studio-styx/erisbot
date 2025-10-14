@@ -260,7 +260,9 @@ createCommand({
                     name: {
                         contains: focused.value,
                         mode: "insensitive"
-                    }
+                    },
+                    adoption: null,
+                    isDead: false
                 },
                 select: {
                     id: true,
@@ -332,12 +334,6 @@ createCommand({
                             gender: { not: pet1Info.gender },
                             pet: {
                                 animal: pet1Info.pet.animal
-                            },
-                            parent1: {
-                                id: { not: pet1Id },
-                            },
-                            parent2: {
-                                id: { not: pet1Id },
                             },
                             pregnantEndAt: null,
                             isPregnant: false,

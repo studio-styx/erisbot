@@ -110,10 +110,9 @@ createResponder({
                     title: config?.label ?? option,
                     components: createModalFields(
                         createLabel({
-                            label: config?.label ?? option,
+                            label: `${config?.label ?? option} do sorteio`,
                             component: new TextInputBuilder({
                                 customId: "response",
-                                label: `${config?.label ?? option} do sorteio`,
                                 placeholder: config?.placeholder ?? "...",
                                 style: config?.style ?? TextInputStyle.Short,
                                 required: true,

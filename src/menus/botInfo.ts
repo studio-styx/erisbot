@@ -1,7 +1,7 @@
 import { icon } from "#functions";
 import { settings } from "#settings";
 import { brBuilder, createContainer, createRow, createSection, createSeparator } from "@magicyan/discord";
-import { ButtonBuilder, ButtonStyle, User, version, type InteractionReplyOptions, } from "discord.js";
+import { ButtonBuilder, ButtonStyle, time, User, version, type InteractionReplyOptions, } from "discord.js";
 import { existsSync, readFileSync } from "fs";
 import si from 'systeminformation'
 
@@ -124,7 +124,8 @@ export async function botInfoMenu<R>(page: 'main' | 'hardware' | 'software' | 'c
                     `> **Versão do Magycian Discord:** ${magycianVersion}`,
                     `> **Versão do Constatic:** 1.3.7`,
                     `> **Minha versão:** ${settings.bot.version}`,
-                    `> **Sistema operacional:** ${getOSInfo()}`
+                    `> **Sistema operacional:** ${getOSInfo()}`,
+                    `> **Estou online dês de:** ${time(new Date(process.uptime() * 1000), "R")}`,
                 ),
             )
             break;

@@ -43,6 +43,12 @@ export function petCareMenu<R>(userId: string, pet: UserPet & { personality: { t
                 disabled: !!page || pet.energy === 100,
             }),
             new ButtonBuilder({
+                customId: `pet/care/train/button/${userId}/${pet.id}`,
+                label: "Treinar",
+                style: ButtonStyle.Success,
+                disabled: !!page || pet.energy <= 20 || pet.happiness <= 20 || pet.hungry <= 20,
+            }),
+            new ButtonBuilder({
                 customId: `pet/care/return/button/${userId}/${pet.id}`,
                 label: "Voltar",
                 style: ButtonStyle.Secondary,

@@ -81,7 +81,7 @@ export async function economyDailyCommand(interaction: ChatInputCommandInteracti
     const hasDailyBonus = user?.activePet?.skills.some(s => s.skill.name === "daily_bonus");
     const hasDailyDecrementCooldown = user?.activePet?.skills.some(s => s.skill.name === "daily_cooldown_reduction");
 
-    const baseMaxDaily = 50;
+    const baseMaxDaily = 100;
     let maxDailyValue = baseMaxDaily;
 
     if (user?.activePet) {
@@ -97,7 +97,7 @@ export async function economyDailyCommand(interaction: ChatInputCommandInteracti
         }
     }
 
-    const dailyValue = getRandomNumber(5, maxDailyValue);
+    const dailyValue = getRandomNumber(30, maxDailyValue);
 
     // Cooldown
     let cooldownTime = "24h";
