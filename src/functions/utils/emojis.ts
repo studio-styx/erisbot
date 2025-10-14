@@ -1,5 +1,5 @@
 import { formatEmoji } from "discord.js";
-import fs from "node:fs/promises";
+import fs from "node:fs";
 
 type EmojiList = typeof import("#emojis");
 
@@ -13,7 +13,7 @@ interface IconInfo {
 type Icon = Record<IconKey, IconInfo>;
 
 const filepath = process.env.ENV === "dev" ? "emojis.dev.json" : "emojis.json";
-const file = await fs.readFile(filepath, "utf-8");
+const file = fs.readFileSync(filepath, "utf-8");
 const emojis: EmojiList = JSON.parse(file);
 
 type ExtractedId = 
