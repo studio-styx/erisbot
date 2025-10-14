@@ -1,11 +1,15 @@
 import { prisma } from "#database";
-import { res, icon, registerLog } from "#functions";
+import { res, registerLog } from "#functions";
+import { getLang, translate } from "#locale";
 import { Prisma, Rarity } from "#prisma";
 import { createEmbed } from "@magicyan/discord";
 import { ChatInputCommandInteraction } from "discord.js";
 
 export async function horseRacingCommand(interaction: ChatInputCommandInteraction<"cached">) {
-    const { options, user: author } = interaction;
+    const { options, user: author, locale } = interaction;
+
+    const lang = getLang(locale);
+    const t = translate.commands.horseRacing[lang];
 
     let amount = options.getNumber("amount", true);
     const horse = options.getString("horse", true) as "purple" | "blue" | "green" | "yellow" | "orange" | "red" | "pink" | "brown";
@@ -28,22 +32,12 @@ export async function horseRacingCommand(interaction: ChatInputCommandInteractio
 
     if (amount > user.money.toNumber()) amount = user.money.toNumber();
     if (amount < 50) {
-        interaction.editReply(res.danger(`${icon.Eris_cry} | Você precisa ter no mínimo 50 STX para apostar.`));
+        interaction.editReply(res.danger(t.notEnoughMoney));
         return;
     }
 
     // Configuração dos cavalos
-    const horses = {
-        purple: { name: "Roxo", emoji: "🐎", colorEmoji: "🟣", position: 0 },
-        blue: { name: "Azul", emoji: "🐎", colorEmoji: "🔵", position: 0 },
-        green: { name: "Verde", emoji: "🐎", colorEmoji: "🟢", position: 0 },
-        yellow: { name: "Amarelo", emoji: "🐎", colorEmoji: "🟡", position: 0 },
-        orange: { name: "Laranja", emoji: "🐎", colorEmoji: "🟠", position: 0 },
-        red: { name: "Vermelho", emoji: "🐎", colorEmoji: "🔴", position: 0 },
-        pink: { name: "Rosa", emoji: "🐎", colorEmoji: "🌸", position: 0 },
-        brown: { name: "Marrom", emoji: "🐎", colorEmoji: "🟤", position: 0 }
-    };
-
+    const horses = t.horces;
     const horseRacingLuck = user.activePet?.skills.find(s => s.skill.name === "horse_racing_luck");
     const horseRacingBonus = user.activePet?.skills.find(s => s.skill.name === "horse_racing_bonus")
 
@@ -156,7 +150,7 @@ export async function horseRacingCommand(interaction: ChatInputCommandInteractio
             if (userWon) {
                 await registerLog({
                     level: 6,
-                    message: `Apostou no cavalo ${horse} e ganhou ${amount * winMultiplier} stx`,
+                    message: t.logWinner(horse, amount, winMultiplier),
                     tags: ["cassino", "transaction", "horse-racing", "sum"],
                     type: "info",
                     user: author.id
@@ -164,7 +158,7 @@ export async function horseRacingCommand(interaction: ChatInputCommandInteractio
             } else {
                 await registerLog({
                     level: 6,
-                    message: `Apostou no cavalo ${horse} e perdeu ${amount} stx`,
+                    message: t.logLoser(horse, amount),
                     tags: ["cassino", "transaction", "horse-racing", "sub"],
                     type: "info",
                     user: author.id
@@ -188,20 +182,18 @@ export async function horseRacingCommand(interaction: ChatInputCommandInteractio
 
     const createRaceEmbed = (winner?: string, multiplier: number = 1.5) => {
         const embedData: any = {
-            title: winner ? "🏁 Corrida Finalizada!" : "🏇 Corrida de Cavalos",
+            title: winner ? t.end.title : t.playing.title,
             description: createRaceTrack(),
             color: winner ? (winner === horse ? "#2ecc71" : "#e74c3c") : "#3498db"
         };
 
         if (winner) {
             embedData.fields = [
-                { name: "Vencedor", value: `${horses[winner as keyof typeof horses].emoji} ${horses[winner as keyof typeof horses].name}`, inline: true },
-                { name: "Sua aposta", value: `${horses[horse].emoji} ${horses[horse].name}`, inline: true },
+                { name: t.end.fields.winner.name, value: t.end.fields.winner.value(horses[winner as keyof typeof horses].emoji, horses[winner as keyof typeof horses].name), inline: true },
+                { name: t.end.fields.bet.name, value: t.end.fields.bet.value(horses[horse].emoji, horses[horse].name), inline: true },
                 {
-                    name: "Resultado",
-                    value: winner === horse
-                        ? `${icon.success} | Você apostou **${amount}** e ganhou ${amount * multiplier} stx!`
-                        : `${icon.denied} | Você apostou **${amount}** e infelizmente perdeu ${icon.Eris_cry_left}`,
+                    name: t.end.fields.result.name,
+                    value: t.end.fields.result.value(winner === horse, amount, multiplier),
                     inline: false
                 }
             ];

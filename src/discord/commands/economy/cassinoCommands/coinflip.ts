@@ -1,5 +1,6 @@
 import { prisma } from "#database";
-import { res, icon, registerLog, calculateProbability } from "#functions";
+import { res, registerLog, calculateProbability } from "#functions";
+import { getLang, translate } from "#locale";
 import { Rarity } from "#prisma";
 import { ChatInputCommandInteraction } from "discord.js";
 
@@ -7,6 +8,9 @@ export async function coinflipCommand(interaction: ChatInputCommandInteraction<"
     const { options, user: author } = interaction;
     let amount = options.getNumber("amount", true);
     const side = options.getString("side", true) as 'heads' | 'tails';
+
+    const lang = getLang(interaction.locale);
+    const t = translate.commands.coinflip[lang];
 
     const user = await prisma.user.findUnique({
         where: { id: author.id },
@@ -21,7 +25,7 @@ export async function coinflipCommand(interaction: ChatInputCommandInteraction<"
     });
 
     if (!user || user.money.toNumber() < 15) {
-        interaction.reply(res.danger(`${icon.denied} | Você não tem dinheiro suficiente para apostar.`));
+        interaction.reply(res.danger(t.errors.notEnoughMoney));
         return;
     }
 
@@ -74,28 +78,28 @@ export async function coinflipCommand(interaction: ChatInputCommandInteraction<"
 
         const wonValue = amount * totalAmount;
 
-        interaction.reply(res.success(`${icon.Eris_enchanted} | A moeda caiu em ${side === "heads" ? "cara" : "coroa"}, você ganhou **${wonValue}** STX!`));
+        interaction.reply(res.success(t.won(side, wonValue)));
         await prisma.user.update({
             where: { id: author.id },
             data: { money: { increment: wonValue } }
         });
         await registerLog({
             level: 6,
-            message: `Apostou na moeda do lado ${side} e ganhou ${wonValue} stx`,
+            message: t.wonLog(side, wonValue),
             tags: ["cassino", "transaction", "coinflip", "sum"],
             type: "info",
             user: author.id
         });
         return;
     } else {
-        interaction.reply(res.danger(`${icon.Eris_shy} | A moeda caiu em ${coinflipResult}, você perdeu **${amount}** STX!`));
+        interaction.reply(res.danger(t.lose(side, amount)));
         await prisma.user.update({
             where: { id: author.id },
             data: { money: { decrement: amount } }
         });
         await registerLog({
             level: 6,
-            message: `Apostou na moeda do lado ${side} e perdeu ${amount} stx`,
+            message: t.loseLog(side, amount),
             type: "info",
             tags: ["cassino", "transaction", "coinflip", "sub"],
             user: author.id

@@ -1,6 +1,7 @@
 import { createCommand, createResponder, ResponderType } from "#base";
 import { prisma, redis } from "#database";
-import { icon, res } from "#functions";
+import { res } from "#functions";
+import { getLang, translate } from "#locale";
 import { createLabel, createModalFields } from "@magicyan/discord";
 import { ApplicationCommandOptionType, ApplicationCommandType, StringSelectMenuBuilder, TextInputBuilder, TextInputStyle } from "discord.js";
 import crypto from "node:crypto";
@@ -163,35 +164,40 @@ createCommand({
         }
     },
     async run(interaction){
-        const { user, options } = interaction;
+        const { user, options, locale } = interaction;
         const subcommand = options.getSubcommand();
+
+        const lang = getLang(locale);
+        const baseT = translate.commands.keyManage;
 
         switch (subcommand) {
             case "generate": {
+                const t = baseT.generateKeyModal[lang];
+
                 interaction.showModal({
-                    title: "Gere um token",
+                    title: t.title,
                     customId: "apikey/generate",
                     components: createModalFields(
                         createLabel({
-                            label: "Id do seu bot",
-                            description: "Escreva o id de seu bot",
+                            label: t.botId.label,
+                            description: t.botId.description,
                             component: new TextInputBuilder({
                                 customId: "botId",
                                 required: true,
                                 style: TextInputStyle.Short,
-                                placeholder: "Digite o id do seu bot"
+                                placeholder: t.botId.placeholder
                             })
                         }),
                         createLabel({
-                            label: "Permissões",
-                            description: "As permissões que seu bot obterá",
+                            label: t.permissions.label,
+                            description: t.permissions.description,
                             component: new StringSelectMenuBuilder({
                                 customId: "permissions",
-                                placeholder: "Selecione as permissões",
+                                placeholder: t.permissions.placeholder,
                                 options: [
-                                    { label: "Ler a economia", value: "ECONOMY.READ" },
-                                    { label: "Ler informações de usuário", value: "USER.INFO.READ" },
-                                    { label: "Ler informações de sorteios", value: "GIVEAWAY.INFO.READ" }
+                                    { label: t.permissions.options.ECONOMY_READ, value: "ECONOMY.READ" },
+                                    { label: t.permissions.options.USER_INFO_READ, value: "USER.INFO.READ" },
+                                    { label: t.permissions.options.GIVEAWAY_INFO_READ, value: "GIVEAWAY.INFO.READ" }
                                 ],
                                 minValues: 1,
                                 maxValues: 3,
@@ -213,9 +219,10 @@ createCommand({
                     }
                 });
 
+                const t = baseT.deleteToken[lang];
+
                 if (!bot) {
-                    interaction.editReply(res.danger(`${icon.error} | Bot não encontrado!`));
-                    return;
+                    interaction.editReply(res.danger(t.botNotFound))
                 }
 
                 await prisma.application.update({
@@ -227,7 +234,7 @@ createCommand({
                     }
                 });
 
-                interaction.editReply(res.success(`${icon.success} | Token deletado com sucesso!`));
+                interaction.editReply(res.success(t.message));
                 return;
             }
             case "regenerate": {
@@ -242,8 +249,10 @@ createCommand({
                     }
                 });
 
+                const t = baseT.regenerateToken[lang];
+
                 if (!bot) {
-                    interaction.editReply(res.danger(`${icon.error} | Bot não encontrado!`));
+                    interaction.editReply(res.danger(t.botNotFound));
                     return;
                 }
 
@@ -258,7 +267,7 @@ createCommand({
                     }
                 });
 
-                interaction.editReply(res.success(`${icon.success} | Novo token gerado: **\`${newToken.key}\`**`));
+                interaction.editReply(res.success(t.message(newToken)));
                 return;
             }
         }
@@ -269,7 +278,7 @@ createResponder({
     customId: "apikey/generate",
     types: [ResponderType.Modal], cache: "cached",
     async run(interaction) {
-        const { user, fields, client } = interaction;
+        const { user, fields, client, locale } = interaction;
 
         const botId = fields.getTextInputValue("botId");
         const permissions = fields.getStringSelectValues("permissions");
@@ -277,8 +286,11 @@ createResponder({
         await interaction.deferReply({ flags });
         const bot = await client.users.fetch(botId, { cache: true }).catch(() => null);
 
+        const lang = getLang(locale);
+        const t = translate.responders.erisApi.generateTokenResponder[lang];
+
         if (!bot || !bot.bot) {
-            interaction.editReply(res.danger(`${icon.error} | Esse id não pertence a um bot!`));
+            interaction.editReply(res.danger(t.errors.userIsNotBot));
             return;
         }
 
@@ -290,7 +302,7 @@ createResponder({
         });
 
         if (alreadyExist) {
-            interaction.editReply(res.danger(`${icon.error} | Um bot com esse id já está registrado em meu sistema! se você é o dono desse bot e nunca criou um token antes, por favor entre em contato com a staff.`))
+            interaction.editReply(res.danger(t.errors.alreadyExist))
             return;
         }
 
@@ -301,7 +313,7 @@ createResponder({
         });
 
         if (userBots > 0) {
-            interaction.editReply(res.danger(`${icon.error} | Você já tem um bot! para adicionar mais bots por favor entre em contato com a staff.`))
+            interaction.editReply(res.danger(t.errors.alreadyHasBot))
             return;
         }
 
@@ -316,7 +328,7 @@ createResponder({
             }
         });
 
-        interaction.editReply(res.success(`${icon.success} | Token gerado com sucesso! por favor nunca compartilhe esse token com ninguém. \n\n \`\`\`${token.key}\`\`\``));
+        interaction.editReply(res.success(t.message(token)));
         return;
     },
 });

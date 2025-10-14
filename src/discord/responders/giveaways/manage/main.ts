@@ -112,6 +112,7 @@ createResponder({
                         createLabel({
                             label: config?.label ?? option,
                             component: new TextInputBuilder({
+                                customId: "response",
                                 label: `${config?.label ?? option} do sorteio`,
                                 placeholder: config?.placeholder ?? "...",
                                 style: config?.style ?? TextInputStyle.Short,

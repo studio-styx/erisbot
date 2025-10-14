@@ -18,7 +18,7 @@ createResponder({
     async run(interaction, { action, userId, petId }) {
         const { user } = interaction;
         if (user.id !== userId) {
-            interaction.reply(`${icon.denied} | Não foi você que executou esse comando! não venha roubar pet dos outros!`)
+            interaction.reply(res.danger(`${icon.denied} | Não foi você que executou esse comando! não venha roubar pet dos outros!`));
             return;
         }
         await interaction.deferUpdate();

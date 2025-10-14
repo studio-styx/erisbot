@@ -1,12 +1,16 @@
 import { prisma } from "#database";
-import { res, icon, registerLog } from "#functions";
+import { res, registerLog } from "#functions";
+import { getLang, translate } from "#locale";
 import { Rarity } from "#prisma";
 import { settings } from "#settings";
 import { createEmbed } from "@magicyan/discord";
 import { ChatInputCommandInteraction } from "discord.js";
 
 export async function slotsCommand(interaction: ChatInputCommandInteraction<"cached">) {
-    const { options, user: author } = interaction;
+    const { options, user: author, locale } = interaction;
+
+    const lang = getLang(locale);
+    const t = translate.commands.slots[lang];
 
     let amount = options.getNumber("amount", true);
     await interaction.deferReply({ flags });
@@ -24,7 +28,7 @@ export async function slotsCommand(interaction: ChatInputCommandInteraction<"cac
     });
 
     if (!user || user.money.toNumber() < 25) {
-        interaction.editReply(res.danger(`${icon.denied} | Você não tem dinheiro suficiente para apostar.`));
+        interaction.editReply(res.danger(t.notEnoughMoney));
         return;
     }
 
@@ -74,8 +78,8 @@ export async function slotsCommand(interaction: ChatInputCommandInteraction<"cac
 
     // Embed inicial
     const embed = createEmbed({
-        title: "🎰 Caça-Níqueis",
-        description: `${slot1} | - | - \n\nGirando...`,
+        title: t.embed.title,
+        description: t.embed.description.slot1(slot1),
         color: settings.colors.primary
     });
 
@@ -83,15 +87,14 @@ export async function slotsCommand(interaction: ChatInputCommandInteraction<"cac
 
     // Animação em 3 etapas
     setTimeout(async () => {
-        embed.setDescription(`${slot1} | ${slot2} | - \n\nGirando...`);
+        embed.setDescription(t.embed.description.slot2(slot1, slot2));
         await interaction.editReply({ embeds: [embed] });
 
         setTimeout(async () => {
             const winAmount = amount * 0.6;
 
-            embed.setDescription(isWin ? `${slot1} | ${slot2} | ${slot3}\n\n${icon.success} **JACKPOT!** Você ganhou **${winAmount}** STX!`
-                : `${slot1} | ${slot2} | ${slot3}\n\nVocê perdeu **${amount}** STX.`
-            );
+            embed.setDescription(isWin ? t.embed.description.winMessage(slot1, slot2, slot3, winAmount)
+                : t.embed.description.loseMessage(slot1, slot2, slot3, amount));
             embed.setColor(isWin ? "#2ecc71" : "#e74c3c");
 
             await prisma.user.update({
@@ -101,7 +104,7 @@ export async function slotsCommand(interaction: ChatInputCommandInteraction<"cac
 
             await registerLog({
                 level: 6,
-                message: `Apostou no caça-níqueis e ${isWin ? `ganhou ${winAmount} stx` : `perdeu ${amount} stx`}`,
+                message: t.log(isWin, winAmount, amount),
                 tags: ["cassino", "transaction", "slots", isWin ? "sum" : "sub"],
                 type: "info",
                 user: author.id
