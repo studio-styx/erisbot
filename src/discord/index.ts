@@ -94,6 +94,7 @@ export const { createCommand, createEvent, createResponder } = setupCreators({
                 if (mails.length === 0) return;
                 const random = Math.random();
                 const chance = 0.3;
+                await new Promise(resolve => setTimeout(resolve, 1500));
                 if (random < chance) {
                     const commandId = await getCommandId(interaction as Interaction, "mail")
                     if (interaction.replied || interaction.deferred) {
@@ -205,7 +206,7 @@ export const { createCommand, createEvent, createResponder } = setupCreators({
 
                 if (hungryPets.length === 0 && sadPets.length === 0 && tiredPets.length === 0 && deadPets.length === 0) return;
 
-                new Promise(resolve => setTimeout(resolve, 1000 * 2));
+                await new Promise(resolve => setTimeout(resolve, 1000 * 2));
                 try {
                     await interaction.followUp(resv2.danger(
                         brBuilder(
