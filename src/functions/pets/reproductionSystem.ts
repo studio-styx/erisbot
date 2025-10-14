@@ -1,7 +1,9 @@
 import { prisma } from "#database";
 import { calculateProbability, getRandomValue, petAnimalFormatted, petRarityFormatted } from "#functions";
+import { menus } from "#menus";
 import { Gender, GeneType, PetGeneticsColorPart } from "#prisma";
 import { brBuilder } from "@magicyan/discord";
+import { Client } from "discord.js";
 
 const randomNames: Record<Gender, string[]> = {
     MALE: [
@@ -18,7 +20,7 @@ const randomNames: Record<Gender, string[]> = {
     ]
 };
 
-export async function scheduleReproductionsDate() {
+export async function scheduleReproductionsDate(client: Client) {
     // Busca pets grávidas com data de término próxima
     const pregnantPets = await prisma.userPet.findMany({
         where: {
@@ -37,16 +39,16 @@ export async function scheduleReproductionsDate() {
     for (const pet of pregnantPets) {
         const time = pet.pregnantEndAt!.getTime() - Date.now();
         if (time < 1) {
-            await setEndReproduction(pet.id);
+            await setEndReproduction(pet.id, client);
             continue;
         }
         setTimeout(async () => {
-            await setEndReproduction(pet.id);
+            await setEndReproduction(pet.id, client);
         }, pet.pregnantEndAt!.getTime() - Date.now());
     }
 }
 
-export async function setEndReproduction(petId: number) {
+export async function setEndReproduction(petId: number, client: Client) {
     // Busca a mãe com dados necessários, incluindo ancestrais
     const mother = await prisma.userPet.findUnique({
         where: { id: petId },
@@ -544,7 +546,7 @@ export async function setEndReproduction(petId: number) {
         })
 
         // Finaliza gravidez e remove cônjuge
-        await Promise.all([
+        const [_a, _b, _c, user] = await Promise.all([
             tx.userPet.update({
                 where: { id: mother.id },
                 data: { isPregnant: false, pregnantEndAt: null, spouseId: null },
@@ -563,8 +565,27 @@ export async function setEndReproduction(petId: number) {
                     ),
                     whoSendId: "1171963692984844401"
                 }
+            }),
+            tx.user.findUniqueOrThrow({
+                where: { id: mother.userId },
             })
         ])
+
+        if (user.dmNotification) {
+            const allMails = await tx.mails.findMany({
+                where: {
+                    userId: mother.userId,
+                    asRead: false
+                }
+            });
+            if (allMails.length === 0) return;
+
+            try {
+                const discordUser = await client.users.fetch(mother.userId);
+                await discordUser.createDM();
+                await discordUser.send(menus.mails.userMails(allMails, user, 0))
+            } catch (_) {}
+        }
     });
 
 }

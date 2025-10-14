@@ -1,6 +1,8 @@
 import { prisma } from "#database";
 import { brBuilder } from "@magicyan/discord";
 import { petAnimalFormatted } from "./formatteds.js";
+import { Client } from "discord.js";
+import { menus } from "#menus";
 
 // Definir multiplicadores por humor (maior impacto)
 const multiplyerByHumor: Record<string, { hungry: number; energy: number; happiness: number }> = {
@@ -37,7 +39,7 @@ const multiplyerByPersonality: Record<string, { hungry: number; energy: number; 
     submissive: { hungry: -2, energy: -2, happiness: -2 }
 };
 
-export async function setAllPetsStats() {
+export async function setAllPetsStats(client: Client) {
     const allPets = await prisma.userPet.findMany({
         where: {
             isDead: false,
@@ -98,7 +100,7 @@ export async function setAllPetsStats() {
         const isDead = newLife <= 0 || newHungry <= 0;
 
         // Atualizar o pet
-        await prisma.userPet.update({
+        const { user } = await prisma.userPet.update({
             where: { id: pet.id },
             data: {
                 hungry: newHungry,
@@ -108,6 +110,9 @@ export async function setAllPetsStats() {
                 isDead: isDead,
                 updatedAt: currentDate,
             },
+            include: {
+                user: true
+            }
         });
 
         if (isDead) {
@@ -115,11 +120,25 @@ export async function setAllPetsStats() {
                 data: {
                     userId: pet.userId,
                     content: brBuilder(
-                        `Sua pet **${pet.name}** (${petAnimalFormatted[pet.pet.animal]}) morreu de **${newLife <= 0 ? `velhice` : newHungry <= 0 ? "fome" : "desconhecido"}**!`
+                        `${pet.gender === "FEMALE" ? "Sua pet" : "Seu pet"} **${pet.name}** (${petAnimalFormatted[pet.pet.animal]}) morreu de **${newLife <= 0 ? `velhice` : newHungry <= 0 ? "fome" : "desconhecido"}**!`
                     ),
                     whoSendId: "1171963692984844401"
                 }
-            })
+            });
+            if (user.dmNotification) {
+                const allMails = await prisma.mails.findMany({
+                    where: {
+                        userId: pet.userId,
+                        asRead: false
+                    }
+                });
+                if (allMails.length === 0) return;
+                try {
+                    const discordUser = await client.users.fetch(pet.userId);
+                    await discordUser.createDM();
+                    await discordUser.send(menus.mails.userMails(allMails, user, 0))
+                } catch (_) {}
+            }
         }
     })());
 

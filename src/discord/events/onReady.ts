@@ -20,16 +20,16 @@ createEvent({
             await scheduleAllEndGiveaways(client)
         }, 1000 * 60 * 10);
 
-        scheduleReproductionsDate();
+        scheduleReproductionsDate(client);
         setInterval(async () => {
-            await scheduleReproductionsDate();
+            await scheduleReproductionsDate(client);
         }, 1000 * 60 * 30)
         setInterval(async () => {
             await determineMoodInterval();
         }, 1000 * 60 * 30);
         setInterval(async () => {
-            await setAllPetsStats();
-        }, 1000 * 60 * 60 * 2)
+            await setAllPetsStats(client);
+        }, 1000 * 60 * 60 * 4)
 
         let currentIndex = 0;
 

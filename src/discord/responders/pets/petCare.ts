@@ -107,7 +107,7 @@ createResponder({
                     ]);
 
                     interaction.followUp(res.success(`${icon.success} | Você alimentou seu pet! agora ele está **${moodEffect}** e sua fome está em: **${newHungry}/100**`))
-                    interaction.editReply(menus.pets.care(userId, newPet))
+                    interaction.editReply(menus.pets.care(userId, newPet, "feed"))
                 }
                 return;
             }
@@ -162,7 +162,7 @@ createResponder({
                     });
 
                     interaction.followUp(res.success(`${icon.success} | Você brincou com seu pet! agora ele está **${moodEffect}** e sua felicidade está em: **${newFun}/100**`))
-                    interaction.editReply(menus.pets.care(userId, newPet))
+                    interaction.editReply(menus.pets.care(userId, newPet, "play"))
                 }
                 return;
             }
