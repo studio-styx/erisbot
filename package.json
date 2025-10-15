@@ -1,6 +1,6 @@
 {
   "name": "erisbarry",
-  "version": "1.6.10",
+  "version": "1.6.11",
   "main": "src/index.ts",
   "type": "module",
   "license": "MIT",
