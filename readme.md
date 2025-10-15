@@ -4,6 +4,7 @@
 [![SUPPORT SERVER](https://img.shields.io/badge/DISCORD_SUPPORT_SERVER-Rio_Styx_&_Botlist-EB459E.svg)](https://shields.io/)
 [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://GitHub.com/studio-styx/erisbot/graphs/commit-activity)
 [![Github Licence](https://img.shields.io/badge/Licence-Creative_Commons_BY_NC_4.0-%230078D7.svg)](https://github.com/studio-styx/erisbot/blob/main/licence.md)
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/studio-styx/erisbot)
 
 <img src="assets/readme/eris_avatar.png" alt="Avatar da Éris" width="200"/>
 
