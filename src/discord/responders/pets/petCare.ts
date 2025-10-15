@@ -70,7 +70,7 @@ createResponder({
                     }) ?? { money: new Prisma.Decimal(0) }).money.toNumber();
 
                     if (userMoney < food.price) {
-                        interaction.followUp(res.success(`${icon.denied} | Você não tem dinheiro suficiente para comprar essa comida! você precisa de: **${food.price}** stx para esse alimento!`));
+                        interaction.followUp(res.danger(`${icon.denied} | Você não tem dinheiro suficiente para comprar essa comida! você precisa de: **${food.price}** stx para esse alimento!`));
                         return;
                     }
 
@@ -241,13 +241,7 @@ createResponder({
                 const newXp = xp + getRandomNumber(5, 15);
 
                 if (!wonASkill) {
-                    await Promise.all([
-                        redis.setex(xpKey, convertTime({ time: "24h", to: "seconds" }), newXp.toString()),
-                        redis.setex(
-                            cooldownKey,
-                            convertTime({ time: "15s", to: "seconds" }),
-                            new Date(Date.now() + convertTime({ time: "15s", to: "milliseconds" })).toISOString()
-                        ),
+                    const [newPet] = await Promise.all([
                         prisma.userPet.update({
                             where: { id: pet.id },
                             data: {
@@ -263,7 +257,13 @@ createResponder({
                                 },
                                 pet: true,
                             }
-                        })
+                        }),
+                        redis.setex(xpKey, convertTime({ time: "24h", to: "seconds" }), newXp.toString()),
+                        redis.setex(
+                            cooldownKey,
+                            convertTime({ time: "15s", to: "seconds" }),
+                            new Date(Date.now() + convertTime({ time: "15s", to: "milliseconds" })).toISOString()
+                        ),
                     ])
 
                     const failMessages = [
@@ -273,6 +273,7 @@ createResponder({
                         "tentou, mas acabou frustrado."
                     ];
                     const randomFail = getRandomValue(failMessages);
+                    interaction.editReply(menus.pets.care(userId, newPet))
                     interaction.followUp(res.danger(`${icon.denied} | Você treinou com seu pet, mas ele ${randomFail}`));
                     return;
                 }

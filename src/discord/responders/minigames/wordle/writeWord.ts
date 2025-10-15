@@ -67,7 +67,7 @@ createResponder({
                     createLabel({
                         label: "Palavra",
                         component: new TextInputBuilder({
-                            label: "Palavra",
+                            customId: "response",
                             placeholder: "Palavra para o jogo",
                             style: TextInputStyle.Paragraph,
                             required: true,

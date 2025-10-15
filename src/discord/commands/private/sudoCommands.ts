@@ -2,7 +2,7 @@ import { createCommand, createResponder, ResponderType } from "#base";
 import { prisma, redis } from "#database";
 import { stocksEventuals, res, icon, processApiQuestions, removeFromBlacklist, addToBlacklist, convertTime } from "#functions";
 import { menus } from "#menus";
-import { GeneType, Mails, PetGeneticsColorPart, Rarity } from "#prisma";
+import {  GeneType, Mails, PetGeneticsColorPart } from "#prisma";
 import { settings } from "#settings";
 import { brBuilder, createContainer, createLabel, createModalFields, createSeparator } from "@magicyan/discord";
 import { ApplicationCommandOptionType, ApplicationCommandType, StringSelectMenuBuilder, TextInputBuilder, TextInputStyle, time, UserSelectMenuBuilder } from "discord.js";
@@ -585,136 +585,51 @@ createCommand({
             case "test": {
                 await interaction.deferReply()
 
-                const fishesByRarity: { name: string; rarity: Rarity; price: number; }[] = [
-                    // COMUNS
-                    { name: "Tilápia", rarity: "COMUM", price: 3 },
-                    { name: "Sardinha", rarity: "COMUM", price: 4 },
-                    { name: "Lambari", rarity: "COMUM", price: 2 },
-                    { name: "Bagre", rarity: "COMUM", price: 2 },
-                    { name: "Mandí", rarity: "COMUM", price: 5 },
-                    { name: "Jundiá", rarity: "COMUM", price: 6 },
-
-                    // UNCOMUNS
-                    { name: "Pacu", rarity: "UNCOMUM", price: 8 },
-                    { name: "Tambaqui", rarity: "UNCOMUM", price: 7 },
-                    { name: "Carpa", rarity: "UNCOMUM", price: 9 },
-                    { name: "Curimbatá", rarity: "UNCOMUM", price: 10 },
-                    { name: "Traíra", rarity: "UNCOMUM", price: 11 },
-                    { name: "Piraputanga", rarity: "UNCOMUM", price: 12 },
-
-                    // RARES
-                    { name: "Dourado", rarity: "RARE", price: 20 },
-                    { name: "Atum", rarity: "RARE", price: 25 },
-                    { name: "Salmão", rarity: "RARE", price: 18 },
-                    { name: "Tucunaré", rarity: "RARE", price: 22 },
-                    { name: "Robalo", rarity: "RARE", price: 28 },
-                    { name: "Garoupa", rarity: "RARE", price: 30 },
-
-                    // EPICS
-                    { name: "Peixe-Espada", rarity: "EPIC", price: 60 },
-                    { name: "Polvo Gigante", rarity: "EPIC", price: 65 },
-                    { name: "Arraia", rarity: "EPIC", price: 50 },
-                    { name: "Enguia Elétrica", rarity: "EPIC", price: 55 },
-                    { name: "Peixe-Lua", rarity: "EPIC", price: 70 },
-
-                    // LEGENDARIES
-                    { name: "Lula Colossal", rarity: "LEGENDARY", price: 200 },
-                    { name: "Peixe-Dragão", rarity: "LEGENDARY", price: 250 },
-                    { name: "Leviatã", rarity: "LEGENDARY", price: 300 },
-                    { name: "Serpente Marinha", rarity: "LEGENDARY", price: 280 },
-                    { name: "Koi Dourado", rarity: "LEGENDARY", price: 220 },
-                    { name: "Kraken Ancestral", rarity: "LEGENDARY", price: 350 }
-                ];
-
-
-
-                const rodsByRarity: Record<Rarity, { names: string[], priceRange: [number, number], durability: [number, number] }> = {
-                    COMUM: {
-                        names: ['Vara Simples', 'Vara de Bambu'],
-                        priceRange: [100, 200],
-                        durability: [25, 35],
-                    },
-                    UNCOMUM: {
-                        names: ['Vara Reforçada', 'Vara de Madeira Polida'],
-                        priceRange: [200, 400],
-                        durability: [40, 60],
-                    },
-                    RARE: {
-                        names: ['Vara de Fibra de Carbono', 'Vara Profissional'],
-                        priceRange: [350, 600],
-                        durability: [70, 90],
-                    },
-                    EPIC: {
-                        names: ['Vara Encantada', 'Vara Real'],
-                        priceRange: [700, 1000],
-                        durability: [100, 140],
-                    },
-                    LEGENDARY: {
-                        names: ['Vara Divina', 'Vara do Leviatã'],
-                        priceRange: [1100, 1600],
-                        durability: [180, 220],
-                    },
-                }
-
-                function randomInRange([min, max]: [number, number]) {
-                    return Math.floor(Math.random() * (max - min + 1)) + min
-                }
-
-                async function main() {
-                    interaction.editReply(res.warning(`${icon.waiting_white} | Iniciando seed...`))
-                    await prisma.fish.deleteMany();
-                    await prisma.fish.createMany({
-                        data: fishesByRarity
-                    })
-
-                    interaction.editReply(res.warning(`${icon.waiting_white} | Peixes criados, agora criando varas...`))
-                    for (const [rarity, data] of Object.entries(rodsByRarity)) {
-                        for (const name of data.names) {
-                            await prisma.fishingRod.create({
-                                data: {
-                                    name,
-                                    rarity: rarity as Rarity,
-                                    price: randomInRange(data.priceRange),
-                                    durability: randomInRange(data.durability),
-                                },
-                            })
+                await prisma.userPet.create({
+                    data: {
+                        gender: "MALE",
+                        name: "SHOYO",
+                        humor: "happy",
+                        petId: 14,
+                        userId: "1419906960354181120",
+                        // 12 e 5,
+                        personality: {
+                            createMany: {
+                                data: [
+                                    {
+                                        traitId: 12,
+                                    },
+                                    {
+                                        traitId: 5,
+                                    }
+                                ]
+                            }
+                        },
+                        genetics: {
+                            createMany: {
+                                data: [
+                                    {
+                                        geneId: 211
+                                    },
+                                    {
+                                        geneId: 216
+                                    },
+                                    {
+                                        geneId: 220
+                                    }
+                                ]
+                            }
+                        },
+                        skills: {
+                            create: {
+                                skillId: 1,
+                                level: 2,
+                            }
                         }
                     }
-                }
+                })
 
-                await main();
-
-                /*
-                const [application, company, guildMember, guildSettings, mails, stock, stockHistory, stockHolding, user, tryviaQuestions] = await prisma.$transaction([
-                    prisma.application.findMany(),
-                    prisma.company.findMany(),
-                    prisma.guildMember.findMany(),
-                    prisma.guildSettings.findMany(),
-                    prisma.mails.findMany(),
-                    prisma.stock.findMany(),
-                    prisma.stockHistory.findMany(),
-                    prisma.stockHolding.findMany(),
-                    prisma.user.findMany(),
-                    prisma.tryviaQuestions.findMany()
-                ])
-
-                await fs.writeFile(
-                    "database.json",
-                    JSON.stringify({
-                        application,
-                        company,
-                        guildMember,
-                        guildSettings,
-                        mails,
-                        stock,
-                        stockHistory,
-                        stockHolding,
-                        user,
-                        tryviaQuestions
-                    }, null, 2)
-                )
-                    */
-                interaction.editReply(res.success("Database povoada! concluído"))
+                interaction.editReply(res.success("Concluído"))
                 return;
             }
             case "force-stock-variation": {
