@@ -221,8 +221,6 @@ model StockHolding {
 
 model GuildSettings {
   id                             String   @id
-  chatBotChannels                String[] @default([])
-  chatBotEnabled                 Boolean  @default(false)
   
   channelsCommandDisabled        String[] @default([])
   channelsCommandDisabledIsHabilited Boolean @default(false)

@@ -13,8 +13,6 @@ export default async function getGuildRoute(app: FastifyInstance, client: Client
         if (!guild) return reply.status(404).send({ error: "Guild not found" })
 
         const settingsBodySchema = z.object({
-            chatBotChannels: z.array(z.string()),
-            chatBotEnabled: z.boolean(),
             channelsCommandDisabled: z.array(z.string()),
             channelsCommandDisabledIsHabilited: z.boolean(),
             channelsCommandEnabled: z.array(z.string()),
@@ -161,8 +159,6 @@ export default async function getGuildRoute(app: FastifyInstance, client: Client
             },
             create: {
                 id: guildId,
-                chatBotChannels: body.chatBotChannels,
-                chatBotEnabled: body.chatBotEnabled,
                 channelsCommandDisabled: body.channelsCommandDisabled,
                 channelsCommandDisabledIsHabilited: body.channelsCommandDisabledIsHabilited,
                 channelsCommandEnabled: body.channelsCommandEnabled,
@@ -177,8 +173,6 @@ export default async function getGuildRoute(app: FastifyInstance, client: Client
                 warnLevelUp: body.warnLevelUp
             },
             update: {
-                chatBotChannels: body.chatBotChannels,
-                chatBotEnabled: body.chatBotEnabled,
                 channelsCommandDisabled: body.channelsCommandDisabled,
                 channelsCommandDisabledIsHabilited: body.channelsCommandDisabledIsHabilited,
                 channelsCommandEnabled: body.channelsCommandEnabled,

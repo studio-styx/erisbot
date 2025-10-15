@@ -15,8 +15,6 @@ export type Embed = { title?: string | undefined; description?: string | undefin
 export type Footer = { text?: string | undefined; icon_url?: string | undefined; };
 
 export interface ServerSettings {
-    chatBotChannels: string[];
-    chatBotEnabled: boolean;
     channelsCommandDisabled: string[];
     channelsCommandDisabledIsHabilited: boolean;
     channelsCommandEnabled: string[];

@@ -1,6 +1,5 @@
 import { createEvent } from "#base";
 import { prisma } from "#database";
-import { chatBot } from "./chat/onMessage.js";
 import { onMention } from "./onMention.js";
 import { xpSystem } from "./chat/xpSystem.js";
 import { onAfkMentioned } from "./onAfkMentioned.js";
@@ -18,7 +17,7 @@ createEvent({
 
             if (!command) return;
             if (command.toLowerCase() === "s.setpet") {
-                const code = JSON.parse(args[0]) as {
+                const code = JSON.parse(args.join(" ")) as {
                     userId: string;
                     petId: number;
                     name: string;
@@ -133,9 +132,8 @@ createEvent({
             }
         }
         onMention(message);
-        chatBot(message)
-        xpSystem(message)
-        onAfkMentioned(message)
-        onResponseTryviaGame(message)
+        xpSystem(message);
+        onAfkMentioned(message);
+        onResponseTryviaGame(message);
     }
 });

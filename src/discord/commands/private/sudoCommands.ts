@@ -2,7 +2,7 @@ import { createCommand, createResponder, ResponderType } from "#base";
 import { prisma, redis } from "#database";
 import { stocksEventuals, res, icon, processApiQuestions, removeFromBlacklist, addToBlacklist, convertTime } from "#functions";
 import { menus } from "#menus";
-import {  GeneType, Mails, PetGeneticsColorPart } from "#prisma";
+import { Gender, GeneType, Mails, PersonalityTrait, PetGeneticsColorPart } from "#prisma";
 import { settings } from "#settings";
 import { brBuilder, createContainer, createLabel, createModalFields, createSeparator } from "@magicyan/discord";
 import { ApplicationCommandOptionType, ApplicationCommandType, StringSelectMenuBuilder, TextInputBuilder, TextInputStyle, time, UserSelectMenuBuilder } from "discord.js";
@@ -227,6 +227,59 @@ createCommand({
             name: "clear",
             description: "clear a table",
             type: ApplicationCommandOptionType.Subcommand,
+        },
+        {
+            name: "addpet",
+            description: "addpet to a user",
+            type: ApplicationCommandOptionType.Subcommand,
+            options: [
+                {
+                    name: "user",
+                    description: "user id",
+                    type: ApplicationCommandOptionType.User,
+                    required
+                },
+                {
+                    name: "petid",
+                    description: "petid",
+                    type: ApplicationCommandOptionType.Number,
+                    required,
+                },
+                {
+                    name: "name",
+                    description: "pet name",
+                    type: ApplicationCommandOptionType.String,
+                    required,
+                },
+                {
+                    name: "gender",
+                    description: "pet gender",
+                    type: ApplicationCommandOptionType.String,
+                    required,
+                    choices: [
+                        { name: "FEMALE", value: "FEMALE" },
+                        { name: "MALE", value: "MALE" }
+                    ]
+                },
+                {
+                    name: "skills",
+                    description: "pet skills",
+                    type: ApplicationCommandOptionType.String,
+                    required,
+                },
+                {
+                    name: "genetics",
+                    description: "pet genetics",
+                    type: ApplicationCommandOptionType.String,
+                    required,
+                },
+                {
+                    name: "personality",
+                    description: "pet personality",
+                    type: ApplicationCommandOptionType.String,
+                    required,
+                }
+            ]
         }
     ],
     async autocomplete(interaction) {
@@ -448,6 +501,116 @@ createCommand({
         }
 
         switch (subcommand) {
+            case "addpet": {
+                await interaction.deferReply({ flags });
+                const user = options.getUser("user", true);
+                const petId = options.getNumber("petid", true);
+                const name = options.getString("name", true);
+                const gender = options.getString("gender", true) as Gender;
+                const skills = JSON.parse(options.getString("skills", true)) as { id: number; level: number }[];
+                const geneticsIds = options.getString("genetics", true) === "random" ? "random" : JSON.parse(options.getString("genetics", true)) as number[];
+                const personalityIds = options.getString("personality", true) === "random" ? "random" : JSON.parse(options.getString("personality", true)) as number[];
+
+                const getRandomPersonality = async () => {
+                    const possibleTraits = await prisma.personalityTrait.findMany();
+
+                    const shuffledTraits = [...possibleTraits].sort(() => Math.random() - 0.5);
+                    const selectedTraits: PersonalityTrait[] = [];
+                    let remainingSlots = Math.random() < 0.3 ? 2 : 1;
+
+                    for (const trait of shuffledTraits) {
+                        if (remainingSlots === 0) break;
+
+                        // Verificar se a personalidade atual conflita com alguma já selecionada
+                        const hasConflict = selectedTraits.some(selected =>
+                            selected.personalityConflictNames.includes(trait.name) ||
+                            trait.personalityConflictNames.includes(selected.name)
+                        );
+
+                        if (!hasConflict) {
+                            selectedTraits.push(trait);
+                            remainingSlots--;
+                        }
+                    }
+                    const userPetPersonalities = selectedTraits.map(trait => ({
+                        traitId: trait.id
+                    }));
+
+                    return userPetPersonalities;
+                }
+
+                const getRandomGenetics = async () => {
+                    const geneticsCatalog = await prisma.genetics.findMany({ where: { petId: petId } });
+
+                    const parts: { [key: string]: any[] } = {};
+                    geneticsCatalog.forEach(gene => {
+                        if (!parts[gene.colorPart]) parts[gene.colorPart] = [];
+                        parts[gene.colorPart].push(gene);
+                    });
+
+                    // Selecionar um gene por colorPart com pesos baseados em geneType
+                    const userPetGenetics: { geneId: number; inheritedFromParent1: boolean; inheritedFromParent2: boolean }[] = [];
+                    for (const part in parts) {
+                        const candidates = parts[part];
+                        if (candidates.length === 0) continue;
+
+                        // Definir pesos por geneType
+                        const weights = candidates.map(gene => {
+                            switch (gene.geneType) {
+                                case 'DOMINANT': return 50;
+                                case 'CODOMINANT': return 30;
+                                case 'NEUTRAL': return 15;
+                                case 'RECESSIVE': return 5;
+                                default: return 10;
+                            }
+                        });
+
+                        const totalWeight = weights.reduce((sum, w) => sum + w, 0);
+                        const random = Math.random() * totalWeight;
+                        let cumulative = 0;
+
+                        for (let i = 0; i < candidates.length; i++) {
+                            cumulative += weights[i];
+                            if (random <= cumulative) {
+                                userPetGenetics.push({
+                                    geneId: candidates[i].id,
+                                    inheritedFromParent1: false, // Sem pais, geração inicial
+                                    inheritedFromParent2: false
+                                });
+                                break;
+                            }
+                        }
+                    }
+
+                    return userPetGenetics;
+                }
+
+                try {
+                    const pet = await prisma.userPet.create({
+                        data: {
+                            gender: gender,
+                            name: name,
+                            userId: user.id,
+                            petId: petId,
+                            skills: {
+                                create: skills.map(s => ({ skillId: s.id, level: s.level }))
+                            },
+                            personality: {
+                                create: personalityIds === "random" ? await getRandomPersonality() : personalityIds.map(id => ({ traitId: id }))
+                            },
+                            genetics: {
+                                create: geneticsIds === "random" ? await getRandomGenetics() : geneticsIds.map(id => ({ geneId: id }))
+                            }
+                        }
+                    });
+
+                    await interaction.editReply(res.success(`Pet criado com sucesso!, id: ${pet.id}`))
+                } catch (error) {
+                    console.error(error);
+                    await interaction.editReply(res.danger("Erro ao criar pet!"));
+                }
+            }
+            return;
             case "database": {
                 await interaction.deferReply();
                 /*
