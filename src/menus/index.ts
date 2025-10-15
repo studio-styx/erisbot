@@ -24,6 +24,7 @@ import { adoptionCenterMenu } from "./pet/adoptionCenter.js";
 import { petCareMenu } from "./pet/petCare.js";
 import { dashboardMenu } from "./settings/dashboard.js";
 import { questionMenu } from "./tryviaGame/question.js";
+import { userInfoMenu } from "./user/info.js";
 import { userLogsMenu } from "./userLogs.js";
 import { rankMenu } from "./xpSystem/rank.js";
 
@@ -81,5 +82,8 @@ export const menus = {
     pets: {
         adoptionCenter: adoptionCenterMenu,
         care: petCareMenu
+    },
+    user: {
+        info: userInfoMenu
     }
 }

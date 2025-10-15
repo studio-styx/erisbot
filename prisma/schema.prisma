@@ -28,6 +28,8 @@ model User {
   activePetId        Int?           @unique
   activePet          UserPet?       @relation("ActivePetRelation", fields: [activePetId], references: [id], onDelete: SetNull)
   blacklist          Json?
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @default(now())     
 
   logs               Log[]
   cooldowns          Cooldown[]
