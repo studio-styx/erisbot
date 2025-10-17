@@ -821,7 +821,7 @@ createCommand({
                 const users = interaction.options.getString("users", true);
                 const content = interaction.options.getString("content", true);
 
-                const sendMailDm = async (mail: Mails) => {
+                const sendMailDm = (mail: Mails) => {
                     const components: any[] = [
                         brBuilder(
                             `# ${icon.mail} | Carta recebida de: ${interaction.user.username}`,
@@ -853,11 +853,10 @@ createCommand({
                                     }
                                 })
                                 usersCount++;
-                                if (!user.mailsTagsIgnored) continue;
                                 try {
                                     const discordUser = await interaction.client.users.fetch(user.id);
                                     if (discordUser) {
-                                        const container = await sendMailDm(mail);
+                                        const container = sendMailDm(mail);
                                         await discordUser.send({ flags: ["IsComponentsV2"], components: [container] })
                                     }
                                 } catch (error) {
@@ -891,7 +890,7 @@ createCommand({
                                     continue;
                                 }
 
-                                const user = await tx.user.upsert({
+                                await tx.user.upsert({
                                     where: { id },
                                     create: { id },
                                     update: {}
@@ -906,9 +905,8 @@ createCommand({
                                 });
 
                                 successUsers.push(discordUser.displayName);
-                                if (!user.mailsTagsIgnored) continue;
                                 try {
-                                    const container = await sendMailDm(mail);
+                                    const container = sendMailDm(mail);
                                     await discordUser.send({ flags: ["IsComponentsV2"], components: [container] })
                                 } catch (error) {
                                     continue;
