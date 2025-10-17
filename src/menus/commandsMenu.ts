@@ -60,7 +60,7 @@ export async function commandsMenu<R>(page: "economy" | "bot" | "user" | "modera
         }
         case "bot": {
             const [supportCommandId, bot] = await Promise.all([
-                getCommandId(interaction, "suporte"),
+                getCommandId(interaction, "support"),
                 getCommandId(interaction, "bot")
             ])
 

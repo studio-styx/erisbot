@@ -1,6 +1,6 @@
 import { Store, setupCreators } from "#base";
 import { prisma } from "#database";
-import { getCommandId, getRandomNumber, getServerSettings, icon, isBlacklisted, PrismaBlacklistValue, res, resv2 } from "#functions";
+import { defaultServerSettings, getCommandId, getRandomNumber, getServerSettings, icon, isBlacklisted, PrismaBlacklistValue, res, resv2, setServerSettings } from "#functions";
 import { PetSkill, UserPetSkill } from "#prisma";
 import { brBuilder, createSeparator } from "@magicyan/discord";
 import { channelMention, Interaction, time } from "discord.js";
@@ -66,8 +66,14 @@ export const { createCommand, createEvent, createResponder } = setupCreators({
 
             if (!interaction.guildId) return;
 
+            const setSettings = async () => {
+                await prisma.guildSettings.upsert({ where: { id: interaction.guildId! }, create: { id: interaction.guildId! }, update: {}} );
+                setServerSettings(interaction.guildId!, defaultServerSettings)
+                return defaultServerSettings;
+            }
+
             const serverSettings = getServerSettings(interaction.guildId)
-                || await prisma.guildSettings.upsert({ where: { id: interaction.guildId }, create: { id: interaction.user.id }, update: {}} );
+                || await setSettings();
 
             const channelId = interaction.channelId;
             if (serverSettings.channelsCommandDisabledIsHabilited && serverSettings.channelsCommandDisabled.includes(channelId) && !interaction.memberPermissions?.has("Administrator")) {
