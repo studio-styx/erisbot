@@ -4,16 +4,17 @@ import { icon, petAnimalFormatted, res, resv2 } from "#functions";
 import { StringSelectMenuBuilder, userMention } from "discord.js";
 
 createResponder({
-    customId: "petBattle/accept/:userId/:targetId/:userPetId",
+    customId: "petBattle/accept/:userId/:targetId/:userPetId/:amount",
     types: [ResponderType.Button], cache: "cached",
     parse(params) {
         return {
             userId: params.userId,
             targetId: params.targetId,
-            userPetId: +params.userPetId
+            userPetId: +params.userPetId,
+            amount: isNaN(+params.amount) ? null : +params.amount
         }
     },
-    async run(interaction, { targetId, userId, userPetId }) {
+    async run(interaction, { targetId, userId, userPetId, amount }) {
         const { user } = interaction;
         if (user.id === userId) {
             await interaction.update(resv2.danger(
@@ -53,7 +54,7 @@ createResponder({
         await interaction.editReply(resv2.warning(
             `Você aceitou a batalha! escolha um dos pets abaixo para batalhar contra o usuário ${userMention(userId)}`,
             new StringSelectMenuBuilder({
-                customId: `petBattle/acceptChoosePet/${userId}/${targetId}/${userPetId}`,
+                customId: `petBattle/acceptChoosePet/${userId}/${targetId}/${userPetId}/${amount}`,
                 placeholder: "Escolha um pet para batalhar",
                 options: selectedUserPets.filter(pet => pet.powers.length > 0).slice(0, 25).map(pet => ({
                     label: `${pet.name} - (${petAnimalFormatted[pet.pet.animal]})`,

@@ -8,6 +8,7 @@ export async function userBattleCommand(interaction: ChatInputCommandInteraction
 
     const petId = Number(options.getString("battlepet", true));
     const selectedUser = options.getUser("user", true);
+    const amount = options.getNumber("amount");
 
     // verificações iniciais
     if (selectedUser.id === user.id) {
@@ -81,7 +82,7 @@ export async function userBattleCommand(interaction: ChatInputCommandInteraction
         createSeparator(),
         `O usuário ${userMention(selectedUser.id)} precisa aceitar a proposta para iniciar a batalha clicando no botão abaixo`,
         new ButtonBuilder({
-            customId: `petBattle/accept/${user.id}/${selectedUser.id}/${pet.id}`,
+            customId: `petBattle/accept/${user.id}/${selectedUser.id}/${pet.id}/${amount}`,
             label: "Aceitar",
             style: ButtonStyle.Success
         })

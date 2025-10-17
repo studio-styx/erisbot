@@ -293,7 +293,21 @@ createCommand({
                             descriptionLocalizations: {
                                 "pt-BR": "pet para lutar",
                                 "es-ES": "mascota para luchar"
+                            },
+                        },
+                        {
+                            name: "amount",
+                            description: "amount to bet",
+                            type: ApplicationCommandOptionType.Number,
+                            nameLocalizations: {
+                                "pt-BR": "quantidade",
+                                "es-ES": "cantidad"
+                            },
+                            descriptionLocalizations: {
+                                "pt-BR": "quantidade a apostar",
+                                "es-ES": "cantidad a apostar"
                             }
+
                         }
                     ]
                 },
