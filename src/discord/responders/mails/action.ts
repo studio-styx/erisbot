@@ -58,22 +58,6 @@ createResponder({
                     return;
                 }
             }
-            case "unIgnoretag1":
-            case "unIgnoretag2": {
-                if (!interaction.isStringSelectMenu()) return;
-                const tags = interaction.values;
-
-                const newUser = await prisma.user.update({
-                    where: { id: userId },
-                    data: {
-                        mailsTagsIgnored: user.mailsTagsIgnored.filter(t => !tags.includes(t))
-                    }
-                })
-
-                await interaction.editReply(menus.mails.ignoreTags(newUser));
-                await interaction.followUp(res.success(`${icon.success} | ${tags.length === 1 ? "A tag selecionada foi excluida" : "As tags selecionadas foram excluidas"}: **${tags.map(t => `\`${t}\``).join(", ")}**`));
-                return;
-            }
         }
     },
 });

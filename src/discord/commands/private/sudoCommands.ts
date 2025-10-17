@@ -853,7 +853,6 @@ createCommand({
                                     }
                                 })
                                 usersCount++;
-                                if (!user.mailsTagsIgnored) continue;
                                 try {
                                     const discordUser = await interaction.client.users.fetch(user.id);
                                     if (discordUser) {
@@ -891,7 +890,7 @@ createCommand({
                                     continue;
                                 }
 
-                                const user = await tx.user.upsert({
+                                await tx.user.upsert({
                                     where: { id },
                                     create: { id },
                                     update: {}
@@ -906,7 +905,6 @@ createCommand({
                                 });
 
                                 successUsers.push(discordUser.displayName);
-                                if (!user.mailsTagsIgnored) continue;
                                 try {
                                     const container = await sendMailDm(mail);
                                     await discordUser.send({ flags: ["IsComponentsV2"], components: [container] })

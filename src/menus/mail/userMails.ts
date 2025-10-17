@@ -2,17 +2,11 @@ import { icon, resv2 } from "#functions";
 import { Mails, User } from "#prisma";
 import { settings } from "#settings";
 import { brBuilder, createContainer, createRow, createSeparator } from "@magicyan/discord";
-import { ButtonBuilder, ButtonStyle, StringSelectMenuBuilder, time, userMention, type InteractionReplyOptions } from "discord.js";
+import { ButtonBuilder, ButtonStyle, time, userMention, type InteractionReplyOptions } from "discord.js";
 
 export function userMailsMenu<R>(mails: Mails[], user: User, page = 0): R {
     if (mails.length === 0) {
         return (resv2.danger(`${icon.error} | Você não tem cartas!`, createRow(
-                new ButtonBuilder({
-                    customId: `mail/menu/unIgnoreTag/${user.id}`,
-                    label: "Desfazer ignorar tags",
-                    style: ButtonStyle.Secondary,
-                    disabled: user.mailsTagsIgnored.length === 0
-                }),
                 new ButtonBuilder({
                     customId: `mail/action/enableDmNotification/${user.id}/0`,
                     label: user.dmNotification ? "Desativar dm" : "Ativar dm",
@@ -23,13 +17,7 @@ export function userMailsMenu<R>(mails: Mails[], user: User, page = 0): R {
     }
 
     const mail = mails[page];
-    const mailTags = mail.tags
-        .filter(tag => !user.mailsTagsIgnored.includes(tag))
-        .map(tag => ({
-            label: tag,
-            value: tag,
-            emoji: "📬"
-        })).slice(0, 25)
+    
     const components = [
         `# ${icon.mail} Lista de cartas`,
         createSeparator(),
@@ -56,17 +44,6 @@ export function userMailsMenu<R>(mails: Mails[], user: User, page = 0): R {
                 style: ButtonStyle.Danger
             })
         ),
-        "Atenção, se ignorar as tags você não receberá mais cartas com essas tags.",
-        createRow(
-            new StringSelectMenuBuilder({
-                customId: `mail/actionPage/ignore/${mail.id}/${page}/${user.id}`,
-                placeholder: mailTags.length === 0 ? "todas as tags dessa carta foram ignoradas" : "Ignorar tags",
-                options: mailTags.length === 0 ? [{ label: "todas as tags dessa carta foram ignoradas", value: "alIgnoratedMailTags" }] : mailTags,
-                minValues: 0,
-                maxValues: mailTags.length === 0 ? 1 : mailTags.length,
-                disabled: mailTags.length === 0
-            })
-        ),
     ];
 
     const rows = [
@@ -88,12 +65,6 @@ export function userMailsMenu<R>(mails: Mails[], user: User, page = 0): R {
                 label: mails.find(m => !m.asRead) ? "Você tem cartas não lidas" : "Apagar todas as cartas",
                 style: ButtonStyle.Danger,
                 disabled: mails.find(m => !m.asRead) ? true : false
-            }),
-            new ButtonBuilder({
-                customId: `mail/menu/unIgnoreTag/${user.id}`,
-                label: "Desfazer ignorar tags",
-                style: ButtonStyle.Secondary,
-                disabled: user.mailsTagsIgnored.length === 0
             }),
             new ButtonBuilder({
                 customId: `mail/action/enableDmNotification/${user.id}/${page}`,

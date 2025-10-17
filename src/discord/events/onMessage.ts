@@ -5,7 +5,8 @@ import { xpSystem } from "./chat/xpSystem.js";
 import { onAfkMentioned } from "./onAfkMentioned.js";
 import { onResponseTryviaGame } from "./tryvia/response.js";
 import { Gender, PersonalityTrait } from "#prisma";
-import { res } from "#functions";
+import { icon, res } from "#functions";
+import { aniversaryEvent } from "./aniversaryRead.js";
 
 createEvent({
     name: "onMessage",
@@ -130,10 +131,23 @@ createEvent({
                     setTimeout(() => msg.delete(), 5000);
                 }
             }
+            if (command.toLowerCase() === "s.force") {
+                const messageId = args[0];
+
+                if (!messageId) {
+                    message.reply(res.danger(`${icon.error} | The arg "messageId" is necessary to execute this command!`))
+                    return;
+                }
+
+                const fetchedMessage = await message.channel.messages.fetch(messageId);
+
+                await aniversaryEvent(fetchedMessage, true)
+            }
         }
         onMention(message);
         xpSystem(message);
         onAfkMentioned(message);
         onResponseTryviaGame(message);
+        aniversaryEvent(message);
     }
 });
