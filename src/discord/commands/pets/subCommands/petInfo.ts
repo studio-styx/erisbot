@@ -38,6 +38,13 @@ export async function petInfoCommand(interaction: ChatInputCommandInteraction<"c
                     pet: true
                 }
             },
+            powers: {
+                include: {
+                    power: true
+                }
+            },
+            combatsAsPet1: true,
+            combatsAsPet2: true
         }
     });
 
@@ -47,6 +54,7 @@ export async function petInfoCommand(interaction: ChatInputCommandInteraction<"c
     }
 
     const childs = [...pet.childsAsParent1, ...pet.childsAsParent2];
+    const combats = [...pet.combatsAsPet1, ...pet.combatsAsPet2]
 
     interaction.editReply(resv2.fuchsia(
         `## Informações do Pet`,
@@ -90,7 +98,9 @@ export async function petInfoCommand(interaction: ChatInputCommandInteraction<"c
                 ? childs.map(f => `**\`${f.name}\`**`).join(", ")
                 : "Nenhum"
             }`,
-            pet.gender === "FEMALE" ? `**Está grávida?**: ${pet.isPregnant === true ? `Sim, termina ${time(pet.pregnantEndAt!, "R")}` : "Não"}` : null
+            pet.gender === "FEMALE" ? `**Está grávida?**: ${pet.isPregnant === true ? `Sim, termina ${time(pet.pregnantEndAt!, "R")}` : "Não"}` : null,
+            `**Poderes:** ${pet.powers.length === 0 ? "Nenhum" : pet.powers.map(p => `**\`${p.power.name}\`**`).join(", ")}`,
+            `**Histórico de combates:** ${combats.length === 0 ? "Nenhum" : `Batalhou ${combats.length} vezes e ganhou ${combats.filter(h => h.winnerPetId === pet.id).length} vezes`}`
         )
     ))
     return;

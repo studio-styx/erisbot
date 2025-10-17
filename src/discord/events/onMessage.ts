@@ -122,7 +122,7 @@ createEvent({
                             }
                         }
                     });
-    
+
                     const msg = await message.channel.send(res.success("Pet criado com sucesso!"));
                     setTimeout(() => msg.delete(), 5000);
                 } catch (error) {

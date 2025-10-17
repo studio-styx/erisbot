@@ -20,9 +20,11 @@ import { startRankingMenu } from "./leaderboard/startRanking.js";
 import { userMailsMenu } from "./mail/userMails.js";
 import { fishMenu } from "./minigames/fish.js";
 import { adoptionCenterMenu } from "./pet/adoptionCenter.js";
+import { battleMenu } from "./pet/battle/battle.js";
 import { petCareMenu } from "./pet/petCare.js";
 import { dashboardMenu } from "./settings/dashboard.js";
 import { questionMenu } from "./tryviaGame/question.js";
+import { userInfoMenu } from "./user/info.js";
 import { userLogsMenu } from "./userLogs.js";
 import { rankMenu } from "./xpSystem/rank.js";
 
@@ -78,6 +80,12 @@ export const menus = {
     },
     pets: {
         adoptionCenter: adoptionCenterMenu,
-        care: petCareMenu
+        care: petCareMenu,
+        battle: {
+            battle: battleMenu
+        }
+    },
+    user: {
+        info: userInfoMenu
     }
 }

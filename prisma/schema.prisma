@@ -14,27 +14,34 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+
+// ------------------------
+// USUÁRIO
+// ------------------------
+
 model User {
   id                 String         @id
   money              Decimal        @default(0.0) @db.Decimal(12, 2)
   bank               Decimal        @default(50.0) @db.Decimal(12, 2)
   xp                 Int            @default(0)
-  company            Company?       @relation(fields: [companyId], references: [id], onDelete: SetNull)
   companyId          Int?
   token              Json?
   afkReasson         String?
   afkTime            DateTime?
   dmNotification     Boolean        @default(false)
   activePetId        Int?           @unique
-  activePet          UserPet?       @relation("ActivePetRelation", fields: [activePetId], references: [id], onDelete: SetNull)
   blacklist          Json?
+  createdAt          DateTime       @default(now())
+  updatedAt          DateTime       @updatedAt
+
+  company            Company?       @relation(fields: [companyId], references: [id], onDelete: SetNull)
+  activePet          UserPet?       @relation("ActivePetRelation", fields: [activePetId], references: [id], onDelete: SetNull)
 
   logs               Log[]
   cooldowns          Cooldown[]
   stocks             StockHolding[]
   mails              Mails[]        @relation("ReceivedMails")
   sendedMails        Mails[]        @relation("SentMails")
-  mailsTagsIgnored   String[]       @default([])
   applications       Application[]
   guilds             GuildMember[]
   transactionsSent   Transaction[]  @relation("UserTransactions")
@@ -43,6 +50,8 @@ model User {
   fishs              UserFish[]
   fishingRods        UserFishingRod[]
   pets               UserPet[]      @relation("UserPetsRelation")
+  combatsAsUser1     CombatHistory[] @relation("User1Relation")
+  combatsAsUser2     CombatHistory[] @relation("User2Relation")
 }
 
 model TryviaQuestions {
@@ -392,6 +401,10 @@ model FishingRod {
   owners          UserFishingRod[]
 }
 
+// ------------------------
+// PETS
+// ------------------------
+
 model Pet {
   id        Int       @id @default(autoincrement())
   name      String
@@ -402,46 +415,58 @@ model Pet {
   createdAt DateTime  @default(now())
 
   userPets  UserPet[]
-  genetics  Genetics[] // catálogo de genes possíveis dessa espécie
+  genetics  Genetics[]
 }
 
+
+// ------------------------
+// PETS DE USUÁRIO
+// ------------------------
+
 model UserPet {
-  id        Int       @id @default(autoincrement())
-  userId    String
-  petId     Int
-  name      String
-  hungry    Int       @default(100)
-  life      Int       @default(100)
-  happiness Int       @default(100)
-  energy    Int       @default(100)
-  isDead    Boolean   @default(false)
-  createdAt DateTime  @default(now())
-  gender    Gender
-  isPregnant Boolean  @default(false)
+  id          Int       @id @default(autoincrement())
+  userId      String
+  petId       Int
+  name        String
+  hungry      Int       @default(100)
+  life        Int       @default(100)
+  happiness   Int       @default(100)
+  energy      Int       @default(100)
+  isDead      Boolean   @default(false)
+  gender      Gender
+  humor       String    @default("normal")
+  isPregnant  Boolean   @default(false)
   pregnantEndAt DateTime?
-  personality UserPetPersonality[]
-  humor      String   @default("normal")
-  updatedAt DateTime  @updatedAt()
-  spouseId Int? @unique
+  spouseId    Int?      @unique
+  parent1Id   Int?
+  parent2Id   Int?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  // Relações diretas
+  user        User      @relation("UserPetsRelation", fields: [userId], references: [id], onDelete: Cascade)
+  pet         Pet       @relation(fields: [petId], references: [id], onDelete: Cascade)
+  spouse      UserPet?  @relation("SpouseRelation", fields: [spouseId], references: [id])
+  spouseOf    UserPet?  @relation("SpouseRelation")
+  activeUser  User?     @relation("ActivePetRelation")
 
   // Hereditariedade
-  parent1Id Int?
-  parent2Id Int?
-
-  parent1   UserPet?  @relation("Parent1Relation", fields: [parent1Id], references: [id])
-  parent2   UserPet?  @relation("Parent2Relation", fields: [parent2Id], references: [id])
+  parent1     UserPet?  @relation("Parent1Relation", fields: [parent1Id], references: [id])
+  parent2     UserPet?  @relation("Parent2Relation", fields: [parent2Id], references: [id])
   childsAsParent1 UserPet[] @relation("Parent1Relation")
   childsAsParent2 UserPet[] @relation("Parent2Relation")
 
-  // Relações
-  activeUser User? @relation("ActivePetRelation")
-  user       User  @relation("UserPetsRelation", fields: [userId], references: [id], onDelete: Cascade)
-  spouse    UserPet?  @relation("SpouseRelation", fields: [spouseId], references: [id])
-  spouseOf  UserPet?  @relation("SpouseRelation")
-  genetics PetGenetics[]
-  pet      Pet       @relation(fields: [petId], references: [id], onDelete: Cascade)
-  skills   UserPetSkill[]
-  adoption AdoptionCenter?
+  // Outras relações
+  genetics    PetGenetics[]
+  skills      UserPetSkill[]
+  powers      UserPetPower[]
+  combatPowerHistory CombatPowerHistory[]
+  combatsAsPet1 CombatHistory[] @relation("Pet1Relation")
+  combatsAsPet2 CombatHistory[] @relation("Pet2Relation")
+  combatsAsWinner CombatHistory[] @relation("PetWinnerRelation")
+  combatsAsLoser  CombatHistory[] @relation("PetLoserRelation")
+  personality UserPetPersonality[]
+  adoption    AdoptionCenter?
 }
 
 model UserPetPersonality {
@@ -546,4 +571,159 @@ enum Animal {
 enum Gender {
   MALE
   FEMALE
+}
+
+// Poderes
+
+// ------------------------
+// ENUMS
+// ------------------------
+
+enum PetPowerType {
+  HEAL         // Cura instantânea
+  AUTOHEAL     // Cura ao longo do tempo
+  DAMAGE       // Dano direto
+  AUTODAMAGE   // Dano ao longo do tempo
+  BUFF         // Aumenta atributos
+  DEBUFF       // Reduz atributos
+}
+
+enum PetElement {
+  NORMAL
+  FIRE
+  WATER
+  EARTH
+  AIR
+  ELECTRIC
+  ICE
+  DARK
+  LIGHT
+}
+
+// ------------------------
+// MODELOS PRINCIPAIS
+// ------------------------
+
+model PetPower {
+  id          Int            @id @default(autoincrement())
+  name        String
+  description String
+
+  type        PetPowerType
+  element     PetElement
+
+  // Estrutura dinâmica mas padronizável, ex:
+  // { "basePower": 50, "accuracy": 90, "cooldown": 2, "scaling": { "attack": 0.8 } }
+  details     Json
+
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  // Relações
+  userPowers  UserPetPower[]
+  effectivenessFrom PetPowerEffectiveness[] @relation("EffectiveFrom")
+  effectivenessTo   PetPowerEffectiveness[] @relation("EffectiveTo")
+}
+
+
+// ------------------------
+// RELAÇÃO DE EFETIVIDADE
+// ------------------------
+
+model PetPowerEffectiveness {
+  id          Int         @id @default(autoincrement())
+
+  fromElement PetElement
+  toElement   PetElement
+  multiplier  Float       @default(1.0)
+
+  // Ligações opcionais diretas entre poderes
+  fromPowerId Int?        
+  toPowerId   Int?
+
+  fromPower   PetPower?   @relation("EffectiveFrom", fields: [fromPowerId], references: [id], onDelete: SetNull)
+  toPower     PetPower?   @relation("EffectiveTo",   fields: [toPowerId], references: [id], onDelete: SetNull)
+}
+
+
+// ------------------------
+// RELAÇÃO PET ↔ PODER
+// ------------------------
+
+model UserPetPower {
+  id          Int         @id @default(autoincrement())
+  userPetId   Int
+  powerId     Int
+
+  level       Int          @default(1)
+  xp          Int          @default(0)
+  isEquipped  Boolean      @default(false)
+
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  // Relações
+  userPet     UserPet      @relation(fields: [userPetId], references: [id], onDelete: Cascade)
+  power       PetPower     @relation(fields: [powerId], references: [id], onDelete: Cascade)
+  combatPowerHistory CombatPowerHistory[]
+}
+
+
+// ------------------------
+// HISTÓRICO DE COMBATES
+// ------------------------
+
+model CombatHistory {
+  id             Int       @id @default(autoincrement())
+  messageId      String    @unique
+  guildId        String
+  channelId      String
+
+  user1Id        String
+  user2Id        String
+  pet1Id         Int
+  pet2Id         Int
+
+  winnerPetId    Int?
+  loserPetId     Int?
+  amount         Int?
+  roundCount     Int       @default(1)
+
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  // Relações com usuários
+  user1          User      @relation("User1Relation", fields: [user1Id], references: [id], onDelete: Cascade)
+  user2          User      @relation("User2Relation", fields: [user2Id], references: [id], onDelete: Cascade)
+
+  // Relações com pets (participantes e resultado)
+  pet1           UserPet   @relation("Pet1Relation", fields: [pet1Id], references: [id], onDelete: Cascade)
+  pet2           UserPet   @relation("Pet2Relation", fields: [pet2Id], references: [id], onDelete: Cascade)
+
+  winnerPet      UserPet?  @relation("PetWinnerRelation", fields: [winnerPetId], references: [id], onDelete: SetNull)
+  loserPet       UserPet?  @relation("PetLoserRelation",  fields: [loserPetId],  references: [id], onDelete: SetNull)
+
+  powerHistory   CombatPowerHistory[]
+}
+
+
+// ------------------------
+// HISTÓRICO DE PODERES EM UM COMBATE
+// ------------------------
+
+model CombatPowerHistory {
+  id          Int           @id @default(autoincrement())
+  combatId    Int
+  userPetPowerId Int?
+  petId       Int
+  damage      Int?
+  heal        Int?
+  turn        Int?
+
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  combat      CombatHistory @relation(fields: [combatId], references: [id], onDelete: Cascade)
+  pet         UserPet       @relation(fields: [petId], references: [id], onDelete: Cascade)
+  userPetPower UserPetPower? @relation(fields: [userPetPowerId], references: [id], onDelete: SetNull)
 }

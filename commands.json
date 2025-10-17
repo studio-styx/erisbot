@@ -162,6 +162,12 @@
         "category": "general"
     },
     {
+        "name": "user info",
+        "description": "Veja as informações de um usuário",
+        "siteAvaible": false,
+        "category": "general"
+    },
+    {
         "name": "user logs",
         "description": "Veja suas logs",
         "siteAvaible": false,

@@ -125,7 +125,7 @@ export async function botInfoMenu<R>(page: 'main' | 'hardware' | 'software' | 'c
                     `> **Versão do Constatic:** 1.3.7`,
                     `> **Minha versão:** ${settings.bot.version}`,
                     `> **Sistema operacional:** ${getOSInfo()}`,
-                    `> **Estou online dês de:** ${time(new Date(process.uptime() * 1000), "R")}`,
+                    `> **Estou online desde:** ${time(Math.floor(Date.now() / 1000 - process.uptime()), "R")}`
                 ),
             )
             break;

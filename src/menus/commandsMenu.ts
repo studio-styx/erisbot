@@ -90,6 +90,7 @@ export async function commandsMenu<R>(page: "economy" | "bot" | "user" | "modera
                 value: brBuilder(
                     `**</user logs:${user}>** - Ver seus registros`,
                     `**</user avatar:${user}>** - Ver seu avatar`,
+                    `**</user info:${user}>** - Ver as informações de um usuário`,
                     `**</xp rank:${xp}>** - Ver o rank de xp dos usuários do servidor`,
                     `**</xp user:${xp}>** - Ver o xp de um usuário`,
                 )

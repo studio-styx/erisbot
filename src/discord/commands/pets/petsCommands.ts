@@ -11,6 +11,7 @@ import { petReproductionCommand } from "./subCommands/petReproduction.js";
 import { UserPet } from "#prisma";
 import { changePetName } from "./subCommands/changePetName.js";
 import { setActivePet } from "./subCommands/setActivePet.js";
+import { userBattleCommand } from "./subCommands/battle/userBattle.js";
 
 const cache = new Store<UserPet>();
 
@@ -238,6 +239,101 @@ createCommand({
                 "es-ES": "activar una mascota",
                 "pt-BR": "ativar um pet"
             }
+        },
+        {
+            name: "battle",
+            description: "battle with someone",
+            nameLocalizations: {
+                "pt-BR": "batalhar",
+                "es-ES": "batalhar"
+            },
+            descriptionLocalizations: {
+                "pt-BR": "batalhar com alguém",
+                "es-ES": "batalhar con alguien"
+            },
+            type: ApplicationCommandOptionType.SubcommandGroup,
+            options: [
+                {
+                    name: "user",
+                    description: "battle with another user",
+                    nameLocalizations: {
+                        "pt-BR": "usuário",
+                        "es-ES": "usuario"
+                    },
+                    descriptionLocalizations: {
+                        "pt-BR": "batalhar com outro usuário",
+                        "es-ES": "batalhar con otro usuario"
+                    },
+                    type: ApplicationCommandOptionType.Subcommand,
+                    options: [
+                        {
+                            name: "user",
+                            description: "user to battle",
+                            type: ApplicationCommandOptionType.User,
+                            required: true,
+                            nameLocalizations: {
+                                "pt-BR": "usuário",
+                                "es-ES": "usuario"
+                            },
+                            descriptionLocalizations: {
+                                "pt-BR": "usuário para lutar",
+                                "es-ES": "usuario para luchar"
+                            }
+                        },
+                        {
+                            name: "battlepet",
+                            description: "pet to battle",
+                            type: ApplicationCommandOptionType.String,
+                            required: true,
+                            autocomplete: true,
+                            nameLocalizations: {
+                                "pt-BR": "pet",
+                                "es-ES": "mascota"
+                            },
+                            descriptionLocalizations: {
+                                "pt-BR": "pet para lutar",
+                                "es-ES": "mascota para luchar"
+                            },
+                        },
+                        {
+                            name: "amount",
+                            description: "amount to bet",
+                            type: ApplicationCommandOptionType.Number,
+                            nameLocalizations: {
+                                "pt-BR": "quantidade",
+                                "es-ES": "cantidad"
+                            },
+                            descriptionLocalizations: {
+                                "pt-BR": "quantidade a apostar",
+                                "es-ES": "cantidad a apostar"
+                            }
+
+                        }
+                    ]
+                },
+                {
+                    name: "pet",
+                    description: "battle with a random pet",
+                    type: ApplicationCommandOptionType.Subcommand,
+                    options: [
+                        {
+                            name: "battlepet",
+                            description: "pet to battle",
+                            type: ApplicationCommandOptionType.String,
+                            required: true,
+                            autocomplete: true,
+                            nameLocalizations: {
+                                "pt-BR": "pet",
+                                "es-ES": "mascota"
+                            },
+                            descriptionLocalizations: {
+                                "pt-BR": "pet para lutar",
+                                "es-ES": "mascota para luchar"
+                            }
+                        }
+                    ]
+                }
+            ]
         }
     ],
     nameLocalizations: {
@@ -272,6 +368,30 @@ createCommand({
                 take: 25
             });
             await interaction.respond(pets.map(pet => ({ name: `${pet.name} - (${pet.pet.animal} - ${pet.pet.specie})`, value: pet.id.toString() })));
+            return;
+        } else if (focused.name === "battlepet") {
+            const pets = await prisma.userPet.findMany({
+                where: {
+                    userId: user.id,
+                    name: {
+                        contains: focused.value,
+                        mode: "insensitive"
+                    },
+                    adoption: null,
+                    isDead: false,
+                    isPregnant: false
+                },
+                select: {
+                    id: true,
+                    name: true,
+                    powers: true,
+                    pet: { select: { animal: true, specie: true } }
+                }
+            })
+
+            const avaiblePets = pets.filter(p => p.powers.length > 0)
+
+            await interaction.respond(avaiblePets.map(pet => ({ name: `${pet.name} - (${pet.pet.animal} - ${pet.pet.specie})`, value: pet.id.toString() })));
             return;
         }
 
@@ -394,6 +514,30 @@ createCommand({
     async run(interaction) {
         const { options } = interaction;
         const subcommand = options.getSubcommand();
+        const subcommandGroup = options.getSubcommandGroup();
+
+        if (subcommandGroup) {
+            switch (subcommandGroup) {
+                case "battle": {
+                    switch (subcommand) {
+                        case "user": {
+                            await userBattleCommand(interaction);
+                            break;
+                        }
+                        default: {
+                            await interaction.reply(res.danger(`${icon.error} | Eu procurei por toda parte mas não achei esse subcomando do grupo batalha!`))
+                            break;
+                        }
+                    }
+                    break;
+                }
+                default: {
+                    await interaction.reply(res.danger(`${icon.error} | Eu procurei por toda parte mas não achei esse grupo de subcomando!`))
+                    break;
+                }
+            }
+            return;
+        }
 
         switch (subcommand) {
             case "spin": {
