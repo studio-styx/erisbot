@@ -21,11 +21,17 @@
     "bravery": "#9c84ef"
   },
   "bot": {
-    "version": "1.6.11",
+    "version": "1.6.13",
     "ownerId": "1171963692984844401",
     "support": {
       "supportGuild": "1172930138770526248",
       "supportChannel": "1391175542447014068"
+    }
+  },
+  "sdk": {
+    "version": {
+      "latest": "0.2.9",
+      "minimalRequired": "0.2.8"
     }
   }
 }
