@@ -108,38 +108,6 @@ createResponder({
                 await interaction.followUp(res.success(`${icon.success} | Carta id: \`${id}\` deletado com sucesso!`))
                 return;
             }
-            case "ignore": {
-                if (!interaction.isStringSelectMenu()) return;
-                const tags = interaction.values
-
-                if (tags.length === 1 && tags[0] === "alIgnoratedMailTags") {
-                    interaction.followUp(res.danger(`${icon.error} | Você já ignorou todas as tags dessa carta`))
-                    return;
-                }
-
-                const user = await prisma.user.upsert({
-                    where: { id: userId },
-                    update: {},
-                    create: { id: userId },
-                    include: { mails: { orderBy: { createdAt: "desc" } } }
-                });
-
-                const currentIgnored = new Set(user.mailsTagsIgnored ?? []);
-
-                tags.forEach(tag => currentIgnored.delete(tag));
-
-                tags.forEach(tag => currentIgnored.add(tag));
-
-                const newUser = await prisma.user.upsert({
-                    where: { id: userId },
-                    update: { mailsTagsIgnored: tags },
-                    create: { id: userId, mailsTagsIgnored: tags },
-                    include: { mails: { orderBy: { createdAt: "desc" } } }
-                });
-                
-                await interaction.editReply(menus.mails.userMails(newUser.mails, newUser, Number(page)));
-                await interaction.followUp(res.success(`${icon.success} | Tags ignoradas com sucesso: ${Array.from(currentIgnored).map(t => `\`${t}\``).join(", ")}`))
-            }
         }
     },
 });

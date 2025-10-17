@@ -17,7 +17,6 @@ import { avaibleJobsMenu } from "./jobs/avaibleJobs.js";
 import { interviewMenu } from "./jobs/interview.js";
 import { rankingMenu } from "./leaderboard/ranking.js";
 import { startRankingMenu } from "./leaderboard/startRanking.js";
-import { ignoreTagMenu } from "./mail/ignoreTag.js";
 import { userMailsMenu } from "./mail/userMails.js";
 import { fishMenu } from "./minigames/fish.js";
 import { adoptionCenterMenu } from "./pet/adoptionCenter.js";
@@ -44,7 +43,6 @@ export const menus = {
     },
     mails: {
         userMails: userMailsMenu,
-        ignoreTags: ignoreTagMenu
     },
     botinfo: botInfoMenu,
     cassino: {

@@ -5,7 +5,7 @@ import { menus } from "#menus";
 import { Gender, GeneType, Mails, PersonalityTrait, PetGeneticsColorPart } from "#prisma";
 import { settings } from "#settings";
 import { brBuilder, createContainer, createLabel, createModalFields, createSeparator } from "@magicyan/discord";
-import { ApplicationCommandOptionType, ApplicationCommandType, StringSelectMenuBuilder, TextInputBuilder, TextInputStyle, time, UserSelectMenuBuilder } from "discord.js";
+import { ApplicationCommandOptionType, ApplicationCommandType, StringSelectMenuBuilder, TextInputBuilder, TextInputStyle, time } from "discord.js";
 import crypto from "node:crypto";
 
 function generateToken() {
@@ -402,11 +402,11 @@ createCommand({
                                     createLabel({
                                         label: "Id do dono do bot",
                                         description: "Qual é o id do dono do bot",
-                                        component: new UserSelectMenuBuilder({
-                                            customId: "onwerId",
-                                            minValues: 1,
-                                            maxValues: 1,
+                                        component: new TextInputBuilder({
+                                            customId: "ownerId",
                                             required: true,
+                                            style: TextInputStyle.Short,
+                                            placeholder: "Digite o id do dono do bot"
                                         })
                                     }),
                                     createLabel({
@@ -853,7 +853,6 @@ createCommand({
                                     }
                                 })
                                 usersCount++;
-                                if (!user.mailsTagsIgnored) continue;
                                 try {
                                     const discordUser = await interaction.client.users.fetch(user.id);
                                     if (discordUser) {
@@ -891,7 +890,7 @@ createCommand({
                                     continue;
                                 }
 
-                                const user = await tx.user.upsert({
+                                await tx.user.upsert({
                                     where: { id },
                                     create: { id },
                                     update: {}
@@ -906,7 +905,6 @@ createCommand({
                                 });
 
                                 successUsers.push(discordUser.displayName);
-                                if (!user.mailsTagsIgnored) continue;
                                 try {
                                     const container = await sendMailDm(mail);
                                     await discordUser.send({ flags: ["IsComponentsV2"], components: [container] })
@@ -1375,20 +1373,15 @@ createResponder({
         }
         const { fields, client } = interaction;
         const botId = fields.getTextInputValue("botId");
-        const selectedUsers = fields.getSelectedUsers("ownerId");
+        const ownerId = fields.getTextInputValue("ownerId");
         const permissions = fields.getStringSelectValues("permissions");
 
-        await interaction.deferReply();
+        await interaction.deferReply({ flags });
         const bot = await client.users.fetch(botId, { cache: true }).catch(() => null);
         if (!bot || !bot.bot) {
             interaction.editReply(res.danger(`${icon.error} | Esse id não pertence a um bot!`));
             return;
         }
-        if (!selectedUsers || selectedUsers.size === 0) {
-            interaction.editReply(res.danger(`${icon.error} | Selecione o dono do bot!`));
-            return;
-        }
-        const ownerId = selectedUsers.first()!.id;
         const alreadyExist = await prisma.application.findUnique({
             where: { id: bot.id },
             select: { id: true }
