@@ -27,6 +27,7 @@
     "@fastify/websocket": "^11.2.0",
     "@google/generative-ai": "^0.24.1",
     "@magicyan/discord": "^1.6.0",
+    "@mirastone/api": "^1.0.1",
     "@napi-rs/canvas": "^0.1.76",
     "@prisma/client": "6.16.2",
     "@reliverse/reglob": "1.0.0",
