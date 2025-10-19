@@ -1,9 +1,9 @@
 import { Store, setupCreators } from "#base";
 import { prisma } from "#database";
-import { defaultServerSettings, getCommandId, getRandomNumber, getServerSettings, icon, isBlacklisted, PrismaBlacklistValue, res, resv2, setServerSettings } from "#functions";
+import { commandsManager, defaultServerSettings, getCommandId, getRandomNumber, getServerSettings, icon, isBlacklisted, PrismaBlacklistValue, res, resv2, setServerSettings } from "#functions";
 import { PetSkill, UserPetSkill } from "#prisma";
 import { brBuilder, createSeparator } from "@magicyan/discord";
-import { channelMention, Interaction, time } from "discord.js";
+import { channelMention, Interaction, time, ChatInputCommandInteraction } from "discord.js";
 
 const cooldown = new Store<Date>();
 const lessUse = new Store<Date>();
@@ -55,6 +55,21 @@ export const { createCommand, createEvent, createResponder } = setupCreators({
                     `> E termina em: ${blacklist.endAt ? time(blacklist.endAt, "R") : "Nunca"}`
                 )))
                 block();
+                return;
+            }
+
+            // verificar se o comando está disponivel
+            // agruar o nome baseado no sub comandoe  grupo de subcomando
+            const commandName = interaction.commandName;
+            const subCommand = (interaction as ChatInputCommandInteraction).options.getSubcommand(false);
+            const subCommandGroup = (interaction as ChatInputCommandInteraction).options.getSubcommandGroup(false);
+
+            const fullCommandName = subCommandGroup ? `${commandName} ${subCommandGroup} ${subCommand}` : subCommand ? `${commandName} ${subCommand}` : commandName;
+
+            const command = commandsManager.get.name(fullCommandName);
+            if (command && !command.isAvaible) {
+                interaction.reply(res.danger(`${icon.error} | Opsie, esse comando foi desativado pelos desenvolvedores! tente novamente mais tarde.`));
+                block()
                 return;
             }
 

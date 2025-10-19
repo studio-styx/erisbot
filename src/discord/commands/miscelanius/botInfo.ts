@@ -1,6 +1,7 @@
 import { createCommand } from "#base";
 import { ApplicationCommandOptionType, ApplicationCommandType, EmbedBuilder } from "discord.js";
 import { menus } from "#menus";
+import { commandsManager } from "#functions";
 
 createCommand({
     name: "bot",
@@ -73,7 +74,8 @@ createCommand({
             }
             case "commands": {
                 await interaction.deferReply({ flags })
-                interaction.editReply(await menus.commands("bot", interaction))
+                const commands = commandsManager.fetch();
+                interaction.editReply(await menus.commands("bot", commands, 1, interaction))
                 return;
             }
             case "ping": {

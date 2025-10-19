@@ -1,219 +1,79 @@
-import { getCommandId, icon } from "#functions";
-import { env, settings } from "#settings";
-import { brBuilder, createRow } from "@magicyan/discord";
-import { EmbedBuilder, StringSelectMenuBuilder, type InteractionReplyOptions, Interaction } from "discord.js";
+import { getCommandId } from "#functions";
+import { settings } from "#settings";
+import { Command } from "#types/commands.js";
+import { brBuilder, createContainer, createRow, createSeparator } from "@magicyan/discord";
+import { ButtonBuilder, ButtonStyle, Interaction, StringSelectMenuBuilder, type InteractionReplyOptions } from "discord.js";
 
-export async function commandsMenu<R>(page: "economy" | "bot" | "user" | "moderation" | "utility" | "fun" | "pet", interaction: Interaction): Promise<R> {
-    const embed = new EmbedBuilder({
-        title: "Commands",
-        color: parseInt(settings.colors.fuchsia.replace("#", ""), 16),
-        timestamp: new Date().toISOString(),
-    })
+const categoryFormatted: Record<string, string> = {
+    economy: "economia",
+    general: "gerais",
+    cassino: "cassino",
+    moderation: "moderação",
+    investment: "investimentos",
+    utility: "utilidades",
+    fun: "diversão",
+    pet: "pet"
+}
 
-    switch (page) {
-        case "economy": {
-            const [daily, work, bank, leaderboard, jobs, cassino, investment] = await Promise.all([
-                getCommandId(interaction, "daily"),
-                getCommandId(interaction, "work"),
-                getCommandId(interaction, "bank"),
-                getCommandId(interaction, "leaderboard"),
-                getCommandId(interaction, "jobs"),
-                getCommandId(interaction, "cassino"),
-                getCommandId(interaction, "investment")
-            ])
+export async function commandsMenu<R>(category: string, commands: Command[], page: number, interaction: Interaction): Promise<R> {
+    const pageCommands = commands.filter(c => c.category === category).slice((page - 1) * 6, page * 6);
+    const pages = Math.ceil(commands.filter(c => c.category === category).length / 10);
 
+    const commandsFormatted: (Command & { discordId: string, primaryName: string})[] = [];
+    
+    const commandsIdsPromises = pageCommands.map(c => (async() => {
+        const primaryName = c.name.split(" ")[0];
+        const commandID = await getCommandId(interaction, primaryName);
 
-            embed.addFields({
-                name: "",
-                value: brBuilder(
-                    `**</work:${work}>** - Trabalhar para ganhar dinheiro`,
-                    `**</daily:${daily}>** - Ganhar sua recompensa diária`,
-                    `**</bank balance:${bank}>** - Verificar seu saldo`,
-                    `**</bank deposit:${bank}>** - Depositar seu dinheiro no banco`,
-                    `**</bank withdraw:${bank}>** - Retirar seu dinheiro do banco`,
-                    `**</bank transfer:${bank}>** - Transferir seu dinheiro para outro usuário`,
-                    `**</leaderboard:${leaderboard}>** - Verificar o ranking de usuários mais ricos`,
-                    `**</jobs search:${jobs}>** - Procurar por um emprego`,
-                    `**</jobs dismiss:${jobs}>** - Sair de seu emprego`,
-                ),
-                inline: true
-            }, {
-                name: "",
-                value: brBuilder(
-                    `**</cassino slots:${cassino}>** - Apostar em caça niqueis`,
-                    `**</cassino coinflip:${cassino}>** - Apostar em cara ou coroa`,
-                    `**</cassino horse-racing:${cassino}>** - Apostar em corrida de cavalos`,
-                    `**</cassino blackjack:${cassino}>** - Apostar no blackjack`,
-                ),
-                inline: true
-            }, {
-                name: "",
-                value: brBuilder(
-                    `**</investment buy:${investment}>** - Comprar uma ação`,
-                    `**</investment own-stocks:${investment}>** - Verificar suas ações`,
-                    `**</investment stocks:${investment}>** - Ver todas as ações`,
-                    `**</investment ia-avaliation:${investment}>** - Pedir avaliação da ia`,
-                ),
-                inline: true
-            })
-            break;
-        }
-        case "bot": {
-            const [supportCommandId, bot] = await Promise.all([
-                getCommandId(interaction, "support"),
-                getCommandId(interaction, "bot")
-            ])
+        commandsFormatted.push({
+            ...c,
+            primaryName,
+            discordId: commandID
+        });
+    })());
 
+    await Promise.all(commandsIdsPromises);
 
-            embed.addFields({
-                name: "",
-                value: brBuilder(
-                    `**</bot info:${bot}>** - Ver as minhas informações`,
-                    `**</bot ping:${bot}>** - Ver meu ping`,
-                    `**</bot commands:${bot}>** - Ver meus comandos`,
-                    `**</suporte reportar bug:${supportCommandId}>** - Reportar um bug`,
-                    `**</suporte reportar usuario:${supportCommandId}>** - Reportar um usuário`,
-                    `**</suporte sugestao:${supportCommandId}>** - Fazer uma sugestão`,
-                ),
-                inline: true
-            })
-            break;
-        }
-        case "user": {
-            const [user, xp] = await Promise.all([
-                getCommandId(interaction, "user"),
-                getCommandId(interaction, "xp")
-            ])
+    const containerCommands = commandsFormatted.map(c => brBuilder(
+        `### </${c.name}:${c.discordId}>`,
+        `**Descrição**: \`${c.description}\``,
+        `**Disponível**: \`${c.isAvaible ? "Sim" : "Não"}\``
+    ));
 
-            embed.addFields({
-                name: "",
-                value: brBuilder(
-                    `**</user logs:${user}>** - Ver seus registros`,
-                    `**</user avatar:${user}>** - Ver seu avatar`,
-                    `**</xp rank:${xp}>** - Ver o rank de xp dos usuários do servidor`,
-                    `**</xp user:${xp}>** - Ver o xp de um usuário`,
-                )
-            })
-            break;
-        }
-        case "moderation": {
-            const [dashboardCommandId, xpCommandId, giveawayCommandId] = await Promise.all([
-                getCommandId(interaction, "dashboard"),
-                getCommandId(interaction, "xp"),
-                getCommandId(interaction, "giveaway")
-            ])
-            embed.addFields({
-                name: "",
-                value: brBuilder(
-                    `**</dashboard:${dashboardCommandId}>** - dashboard`,
-                    `**</xp add:${xpCommandId}>** - Adicionar xp a um usuário`,
-                    `**</xp remove:${xpCommandId}>** - Remover xp de um usuário`,
-                    `**</xp reset user:${xpCommandId}>** - Resetar o xp de um usuário`,
-                    `**</xp reset server:${xpCommandId}>** - Resetar o xp do server`,
-                    `**</giveaway create:${giveawayCommandId}>** - Criar um sorteio`,
-                    `**</giveaway edit:${giveawayCommandId}>** - Editar um sorteio`,
-                    `**</giveaway cancel:${giveawayCommandId}>** - Cancelar um sorteio`,
-                    `**</giveaway end:${giveawayCommandId}>** - Finalizar um sorteio mais cedo`,
-                    `**</giveaway reroll:${giveawayCommandId}>** - Substituir um ganhador`,
-                    `**</giveaway entry:${giveawayCommandId}>** - Colocar o server em um sorteio conectado`,
-                )
-            })
-            embed.setDescription(brBuilder(
-                    "Agora a configuração do server fica por parte do site!",
-                    "No site é possivel configurar:",
-                    "- Chatbot",
-                    "- Canais onde pode ser usado comandos",
-                    "- Sistema de xp que é possivel configurar:",
-                    "> - Dificuldade",
-                    "> - Cargos que recebem mais ou menos xp",
-                    "> - Cargos que não recebem xp",
-                    "> - Canais que recebem mais ou menos xp",
-                    "> - Canais que não recebem xp",
-                    "> - Canal de aviso de levelUp",
-                    "> - Mensagem de aviso de levelUp",
-                    "> - Cargos que o usuário receberá se subir de nivel",
-                    "> - Canais que o usuário poderá ver se subir de nível",
-                    ` Use já o meu dashboard! [Clique aqui!](${env.FRONT_BASE_URL}/guilds${interaction.guildId ? `/${interaction.guildId}` : ""})`
-                ))
-            break;
-        }
-        case "utility": {
-            const [afk] = await Promise.all([
-                getCommandId(interaction, "afk")
-            ])
+    const categories = [...new Set(commands.map(c => c.category))];
 
-            embed.addFields({
-                name: "",
-                value: brBuilder(
-                    `**</afk set:${afk}>** - Definir seu afk`,
-                    `**</afk remove:${afk}>** - Remover seu afk`,
-                )
-            })
-            break;
-        }
-        case "fun": {
-            const [tryvia, fishing, wordle] = await Promise.all([
-                getCommandId(interaction, "tryvia"),
-                getCommandId(interaction, "fishing"),
-                getCommandId(interaction, "wordle"),
-            ])
-
-            embed.addFields({
-                name: "",
-                value: brBuilder(
-                    `**</tryvia start:${tryvia}>** - Começar um jogo de trivia no canal atual`,
-                    `**</tryvia close:${tryvia}>** - Finaliza um jogo de trivia antecipadamente no canal \`(requer perms: gerenciar servidor ou gerenciar canais, ou ser o dono do jogo)\``,
-                    `**</fishing fish:${fishing}>** - Começar a pescar`,
-                    `**</fishing inventory:${fishing}>** - Ver o inventário de peixes`,
-                    `**</fishing sell:${fishing}>** - Vender um peixe do inventário`,
-                    `**</fishing fishing_rod_buy:${fishing}>** - Comprar uma vara de pesca`,
-                    `**</wordle:${wordle}>** - Começar uma partida de termo`
-                )
-            })
-            break;
-        }
-        case "pet": {
-            const [pet] = await Promise.all([
-                getCommandId(interaction, "pet")
-            ])
-
-            embed.addFields({
-                name: "",
-                value: brBuilder(
-                    `**</pet spin:${pet}>** - Girar a roleta para cair algum pet`,
-                    `**</pet adopt:${pet}>** - Adote algum pet`,
-                    `**</pet release:${pet}>** - Mande algum pet para a adoção`,
-                    `**</pet info:${pet}>** - Veja as informações de um pet`,
-                    `**</pet care:${pet}>** - Cuide de seu pet`,
-                    `**</pet breed:${pet}>** - Reproduza dois pets`,
-                    `**</pet change_name:${pet}>** - Mude o nome de seu pet`,
-                    `**</pet set_active_pet:${pet}>** - Defina seu pet como ativo`,
-                )
-            })
-        }
-    }
-
-    const components = [
+    const container = createContainer(settings.colors.fuchsia,
+        brBuilder(
+            "# Comandos",
+            `-# Categoria: \`${categoryFormatted[category] || category}\``
+        ),
+        createSeparator(),
+        ...containerCommands,
+        createSeparator(),
+        `Página: \`${page}/${pages}\``,
+        new StringSelectMenuBuilder({
+            customId: `menu/help/commands/select/${category}/1`,
+            placeholder: "Selecione uma categoria",
+            options: categories.filter(c => c !== category).map(c => ({ label: categoryFormatted[c] || c, value: c }))
+        }),
         createRow(
-            new StringSelectMenuBuilder({
-                customId: "menu/help/commands",
-                placeholder: "Select a category",
-                options: [
-                    { label: "Economia", value: "economy", emoji: icon.money_bag, default: page === "economy" },
-                    { label: "Bot", value: "bot", emoji: icon.bot, default: page === "bot" },
-                    { label: "Usuário", value: "user", emoji: icon.investment_graph, default: page === "user" },
-                    { label: "Moderação", value: "moderation", emoji: icon.security, default: page === "moderation" },
-                    { label: "Utilidades", value: "utility", emoji: icon.key, default: page === "utility" },
-                    { label: "Diversão", value: "fun", emoji: icon.Eris_happy, default: page === "fun" },
-                    { label: "Pet", value: "pet", emoji: "🐶", default: page === "pet" }
-                ]
-            })
+            new ButtonBuilder({
+                customId: `menu/help/commands/page/${category}/${page - 1}`,
+                style: ButtonStyle.Primary,
+                emoji: "◀️",
+                disabled: page === 1
+            }),
+            new ButtonBuilder({
+                customId: `menu/help/commands/page/${category}/${page + 1}`,
+                style: ButtonStyle.Primary,
+                emoji: "▶️",
+                disabled: page === pages
+            }),
         )
-    ]
+    );
 
     return ({
-        flags,
-        embeds: [embed],
-        components
+        flags: ["Ephemeral", "IsComponentsV2"],
+        components: [container]
     } satisfies InteractionReplyOptions) as R;
 }
