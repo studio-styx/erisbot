@@ -16,8 +16,9 @@ const categoryFormatted: Record<string, string> = {
 }
 
 export async function commandsMenu<R>(category: string, commands: Command[], page: number, interaction: Interaction): Promise<R> {
-    const pageCommands = commands.filter(c => c.category === category).slice((page - 1) * 6, page * 6);
-    const pages = Math.ceil(commands.filter(c => c.category === category).length / 10);
+    const commandsPerPage = 6;
+    const pageCommands = commands.filter(c => c.category === category).slice((page - 1) * commandsPerPage, page * commandsPerPage);
+    const pages = Math.ceil(commands.filter(c => c.category === category).length / commandsPerPage);
 
     const commandsFormatted: (Command & { discordId: string, primaryName: string})[] = [];
     
