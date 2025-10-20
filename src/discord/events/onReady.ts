@@ -1,15 +1,23 @@
 import { createEvent } from "#base";
-import { determineMoodInterval, scheduleAllEndGiveaways, 
+import { commandsManager, determineMoodInterval, scheduleAllEndGiveaways, 
     scheduleReproductionsDate, scheduleTransactionExpires, setAllPetsStats, setAllServerSettings 
 } from "#functions";
 import { settings } from "#settings";
+import { Command } from "#types/commands.js";
 import { ActivityType } from "discord.js";
+import fs from "node:fs/promises"
 
 createEvent({
     name: "ready",
     event: "clientReady",
     async run(client) {
         await setAllServerSettings(client);
+
+        const raw = await fs.readFile(`${__rootname}/commands.json`, "utf-8");
+        const commands = JSON.parse(raw) as Command[];
+        
+        commandsManager.addMany(commands);
+
         scheduleTransactionExpires(client);
         setInterval(async () => {
             await scheduleTransactionExpires(client);

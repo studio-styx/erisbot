@@ -116,15 +116,23 @@ export async function setAllPetsStats(client: Client) {
         });
 
         if (isDead) {
-            await prisma.mails.create({
-                data: {
-                    userId: pet.userId,
-                    content: brBuilder(
-                        `${pet.gender === "FEMALE" ? "Sua pet" : "Seu pet"} **${pet.name}** (${petAnimalFormatted[pet.pet.animal]}) morreu de **${newLife <= 0 ? `velhice` : newHungry <= 0 ? "fome" : "desconhecido"}**!`
-                    ),
-                    whoSendId: "1171963692984844401"
-                }
-            });
+            await prisma.$transaction([
+                prisma.mails.create({
+                    data: {
+                        userId: pet.userId,
+                        content: brBuilder(
+                            `${pet.gender === "FEMALE" ? "Sua pet" : "Seu pet"} **${pet.name}** (${petAnimalFormatted[pet.pet.animal]}) morreu de **${newLife <= 0 ? `velhice` : newHungry <= 0 ? "fome" : "desconhecido"}**!`
+                        ),
+                        whoSendId: "1171963692984844401"
+                    }
+                }),
+                prisma.user.update({
+                    where: { id: pet.userId },
+                    data: {
+                        activePetId: { set: null }
+                    }
+                })
+            ])
             if (user.dmNotification) {
                 const allMails = await prisma.mails.findMany({
                     where: {

@@ -1,356 +1,466 @@
 [
-    {
-        "name": "bank balance",
-        "description": "Veja seu saldo ou de outra pessoa",
-        "siteAvaible": false,
-        "category": "economy"
-    },
-    {
-        "name": "bank deposit",
-        "description": "Deposite dinheiro em sua conta",
-        "siteAvaible": false,
-        "category": "economy"
-    },
-    {
-        "name": "bank withdraw",
-        "description": "Saque dinheiro de sua conta",
-        "siteAvaible": false,
-        "category": "economy"
-    },
-    {
-        "name": "bank transfer",
-        "description": "Transfira dinheiro para outra pessoa",
-        "siteAvaible": false,
-        "category": "economy"
-    },
-    {
-        "name": "bot commands",
-        "description": "Ver os meus comandos",
-        "siteAvaible": false,
-        "category": "general"
-    },
-    {
-        "name": "bot ping",
-        "description": "Veja o ping do bot",
-        "siteAvaible": false,
-        "category": "general"
-    },
-    {
-        "name": "bot info",
-        "description": "Veja minhas informações",
-        "siteAvaible": false,
-        "category": "general"
-    },
-    {
-        "name": "cassino blackjack",
-        "description": "Joque Blackjack contra o dealer ou contra a Éris",
-        "siteAvaible": false,
-        "category": "cassino"
-    },
-    {
-        "name": "cassino coinflip",
-        "description": "Aposte no cara ou coroa",
-        "siteAvaible": false,
-        "category": "cassino"
-    },
-    {
-        "name": "cassino horce-racing",
-        "description": "Aposte na corrida de cavalos",
-        "siteAvaible": false,
-        "category": "cassino"
-    },
-    {
-        "name": "cassino slots",
-        "description": "Jogue caça niquels",
-        "siteAvaible": false,
-        "category": "cassino"
-    },
-    {
-        "name": "daily",
-        "description": "Receba seu prêmio diário",
-        "siteAvaible": false,
-        "category": "economy"
-    },
-    {
-        "name": "dashboard",
-        "description": "Configure a Éris em seu server",
-        "siteAvaible": false,
-        "category": "moderation"
-    },
-    {
-        "name": "investment buy",
-        "description": "Compre uma ação",
-        "siteAvaible": false,
-        "category": "investment"
-    },
-    {
-        "name": "investment ia-avaliation",
-        "description": "Obtenha a avaliação de uma ia pra qual ação comprar",
-        "siteAvaible": false,
-        "category": "investment"
-    },
-    {
-        "name": "investment sell",
-        "description": "Vende uma ação",
-        "siteAvaible": false,
-        "category": "investment"
-    },
-    {
-        "name": "investment own-stocks",
-        "description": "Veja suas ações",
-        "siteAvaible": false,
-        "category": "investment"
-    },
-    {
-        "name": "investment stocks",
-        "description": "Veja as ações disponíveis",
-        "siteAvaible": false,
-        "category": "investment"
-    },
-    {
-        "name": "jobs dismiss",
-        "description": "Saia de seu emprego",
-        "siteAvaible": false,
-        "category": "economy"
-    },
-    {
-        "name": "jobs search",
-        "description": "Procure por empregos",
-        "siteAvaible": false,
-        "category": "economy"
-    },
-    {
-        "name": "leaderboard",
-        "description": "Veja o ranking de mais ricos",
-        "siteAvaible": false,
-        "category": "economy"
-    },
-    {
-        "name": "miscelanius cooldowns",
-        "description": "Veja seus cooldowns pendentes",
-        "siteAvaible": false,
-        "category": "general"
-    },
-    {
-        "name": "miscelanius count",
-        "description": "Veja eu contar o máximo possivel em segundos",
-        "siteAvaible": false,
-        "category": "general"
-    },
-    {
-        "name": "suporte reportar bug",
-        "description": "Reportar um bug",
-        "siteAvaible": false,
-        "category": "general"
-    },
-    {
-        "name": "suporte reportar usuario",
-        "description": "Reportar um usuário",
-        "siteAvaible": false,
-        "category": "general"
-    },
-    {
-        "name": "suporte sugestao",
-        "description": "Enviar uma sugestão",
-        "siteAvaible": false,
-        "category": "general"
-    },
-    {
-        "name": "user avatar",
-        "description": "Veja o avatar de um usuário",
-        "siteAvaible": false,
-        "category": "general"
-    },
-    {
-        "name": "user info",
-        "description": "Veja as informações de um usuário",
-        "siteAvaible": false,
-        "category": "general"
-    },
-    {
-        "name": "user logs",
-        "description": "Veja suas logs",
-        "siteAvaible": false,
-        "category": "general"
-    },
-    {
-        "name": "work",
-        "description": "Trabalhe para ganhar dinheiro",
-        "siteAvaible": false,
-        "category": "economy"
-    },
-    {
-        "name": "xp add",
-        "description": "Adicionar xp a alguem",
-        "siteAvaible": false,
-        "category": "moderation"
-    },
-    {
-        "name": "xp remove",
-        "description": "Remover xp de alguem",
-        "siteAvaible": false,
-        "category": "moderation"
-    },
-    {
-        "name": "xp reset user",
-        "description": "Resetar o xp de algúem",
-        "siteAvaible": false,
-        "category": "moderation"
-    },
-    {
-        "name": "xp reset server",
-        "description": "Resetar o xp de alguem",
-        "siteAvaible": false,
-        "category": "moderation"
-    },
-    {
-        "name": "xp user",
-        "description": "Ver o xp de alguem",
-        "siteAvaible": false,
-        "category": "general"
-    },
-    {
-        "name": "xp rank",
-        "description": "Ver o ranking de xp",
-        "siteAvaible": false,
-        "category": "general"
-    },
-    {
-        "name": "afk set",
-        "description": "Definir seu afk",
-        "siteAvaible": false,
-        "category": "utility"
-    },
-    {
-        "name": "afk remove",
-        "description": "Remover seu afk",
-        "siteAvaible": false,
-        "category": "utility"
-    },
-    {
-        "name": "tryvia start",
-        "description": "Começa um jogo de trivia no canal",
-        "siteAvaible": false,
-        "category": "fun"
-    },
-    {
-        "name": "tryvia close",
-        "description": "Para o jogo de trivia",
-        "siteAvaible": false,
-        "category": "fun"
-    },
-    {
-        "name": "giveaway create",
-        "description": "Crie um sorteio",
-        "siteAvaible": false,
-        "category": "moderation"
-    },
-    {
-        "name": "giveaway edit",
-        "description": "Edita um sorteio",
-        "siteAvaible": false,
-        "category": "moderation"
-    },
-    {
-        "name": "giveaway cancel",
-        "description": "Cancela um sorteio",
-        "siteAvaible": false,
-        "category": "moderation"
-    },
-    {
-        "name": "giveaway end",
-        "description": "Finaliza um sorteio",
-        "siteAvaible": false,
-        "category": "moderation"
-    },
-    {
-        "name": "giveaway reroll",
-        "description": "Substitui um ganhador",
-        "siteAvaible": false,
-        "category": "moderation"
-    },
-    {
-        "name": "giveaway entry",
-        "description": "Colocar o server em um sorteio conectado",
-        "siteAvaible": false,
-        "category": "moderation"
-    },
-    {
-        "name": "fishing fish",
-        "description": "Começar a pescar",
-        "siteAvaible": false,
-        "category": "fun"
-    },
-    {
-        "name": "fishing sell",
-        "description": "Vender seus peixes pescados",
-        "siteAvaible": false,
-        "category": "fun"
-    },
-    {
-        "name": "fishing inventory",
-        "description": "Ver seu inventário de peixes",
-        "siteAvaible": false,
-        "category": "fun"
-    },
-    {
-        "name": "fishing fishing_rod_buy",
-        "description": "Comprar uma vara de pesca",
-        "siteAvaible": false,
-        "category": "fun"
-    },
-    {
-        "name": "wordle",
-        "description": "Jogue uma partida de termo",
-        "siteAvaible": false,
-        "category": "fun"
-    },
-    {
-        "name": "pet spin",
-        "description": "Girar a roleta para cair algum pet",
-        "siteAvaible": false,
-        "category": "pet"
-    },
-    {
-        "name": "pet adopt",
-        "description": "Adote algum pet",
-        "siteAvaible": false,
-        "category": "pet"
-    },
-    {
-        "name": "pet release",
-        "description": "Mande algum pet para a adoção",
-        "siteAvaible": false,
-        "category": "pet"
-    }, 
-    {
-        "name": "pet info",
-        "description": "Veja as informações de um pet",
-        "siteAvaible": false,
-        "category": "pet"
-    },
-    {
-        "name": "pet care",
-        "description": "Cuide de seu pet",
-        "siteAvaible": false,
-        "category": "pet"
-    },
-    {
-        "name": "pet breed",
-        "description": "Reproduza dois pets",
-        "siteAvaible": false,
-        "category": "pet"
-    },
-    {
-        "name": "pet change_name",
-        "description": "Mude o nome de seu pet",
-        "siteAvaible": false,
-        "category": "pet"
-    },
-    {
-        "name": "pet set_active_pet",
-        "description": "Defina seu pet como ativo",
-        "siteAvaible": false,
-        "category": "pet"
-    }
+  {
+    "name": "bank balance",
+    "id": 1,
+    "description": "Veja seu saldo ou de outra pessoa",
+    "siteAvaible": false,
+    "category": "economy",
+    "isAvaible": true
+  },
+  {
+    "name": "bank deposit",
+    "id": 2,
+    "description": "Deposite dinheiro em sua conta",
+    "siteAvaible": false,
+    "category": "economy",
+    "isAvaible": true
+  },
+  {
+    "name": "bank withdraw",
+    "id": 3,
+    "description": "Saque dinheiro de sua conta",
+    "siteAvaible": false,
+    "category": "economy",
+    "isAvaible": true
+  },
+  {
+    "name": "bank transfer",
+    "id": 4,
+    "description": "Transfira dinheiro para outra pessoa",
+    "siteAvaible": false,
+    "category": "economy",
+    "isAvaible": true
+  },
+  {
+    "name": "bot commands",
+    "id": 5,
+    "description": "Ver os meus comandos",
+    "siteAvaible": false,
+    "category": "bot",
+    "isAvaible": true
+  },
+  {
+    "name": "bot ping",
+    "id": 6,
+    "description": "Veja o ping do bot",
+    "siteAvaible": false,
+    "category": "bot",
+    "isAvaible": true
+  },
+  {
+    "name": "bot info",
+    "id": 7,
+    "description": "Veja minhas informações",
+    "siteAvaible": false,
+    "category": "bot",
+    "isAvaible": true
+  },
+  {
+    "id": 8,
+    "name": "cassino blackjack",
+    "description": "Joque Blackjack contra o dealer ou contra a Éris",
+    "category": "cassino",
+    "isAvaible": false,
+    "siteAvaible": false
+  },
+  {
+    "name": "cassino coinflip",
+    "id": 9,
+    "description": "Aposte no cara ou coroa",
+    "siteAvaible": false,
+    "category": "cassino",
+    "isAvaible": true
+  },
+  {
+    "id": 10,
+    "name": "cassino horse-racing",
+    "description": "Aposte na corrida de cavalos",
+    "category": "cassino",
+    "isAvaible": true,
+    "siteAvaible": false
+  },
+  {
+    "name": "cassino slots",
+    "id": 11,
+    "description": "Jogue caça niquels",
+    "siteAvaible": false,
+    "category": "cassino",
+    "isAvaible": true
+  },
+  {
+    "name": "daily",
+    "id": 12,
+    "description": "Receba seu prêmio diário",
+    "siteAvaible": false,
+    "category": "economy",
+    "isAvaible": true
+  },
+  {
+    "name": "dashboard",
+    "id": 13,
+    "description": "Configure a Éris em seu server",
+    "siteAvaible": false,
+    "category": "moderation",
+    "isAvaible": true
+  },
+  {
+    "name": "investment buy",
+    "id": 14,
+    "description": "Compre uma ação",
+    "siteAvaible": false,
+    "category": "investment",
+    "isAvaible": true
+  },
+  {
+    "name": "investment ia-avaliation",
+    "id": 15,
+    "description": "Obtenha a avaliação de uma ia pra qual ação comprar",
+    "siteAvaible": false,
+    "category": "investment",
+    "isAvaible": true
+  },
+  {
+    "name": "investment own-stocks",
+    "id": 17,
+    "description": "Veja suas ações",
+    "siteAvaible": false,
+    "category": "investment",
+    "isAvaible": true
+  },
+  {
+    "name": "investment stocks",
+    "id": 18,
+    "description": "Veja as ações disponíveis",
+    "siteAvaible": false,
+    "category": "investment",
+    "isAvaible": true
+  },
+  {
+    "name": "jobs dismiss",
+    "id": 19,
+    "description": "Saia de seu emprego",
+    "siteAvaible": false,
+    "category": "economy",
+    "isAvaible": true
+  },
+  {
+    "name": "jobs search",
+    "id": 20,
+    "description": "Procure por empregos",
+    "siteAvaible": false,
+    "category": "economy",
+    "isAvaible": true
+  },
+  {
+    "name": "leaderboard",
+    "id": 21,
+    "description": "Veja o ranking de mais ricos",
+    "siteAvaible": false,
+    "category": "economy",
+    "isAvaible": true
+  },
+  {
+    "name": "miscelanius cooldowns",
+    "id": 22,
+    "description": "Veja seus cooldowns pendentes",
+    "siteAvaible": false,
+    "category": "general",
+    "isAvaible": true
+  },
+  {
+    "name": "miscelanius count",
+    "id": 23,
+    "description": "Veja eu contar o máximo possivel em segundos",
+    "siteAvaible": false,
+    "category": "general",
+    "isAvaible": true
+  },
+  {
+    "name": "suporte reportar bug",
+    "id": 24,
+    "description": "Reportar um bug",
+    "siteAvaible": false,
+    "category": "general",
+    "isAvaible": true
+  },
+  {
+    "name": "suporte reportar usuario",
+    "id": 25,
+    "description": "Reportar um usuário",
+    "siteAvaible": false,
+    "category": "general",
+    "isAvaible": true
+  },
+  {
+    "name": "suporte sugestao",
+    "id": 26,
+    "description": "Enviar uma sugestão",
+    "siteAvaible": false,
+    "category": "general",
+    "isAvaible": true
+  },
+  {
+    "name": "user avatar",
+    "id": 27,
+    "description": "Veja o avatar de um usuário",
+    "siteAvaible": false,
+    "category": "general",
+    "isAvaible": true
+  },
+  {
+    "name": "user info",
+    "id": 28,
+    "description": "Veja as informações de um usuário",
+    "siteAvaible": false,
+    "category": "general",
+    "isAvaible": true
+  },
+  {
+    "name": "user logs",
+    "id": 29,
+    "description": "Veja suas logs",
+    "siteAvaible": false,
+    "category": "general",
+    "isAvaible": true
+  },
+  {
+    "name": "work",
+    "id": 30,
+    "description": "Trabalhe para ganhar dinheiro",
+    "siteAvaible": false,
+    "category": "economy",
+    "isAvaible": true
+  },
+  {
+    "name": "xp add",
+    "id": 31,
+    "description": "Adicionar xp a alguem",
+    "siteAvaible": false,
+    "category": "moderation",
+    "isAvaible": true
+  },
+  {
+    "name": "xp remove",
+    "id": 32,
+    "description": "Remover xp de alguem",
+    "siteAvaible": false,
+    "category": "moderation",
+    "isAvaible": true
+  },
+  {
+    "name": "xp reset user",
+    "id": 33,
+    "description": "Resetar o xp de algúem",
+    "siteAvaible": false,
+    "category": "moderation",
+    "isAvaible": true
+  },
+  {
+    "name": "xp reset server",
+    "id": 34,
+    "description": "Resetar o xp de alguem",
+    "siteAvaible": false,
+    "category": "moderation",
+    "isAvaible": true
+  },
+  {
+    "name": "xp user",
+    "id": 35,
+    "description": "Ver o xp de alguem",
+    "siteAvaible": false,
+    "category": "general",
+    "isAvaible": true
+  },
+  {
+    "name": "xp rank",
+    "id": 36,
+    "description": "Ver o ranking de xp",
+    "siteAvaible": false,
+    "category": "general",
+    "isAvaible": true
+  },
+  {
+    "name": "afk set",
+    "id": 37,
+    "description": "Definir seu afk",
+    "siteAvaible": false,
+    "category": "utility",
+    "isAvaible": true
+  },
+  {
+    "name": "afk remove",
+    "id": 38,
+    "description": "Remover seu afk",
+    "siteAvaible": false,
+    "category": "utility",
+    "isAvaible": true
+  },
+  {
+    "name": "tryvia start",
+    "id": 39,
+    "description": "Começa um jogo de trivia no canal",
+    "siteAvaible": false,
+    "category": "fun",
+    "isAvaible": true
+  },
+  {
+    "name": "tryvia close",
+    "id": 40,
+    "description": "Para o jogo de trivia",
+    "siteAvaible": false,
+    "category": "fun",
+    "isAvaible": true
+  },
+  {
+    "name": "giveaway create",
+    "id": 41,
+    "description": "Crie um sorteio",
+    "siteAvaible": false,
+    "category": "moderation",
+    "isAvaible": true
+  },
+  {
+    "name": "giveaway edit",
+    "id": 42,
+    "description": "Edita um sorteio",
+    "siteAvaible": false,
+    "category": "moderation",
+    "isAvaible": true
+  },
+  {
+    "name": "giveaway cancel",
+    "id": 43,
+    "description": "Cancela um sorteio",
+    "siteAvaible": false,
+    "category": "moderation",
+    "isAvaible": true
+  },
+  {
+    "name": "giveaway end",
+    "id": 44,
+    "description": "Finaliza um sorteio",
+    "siteAvaible": false,
+    "category": "moderation",
+    "isAvaible": true
+  },
+  {
+    "name": "giveaway reroll",
+    "id": 45,
+    "description": "Substitui um ganhador",
+    "siteAvaible": false,
+    "category": "moderation",
+    "isAvaible": true
+  },
+  {
+    "name": "giveaway entry",
+    "id": 46,
+    "description": "Colocar o server em um sorteio conectado",
+    "siteAvaible": false,
+    "category": "moderation",
+    "isAvaible": true
+  },
+  {
+    "name": "fishing fish",
+    "id": 47,
+    "description": "Começar a pescar",
+    "siteAvaible": false,
+    "category": "fun",
+    "isAvaible": true
+  },
+  {
+    "name": "fishing sell",
+    "id": 48,
+    "description": "Vender seus peixes pescados",
+    "siteAvaible": false,
+    "category": "fun",
+    "isAvaible": true
+  },
+  {
+    "name": "fishing inventory",
+    "id": 49,
+    "description": "Ver seu inventário de peixes",
+    "siteAvaible": false,
+    "category": "fun",
+    "isAvaible": true
+  },
+  {
+    "name": "fishing fishing_rod_buy",
+    "id": 50,
+    "description": "Comprar uma vara de pesca",
+    "siteAvaible": false,
+    "category": "fun",
+    "isAvaible": true
+  },
+  {
+    "name": "wordle",
+    "id": 51,
+    "description": "Jogue uma partida de termo",
+    "siteAvaible": false,
+    "category": "fun",
+    "isAvaible": true
+  },
+  {
+    "name": "pet spin",
+    "id": 52,
+    "description": "Girar a roleta para cair algum pet",
+    "siteAvaible": false,
+    "category": "pet",
+    "isAvaible": true
+  },
+  {
+    "name": "pet adopt",
+    "id": 53,
+    "description": "Adote algum pet",
+    "siteAvaible": false,
+    "category": "pet",
+    "isAvaible": true
+  },
+  {
+    "name": "pet release",
+    "id": 54,
+    "description": "Mande algum pet para a adoção",
+    "siteAvaible": false,
+    "category": "pet",
+    "isAvaible": true
+  },
+  {
+    "name": "pet info",
+    "id": 55,
+    "description": "Veja as informações de um pet",
+    "siteAvaible": false,
+    "category": "pet",
+    "isAvaible": true
+  },
+  {
+    "name": "pet care",
+    "id": 56,
+    "description": "Cuide de seu pet",
+    "siteAvaible": false,
+    "category": "pet",
+    "isAvaible": true
+  },
+  {
+    "name": "pet breed",
+    "id": 57,
+    "description": "Reproduza dois pets",
+    "siteAvaible": false,
+    "category": "pet",
+    "isAvaible": true
+  },
+  {
+    "name": "pet change_name",
+    "id": 58,
+    "description": "Mude o nome de seu pet",
+    "siteAvaible": false,
+    "category": "pet",
+    "isAvaible": true
+  },
+  {
+    "name": "pet set_active_pet",
+    "id": 59,
+    "description": "Defina seu pet como ativo",
+    "siteAvaible": false,
+    "category": "pet",
+    "isAvaible": true
+  }
 ]

@@ -1,11 +1,12 @@
 import { createCommand, createResponder, ResponderType } from "#base";
 import { prisma, redis } from "#database";
-import { stocksEventuals, res, icon, processApiQuestions, removeFromBlacklist, addToBlacklist, convertTime } from "#functions";
+import { stocksEventuals, res, icon, processApiQuestions, removeFromBlacklist, addToBlacklist, convertTime, commandsManager } from "#functions";
 import { menus } from "#menus";
 import { Gender, GeneType, Mails, PersonalityTrait, PetGeneticsColorPart } from "#prisma";
 import { settings } from "#settings";
+import { Command } from "#types/commands.js";
 import { brBuilder, createContainer, createLabel, createModalFields, createSeparator } from "@magicyan/discord";
-import { ApplicationCommandOptionType, ApplicationCommandType, StringSelectMenuBuilder, TextInputBuilder, TextInputStyle, time, UserSelectMenuBuilder } from "discord.js";
+import { ApplicationCommandOptionType, ApplicationCommandType, StringSelectMenuBuilder, TextInputBuilder, TextInputStyle, time } from "discord.js";
 import crypto from "node:crypto";
 
 function generateToken() {
@@ -280,6 +281,96 @@ createCommand({
                     required,
                 }
             ]
+        },
+        {
+            name: "commands",
+            description: "manage the commands",
+            type: ApplicationCommandOptionType.SubcommandGroup,
+            options: [
+                {
+                    name: "add",
+                    description: "add a command",
+                    type: ApplicationCommandOptionType.Subcommand,
+                    options: [
+                        {
+                            name: "name",
+                            description: "name of the command",
+                            type: ApplicationCommandOptionType.String,
+                            required
+                        },
+                        {
+                            name: "description",
+                            description: "description of the command",
+                            type: ApplicationCommandOptionType.String,
+                            required
+                        },
+                        {
+                            name: "category",
+                            description: "category of the command",
+                            type: ApplicationCommandOptionType.String,
+                            required
+                        },
+                        {
+                            name: "isavaible",
+                            description: "is the command disabled",
+                            type: ApplicationCommandOptionType.Boolean,
+                            required: false
+                        }
+                    ]
+                },
+                {
+                    name: "remove",
+                    description: "remove a command",
+                    type: ApplicationCommandOptionType.Subcommand,
+                    options: [
+                        {
+                            name: "name",
+                            description: "name of the command",
+                            type: ApplicationCommandOptionType.Integer,
+                            required,
+                            autocomplete
+                        }
+                    ]
+                },
+                {
+                    name: "edit",
+                    description: "edit a command",
+                    type: ApplicationCommandOptionType.Subcommand,
+                    options: [
+                        {
+                            name: "command",
+                            description: "command to edit",
+                            type: ApplicationCommandOptionType.Integer,
+                            required,
+                            autocomplete
+                        },
+                        {
+                            name: "name",
+                            description: "name of the command",
+                            type: ApplicationCommandOptionType.String,
+                            required: false
+                        },
+                        {
+                            name: "description",
+                            description: "description of the command",
+                            type: ApplicationCommandOptionType.String,
+                            required: false
+                        },
+                        {
+                            name: "category",
+                            description: "category of the command",
+                            type: ApplicationCommandOptionType.String,
+                            required: false
+                        },
+                        {
+                            name: "isavaible",
+                            description: "is the command disabled",
+                            type: ApplicationCommandOptionType.Boolean,
+                            required: false
+                        }
+                    ]
+                }
+            ]
         }
     ],
     async autocomplete(interaction) {
@@ -289,8 +380,9 @@ createCommand({
         const subCommandGroup = options.getSubcommandGroup();
         const subcommand = options.getSubcommand();
 
-        if (subCommandGroup === "apikey") {
-            const getBotsNames = async () => {
+        switch (subCommandGroup) {
+            case "apikey": {
+                const getBotsNames = async () => {
                 const raw = await redis.get(`apikey:bots:cache:admin`);
                 if (!raw) {
                     const bots = await prisma.application.findMany({});
@@ -329,8 +421,32 @@ createCommand({
                 })));
                 return;
             }
-        }
+            }
+            case "commands": {
+                switch (subcommand) {
+                    case "remove": {
+                        if (focused.name === "name") {
+                            const commands = commandsManager.fetch();
 
+                            const list = commands.filter(c => c.name.toLowerCase().includes(focused.value.toLowerCase())).slice(0, 25);
+
+                            await interaction.respond(list.map(c => ({ name: c.name, value: c.id })));
+                            return;
+                        }
+                    }
+                    case "edit": {
+                        if (focused.name === "command") {
+                            const commands = commandsManager.fetch();
+
+                            const list = commands.filter(c => c.name.toLowerCase().includes(focused.value.toLowerCase())).slice(0, 25);
+
+                            await interaction.respond(list.map(c => ({ name: c.name, value: c.id })));
+                            return;
+                        }
+                    }
+                }
+            }
+        }
         if (subcommand === "set-work") {
             const companys = await prisma.company.findMany({
                 where: {
@@ -402,11 +518,11 @@ createCommand({
                                     createLabel({
                                         label: "Id do dono do bot",
                                         description: "Qual é o id do dono do bot",
-                                        component: new UserSelectMenuBuilder({
-                                            customId: "onwerId",
-                                            minValues: 1,
-                                            maxValues: 1,
+                                        component: new TextInputBuilder({
+                                            customId: "ownerId",
                                             required: true,
+                                            style: TextInputStyle.Short,
+                                            placeholder: "Digite o id do dono do bot"
                                         })
                                     }),
                                     createLabel({
@@ -493,6 +609,56 @@ createCommand({
                             });
                             interaction.editReply(res.success(`${icon.success} | Novo token gerado: **\`${newToken.key}\`**`));
                             return;
+                        }
+                    }
+                }
+                case "commands": {
+                    await interaction.deferReply();
+                    switch (subcommand) {
+                        case "add": {
+                            const name = options.getString("name", true);
+                            const description = options.getString("description", true);
+                            const category = options.getString("category", true);
+                            const isAvaible = options.getBoolean("isavaible") || true;
+
+                            const id = commandsManager.get.highestId() + 1;
+                            await commandsManager.addAndUpdate({ id, name, description, category, isAvaible, siteAvaible: false })
+                        
+                            interaction.editReply(res.success(`Comando adicionado com sucesso!, id: ${id}`));
+                            break;
+                        }
+                        case "remove": {
+                            const id = options.getInteger("name", true);
+                            await commandsManager.removeAndUpdate.id(id);
+                            interaction.editReply(res.success(`Comando removido com sucesso!`));
+                            break;
+                        }
+                        case "edit": {
+                            const id = options.getInteger("command", true);
+
+                            const command = commandsManager.get.id(id);
+
+                            if (!command) {
+                                interaction.editReply(res.danger("Comando não encontrado!"));
+                                return;
+                            }
+
+                            let isAvaible = options.getBoolean("isavaible");
+                            if (isAvaible === undefined) isAvaible = command.isAvaible;
+                            if (isAvaible === null) isAvaible = command.isAvaible;
+
+                            const newCommand: Command = {
+                                id,
+                                name: options.getString("name") || command.name,
+                                description: options.getString("description") || command.description,
+                                category: options.getString("category") || command.category,
+                                isAvaible: isAvaible,
+                                siteAvaible: command.siteAvaible
+                            }
+
+                            await commandsManager.setAndUpdate.id(id, newCommand);
+                            interaction.editReply(res.success(`Comando editado com sucesso! novos dados: \n **nome:** \`${newCommand.name}\`\n **descrição:** \`${newCommand.description}\`\n **categoria:** \`${newCommand.category}\`\n **disponível:** \`${newCommand.isAvaible ? "sim" : "não"}\``));
+                            break;
                         }
                     }
                 }
@@ -1373,20 +1539,15 @@ createResponder({
         }
         const { fields, client } = interaction;
         const botId = fields.getTextInputValue("botId");
-        const selectedUsers = fields.getSelectedUsers("ownerId");
+        const ownerId = fields.getTextInputValue("ownerId");
         const permissions = fields.getStringSelectValues("permissions");
 
-        await interaction.deferReply();
+        await interaction.deferReply({ flags });
         const bot = await client.users.fetch(botId, { cache: true }).catch(() => null);
         if (!bot || !bot.bot) {
             interaction.editReply(res.danger(`${icon.error} | Esse id não pertence a um bot!`));
             return;
         }
-        if (!selectedUsers || selectedUsers.size === 0) {
-            interaction.editReply(res.danger(`${icon.error} | Selecione o dono do bot!`));
-            return;
-        }
-        const ownerId = selectedUsers.first()!.id;
         const alreadyExist = await prisma.application.findUnique({
             where: { id: bot.id },
             select: { id: true }

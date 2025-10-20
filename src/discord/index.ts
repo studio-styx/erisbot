@@ -1,9 +1,9 @@
 import { Store, setupCreators } from "#base";
 import { prisma } from "#database";
-import { getCommandId, getRandomNumber, getServerSettings, icon, isBlacklisted, PrismaBlacklistValue, res, resv2 } from "#functions";
+import { commandsManager, defaultServerSettings, getCommandId, getRandomNumber, getServerSettings, icon, isBlacklisted, PrismaBlacklistValue, res, resv2, setServerSettings } from "#functions";
 import { PetSkill, UserPetSkill } from "#prisma";
 import { brBuilder, createSeparator } from "@magicyan/discord";
-import { channelMention, Interaction, time } from "discord.js";
+import { channelMention, Interaction, time, ChatInputCommandInteraction } from "discord.js";
 
 const cooldown = new Store<Date>();
 const lessUse = new Store<Date>();
@@ -58,6 +58,21 @@ export const { createCommand, createEvent, createResponder } = setupCreators({
                 return;
             }
 
+            // verificar se o comando está disponivel
+            // agruar o nome baseado no sub comandoe  grupo de subcomando
+            const commandName = interaction.commandName;
+            const subCommand = (interaction as ChatInputCommandInteraction).options.getSubcommand(false);
+            const subCommandGroup = (interaction as ChatInputCommandInteraction).options.getSubcommandGroup(false);
+
+            const fullCommandName = subCommandGroup ? `${commandName} ${subCommandGroup} ${subCommand}` : subCommand ? `${commandName} ${subCommand}` : commandName;
+
+            const command = commandsManager.get.name(fullCommandName);
+            if (command && !command.isAvaible) {
+                interaction.reply(res.danger(`${icon.error} | Opsie, esse comando foi desativado pelos desenvolvedores! tente novamente mais tarde.`));
+                block()
+                return;
+            }
+
             if (cooldown.has(interaction.user.id)) {
                 interaction.reply(res.danger(`${icon.error} | Acalme-se! você está sendo muito rápido, por favor aguarde ${time(cooldown.get(interaction.user.id)!, "R")} para usar comandos novamente!`));
                 block()
@@ -66,8 +81,14 @@ export const { createCommand, createEvent, createResponder } = setupCreators({
 
             if (!interaction.guildId) return;
 
+            const setSettings = async () => {
+                await prisma.guildSettings.upsert({ where: { id: interaction.guildId! }, create: { id: interaction.guildId! }, update: {}} );
+                setServerSettings(interaction.guildId!, defaultServerSettings)
+                return defaultServerSettings;
+            }
+
             const serverSettings = getServerSettings(interaction.guildId)
-                || await prisma.guildSettings.upsert({ where: { id: interaction.guildId }, create: { id: interaction.user.id }, update: {}} );
+                || await setSettings();
 
             const channelId = interaction.channelId;
             if (serverSettings.channelsCommandDisabledIsHabilited && serverSettings.channelsCommandDisabled.includes(channelId) && !interaction.memberPermissions?.has("Administrator")) {

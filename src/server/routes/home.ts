@@ -9,7 +9,8 @@ export default function homeRoute(app: FastifyInstance, client: Client<true>){
             message: `🍃 Online on discord as ${client.user.username}`,
             guilds: client.guilds.cache.size,
             users: client.users.cache.size,
-            version: settings.bot.version
+            version: settings.bot.version,
+            sdk: settings.sdk
         });
     });
 }
