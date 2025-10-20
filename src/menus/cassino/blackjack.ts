@@ -149,7 +149,7 @@ export function blackjackMenu<R>(userId: string, amount: number, lang: LangCode,
                 customId: `blackjack/game/stand/${userId}`,
                 label: g.buttons.stand,
                 style: ButtonStyle.Danger,
-                disabled: options?.disableButtons || game.turnCount <= 4
+                disabled: options?.disableButtons || game.turnCount <= 5
             })
         )
     ];

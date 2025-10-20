@@ -28,8 +28,8 @@ createResponder({
         const erisAction = async () => {
             const erisAction = game.decideErisAction(game.calculateHandValue(game.getUserCards()));
 
-            if (erisAction) {
-                const card = game.erisTurn();
+            if (erisAction.action === "hit") {
+                const card = game.erisTurn(erisAction.card);
                 if (!card) {
                     // éris perdeu
                     await prisma.user.update({

@@ -1,11 +1,68 @@
-import { icon } from "#functions";
+import { getRandomValue, icon } from "#functions";
 import NodeCache from "node-cache";
+
+const cache = new NodeCache({ stdTTL: 20 * 60 }); // 20 minutos TTL
+
+// Recupera todos os jogos armazenados
+export const getBlackjackGames = (): Record<string, BlackjackIA> => {
+    return cache.get("blackjackGames") as Record<string, BlackjackIA> || {};
+};
+
+// Pega o jogo de um usuário específico
+export const getBlackjackGame = (id: string): BlackjackIA | undefined => {
+    const games = getBlackjackGames();
+    return games[id];
+};
+
+// Salva ou atualiza o jogo de um usuário
+export const setBlackjackGame = (id: string, game: BlackjackIA) => {
+    const games = (cache.get("blackjackGames") as Record<string, BlackjackIA>) || {};
+    games[id] = game;
+    cache.set("blackjackGames", games);
+};
+
+// Remove jogo de um usuário (por exemplo, após fim do jogo)
+export const removeBlackjackGame = (id: string) => {
+    const games = getBlackjackGames();
+    delete games[id];
+    cache.set("blackjackGames", games);
+};
+
+export const getAllUserBlackjackGames = (): BlackjackGamesHistory[] => {
+    const games = cache.get("userBlackjackGames") as BlackjackGamesHistory[] || [];
+    return games;
+}
+
+export const userGames = (id: string): BlackjackGamesHistory[] => {
+    return getAllUserBlackjackGames().filter(g => g.userId === id);
+}
+
+export const addUserGame = (game: BlackjackGamesHistory) => {
+    const games = getAllUserBlackjackGames();
+    games.push(game);
+    cache.set("userBlackjackGames", games);
+}
 
 export type Humor = "angry" | "happy" | "sad" | "neutral" | "scared" | "surprised" | "confused";
 
 export interface Cards {
     number: number;
     name: string;
+}
+
+export interface ActionResult {
+    action: 'hit' | 'stand';
+    card?: Cards;
+}
+
+export interface BlackjackGamesHistory {
+    userId: string;
+    winner: "eris" | "user" | "draw";
+    reason: "bigHand" | "over21";
+    amount: number;
+    difficulty: 0 | 1 | 2 | 3 | 4;
+    humor: Humor
+    timestamp: number;
 }
 
 export class BlackjackIA {
@@ -33,6 +90,10 @@ export class BlackjackIA {
 
     public getErisHumor(): Humor {
         return this.humor;
+    }
+
+    public getErisNextCard(): Cards | null {
+        return this.erisNextCard;
     }
 
     public getErisDifficulty(): number {
@@ -153,14 +214,21 @@ export class BlackjackIA {
     }
 
     // jogada da Éris
-    public erisTurn(): Cards | null {
+    public erisTurn(predefinedCard?: Cards): Cards | null {
+        if (predefinedCard) {
+            this.erisCards.push(predefinedCard);
+            if (this.calculateHandValue(this.erisCards) > 21) {
+                return null;
+            }
+            return predefinedCard;
+        }
         const card = this.drawCard('eris')
         this.erisCards.push(card);
         if (this.calculateHandValue(this.erisCards) > 21) {
             return null;
         }
         return card;
-        // se retornar boolean a Éris perdeu, se não ela continua
+        // se retornar null a Éris perdeu, se não ela continua
     }
 
     public userStops(): 'eris' | 'user' | 'draw' {
@@ -174,80 +242,95 @@ export class BlackjackIA {
                 : 'eris';
     }
 
-    public decideErisAction(playerVisibleCardValue: number): boolean {
+    public decideErisAction(playerVisibleCardValue: number): ActionResult {
         const erisHand = this.calculateHandValue(this.erisCards);
         const isSoftHand = this.erisCards.some(card => card.name === 'A') && erisHand <= 18;
 
-        // Nível 0: Dealer padrão
+        // Função auxiliar para escolher uma carta
+        const chooseCard = (minValue: number, maxValue: number, chanceOfError: number): Cards => {
+            const validCards = this.remainingCards.filter(card => card.number >= minValue && card.number <= maxValue);
+            const targetCards = chanceOfError > Math.random() ? this.remainingCards : validCards;
+            return getRandomValue(targetCards.length ? targetCards : this.remainingCards);
+        };
+
+        // Dificuldade 0: Dealer padrão
         if (this.difficulty === 0) {
-            return erisHand < 17 || (erisHand === 17 && isSoftHand); // Pede carta em soft 17
+            return erisHand < 17 || (erisHand === 17 && isSoftHand)
+                ? { action: 'hit' }
+                : { action: 'stand' };
         }
 
-        let chance = 0.7; // Base inicial para pedir carta
+        // Calcular probabilidade base para pedir carta
+        let chance = 0.6; // Reduzido de 0.7 para menos agressividade
 
-        // Ajuste baseado na carta visível do jogador
-        const playerCardIsHigh = ['10', 'J', 'Q', 'K', 'A'].includes(String(playerVisibleCardValue));
-        const playerCardIsLow = ['2', '3', '4', '5', '6'].includes(String(playerVisibleCardValue));
-
-        // Níveis 1 e 2: Estratégia com aleatoriedade
-        if (this.difficulty <= 2) {
+        if (this.difficulty === 1) {
+            // Eris Fácil: Decisão simples com base em probabilidade
             if (erisHand > 17) chance -= 0.4;
             if (erisHand > 19) chance -= 0.3;
-            if (playerCardIsHigh) chance += 0.2; // Jogador tem carta alta
-            if (playerCardIsLow) chance -= 0.2;  // Jogador tem carta baixa
-            if (this.difficulty === 2) {
-                // Análise leve do baralho restante
-                const highCardRatio = this.calculateHighCardRatio();
-                chance += highCardRatio > 0.5 ? 0.1 : -0.1; // Mais agressivo se há mais cartas altas
-            }
             chance += this.getHumorModifier();
             chance = Math.min(Math.max(chance, 0), 1);
-            return Math.random() < chance;
-        }
-        // Nível 3: Difícil
-        else if (this.difficulty === 3) {
-            if (this.erisNextCard && Math.random() < 0.6) {
-                const erisHandValueNextCard = this.calculateHandValue([...this.erisCards, this.erisNextCard]);
-                if (erisHandValueNextCard <= 21 && erisHand < 18) return true; // Pede se seguro e mão fraca
-                if (erisHandValueNextCard > 21 && erisHand >= 16) return false; // Evita estourar
-            }
-            // Estratégia baseada na carta do jogador
-            if (erisHand > 17) chance -= 0.4;
-            if (erisHand > 19) chance -= 0.3;
-            if (playerCardIsHigh && this.userCards.length > 2) chance -= 0.2; // Jogador pode estourar
-            if (playerCardIsLow) chance -= 0.3; // Jogador tem mão fraca
-            const highCardRatio = this.calculateHighCardRatio();
-            chance += highCardRatio > 0.5 ? 0.2 : -0.2;
-            chance += this.getHumorModifier();
-            chance = Math.min(Math.max(chance, 0), 1);
-            return Math.random() < chance;
-        }
-        // Nível 4: Pesadelo
-        else {
-            if (this.erisNextCard) {
-                const erisHandValueNextCard = this.calculateHandValue([...this.erisCards, this.erisNextCard]);
-                // Pede carta se seguro e mão fraca, ou com pequena chance de blefe
-                if (erisHandValueNextCard <= 21 && (erisHand < 18 || (Math.random() < 0.05 && erisHand < 20))) {
-                    return true;
-                }
-                // Para se a mão é forte ou jogador tem carta baixa
-                if (erisHand >= 18 || (playerCardIsLow && erisHand >= 16)) {
-                    return false;
-                }
-                // Análise do baralho para mãos marginais
-                const highCardRatio = this.calculateHighCardRatio();
-                if (highCardRatio > 0.6 && erisHand >= 16) return false; // Evita risco com muitas cartas altas
-                return erisHandValueNextCard <= 21; // Fallback: pede se seguro
-            }
-            return erisHand < 17; // Fallback se erisNextCard não estiver definido
-        }
-    }
+            return Math.random() < chance ? { action: 'hit' } : { action: 'stand' };
+        } else if (this.difficulty === 2) {
+            // Eris Normal: Mais cautelosa, considera risco de estouro
+            if (erisHand > 17) chance -= 0.4; // Mais cauteloso que antes (era 0.3)
+            if (erisHand > 19) chance -= 0.28;
+            if (playerVisibleCardValue >= 10) chance += 0.17; // Reduzido de 0.2
+            if (playerVisibleCardValue <= 6) chance += 0.17; // Reduzido de 0.2
+            if (isSoftHand && erisHand <= 17) chance += 0.25; // Mais agressivo em soft hands
 
-    private calculateHighCardRatio(): number {
-        const highCards = this.remainingCards.filter(card =>
-            ['10', 'J', 'Q', 'K', 'A'].includes(card.name)).length;
-        return highCards / (this.remainingCards.length || 1);
+            // Calcula risco de estourar
+            const bustRisk = this.remainingCards.filter(card => card.number + erisHand > 21).length / this.remainingCards.length;
+            if (bustRisk > 0.4 && erisHand >= 15) chance -= 0.15; // Evita estourar em mãos altas
+            if (erisHand === 21) chance = 0;
+            chance = Math.min(Math.max(chance, 0), 1);
+
+            if (Math.random() > chance) {
+                return { action: 'stand' };
+            }
+
+            const maxCardValue = 21 - erisHand;
+            const card = chooseCard(1, maxCardValue, 0.4);
+            return { action: 'hit', card };
+        } else if (this.difficulty === 3) {
+            // Eris Difícil: Mais estratégica, menor chance de erro
+            if (erisHand > 17) chance -= 0.5;
+            if (erisHand > 19) chance -= 0.3;
+            if (playerVisibleCardValue >= 10) chance += 0.3;
+            if (playerVisibleCardValue <= 6) chance -= 0.3;
+            if (isSoftHand && erisHand <= 17) chance += 0.2; // Mais agressivo em soft hands
+
+            if (Math.random() > chance) {
+                return { action: 'stand' };
+            }
+
+            const maxCardValue = 21 - erisHand;
+            const card = chooseCard(1, maxCardValue, 0.2); // Menor chance de erro
+            return { action: 'hit', card };
+        } else if (this.difficulty === 4) {
+            // Eris Pesadelo: Altamente estratégica, considera probabilidade de estourar
+            if (erisHand > 17) chance -= 0.6;
+            if (erisHand > 19) chance -= 0.4;
+            if (playerVisibleCardValue >= 10) chance += 0.4;
+            if (playerVisibleCardValue <= 6) chance -= 0.4;
+            if (isSoftHand && erisHand <= 17) chance += 0.3;
+
+            // Calcula probabilidade de estourar
+            const bustRisk = this.remainingCards.filter(card => card.number + erisHand > 21).length / this.remainingCards.length;
+            if (bustRisk > 0.5 && erisHand >= 16) chance -= 0.3;
+
+            if (Math.random() > chance) {
+                return { action: 'stand' };
+            }
+
+            const maxCardValue = 21 - erisHand;
+            const card = chooseCard(1, maxCardValue, 0.1); // Mínima chance de erro
+            return { action: 'hit', card };
+        }
+
+        // Fallback para dificuldades inválidas
+        return { action: 'stand' };
     }
+    
     private getHumorModifier(): number {
         switch (this.humor) {
             case "angry": return 0.3;
@@ -325,7 +408,7 @@ export class BlackjackIA {
         };
 
         if (wins === 'eris') {
-        return eventFrases.erisWins[Math.floor(Math.random() * eventFrases.erisWins.length)];
+            return eventFrases.erisWins[Math.floor(Math.random() * eventFrases.erisWins.length)];
         }
         if (wins === 'user') {
             return eventFrases.erisLoses[Math.floor(Math.random() * eventFrases.erisLoses.length)];
@@ -542,30 +625,3 @@ export class BlackjackIA {
     }
 
 }
-
-const cache = new NodeCache({ stdTTL: 20 * 60 }); // 20 minutos TTL
-
-// Recupera todos os jogos armazenados
-export const getBlackjackGames = (): Record<string, BlackjackIA> => {
-    return cache.get("blackjackGames") as Record<string, BlackjackIA> || {};
-};
-
-// Pega o jogo de um usuário específico
-export const getBlackjackGame = (id: string): BlackjackIA | undefined => {
-    const games = getBlackjackGames();
-    return games[id];
-};
-
-// Salva ou atualiza o jogo de um usuário
-export const setBlackjackGame = (id: string, game: BlackjackIA) => {
-    const games = (cache.get("blackjackGames") as Record<string, BlackjackIA>) || {};
-    games[id] = game;
-    cache.set("blackjackGames", games);
-};
-
-// Remove jogo de um usuário (por exemplo, após fim do jogo)
-export const removeBlackjackGame = (id: string) => {
-    const games = getBlackjackGames();
-    delete games[id];
-    cache.set("blackjackGames", games);
-};

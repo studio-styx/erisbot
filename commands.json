@@ -60,7 +60,7 @@
     "name": "cassino blackjack",
     "description": "Joque Blackjack contra o dealer ou contra a Éris",
     "category": "cassino",
-    "isAvaible": false,
+    "isAvaible": true,
     "siteAvaible": false
   },
   {
