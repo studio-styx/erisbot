@@ -1,8 +1,8 @@
 import { createCommand, createResponder, ResponderType } from "#base";
 import { prisma, redis } from "#database";
-import { stocksEventuals, res, icon, processApiQuestions, removeFromBlacklist, addToBlacklist, convertTime, commandsManager } from "#functions";
+import { stocksEventuals, res, icon, processApiQuestions, removeFromBlacklist, addToBlacklist, convertTime, commandsManager, shuffleArray } from "#functions";
 import { menus } from "#menus";
-import { Gender, GeneType, Mails, PersonalityTrait, PetGeneticsColorPart } from "#prisma";
+import { Gender, Mails, PersonalityTrait, PetElement, PetPowerType } from "#prisma";
 import { settings } from "#settings";
 import { Command } from "#types/commands.js";
 import { brBuilder, createContainer, createLabel, createModalFields, createSeparator } from "@magicyan/discord";
@@ -383,44 +383,44 @@ createCommand({
         switch (subCommandGroup) {
             case "apikey": {
                 const getBotsNames = async () => {
-                const raw = await redis.get(`apikey:bots:cache:admin`);
-                if (!raw) {
-                    const bots = await prisma.application.findMany({});
-                    const names: { name: string; id: string }[] = [];
-                    await Promise.all(bots.map(async (bot) => {
-                        try {
-                            const discordBot = client.users.cache.get(bot.id);
-                            if (discordBot) {
-                                names.push({ name: discordBot.username, id: bot.id });
-                            } else {
-                                const fetchedBot = await client.users.fetch(bot.id).catch(() => null);
-                                if (fetchedBot) {
-                                    names.push({ name: fetchedBot.username, id: bot.id });
+                    const raw = await redis.get(`apikey:bots:cache:admin`);
+                    if (!raw) {
+                        const bots = await prisma.application.findMany({});
+                        const names: { name: string; id: string }[] = [];
+                        await Promise.all(bots.map(async (bot) => {
+                            try {
+                                const discordBot = client.users.cache.get(bot.id);
+                                if (discordBot) {
+                                    names.push({ name: discordBot.username, id: bot.id });
                                 } else {
-                                    await prisma.application.delete({
-                                        where: { id: bot.id }
-                                    });
+                                    const fetchedBot = await client.users.fetch(bot.id).catch(() => null);
+                                    if (fetchedBot) {
+                                        names.push({ name: fetchedBot.username, id: bot.id });
+                                    } else {
+                                        await prisma.application.delete({
+                                            where: { id: bot.id }
+                                        });
+                                    }
                                 }
+                            } catch (error) {
+                                console.error(error);
                             }
-                        } catch (error) {
-                            console.error(error);
-                        }
-                    }));
-                    await redis.set(`apikey:bots:cache:admin`, JSON.stringify(names));
-                    return names;
-                } else {
-                    return JSON.parse(raw) as { name: string; id: string }[];
-                }
-            };
+                        }));
+                        await redis.set(`apikey:bots:cache:admin`, JSON.stringify(names));
+                        return names;
+                    } else {
+                        return JSON.parse(raw) as { name: string; id: string }[];
+                    }
+                };
 
-            if (focused.name === "bot") {
-                const bots = await getBotsNames();
-                await interaction.respond(bots.filter(bot => bot.name.toLowerCase().includes(focused.value.toLowerCase())).map(bot => ({
-                    name: bot.name,
-                    value: bot.id
-                })));
-                return;
-            }
+                if (focused.name === "bot") {
+                    const bots = await getBotsNames();
+                    await interaction.respond(bots.filter(bot => bot.name.toLowerCase().includes(focused.value.toLowerCase())).map(bot => ({
+                        name: bot.name,
+                        value: bot.id
+                    })));
+                    return;
+                }
             }
             case "commands": {
                 switch (subcommand) {
@@ -623,7 +623,7 @@ createCommand({
 
                             const id = commandsManager.get.highestId() + 1;
                             await commandsManager.addAndUpdate({ id, name, description, category, isAvaible, siteAvaible: false })
-                        
+
                             interaction.editReply(res.success(`Comando adicionado com sucesso!, id: ${id}`));
                             break;
                         }
@@ -776,7 +776,7 @@ createCommand({
                     await interaction.editReply(res.danger("Erro ao criar pet!"));
                 }
             }
-            return;
+                return;
             case "database": {
                 await interaction.deferReply();
                 /*
@@ -914,49 +914,27 @@ createCommand({
             case "test": {
                 await interaction.deferReply()
 
-                await prisma.userPet.create({
-                    data: {
-                        gender: "MALE",
-                        name: "SHOYO",
-                        humor: "happy",
-                        petId: 14,
-                        userId: "1419906960354181120",
-                        // 12 e 5,
-                        personality: {
-                            createMany: {
-                                data: [
-                                    {
-                                        traitId: 12,
-                                    },
-                                    {
-                                        traitId: 5,
-                                    }
-                                ]
-                            }
-                        },
-                        genetics: {
-                            createMany: {
-                                data: [
-                                    {
-                                        geneId: 211
-                                    },
-                                    {
-                                        geneId: 216
-                                    },
-                                    {
-                                        geneId: 220
-                                    }
-                                ]
-                            }
-                        },
-                        skills: {
-                            create: {
-                                skillId: 1,
-                                level: 2,
-                            }
-                        }
-                    }
-                })
+                const avaiblePowers = await prisma.petPower.findMany();
+
+                const carsionRandomPowers = shuffleArray(avaiblePowers).slice(0, 5);
+                const birdRandomPowers = shuffleArray(avaiblePowers).slice(5, 10);
+
+                await prisma.$transaction([
+                    prisma.userPetPower.createMany({
+                        data: carsionRandomPowers.map(p => ({
+                            userPetId: 91,
+                            powerId: p.id,
+                            isEquipped: true
+                        }))
+                    }),
+                    prisma.userPetPower.createMany({
+                        data: birdRandomPowers.map(p => ({
+                            userPetId: 73,
+                            powerId: p.id,
+                            isEquipped: true
+                        }))
+                    })
+                ])
 
                 interaction.editReply(res.success("Concluído"))
                 return;
@@ -1203,290 +1181,148 @@ createCommand({
                     // Promise com a transação
                     const txPromise = (async () => {
                         await prisma.$transaction(async (tx) => {
-                            // 1) Pets (muito mais entradas)
-                            await interaction.editReply(res.warning(`${icon.waiting_white} | Criando pets...`));
-                            await tx.pet.createMany({
-                                data: [
-                                    { name: "Gato Siamês", rarity: "COMUM", price: 200, animal: "CAT", specie: "Siamese" },
-                                    { name: "Gato Persa", rarity: "RARE", price: 450, animal: "CAT", specie: "Persian" },
-                                    { name: "Gato de Rua", rarity: "COMUM", price: 80, animal: "CAT", specie: "Street" },
-                                    { name: "Cachorro Labrador", rarity: "RARE", price: 500, animal: "DOG", specie: "Labrador" },
-                                    { name: "Cachorro Husky", rarity: "EPIC", price: 1500, animal: "DOG", specie: "Husky" },
-                                    { name: "Cachorro Pug", rarity: "COMUM", price: 300, animal: "DOG", specie: "Pug" },
-                                    { name: "Papagaio", rarity: "COMUM", price: 350, animal: "BIRD", specie: "Parrot" },
-                                    { name: "Canário", rarity: "COMUM", price: 90, animal: "BIRD", specie: "Canary" },
-                                    { name: "Hamster Sírio", rarity: "COMUM", price: 100, animal: "HAMSTER", specie: "Syrian" },
-                                    { name: "Hamster Anão", rarity: "UNCOMUM", price: 140, animal: "HAMSTER", specie: "Dwarf" },
-                                    { name: "Coelho Branco", rarity: "UNCOMUM", price: 250, animal: "RABBIT", specie: "White" },
-                                    { name: "Coelho Selvagem", rarity: "COMUM", price: 110, animal: "RABBIT", specie: "Wild" },
-                                    { name: "Dragão Verde", rarity: "LEGENDARY", price: 5000, animal: "DRAGON", specie: "Emerald" },
-                                    { name: "Dragão de Fogo", rarity: "LEGENDARY", price: 5500, animal: "DRAGON", specie: "Inferno" },
-                                    { name: "Dragão Ancião", rarity: "EPIC", price: 3000, animal: "DRAGON", specie: "Elder" },
-                                    { name: "Leão Africano", rarity: "EPIC", price: 2000, animal: "LION", specie: "African" },
-                                    { name: "Leão Branco", rarity: "RARE", price: 1800, animal: "LION", specie: "White" },
-                                    { name: "Jaguar Preto", rarity: "EPIC", price: 2500, animal: "JAGUAR", specie: "Black" },
-                                    { name: "Jaguar das Selvas", rarity: "RARE", price: 1600, animal: "JAGUAR", specie: "Jungle" },
-                                    { name: "Fênix", rarity: "LEGENDARY", price: 6000, animal: "BIRD", specie: "Phoenix" },
-                                    { name: "Gato Selvagem", rarity: "RARE", price: 700, animal: "CAT", specie: "Wildcat" },
-                                    { name: "Cão Pastor", rarity: "UNCOMUM", price: 400, animal: "DOG", specie: "Shepherd" },
-                                    { name: "Pássaro do Paraíso", rarity: "EPIC", price: 2200, animal: "BIRD", specie: "Paradise" },
-                                    { name: "Coelho Lunar", rarity: "RARE", price: 900, animal: "RABBIT", specie: "Lunar" },
-                                    { name: "Gato Bengal", rarity: "RARE", price: 600, animal: "CAT", specie: "Bengal" },
-                                    { name: "Gato Maine Coon", rarity: "EPIC", price: 1200, animal: "CAT", specie: "MaineCoon" },
-                                    { name: "Cachorro Golden Retriever", rarity: "RARE", price: 550, animal: "DOG", specie: "GoldenRetriever" },
-                                    { name: "Cachorro Bulldog", rarity: "UNCOMUM", price: 350, animal: "DOG", specie: "Bulldog" },
-                                    { name: "Arara Azul", rarity: "EPIC", price: 1800, animal: "BIRD", specie: "BlueMacaw" },
-                                    { name: "Coruja", rarity: "RARE", price: 800, animal: "BIRD", specie: "Owl" },
-                                    { name: "Hamster Roborovski", rarity: "UNCOMUM", price: 120, animal: "HAMSTER", specie: "Roborovski" },
-                                    { name: "Hamster Chinês", rarity: "COMUM", price: 80, animal: "HAMSTER", specie: "Chinese" },
-                                    { name: "Coelho Holland Lop", rarity: "RARE", price: 300, animal: "RABBIT", specie: "HollandLop" },
-                                    { name: "Coelho Rex", rarity: "UNCOMUM", price: 200, animal: "RABBIT", specie: "Rex" },
-                                    { name: "Dragão de Gelo", rarity: "LEGENDARY", price: 5200, animal: "DRAGON", specie: "Ice" },
-                                    { name: "Dragão das Sombras", rarity: "EPIC", price: 2800, animal: "DRAGON", specie: "Shadow" },
-                                    { name: "Leão Asiático", rarity: "RARE", price: 1600, animal: "LION", specie: "Asiatic" },
-                                    { name: "Leão das Cavernas", rarity: "EPIC", price: 2200, animal: "LION", specie: "Cave" },
-                                    { name: "Jaguar Dourado", rarity: "LEGENDARY", price: 3000, animal: "JAGUAR", specie: "Golden" },
-                                    { name: "Jaguar Albino", rarity: "RARE", price: 2000, animal: "JAGUAR", specie: "Albino" },
-                                    { name: "Falcão Peregrino", rarity: "EPIC", price: 1500, animal: "BIRD", specie: "Falcon" },
-                                    { name: "Pinguim", rarity: "UNCOMUM", price: 400, animal: "BIRD", specie: "Penguin" },
-                                    { name: "Gato Sphynx", rarity: "EPIC", price: 1000, animal: "CAT", specie: "Sphynx" },
-                                    { name: "Cachorro Beagle", rarity: "COMUM", price: 250, animal: "DOG", specie: "Beagle" },
-                                    { name: "Coelho Angorá", rarity: "RARE", price: 350, animal: "RABBIT", specie: "Angora" },
-                                    { name: "Dragão Elétrico", rarity: "LEGENDARY", price: 5800, animal: "DRAGON", specie: "Electric" },
-                                    { name: "Leão Marinho", rarity: "UNCOMUM", price: 500, animal: "LION", specie: "Sea" },
-                                    { name: "Jaguar das Montanhas", rarity: "EPIC", price: 2400, animal: "JAGUAR", specie: "Mountain" },
-                                    { name: "Águia Real", rarity: "RARE", price: 900, animal: "BIRD", specie: "GoldenEagle" }
-                                ]
+                            // Lista de poderes a serem criados
+                            await tx.petPower.deleteMany();
+                            const powersToCreate: { name: string; description: string; type: PetPowerType; element: PetElement; details: any}[] = [
+                                // Poderes de DANO
+                                {
+                                    name: "Fireball",
+                                    description: "Lança uma bola de fogo que causa dano direto.",
+                                    type: "DAMAGE",
+                                    element: "FIRE",
+                                    details: { damage: 12, cooldown: 2, manaCost: 20 },
+                                },
+                                {
+                                    name: "Water Jet",
+                                    description: "Dispara um jato d'água poderoso.",
+                                    type: "DAMAGE",
+                                    element: "WATER",
+                                    details: { damage: 15, cooldown: 2, manaCost: 18 },
+                                },
+                                {
+                                    name: "Thunderbolt",
+                                    description: "Libera um raio elétrico.",
+                                    type: "DAMAGE",
+                                    element: "ELECTRIC",
+                                    details: { damage: 18, cooldown: 3, manaCost: 25 },
+                                },
+                                {
+                                    name: "Earth Slam",
+                                    description: "Golpeia o chão, causando tremor.",
+                                    type: "DAMAGE",
+                                    element: "EARTH",
+                                    details: { damage: 20, cooldown: 3, manaCost: 22 },
+                                },
+                                // Poderes de CURA
+                                {
+                                    name: "Healing Light",
+                                    description: "Cura o pet com luz restauradora.",
+                                    type: "HEAL",
+                                    element: "LIGHT",
+                                    details: { heal: 13, cooldown: 2, manaCost: 15 },
+                                },
+                                {
+                                    name: "Nature's Touch",
+                                    description: "Restaura vida com energia natural.",
+                                    type: "HEAL",
+                                    element: "EARTH",
+                                    details: { heal: 15, cooldown: 2, manaCost: 12 },
+                                },
+                                // Poderes de BUFF
+                                {
+                                    name: "Flame Aura",
+                                    description: "Aumenta o dano de ataques de fogo.",
+                                    type: "BUFF",
+                                    element: "FIRE",
+                                    details: { duration: 3, cooldown: 4, manaCost: 10, elementBuffed: "FIRE" },
+                                },
+                                {
+                                    name: "Wind Boost",
+                                    description: "Aumenta a velocidade e dano de ataques de ar.",
+                                    type: "BUFF",
+                                    element: "AIR",
+                                    details: { duration: 2, cooldown: 3, manaCost: 8, elementBuffed: "AIR" },
+                                },
+                                // Poderes de DEBUFF
+                                {
+                                    name: "Frostbite",
+                                    description: "Reduz o dano de ataques inimigos.",
+                                    type: "DEBUFF",
+                                    element: "ICE",
+                                    details: { duration: 2, cooldown: 3, manaCost: 10, elementDebuffed: "FIRE" },
+                                },
+                                {
+                                    name: "Dark Veil",
+                                    description: "Diminui a precisão do inimigo.",
+                                    type: "DEBUFF",
+                                    element: "DARK",
+                                    details: { duration: 3, cooldown: 4, manaCost: 12, elementDebuffed: "LIGHT" },
+                                },
+                                // Poderes de AUTODAMAGE
+                                {
+                                    name: "Poison Cloud",
+                                    description: "Causa dano contínuo ao longo do tempo.",
+                                    type: "AUTODAMAGE",
+                                    element: "DARK",
+                                    details: { damage: 4, turnsDuration: 3, cooldown: 4, manaCost: 15 },
+                                },
+                                // Poderes de AUTOHEAL
+                                {
+                                    name: "Regeneration",
+                                    description: "Restaura vida gradualmente.",
+                                    type: "AUTOHEAL",
+                                    element: "WATER",
+                                    details: { heal: 3, turnsDuration: 3, cooldown: 4, manaCost: 12 },
+                                },
+                            ];
+
+                            // Inserir poderes
+                            await tx.petPower.createMany({
+                                data: powersToCreate,
                             });
 
-                            // 2) Personality traits (com geneType variados)
-                            await interaction.editReply(res.warning(`${icon.waiting_white} | Criando personalidades...`));
-                            await tx.personalityTrait.createMany({
-                                data: [
-                                    { name: "calm", geneType: "NEUTRAL", personalityConflictNames: ["aggressive", "energetic", "mischievous"] },
-                                    { name: "playful", geneType: "CODOMINANT", personalityConflictNames: ["lazy", "timid", "submissive"] },
-                                    { name: "curious", geneType: "CODOMINANT", personalityConflictNames: ["shy", "stubborn", "patient"] },
-                                    { name: "shy", geneType: "RECESSIVE", personalityConflictNames: ["brave", "dominant", "protective"] },
-                                    { name: "brave", geneType: "DOMINANT", personalityConflictNames: ["timid", "submissive", "clingy"] },
-                                    { name: "loyal", geneType: "DOMINANT", personalityConflictNames: ["independent", "mischievous"] },
-                                    { name: "aggressive", geneType: "DOMINANT", personalityConflictNames: ["calm", "gentle", "patient"] },
-                                    { name: "lazy", geneType: "RECESSIVE", personalityConflictNames: ["energetic", "playful", "curious"] },
-                                    { name: "friendly", geneType: "CODOMINANT", personalityConflictNames: ["aggressive", "stubborn"] },
-                                    { name: "stubborn", geneType: "RECESSIVE", personalityConflictNames: ["submissive", "friendly", "gentle"] },
-                                    { name: "gentle", geneType: "NEUTRAL", personalityConflictNames: ["aggressive", "dominant"] },
-                                    { name: "energetic", geneType: "CODOMINANT", personalityConflictNames: ["lazy", "calm", "timid"] },
-                                    { name: "protective", geneType: "DOMINANT", personalityConflictNames: ["independent", "submissive"] },
-                                    { name: "independent", geneType: "NEUTRAL", personalityConflictNames: ["clingy", "loyal", "protective"] },
-                                    { name: "clingy", geneType: "RECESSIVE", personalityConflictNames: ["independent", "brave"] },
-                                    { name: "timid", geneType: "RECESSIVE", personalityConflictNames: ["brave", "energetic", "dominant"] },
-                                    { name: "mischievous", geneType: "CODOMINANT", personalityConflictNames: ["patient", "loyal", "calm"] },
-                                    { name: "patient", geneType: "NEUTRAL", personalityConflictNames: ["aggressive", "mischievous", "curious"] },
-                                    { name: "dominant", geneType: "DOMINANT", personalityConflictNames: ["submissive", "shy", "gentle"] },
-                                    { name: "submissive", geneType: "RECESSIVE", personalityConflictNames: ["dominant", "brave", "stubborn"] }
-                                ]
+                            // Lista de relações de efetividade entre elementos
+                            const effectivenessToCreate: { fromElement: PetElement; toElement: PetElement; multiplier: number }[] = [
+                                // Fogo é forte contra Gelo, fraco contra Água
+                                { fromElement: "FIRE", toElement: "ICE", multiplier: 1.5 },
+                                { fromElement: "FIRE", toElement: "WATER", multiplier: 0.5 },
+                                // Água é forte contra Fogo, fraca contra Elétrico
+                                { fromElement: "WATER", toElement: "FIRE", multiplier: 1.5 },
+                                { fromElement: "WATER", toElement: "ELECTRIC", multiplier: 0.5 },
+                                // Elétrico é forte contra Água, fraco contra Terra
+                                { fromElement: "ELECTRIC", toElement: "WATER", multiplier: 1.5 },
+                                { fromElement: "ELECTRIC", toElement: "EARTH", multiplier: 0.5 },
+                                // Terra é forte contra Elétrico, fraca contra Ar
+                                { fromElement: "EARTH", toElement: "ELECTRIC", multiplier: 1.5 },
+                                { fromElement: "EARTH", toElement: "AIR", multiplier: 0.5 },
+                                // Ar é forte contra Terra, fraco contra Fogo
+                                { fromElement: "AIR", toElement: "EARTH", multiplier: 1.5 },
+                                { fromElement: "AIR", toElement: "FIRE", multiplier: 0.5 },
+                                // Gelo é forte contra Ar, fraco contra Fogo
+                                { fromElement: "ICE", toElement: "AIR", multiplier: 1.5 },
+                                { fromElement: "ICE", toElement: "FIRE", multiplier: 0.5 },
+                                // Luz é forte contra Escuridão, fraca contra Normal
+                                { fromElement: "LIGHT", toElement: "DARK", multiplier: 1.5 },
+                                { fromElement: "LIGHT", toElement: "NORMAL", multiplier: 0.5 },
+                                // Escuridão é forte contra Normal, fraca contra Luz
+                                { fromElement: "DARK", toElement: "NORMAL", multiplier: 1.5 },
+                                { fromElement: "DARK", toElement: "LIGHT", multiplier: 0.5 },
+                                // Normal é neutro contra todos (multiplicador 1.0)
+                                { fromElement: "NORMAL", toElement: "NORMAL", multiplier: 1.0 },
+                                { fromElement: "NORMAL", toElement: "FIRE", multiplier: 1.0 },
+                                { fromElement: "NORMAL", toElement: "WATER", multiplier: 1.0 },
+                                { fromElement: "NORMAL", toElement: "ELECTRIC", multiplier: 1.0 },
+                                { fromElement: "NORMAL", toElement: "EARTH", multiplier: 1.0 },
+                                { fromElement: "NORMAL", toElement: "AIR", multiplier: 1.0 },
+                                { fromElement: "NORMAL", toElement: "ICE", multiplier: 1.0 },
+                                { fromElement: "NORMAL", toElement: "DARK", multiplier: 1.0 },
+                                { fromElement: "NORMAL", toElement: "LIGHT", multiplier: 1.0 },
+                            ];
+
+                            // Inserir relações de efetividade
+                            await tx.petPowerEffectiveness.createMany({
+                                data: effectivenessToCreate,
                             });
-
-                            // 3) Skills (mais opções)
-                            await interaction.editReply(res.warning(`${icon.waiting_white} | Criando skills...`));
-                            await tx.petSkill.createMany({
-                                data: [
-                                    { name: "daily_bonus" },
-                                    { name: "daily_cooldown_reduction" },
-                                    { name: "work_bonus" },
-                                    { name: "work_xp_bonus" },
-                                    { name: "job_interview_easier" },
-                                    { name: "work_challenge_avoid" },
-                                    { name: "work_challenge_easier" },
-                                    { name: "slots_luck" },
-                                    { name: "coinflip_luck" },
-                                    { name: "coinflip_bonus" },
-                                    { name: "horse_racing_luck" },
-                                    { name: "horse_racing_bonus" }
-                                ]
-                            });
-
-
-                            // 4) Genetics: criar várias traits por pet (muito mais geneticsData)
-                            await interaction.editReply(res.warning(`${icon.waiting_white} | Criando genéticas (múltiplas por espécie)...`));
-                            const allPets = await tx.pet.findMany();
-
-                            const geneticsData: { petId: number; trait: string; colorPart: PetGeneticsColorPart; geneType: GeneType; }[] = allPets.flatMap((p) => {
-                                const baseTraits = [
-                                    // olhos comuns
-                                    { trait: "Olhos Azuis", colorPart: "EYE", geneType: "DOMINANT" },
-                                    { trait: "Olhos Verdes", colorPart: "EYE", geneType: "RECESSIVE" },
-                                    { trait: "Olhos Dourados", colorPart: "EYE", geneType: "CODOMINANT" },
-                                    { trait: "Olhos Pretos", colorPart: "EYE", geneType: "NEUTRAL" },
-                                ];
-
-                                const animalSpecificTraits = (() => {
-                                    switch (p.animal) {
-                                        case "CAT":
-                                            return [
-                                                // pelagem - primary para gatos
-                                                { trait: "Pelo Cinza", colorPart: "COLOR1", geneType: "NEUTRAL" },
-                                                { trait: "Pelo Laranja", colorPart: "COLOR1", geneType: "CODOMINANT" },
-                                                { trait: "Pelo Branco", colorPart: "COLOR1", geneType: "RECESSIVE" },
-                                                { trait: "Pelo Preto", colorPart: "COLOR1", geneType: "DOMINANT" },
-                                                // pelagem - secondary / padrões para gatos
-                                                { trait: "Manchas Brancas", colorPart: "COLOR2", geneType: "CODOMINANT" },
-                                                { trait: "Listras Tabby", colorPart: "COLOR2", geneType: "NEUTRAL" },
-                                                { trait: "Patas Pretas", colorPart: "COLOR2", geneType: "NEUTRAL" },
-                                                { trait: "Orelhas Pontudas", colorPart: "COLOR2", geneType: "RECESSIVE" },
-                                                // extras para gatos
-                                                { trait: "Cauda Curta", colorPart: "COLOR2", geneType: "RECESSIVE" },
-                                                { trait: "Bigodes Longos", colorPart: "COLOR2", geneType: "CODOMINANT" },
-                                                { trait: "Pelo Curto", colorPart: "COLOR1", geneType: "DOMINANT" },
-                                                { trait: "Pelo Longo", colorPart: "COLOR1", geneType: "RECESSIVE" },
-                                            ];
-                                        case "DOG":
-                                            return [
-                                                // pelagem - primary para cães
-                                                { trait: "Pelo Marrom", colorPart: "COLOR1", geneType: "NEUTRAL" },
-                                                { trait: "Pelo Dourado", colorPart: "COLOR1", geneType: "CODOMINANT" },
-                                                { trait: "Pelo Branco", colorPart: "COLOR1", geneType: "RECESSIVE" },
-                                                { trait: "Pelo Preto", colorPart: "COLOR1", geneType: "DOMINANT" },
-                                                // pelagem - secondary / padrões para cães
-                                                { trait: "Manchas Pretas", colorPart: "COLOR2", geneType: "CODOMINANT" },
-                                                { trait: "Listras Brindle", colorPart: "COLOR2", geneType: "NEUTRAL" },
-                                                { trait: "Colar Branco", colorPart: "COLOR2", geneType: "NEUTRAL" },
-                                                { trait: "Orelhas Caídas", colorPart: "COLOR2", geneType: "RECESSIVE" },
-                                                // extras para cães
-                                                { trait: "Cauda Enrolada", colorPart: "COLOR2", geneType: "CODOMINANT" },
-                                                { trait: "Focinho Curto", colorPart: "COLOR2", geneType: "RECESSIVE" },
-                                                { trait: "Pelo Ondulado", colorPart: "COLOR1", geneType: "CODOMINANT" },
-                                                { trait: "Pelo Liso", colorPart: "COLOR1", geneType: "DOMINANT" },
-                                            ];
-                                        case "BIRD":
-                                            return [
-                                                // pelagem (penas) - primary para pássaros
-                                                { trait: "Penas Azuis", colorPart: "COLOR1", geneType: "DOMINANT" },
-                                                { trait: "Penas Verdes", colorPart: "COLOR1", geneType: "RECESSIVE" },
-                                                { trait: "Penas Amarelas", colorPart: "COLOR1", geneType: "CODOMINANT" },
-                                                { trait: "Penas Pretas", colorPart: "COLOR1", geneType: "NEUTRAL" },
-                                                // pelagem - secondary / padrões para pássaros
-                                                { trait: "Manchas Coloridas", colorPart: "COLOR2", geneType: "CODOMINANT" },
-                                                { trait: "Listras nas Asas", colorPart: "COLOR2", geneType: "NEUTRAL" },
-                                                { trait: "Bico Curvo", colorPart: "COLOR2", geneType: "NEUTRAL" },
-                                                { trait: "Crista Alta", colorPart: "COLOR2", geneType: "DOMINANT" },
-                                                // extras para pássaros
-                                                { trait: "Asas Longas", colorPart: "COLOR2", geneType: "CODOMINANT" },
-                                                { trait: "Penas Iridescentes", colorPart: "COLOR1", geneType: "RECESSIVE" },
-                                                { trait: "Cauda Bifurcada", colorPart: "COLOR2", geneType: "NEUTRAL" },
-                                                { trait: "Olhos Vermelhos", colorPart: "EYE", geneType: "RECESSIVE" },
-                                            ];
-                                        case "HAMSTER":
-                                            return [
-                                                // pelagem - primary para hamsters
-                                                { trait: "Pelo Cinza Claro", colorPart: "COLOR1", geneType: "NEUTRAL" },
-                                                { trait: "Pelo Marrom", colorPart: "COLOR1", geneType: "DOMINANT" },
-                                                { trait: "Pelo Branco", colorPart: "COLOR1", geneType: "RECESSIVE" },
-                                                { trait: "Pelo Dourado", colorPart: "COLOR1", geneType: "CODOMINANT" },
-                                                // pelagem - secondary / padrões para hamsters
-                                                { trait: "Manchas Pretas", colorPart: "COLOR2", geneType: "CODOMINANT" },
-                                                { trait: "Listras Dorsais", colorPart: "COLOR2", geneType: "NEUTRAL" },
-                                                { trait: "Patas Rosadas", colorPart: "COLOR2", geneType: "NEUTRAL" },
-                                                { trait: "Orelhas Pequenas", colorPart: "COLOR2", geneType: "RECESSIVE" },
-                                                // extras para hamsters
-                                                { trait: "Cauda Curta", colorPart: "COLOR2", geneType: "DOMINANT" },
-                                                { trait: "Pelo Espesso", colorPart: "COLOR1", geneType: "CODOMINANT" },
-                                                { trait: "Bochechas Grandes", colorPart: "COLOR2", geneType: "NEUTRAL" },
-                                                { trait: "Olhos Negros", colorPart: "EYE", geneType: "DOMINANT" },
-                                            ];
-                                        case "RABBIT":
-                                            return [
-                                                // pelagem - primary para coelhos
-                                                { trait: "Pelo Branco", colorPart: "COLOR1", geneType: "RECESSIVE" },
-                                                { trait: "Pelo Cinza", colorPart: "COLOR1", geneType: "NEUTRAL" },
-                                                { trait: "Pelo Marrom", colorPart: "COLOR1", geneType: "DOMINANT" },
-                                                { trait: "Pelo Preto", colorPart: "COLOR1", geneType: "CODOMINANT" },
-                                                // pelagem - secondary / padrões para coelhos
-                                                { trait: "Manchas Negras", colorPart: "COLOR2", geneType: "CODOMINANT" },
-                                                { trait: "Listras Agouti", colorPart: "COLOR2", geneType: "NEUTRAL" },
-                                                { trait: "Orelhas Longas", colorPart: "COLOR2", geneType: "DOMINANT" },
-                                                { trait: "Patas Brancas", colorPart: "COLOR2", geneType: "RECESSIVE" },
-                                                // extras para coelhos
-                                                { trait: "Pelo Angorá", colorPart: "COLOR1", geneType: "RECESSIVE" },
-                                                { trait: "Nariz Rosa", colorPart: "COLOR2", geneType: "NEUTRAL" },
-                                                { trait: "Olhos Rubi", colorPart: "EYE", geneType: "RECESSIVE" },
-                                                { trait: "Cauda Fofa", colorPart: "COLOR2", geneType: "CODOMINANT" },
-                                            ];
-                                        case "DRAGON":
-                                            return [
-                                                // pelagem (escamas) - primary para dragões
-                                                { trait: "Escamas Verdes", colorPart: "COLOR1", geneType: "NEUTRAL" },
-                                                { trait: "Escamas Vermelhas", colorPart: "COLOR1", geneType: "DOMINANT" },
-                                                { trait: "Escamas Azuis", colorPart: "COLOR1", geneType: "RECESSIVE" },
-                                                { trait: "Escamas Douradas", colorPart: "COLOR1", geneType: "CODOMINANT" },
-                                                // pelagem - secondary / padrões para dragões
-                                                { trait: "Chifres Curvos", colorPart: "COLOR2", geneType: "DOMINANT" },
-                                                { trait: "Asas Membranosas", colorPart: "COLOR2", geneType: "NEUTRAL" },
-                                                { trait: "Espinhos Dorsais", colorPart: "COLOR2", geneType: "CODOMINANT" },
-                                                { trait: "Cauda Espinhosa", colorPart: "COLOR2", geneType: "RECESSIVE" },
-                                                // extras para dragões
-                                                { trait: "Olhos Flamejantes", colorPart: "EYE", geneType: "DOMINANT" },
-                                                { trait: "Escamas Iridescentes", colorPart: "COLOR1", geneType: "CODOMINANT" },
-                                                { trait: "Garras Afiadas", colorPart: "COLOR2", geneType: "NEUTRAL" },
-                                                { trait: "Respiração de Fogo", colorPart: "COLOR2", geneType: "NEUTRAL" },
-                                            ];
-                                        case "LION":
-                                            return [
-                                                // pelagem - primary para leões
-                                                { trait: "Juba Dourada", colorPart: "COLOR1", geneType: "DOMINANT" },
-                                                { trait: "Pelo Amarelo", colorPart: "COLOR1", geneType: "NEUTRAL" },
-                                                { trait: "Pelo Branco", colorPart: "COLOR1", geneType: "RECESSIVE" },
-                                                { trait: "Pelo Preto", colorPart: "COLOR1", geneType: "CODOMINANT" },
-                                                // pelagem - secondary / padrões para leões
-                                                { trait: "Manchas no Corpo", colorPart: "COLOR2", geneType: "CODOMINANT" },
-                                                { trait: "Listras na Cauda", colorPart: "COLOR2", geneType: "NEUTRAL" },
-                                                { trait: "Juba Espessa", colorPart: "COLOR2", geneType: "DOMINANT" },
-                                                { trait: "Patas Grandes", colorPart: "COLOR2", geneType: "NEUTRAL" },
-                                                // extras para leões
-                                                { trait: "Olhos Âmbar", colorPart: "EYE", geneType: "CODOMINANT" },
-                                                { trait: "Garras Retráteis", colorPart: "COLOR2", geneType: "DOMINANT" },
-                                                { trait: "Rugido Alto", colorPart: "COLOR2", geneType: "NEUTRAL" },
-                                                { trait: "Cauda com Tufo", colorPart: "COLOR2", geneType: "RECESSIVE" },
-                                            ];
-                                        case "JAGUAR":
-                                            return [
-                                                // pelagem - primary para jaguares
-                                                { trait: "Pelo Amarelo", colorPart: "COLOR1", geneType: "NEUTRAL" },
-                                                { trait: "Pelo Preto", colorPart: "COLOR1", geneType: "DOMINANT" },
-                                                { trait: "Pelo Manchado", colorPart: "COLOR1", geneType: "CODOMINANT" },
-                                                { trait: "Pelo Albino", colorPart: "COLOR1", geneType: "RECESSIVE" },
-                                                // pelagem - secondary / padrões para jaguares
-                                                { trait: "Rosetas Pretas", colorPart: "COLOR2", geneType: "DOMINANT" },
-                                                { trait: "Listras nas Patas", colorPart: "COLOR2", geneType: "NEUTRAL" },
-                                                { trait: "Cauda Longa", colorPart: "COLOR2", geneType: "CODOMINANT" },
-                                                { trait: "Orelhas Arredondadas", colorPart: "COLOR2", geneType: "RECESSIVE" },
-                                                // extras para jaguares
-                                                { trait: "Olhos Verdes", colorPart: "EYE", geneType: "DOMINANT" },
-                                                { trait: "Mandíbula Forte", colorPart: "COLOR2", geneType: "NEUTRAL" },
-                                                { trait: "Pelo Lustroso", colorPart: "COLOR1", geneType: "CODOMINANT" },
-                                                { trait: "Garras Curvas", colorPart: "COLOR2", geneType: "DOMINANT" },
-                                            ];
-                                        default:
-                                            return [];
-                                    }
-                                })();
-
-                                return [...baseTraits, ...animalSpecificTraits].map(trait => ({
-                                    petId: p.id,
-                                    trait: trait.trait,
-                                    colorPart: trait.colorPart as PetGeneticsColorPart,
-                                    geneType: trait.geneType as GeneType,
-                                }));
-                            });
-
-                            // Inserir todas as genetics
-                            // Para evitar problemas de limite por createMany, quebramos em chunks de 500
-                            const chunkSize = 500;
-                            for (let i = 0; i < geneticsData.length; i += chunkSize) {
-                                const chunk = geneticsData.slice(i, i + chunkSize);
-                                await tx.genetics.createMany({ data: chunk });
-                            }
-
-                            await interaction.editReply(res.warning(`${icon.waiting_white} | Genéticas criadas para ${allPets.length} pets.`));
                         });
                     })();
 
@@ -1495,7 +1331,7 @@ createCommand({
 
                     await interaction.editReply(res.success(`${icon.success} | Povoamento concluído com sucesso!`));
                 } catch (err: any) {
-                    console.error(err)
+                    console.error(err);
                     if (err.message === "TIMEOUT") {
                         await interaction.editReply(res.danger(`${icon.error} | Tempo limite de 30 segundos atingido durante o povoamento.`));
                     } else {

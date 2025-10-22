@@ -1,5 +1,5 @@
 import { prisma } from "#database";
-import { getValidUserPet, icon, resv2 } from "#functions";
+import { getValidUserPet, icon, res, resv2 } from "#functions";
 import { createSeparator } from "@magicyan/discord";
 import { ButtonBuilder, ButtonStyle, ChatInputCommandInteraction, userMention } from "discord.js";
 
@@ -12,17 +12,17 @@ export async function userBattleCommand(interaction: ChatInputCommandInteraction
 
     // verificações iniciais
     if (selectedUser.id === user.id) {
-        await interaction.editReply(`${icon.denied} | Você não pode lutar contra você mesmo!`);
+        await interaction.reply(res.danger(`${icon.denied} | Você não pode lutar contra você mesmo!`));
         return;
     }
 
     if (selectedUser.id === client.application.id) {
-        await interaction.editReply(`${icon.denied} | Você não pode lutar contra mim! eu acabaria com você facil.`);
+        await interaction.reply(res.danger(`${icon.denied} | Você não pode lutar contra mim! eu acabaria com você facil.`));
         return;
     }
 
     if (selectedUser.bot) {
-        await interaction.editReply(`${icon.denied} | Você não pode lutar contra um bot!`)
+        await interaction.reply(res.danger(`${icon.denied} | Você não pode lutar contra um bot!`));
         return;
     }
 
@@ -40,17 +40,17 @@ export async function userBattleCommand(interaction: ChatInputCommandInteraction
 
     // Verificações de pet
     if (!pet) {
-        await interaction.editReply(`${icon.error} | Eu não consegui encontrar esse pet!`);
+        await interaction.editReply(res.danger(`${icon.error} | Eu não consegui encontrar esse pet!`));
         return;
     }
 
     if (pet.powers.length < 1) {
-        await interaction.editReply(`${icon.error} | Esse pet não tem poderes!`);
+        await interaction.editReply(res.danger(`${icon.error} | Esse pet não tem poderes!`));
         return;
     }
 
     if (pet.isPregnant) {
-        await interaction.editReply(`${icon.denied} | Você está louco de enviar uma pet grávida para lutar!?`);
+        await interaction.editReply(res.danger(`${icon.denied} | Você está louco de enviar uma pet grávida para lutar!?`));
         return;
     }
 
@@ -72,8 +72,8 @@ export async function userBattleCommand(interaction: ChatInputCommandInteraction
         }
     })
 
-    if (!selectedUserPets || selectedUserPets.length < 1 || selectedUserPets.some(p => p.powers.length > 0)) {
-        await interaction.editReply(`${icon.error} | O usuário selecionado não tem pets disponiveis!`);
+    if (selectedUserPets.length === 0 || selectedUserPets.filter(p => p.powers.length > 0).length < 1) {
+        await interaction.editReply(res.danger(`${icon.error} | O usuário selecionado não tem pets disponiveis!`));
         return;
     }
 

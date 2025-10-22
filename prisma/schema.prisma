@@ -11,7 +11,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+  url      = env("DEV_DATABASE_URL")
 }
 
 
@@ -193,6 +193,9 @@ model Company {
   experience   Int     @default(0)
   wage         Decimal @default(100.0) @db.Decimal(12, 2)
   expectations Json
+  flags         String[] @default([])
+  isEnabled     Boolean @default(true)
+
   workers      User[]
 }
 
@@ -413,6 +416,8 @@ model Pet {
   animal    Animal
   specie    String
   createdAt DateTime  @default(now())
+  flags     String[]  @default([])
+  isEnabled Boolean   @default(true)
 
   userPets  UserPet[]
   genetics  Genetics[]
@@ -657,7 +662,7 @@ model UserPetPower {
 
   level       Int          @default(1)
   xp          Int          @default(0)
-  isEquipped  Boolean      @default(false)
+  isEquipped  Boolean      @default(true)
 
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt

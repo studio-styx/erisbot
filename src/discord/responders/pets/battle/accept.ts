@@ -27,11 +27,11 @@ createResponder({
             return;
         }
 
-        await interaction.deferReply();
+        await interaction.deferUpdate();
 
         const selectedUserPets = await prisma.userPet.findMany({
             where: {
-                userId,
+                userId: targetId,
                 isDead: false,
                 adoption: null,
                 isPregnant: false,
@@ -46,8 +46,8 @@ createResponder({
             }
         })
 
-        if (!selectedUserPets || selectedUserPets.length < 1 || selectedUserPets.some(p => p.powers.length > 0)) {
-            await interaction.editReply(`${icon.error} | Você não tem pets disponiveis! você deve ter ao menos 1 pet com algum poder`);
+        if (selectedUserPets.length < 1 || selectedUserPets.filter(p => p.powers.length > 0).length < 1) {
+            await interaction.editReply(res.danger(`${icon.error} | Você não tem pets disponiveis! você deve ter ao menos 1 pet com algum poder`));
             return;
         }
 

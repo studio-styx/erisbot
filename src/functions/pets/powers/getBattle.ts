@@ -3,7 +3,7 @@ import { PetElement, UserPetPower } from "#prisma";
 import { NormalizePetPowerReturns } from "./getPetPowerDetails.js";
 
 type PetStats = {
-    powers: (UserPetPower & NormalizePetPowerReturns)[];
+    powers: ((UserPetPower & NormalizePetPowerReturns) & { cooldown: number})[];
     life: number;
     mana: number;
     name: string
@@ -67,9 +67,8 @@ export interface CachedPetBattle {
     turn: "PET1" | "PET2";
     pet1: PetStats;
     pet2: PetStats;
-    effects: BattleEffects[]
+    effects: BattleEffects[];
 }
-
 
 export const battleManage = {
     setPetBattle,

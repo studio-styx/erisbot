@@ -6,6 +6,7 @@ import { ButtonBuilder, ButtonStyle, Client, time, userMention } from "discord.j
 import { FastifyInstance } from "fastify";
 import { StatusCodes } from "http-status-codes";
 import z from "zod";
+import { transactionCache } from "./waitForConfirm.js";
 
 export default async function giveStx(app: FastifyInstance, client: Client<true>) {
     app.post("/give-stx", async (req, reply) => {
@@ -198,41 +199,47 @@ export default async function giveStx(app: FastifyInstance, client: Client<true>
                 const endIn = transaction.expiresAt!;
                 if (endIn < new Date(Date.now() + 1000)) {
                     await redis.del(transactionKey);
+                    transactionCache.set(transaction.id.toString(), "EXPIRED")
                     return interaction.editReply(res.danger(`${icon.error} | Transação expirada, você demorou demais para responder`, { components: [] }));
                 }
 
-                await prisma.$transaction([
-                    prisma.application.update({
-                        where: { id: transaction.userId },
-                        data: { money: { decrement: transaction.amount } },
-                    }),
-                    prisma.user.update({
-                        where: { id: transaction.targetId },
-                        data: { money: { increment: transaction.amount } },
-                    }),
-                    prisma.transaction.update({
-                        where: { id: transaction.id },
-                        data: { status: "APPROVED" }
-                    }),
-                    prisma.log.create({
-                        data: {
-                            message: `Recebeu dinheiro da aplicação: ${userMention(application.id)} com o motivo: ${transaction.reason ?? "Nenhum motivo fornecido"}`,
-                            level: 7,
-                            type: "info",
-                            userId: transaction.targetId,
-                            tags: ["economy", "transfer", "receive", "api", "transaction"]
-                        }
-                    })
-                ]);
-
-                await redis.del(transactionKey);
+                await Promise.all([
+                    prisma.$transaction([
+                        prisma.application.update({
+                            where: { id: transaction.userId },
+                            data: { money: { decrement: transaction.amount } },
+                        }),
+                        prisma.user.update({
+                            where: { id: transaction.targetId },
+                            data: { money: { increment: transaction.amount } },
+                        }),
+                        prisma.transaction.update({
+                            where: { id: transaction.id },
+                            data: { status: "APPROVED" }
+                        }),
+                        prisma.log.create({
+                            data: {
+                                message: `Recebeu dinheiro da aplicação: ${userMention(application.id)} com o motivo: ${transaction.reason ?? "Nenhum motivo fornecido"}`,
+                                level: 7,
+                                type: "info",
+                                userId: transaction.targetId,
+                                tags: ["economy", "transfer", "receive", "api", "transaction"]
+                            }
+                        })
+                    ]),
+                    redis.del(transactionKey)
+                ])
+                transactionCache.set(transaction.id.toString(), "APPROVED")
                 return interaction.editReply(res.success(`${icon.Eris_happy} | Transação confirmada`, { components: [] }));
             } else {
-                await prisma.transaction.update({
-                    where: { id: transaction.id },
-                    data: { status: "REJECTED" }
-                });
-                await redis.del(transactionKey);
+                await Promise.all([
+                    prisma.transaction.update({
+                        where: { id: transaction.id },
+                        data: { status: "REJECTED" }
+                    }),
+                    redis.del(transactionKey)
+                ]);
+                transactionCache.set(transaction.id.toString(), "REJECTED")
                 return interaction.editReply(res.danger(`${icon.error} | Transação cancelada`, { components: [] }));
             }
         },

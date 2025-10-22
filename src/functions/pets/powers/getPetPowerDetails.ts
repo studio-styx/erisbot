@@ -1,7 +1,7 @@
 import { PetElement, PetPower } from "#prisma";
 
 /** --- Tipos base --- */
-interface BasePetPowerDetails {
+export interface BasePetPowerDetails {
     name: string;
     id: number;
     description: string;
@@ -11,7 +11,7 @@ interface BasePetPowerDetails {
 }
 
 /** --- Tipos específicos de poder --- */
-interface PetDamagePowerDetails {
+export interface PetDamagePowerDetails {
     type: "DAMAGE";
     details: {
         damage: number;
@@ -20,7 +20,7 @@ interface PetDamagePowerDetails {
     };
 }
 
-interface PetBuffPowerDetails {
+export interface PetBuffPowerDetails {
     type: "BUFF";
     details: {
         duration: number;
@@ -30,7 +30,7 @@ interface PetBuffPowerDetails {
     };
 }
 
-interface PetDebuffPowerDetails {
+export interface PetDebuffPowerDetails {
     type: "DEBUFF";
     details: {
         duration: number;
@@ -40,7 +40,7 @@ interface PetDebuffPowerDetails {
     };
 }
 
-interface PetAutoDamageDetails {
+export interface PetAutoDamageDetails {
     type: "AUTODAMAGE";
     details: {
         cooldown: number;
@@ -50,7 +50,7 @@ interface PetAutoDamageDetails {
     };
 }
 
-interface PetHealDetails {
+export interface PetHealDetails {
     type: "HEAL";
     details: {
         cooldown: number;
@@ -59,7 +59,7 @@ interface PetHealDetails {
     };
 }
 
-interface PetAutoHealDetails {
+export interface PetAutoHealDetails {
     type: "AUTOHEAL";
     details: {
         cooldown: number;

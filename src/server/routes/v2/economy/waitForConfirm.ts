@@ -1,9 +1,12 @@
+import { Store } from "#base";
 import { prisma } from "#database";
 import { calculateDate } from "#functions";
 import { TransactionStatus } from "#prisma";
 import { Client } from "discord.js";
 import { FastifyInstance } from "fastify";
 import { StatusCodes } from "http-status-codes";
+
+export const transactionCache = new Store<TransactionStatus>();
 
 export default async function transaction(app: FastifyInstance, _client: Client<true>) {
     app.patch<{ Params: { transactionId: string } }>("/transaction/wait/:transactionId", async (req, reply) => {
@@ -37,28 +40,45 @@ export default async function transaction(app: FastifyInstance, _client: Client<
             return reply.status(400).send({ message: "Transaction time is expired" });
         }
 
-        const expiresAtSeconds = transaction.expiresAt.getTime() / 1000;
-        const intervealTime = expiresAtSeconds < 30 ? 1 : expiresAtSeconds < 60 ? 3 : 5;
+        let verificationCount = 0;
+        const seconds = transaction.expiresAt.getTime() / 1000;
+        const freshTransactionCount = seconds < 60 ? 30 : seconds < 120 ? 45 : seconds < 200 ? 60 : seconds < 300 ? 70 : 130;
 
         const waitForConfirmation = (): Promise<TransactionStatus | "DELETED"> => {
             return new Promise((resolve) => {
                 const interval = setInterval(async () => {
-                    const freshTransaction = await prisma.transaction.findUnique({
-                        where: { id: parseInt(transactionId) }
-                    });
-
-                    if (!freshTransaction) {
+                    if (transaction.expiresAt! < new Date()) {
                         clearInterval(interval);
-                        resolve("DELETED");
+                        resolve("EXPIRED");
                         return;
                     }
-
-                    if (freshTransaction.status !== "PENDING") {
-                        clearInterval(interval);
-                        resolve(freshTransaction.status);
-                        return;
+                    if (verificationCount >= freshTransactionCount) {
+                        const freshTransaction = await prisma.transaction.findUnique({
+                            where: { id: parseInt(transactionId) }
+                        });
+    
+                        if (!freshTransaction) {
+                            clearInterval(interval);
+                            resolve("DELETED");
+                            return;
+                        }
+    
+                        if (freshTransaction.status !== "PENDING") {
+                            clearInterval(interval);
+                            resolve(freshTransaction.status);
+                            return;
+                        }
+                        verificationCount = 0;
+                    } else {
+                        const result = transactionCache.get(transactionId);
+                        if (result) {
+                            clearInterval(interval);
+                            resolve(result);
+                            return;
+                        }
+                        verificationCount++;
                     }
-                }, intervealTime * 1000);
+                }, 200);
             });
         }
 

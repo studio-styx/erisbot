@@ -1,7 +1,7 @@
 import { CachedPetBattle } from "#functions";
 import { settings } from "#settings";
 import { brBuilder, createContainer, createRow, createSeparator } from "@magicyan/discord";
-import { ActionRowBuilder, ButtonBuilder, ButtonStyle, type InteractionReplyOptions } from "discord.js";
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, userMention, type InteractionReplyOptions } from "discord.js";
 
 export function battleMenu<R>(battle: CachedPetBattle): R {
     // Inicializa os botões
@@ -9,26 +9,69 @@ export function battleMenu<R>(battle: CachedPetBattle): R {
 
     // Se for a vez do pet 1, carregar os botões com os elementos dele
     if (battle.turn === "PET1") {
-        battle.pet1.powers.forEach(power => {
+        battle.pet1.powers.forEach((power, index) => {
+            if (index === battle.pet1.powers.length) {
+                buttons.push(
+                    new ButtonBuilder({
+                        customId: `battle/${battle.id}/skip/${battle.user2Id}`,
+                        label: "Pular", 
+                        style: ButtonStyle.Secondary
+                    })
+                )
+            }
             buttons.push(
                 new ButtonBuilder({
                     customId: `battle/${battle.id}/${power.id}/${battle.user1Id}`,
                     label: power.name, 
-                    style: ButtonStyle.Primary,
+                    style: power.type === "AUTODAMAGE" || power.type === "DAMAGE"
+                        ? ButtonStyle.Danger
+                        : power.type === "AUTOHEAL" || power.type === "HEAL"
+                        ? ButtonStyle.Success
+                        : ButtonStyle.Primary,
+                    disabled: battle.pet1.mana < power.details.manaCost 
+                        || power.cooldown > 0,
                 })
             )
         });
     } else { // se não, cria do outro
-        battle.pet2.powers.forEach(power => {
+        battle.pet2.powers.forEach((power, index) => {
+            if (index === battle.pet2.powers.length) {
+                buttons.push(
+                    new ButtonBuilder({
+                        customId: `battle/${battle.id}/skip/${battle.user2Id}`,
+                        label: "Pular", 
+                        style: ButtonStyle.Secondary
+                    })
+                )
+            }
             buttons.push(
                 new ButtonBuilder({
                     customId: `battle/${battle.id}/${power.id}/${battle.user2Id}`,
                     label: power.name, 
-                    style: ButtonStyle.Primary,
+                    style: power.type === "AUTODAMAGE" || power.type === "DAMAGE"
+                        ? ButtonStyle.Danger
+                        : power.type === "AUTOHEAL" || power.type === "HEAL"
+                        ? ButtonStyle.Success
+                        : ButtonStyle.Primary,
+                    disabled: battle.pet2.mana < power.details.manaCost 
+                        || power.cooldown > 0 
                 })
             )
         });
     }
+
+    buttons.push(
+        new ButtonBuilder({
+            customId: `battle/${battle.id}/skip/${battle.turn === "PET1" ? battle.user1Id : battle.user2Id}`,
+            label: "Pular", 
+            style: ButtonStyle.Secondary
+        }),
+        new ButtonBuilder({
+            customId: `battle/${battle.id}/end/${battle.turn === "PET1" ? battle.user1Id : battle.user2Id}`,
+            label: "Encerrar", 
+            style: ButtonStyle.Danger
+        })
+    )
 
     // cria as linhas cortadas em 5 botões cada
     const rows: ActionRowBuilder<ButtonBuilder>[] = [];
@@ -39,6 +82,7 @@ export function battleMenu<R>(battle: CachedPetBattle): R {
     const container = createContainer(settings.colors.fuchsia,
         brBuilder(
             `## Batalha de pets entre ${battle.pet1.name} e ${battle.pet2.name}`,
+            `-# Vês de: **${battle.turn === "PET1" ? `${battle.pet1.name} - ${userMention(battle.user1Id)}` : `${battle.pet2.name} - ${userMention(battle.user2Id)}`}**`
         ),
         createSeparator(),
         brBuilder(

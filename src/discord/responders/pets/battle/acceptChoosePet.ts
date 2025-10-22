@@ -29,7 +29,7 @@ createResponder({
             return;
         }
 
-        await interaction.deferReply();
+        await interaction.deferUpdate();
 
         const petId = +values[0];
 
@@ -72,7 +72,7 @@ createResponder({
         ])
 
         if (!targetPet) {
-            await interaction.editReply(resv2.danger(`${icon.error} | Eu não consegui encontrar esse targetPet!`));
+            await interaction.editReply(resv2.danger(`${icon.error} | Eu não consegui encontrar esse pet!`));
             return;
         }
 
@@ -104,7 +104,7 @@ createResponder({
                 messageId: message.id,
                 pet1Id: userPet.id,
                 pet2Id: targetPet.id,
-                user1Id: user.id,
+                user1Id: userId,
                 user2Id: targetId
             }
         });
@@ -113,7 +113,7 @@ createResponder({
             id: battle.id,
             pet1Id: userPet.id,
             pet2Id: targetPet.id,
-            user1Id: user.id,
+            user1Id: userId,
             user2Id: targetId,
             amount,
             round: 0,
@@ -123,7 +123,8 @@ createResponder({
                 mana: 100,
                 powers: userPet.powers.map(p => ({
                     ...p,
-                    ...normalizePetPower(p.power)
+                    ...normalizePetPower(p.power),
+                    cooldown: 0
                 })),
                 name: userPet.name
             },
@@ -132,7 +133,8 @@ createResponder({
                 mana: 100,
                 powers: targetPet.powers.map(p => ({
                     ...p,
-                    ...normalizePetPower(p.power)
+                    ...normalizePetPower(p.power),
+                    cooldown: 0
                 })),
                 name: targetPet.name
             },
