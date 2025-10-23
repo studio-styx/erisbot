@@ -755,6 +755,7 @@ createCommand({
                     const pet = await prisma.userPet.create({
                         data: {
                             gender: gender,
+                            flags: ["admin_added"],
                             name: name,
                             userId: user.id,
                             petId: petId,
@@ -1183,95 +1184,137 @@ createCommand({
                         await prisma.$transaction(async (tx) => {
                             // Lista de poderes a serem criados
                             await tx.petPower.deleteMany();
-                            const powersToCreate: { name: string; description: string; type: PetPowerType; element: PetElement; details: any}[] = [
+                            const powersToCreate = [
                                 // Poderes de DANO
                                 {
                                     name: "Fireball",
                                     description: "Lança uma bola de fogo que causa dano direto.",
-                                    type: "DAMAGE",
-                                    element: "FIRE",
+                                    type: PetPowerType.DAMAGE,
+                                    element: PetElement.FIRE,
                                     details: { damage: 12, cooldown: 2, manaCost: 20 },
                                 },
                                 {
-                                    name: "Water Jet",
+                                    name: "WaterJet",
                                     description: "Dispara um jato d'água poderoso.",
-                                    type: "DAMAGE",
-                                    element: "WATER",
+                                    type: PetPowerType.DAMAGE,
+                                    element: PetElement.WATER,
                                     details: { damage: 15, cooldown: 2, manaCost: 18 },
                                 },
                                 {
                                     name: "Thunderbolt",
                                     description: "Libera um raio elétrico.",
-                                    type: "DAMAGE",
-                                    element: "ELECTRIC",
+                                    type: PetPowerType.DAMAGE,
+                                    element: PetElement.ELECTRIC,
                                     details: { damage: 18, cooldown: 3, manaCost: 25 },
                                 },
                                 {
-                                    name: "Earth Slam",
+                                    name: "EarthSlam",
                                     description: "Golpeia o chão, causando tremor.",
-                                    type: "DAMAGE",
-                                    element: "EARTH",
+                                    type: PetPowerType.DAMAGE,
+                                    element: PetElement.EARTH,
                                     details: { damage: 20, cooldown: 3, manaCost: 22 },
+                                },
+                                {
+                                    name: "PsychicBlast",
+                                    description: "Emite uma onda psíquica que causa dano mental.",
+                                    type: PetPowerType.DAMAGE,
+                                    element: PetElement.PSYCHIC,
+                                    details: { damage: 16, cooldown: 3, manaCost: 22 },
+                                },
+                                {
+                                    name: "MetalSlash",
+                                    description: "Corta com lâminas de metal afiadas.",
+                                    type: PetPowerType.DAMAGE,
+                                    element: PetElement.METAL,
+                                    details: { damage: 19, cooldown: 2, manaCost: 20 },
+                                },
+                                {
+                                    name: "GhostStrike",
+                                    description: "Ataque espectral que ignora defesas físicas.",
+                                    type: PetPowerType.DAMAGE,
+                                    element: PetElement.GHOST,
+                                    details: { damage: 14, cooldown: 3, manaCost: 18 },
+                                },
+                                {
+                                    name: "PoisonSpit",
+                                    description: "Cuspe venenoso que causa dano imediato.",
+                                    type: PetPowerType.DAMAGE,
+                                    element: PetElement.POISON,
+                                    details: { damage: 13, cooldown: 2, manaCost: 17 },
                                 },
                                 // Poderes de CURA
                                 {
-                                    name: "Healing Light",
+                                    name: "HealingLight",
                                     description: "Cura o pet com luz restauradora.",
-                                    type: "HEAL",
-                                    element: "LIGHT",
+                                    type: PetPowerType.HEAL,
+                                    element: PetElement.LIGHT,
                                     details: { heal: 13, cooldown: 2, manaCost: 15 },
                                 },
                                 {
-                                    name: "Nature's Touch",
+                                    name: "NaturesTouch",
                                     description: "Restaura vida com energia natural.",
-                                    type: "HEAL",
-                                    element: "EARTH",
+                                    type: PetPowerType.HEAL,
+                                    element: PetElement.EARTH,
                                     details: { heal: 15, cooldown: 2, manaCost: 12 },
+                                },
+                                {
+                                    name: "SpiritMend",
+                                    description: "Restaura vida com energia espectral.",
+                                    type: PetPowerType.HEAL,
+                                    element: PetElement.GHOST,
+                                    details: { heal: 12, cooldown: 2, manaCost: 14 },
                                 },
                                 // Poderes de BUFF
                                 {
-                                    name: "Flame Aura",
+                                    name: "FlameAura",
                                     description: "Aumenta o dano de ataques de fogo.",
-                                    type: "BUFF",
-                                    element: "FIRE",
-                                    details: { duration: 3, cooldown: 4, manaCost: 10, elementBuffed: "FIRE" },
+                                    type: PetPowerType.BUFF,
+                                    element: PetElement.FIRE,
+                                    details: { duration: 3, cooldown: 4, manaCost: 10, elementBuffed: PetElement.FIRE },
                                 },
                                 {
-                                    name: "Wind Boost",
+                                    name: "WindBoost",
                                     description: "Aumenta a velocidade e dano de ataques de ar.",
-                                    type: "BUFF",
-                                    element: "AIR",
-                                    details: { duration: 2, cooldown: 3, manaCost: 8, elementBuffed: "AIR" },
+                                    type: PetPowerType.BUFF,
+                                    element: PetElement.AIR,
+                                    details: { duration: 2, cooldown: 3, manaCost: 8, elementBuffed: PetElement.AIR },
+                                },
+                                {
+                                    name: "PsychicShield",
+                                    description: "Aumenta a resistência a ataques psíquicos.",
+                                    type: PetPowerType.BUFF,
+                                    element: PetElement.PSYCHIC,
+                                    details: { duration: 3, cooldown: 4, manaCost: 12, elementBuffed: PetElement.PSYCHIC },
                                 },
                                 // Poderes de DEBUFF
                                 {
                                     name: "Frostbite",
                                     description: "Reduz o dano de ataques inimigos.",
-                                    type: "DEBUFF",
-                                    element: "ICE",
-                                    details: { duration: 2, cooldown: 3, manaCost: 10, elementDebuffed: "FIRE" },
+                                    type: PetPowerType.DEBUFF,
+                                    element: PetElement.ICE,
+                                    details: { duration: 2, cooldown: 3, manaCost: 10, elementDebuffed: PetElement.FIRE },
                                 },
                                 {
-                                    name: "Dark Veil",
+                                    name: "DarkVeil",
                                     description: "Diminui a precisão do inimigo.",
-                                    type: "DEBUFF",
-                                    element: "DARK",
-                                    details: { duration: 3, cooldown: 4, manaCost: 12, elementDebuffed: "LIGHT" },
+                                    type: PetPowerType.DEBUFF,
+                                    element: PetElement.DARK,
+                                    details: { duration: 3, cooldown: 4, manaCost: 12, elementDebuffed: PetElement.LIGHT },
                                 },
                                 // Poderes de AUTODAMAGE
                                 {
-                                    name: "Poison Cloud",
+                                    name: "PoisonCloud",
                                     description: "Causa dano contínuo ao longo do tempo.",
-                                    type: "AUTODAMAGE",
-                                    element: "DARK",
+                                    type: PetPowerType.AUTODAMAGE,
+                                    element: PetElement.DARK,
                                     details: { damage: 4, turnsDuration: 3, cooldown: 4, manaCost: 15 },
                                 },
                                 // Poderes de AUTOHEAL
                                 {
                                     name: "Regeneration",
                                     description: "Restaura vida gradualmente.",
-                                    type: "AUTOHEAL",
-                                    element: "WATER",
+                                    type: PetPowerType.AUTOHEAL,
+                                    element: PetElement.WATER,
                                     details: { heal: 3, turnsDuration: 3, cooldown: 4, manaCost: 12 },
                                 },
                             ];
@@ -1284,39 +1327,55 @@ createCommand({
                             // Lista de relações de efetividade entre elementos
                             const effectivenessToCreate: { fromElement: PetElement; toElement: PetElement; multiplier: number }[] = [
                                 // Fogo é forte contra Gelo, fraco contra Água
-                                { fromElement: "FIRE", toElement: "ICE", multiplier: 1.5 },
-                                { fromElement: "FIRE", toElement: "WATER", multiplier: 0.5 },
+                                { fromElement: PetElement.FIRE, toElement: PetElement.ICE, multiplier: 1.5 },
+                                { fromElement: PetElement.FIRE, toElement: PetElement.WATER, multiplier: 0.5 },
                                 // Água é forte contra Fogo, fraca contra Elétrico
-                                { fromElement: "WATER", toElement: "FIRE", multiplier: 1.5 },
-                                { fromElement: "WATER", toElement: "ELECTRIC", multiplier: 0.5 },
+                                { fromElement: PetElement.WATER, toElement: PetElement.FIRE, multiplier: 1.5 },
+                                { fromElement: PetElement.WATER, toElement: PetElement.ELECTRIC, multiplier: 0.5 },
                                 // Elétrico é forte contra Água, fraco contra Terra
-                                { fromElement: "ELECTRIC", toElement: "WATER", multiplier: 1.5 },
-                                { fromElement: "ELECTRIC", toElement: "EARTH", multiplier: 0.5 },
+                                { fromElement: PetElement.ELECTRIC, toElement: PetElement.WATER, multiplier: 1.5 },
+                                { fromElement: PetElement.ELECTRIC, toElement: PetElement.EARTH, multiplier: 0.5 },
                                 // Terra é forte contra Elétrico, fraca contra Ar
-                                { fromElement: "EARTH", toElement: "ELECTRIC", multiplier: 1.5 },
-                                { fromElement: "EARTH", toElement: "AIR", multiplier: 0.5 },
+                                { fromElement: PetElement.EARTH, toElement: PetElement.ELECTRIC, multiplier: 1.5 },
+                                { fromElement: PetElement.EARTH, toElement: PetElement.AIR, multiplier: 0.5 },
                                 // Ar é forte contra Terra, fraco contra Fogo
-                                { fromElement: "AIR", toElement: "EARTH", multiplier: 1.5 },
-                                { fromElement: "AIR", toElement: "FIRE", multiplier: 0.5 },
+                                { fromElement: PetElement.AIR, toElement: PetElement.EARTH, multiplier: 1.5 },
+                                { fromElement: PetElement.AIR, toElement: PetElement.FIRE, multiplier: 0.5 },
                                 // Gelo é forte contra Ar, fraco contra Fogo
-                                { fromElement: "ICE", toElement: "AIR", multiplier: 1.5 },
-                                { fromElement: "ICE", toElement: "FIRE", multiplier: 0.5 },
+                                { fromElement: PetElement.ICE, toElement: PetElement.AIR, multiplier: 1.5 },
+                                { fromElement: PetElement.ICE, toElement: PetElement.FIRE, multiplier: 0.5 },
                                 // Luz é forte contra Escuridão, fraca contra Normal
-                                { fromElement: "LIGHT", toElement: "DARK", multiplier: 1.5 },
-                                { fromElement: "LIGHT", toElement: "NORMAL", multiplier: 0.5 },
+                                { fromElement: PetElement.LIGHT, toElement: PetElement.DARK, multiplier: 1.5 },
+                                { fromElement: PetElement.LIGHT, toElement: PetElement.NORMAL, multiplier: 0.5 },
                                 // Escuridão é forte contra Normal, fraca contra Luz
-                                { fromElement: "DARK", toElement: "NORMAL", multiplier: 1.5 },
-                                { fromElement: "DARK", toElement: "LIGHT", multiplier: 0.5 },
+                                { fromElement: PetElement.DARK, toElement: PetElement.NORMAL, multiplier: 1.5 },
+                                { fromElement: PetElement.DARK, toElement: PetElement.LIGHT, multiplier: 0.5 },
+                                // Veneno é forte contra Terra, fraco contra Psíquico
+                                { fromElement: PetElement.POISON, toElement: PetElement.EARTH, multiplier: 1.5 },
+                                { fromElement: PetElement.POISON, toElement: PetElement.PSYCHIC, multiplier: 0.5 },
+                                // Psíquico é forte contra Veneno, fraco contra Fantasma
+                                { fromElement: PetElement.PSYCHIC, toElement: PetElement.POISON, multiplier: 1.5 },
+                                { fromElement: PetElement.PSYCHIC, toElement: PetElement.GHOST, multiplier: 0.5 },
+                                // Metal é forte contra Gelo, fraco contra Fogo
+                                { fromElement: PetElement.METAL, toElement: PetElement.ICE, multiplier: 1.5 },
+                                { fromElement: PetElement.METAL, toElement: PetElement.FIRE, multiplier: 0.5 },
+                                // Fantasma é forte contra Psíquico, fraco contra Escuridão
+                                { fromElement: PetElement.GHOST, toElement: PetElement.PSYCHIC, multiplier: 1.5 },
+                                { fromElement: PetElement.GHOST, toElement: PetElement.DARK, multiplier: 0.5 },
                                 // Normal é neutro contra todos (multiplicador 1.0)
-                                { fromElement: "NORMAL", toElement: "NORMAL", multiplier: 1.0 },
-                                { fromElement: "NORMAL", toElement: "FIRE", multiplier: 1.0 },
-                                { fromElement: "NORMAL", toElement: "WATER", multiplier: 1.0 },
-                                { fromElement: "NORMAL", toElement: "ELECTRIC", multiplier: 1.0 },
-                                { fromElement: "NORMAL", toElement: "EARTH", multiplier: 1.0 },
-                                { fromElement: "NORMAL", toElement: "AIR", multiplier: 1.0 },
-                                { fromElement: "NORMAL", toElement: "ICE", multiplier: 1.0 },
-                                { fromElement: "NORMAL", toElement: "DARK", multiplier: 1.0 },
-                                { fromElement: "NORMAL", toElement: "LIGHT", multiplier: 1.0 },
+                                { fromElement: PetElement.NORMAL, toElement: PetElement.NORMAL, multiplier: 1.0 },
+                                { fromElement: PetElement.NORMAL, toElement: PetElement.FIRE, multiplier: 1.0 },
+                                { fromElement: PetElement.NORMAL, toElement: PetElement.WATER, multiplier: 1.0 },
+                                { fromElement: PetElement.NORMAL, toElement: PetElement.ELECTRIC, multiplier: 1.0 },
+                                { fromElement: PetElement.NORMAL, toElement: PetElement.EARTH, multiplier: 1.0 },
+                                { fromElement: PetElement.NORMAL, toElement: PetElement.AIR, multiplier: 1.0 },
+                                { fromElement: PetElement.NORMAL, toElement: PetElement.ICE, multiplier: 1.0 },
+                                { fromElement: PetElement.NORMAL, toElement: PetElement.DARK, multiplier: 1.0 },
+                                { fromElement: PetElement.NORMAL, toElement: PetElement.LIGHT, multiplier: 1.0 },
+                                { fromElement: PetElement.NORMAL, toElement: PetElement.POISON, multiplier: 1.0 },
+                                { fromElement: PetElement.NORMAL, toElement: PetElement.PSYCHIC, multiplier: 1.0 },
+                                { fromElement: PetElement.NORMAL, toElement: PetElement.METAL, multiplier: 1.0 },
+                                { fromElement: PetElement.NORMAL, toElement: PetElement.GHOST, multiplier: 1.0 },
                             ];
 
                             // Inserir relações de efetividade

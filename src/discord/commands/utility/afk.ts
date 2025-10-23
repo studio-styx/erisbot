@@ -37,7 +37,7 @@ createCommand({
                     name: "reason",
                     description: "your reasson for being afk",
                     type: ApplicationCommandOptionType.String,
-                    required: true,
+                    required: false,
                     nameLocalizations: {
                         "en-US": "reason",
                         "pt-BR": "motivo",
@@ -70,7 +70,7 @@ createCommand({
     async run(interaction) {
         switch (interaction.options.getSubcommand()) {
             case "set": {
-                const reason = interaction.options.getString("reason", true);
+                const reason = interaction.options.getString("reason") || "Não definido";
 
                 await interaction.deferReply();
                 const reasonFormatted = await formatReasonMentions(interaction, reason);

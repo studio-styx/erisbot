@@ -1,4 +1,4 @@
-import { CachedPetBattle } from "#functions";
+import { CachedPetBattle, petPowerFormatted } from "#functions";
 import { settings } from "#settings";
 import { brBuilder, createContainer, createRow, createSeparator } from "@magicyan/discord";
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, userMention, type InteractionReplyOptions } from "discord.js";
@@ -9,20 +9,11 @@ export function battleMenu<R>(battle: CachedPetBattle): R {
 
     // Se for a vez do pet 1, carregar os botões com os elementos dele
     if (battle.turn === "PET1") {
-        battle.pet1.powers.forEach((power, index) => {
-            if (index === battle.pet1.powers.length) {
-                buttons.push(
-                    new ButtonBuilder({
-                        customId: `battle/${battle.id}/skip/${battle.user2Id}`,
-                        label: "Pular", 
-                        style: ButtonStyle.Secondary
-                    })
-                )
-            }
+        battle.pet1.powers.forEach(power => {
             buttons.push(
                 new ButtonBuilder({
                     customId: `battle/${battle.id}/${power.id}/${battle.user1Id}`,
-                    label: power.name, 
+                    label: petPowerFormatted[power.name] || power.name, 
                     style: power.type === "AUTODAMAGE" || power.type === "DAMAGE"
                         ? ButtonStyle.Danger
                         : power.type === "AUTOHEAL" || power.type === "HEAL"
@@ -34,20 +25,11 @@ export function battleMenu<R>(battle: CachedPetBattle): R {
             )
         });
     } else { // se não, cria do outro
-        battle.pet2.powers.forEach((power, index) => {
-            if (index === battle.pet2.powers.length) {
-                buttons.push(
-                    new ButtonBuilder({
-                        customId: `battle/${battle.id}/skip/${battle.user2Id}`,
-                        label: "Pular", 
-                        style: ButtonStyle.Secondary
-                    })
-                )
-            }
+        battle.pet2.powers.forEach(power => {
             buttons.push(
                 new ButtonBuilder({
                     customId: `battle/${battle.id}/${power.id}/${battle.user2Id}`,
-                    label: power.name, 
+                    label: petPowerFormatted[power.name] || power.name, 
                     style: power.type === "AUTODAMAGE" || power.type === "DAMAGE"
                         ? ButtonStyle.Danger
                         : power.type === "AUTOHEAL" || power.type === "HEAL"

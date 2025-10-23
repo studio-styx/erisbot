@@ -430,6 +430,7 @@ model Pet {
 
 model UserPet {
   id          Int       @id @default(autoincrement())
+  flags       String[]  @default([])
   userId      String
   petId       Int
   name        String
@@ -603,6 +604,10 @@ enum PetElement {
   ICE
   DARK
   LIGHT
+  POISON
+  PSYCHIC
+  METAL
+  GHOST
 }
 
 // ------------------------
@@ -613,6 +618,7 @@ model PetPower {
   id          Int            @id @default(autoincrement())
   name        String
   description String
+  flags       String[]       @default([])
 
   type        PetPowerType
   element     PetElement
@@ -659,6 +665,7 @@ model UserPetPower {
   id          Int         @id @default(autoincrement())
   userPetId   Int
   powerId     Int
+  flags       String[]    @default([])
 
   level       Int          @default(1)
   xp          Int          @default(0)

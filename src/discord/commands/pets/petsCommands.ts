@@ -311,28 +311,6 @@ createCommand({
                         }
                     ]
                 },
-                {
-                    name: "pet",
-                    description: "battle with a random pet",
-                    type: ApplicationCommandOptionType.Subcommand,
-                    options: [
-                        {
-                            name: "battlepet",
-                            description: "pet to battle",
-                            type: ApplicationCommandOptionType.String,
-                            required: true,
-                            autocomplete: true,
-                            nameLocalizations: {
-                                "pt-BR": "pet",
-                                "es-ES": "mascota"
-                            },
-                            descriptionLocalizations: {
-                                "pt-BR": "pet para lutar",
-                                "es-ES": "mascota para luchar"
-                            }
-                        }
-                    ]
-                }
             ]
         }
     ],

@@ -12,6 +12,9 @@ createResponder({
         const pageN = Number(page);
         
         const companys = await prisma.company.findMany({
+            where: {
+                isEnabled: true
+            },
             orderBy: [
                 {
                     experience: "asc"

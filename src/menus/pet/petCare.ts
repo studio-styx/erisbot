@@ -4,7 +4,7 @@ import { settings } from "#settings";
 import { brBuilder, createContainer, createRow, createSeparator } from "@magicyan/discord";
 import { ButtonBuilder, ButtonStyle, StringSelectMenuBuilder, type InteractionReplyOptions } from "discord.js";
 
-export function petCareMenu<R>(userId: string, pet: UserPet & { personality: { trait: { name: string } }[], pet: Pet }, page?: "feed" | "play"): R {
+export function petCareMenu<R>(userId: string, pet: UserPet & { personality: { trait: { name: string } }[], pet: Pet }, page?: "feed" | "play" | "train"): R {
     const components: any[] = [
         brBuilder(
             `## Cuidados com pet: ${pet.name}`
@@ -58,32 +58,49 @@ export function petCareMenu<R>(userId: string, pet: UserPet & { personality: { t
     ]
 
     if (page) {
-        if (page === "feed") {
-            components.push(
-                createSeparator(),
-                new StringSelectMenuBuilder({
-                    customId: `pet/care/feed/select/${userId}/${pet.id}`,
-                    placeholder: "Escolha a comida",
-                    options: petsFood[pet.pet.animal].map(f => ({
-                        label: f.name,
-                        value: f.id,
-                        description: `Preço: ${f.price} stx, recupera: ${f.points} de fome`
-                    }))
-                })
-            )
-        } else {
-            components.push(
-                createSeparator(),
-                new StringSelectMenuBuilder({
-                    customId: `pet/care/play/select/${userId}/${pet.id}`,
-                    placeholder: "Escolha uma brincadeira",
-                    options: petPlays[pet.pet.animal].map(p => ({
-                        label: p.name,
-                        value: p.id,
-                        description: `Diversão: ${p.fun}, energia: ${p.energy}`
-                    }))
-                })
-            )
+        switch (page) {
+            case "feed": {
+                components.push(
+                    createSeparator(),
+                    new StringSelectMenuBuilder({
+                        customId: `pet/care/feed/select/${userId}/${pet.id}`,
+                        placeholder: "Escolha a comida",
+                        options: petsFood[pet.pet.animal].map(f => ({
+                            label: f.name,
+                            value: f.id,
+                            description: `Preço: ${f.price} stx, recupera: ${f.points} de fome`
+                        }))
+                    })
+                )
+                break;
+            }
+            case "play": {
+                components.push(
+                    createSeparator(),
+                    new StringSelectMenuBuilder({
+                        customId: `pet/care/play/select/${userId}/${pet.id}`,
+                        placeholder: "Escolha uma brincadeira",
+                        options: petPlays[pet.pet.animal].map(p => ({
+                            label: p.name,
+                            value: p.id,
+                            description: `Diversão: ${p.fun}, energia: ${p.energy}`
+                        }))
+                    })
+                )
+            }
+            case "train": {
+                components.push(
+                    createSeparator(),
+                    new StringSelectMenuBuilder({
+                        customId: `pet/care/train/select/${userId}/${pet.id}`,
+                        placeholder: "Escolha um tipo de treino",
+                        options: [
+                            { label: "Habilidades", description: "Habilidades que são usadas em outros comandos", value: "skills" },
+                            { label: "Poderes", description: "Poderes usados em batalha", value: "powers"}
+                        ]
+                    })
+                )
+            }
         }
     }
 

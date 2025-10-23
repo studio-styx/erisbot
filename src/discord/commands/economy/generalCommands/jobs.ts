@@ -4,6 +4,9 @@ import { ChatInputCommandInteraction } from "discord.js";
 
 export async function EconomyJobsCommand(interaction: ChatInputCommandInteraction<"cached">) {
     const companys = await prisma.company.findMany({
+        where: {
+            isEnabled: true
+        },
         orderBy: [
             {
                 experience: "asc"

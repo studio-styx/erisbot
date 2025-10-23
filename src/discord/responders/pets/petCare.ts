@@ -1,6 +1,6 @@
 import { createResponder, ResponderType } from "#base";
 import { prisma, redis } from "#database";
-import { calculateProbability, convertTime, getRandomNumber, getRandomValue, getValidUserPet, icon, petPlays, petsFood, petSkillNameFormatted, res } from "#functions";
+import { calculateProbability, convertTime, getRandomNumber, getRandomValue, getValidUserPet, icon, petPlays, petPowerFormatted, petsFood, petSkillNameFormatted, res } from "#functions";
 import { menus } from "#menus";
 import { Prisma } from "#prisma";
 import { randomNumber } from "@magicyan/discord";
@@ -34,6 +34,11 @@ createResponder({
                 skills: {
                     include: {
                         skill: true
+                    }
+                },
+                powers: {
+                    include: {
+                        power: true
                     }
                 }
             }
@@ -204,50 +209,113 @@ createResponder({
                 return;
             }
             case "train": {
-                if (!interaction.isButton()) return;
-                if (pet.energy <= 20 || pet.happiness <= 20 || pet.hungry <= 20) {
-                    interaction.followUp(res.danger(`${icon.denied} | Seu pet não está em condições de treinar! Verifique se ele está descansado, feliz e bem alimentado.`));
+                if (interaction.isButton()) {
+                    interaction.editReply(menus.pets.care(userId, pet, "train"))
                     return;
-                }
-
-                if (pet.skills.length >= 3) {
-                    interaction.followUp(res.danger(`${icon.denied} | Seu pet já tem 3 habilidades!`));
-                    return;
-                }
-
-                const cooldownKey = `pet:trainCooldown:${pet.id}`
-                const onCooldown = await redis.get(cooldownKey);
-
-                if (onCooldown) {
-                    interaction.followUp(res.danger(`${icon.denied} | Seu pet está cansado! ele precisa descansar! volte novamente ${time(new Date(onCooldown), "R")}`))
-                    return;
-                }
-
-                const xpKey = `pet:xp:${pet.id}`;
-                const xp = Number((await redis.get(xpKey)) ?? 0);
-
-                const chance = Math.min(xp / 25, 10);
-
-                const wonASkill = pet.skills.length === 0
-                    ? calculateProbability(chance + 25 + getRandomNumber(0, 10))
-                    : pet.skills.length === 1
-                        ? calculateProbability(chance + 15 + getRandomNumber(0, 10))
-                        : calculateProbability(chance + 5 + getRandomNumber(0, 10));
-
-
-                const newEnergy = Math.max(pet.energy - getRandomNumber(8, 20), 4);
-                const newHappiness = Math.max(pet.happiness - getRandomNumber(3, 7), 4);
-                const newHungry = Math.max(pet.hungry - getRandomNumber(6, 18), 4);
-                const newXp = xp + getRandomNumber(5, 15);
-
-                if (!wonASkill) {
+                };
+                const option = interaction.values[0] as "skills" | "powers";
+                if (option === "skills") {
+                    if (pet.energy <= 20 || pet.happiness <= 20 || pet.hungry <= 20) {
+                        interaction.followUp(res.danger(`${icon.denied} | Seu pet não está em condições de treinar! Verifique se ele está descansado, feliz e bem alimentado.`));
+                        return;
+                    }
+    
+                    if (pet.skills.length >= 3) {
+                        interaction.followUp(res.danger(`${icon.denied} | Seu pet já tem 3 habilidades!`));
+                        return;
+                    }
+    
+                    const cooldownKey = `pet:trainCooldown:${pet.id}`
+                    const onCooldown = await redis.get(cooldownKey);
+    
+                    if (onCooldown) {
+                        interaction.followUp(res.danger(`${icon.denied} | Seu pet está cansado! ele precisa descansar! volte novamente ${time(new Date(onCooldown), "R")}`))
+                        return;
+                    }
+    
+                    const xpKey = `pet:xp:${pet.id}`;
+                    const xp = Number((await redis.get(xpKey)) ?? 0);
+    
+                    const chance = Math.min(xp / 25, 10);
+    
+                    const wonASkill = pet.skills.length === 0
+                        ? calculateProbability(chance + 25 + getRandomNumber(0, 10))
+                        : pet.skills.length === 1
+                            ? calculateProbability(chance + 15 + getRandomNumber(0, 10))
+                            : calculateProbability(chance + 5 + getRandomNumber(0, 10));
+    
+    
+                    const newEnergy = Math.max(pet.energy - getRandomNumber(8, 20), 4);
+                    const newHappiness = Math.max(pet.happiness - getRandomNumber(3, 7), 4);
+                    const newHungry = Math.max(pet.hungry - getRandomNumber(6, 18), 4);
+                    const newXp = xp + getRandomNumber(5, 15);
+    
+                    if (!wonASkill) {
+                        const [newPet] = await Promise.all([
+                            prisma.userPet.update({
+                                where: { id: pet.id },
+                                data: {
+                                    energy: newEnergy,
+                                    happiness: newHappiness,
+                                    hungry: newHungry
+                                },
+                                include: {
+                                    personality: {
+                                        include: {
+                                            trait: true
+                                        }
+                                    },
+                                    pet: true,
+                                }
+                            }),
+                            redis.setex(xpKey, convertTime({ time: "24h", to: "seconds" }), newXp.toString()),
+                            redis.setex(
+                                cooldownKey,
+                                convertTime({ time: "15s", to: "seconds" }),
+                                new Date(Date.now() + convertTime({ time: "15s", to: "milliseconds" })).toISOString()
+                            ),
+                        ])
+    
+                        const failMessages = [
+                            "se distraiu com um inseto e não aprendeu nada novo.",
+                            "ficou cansado demais para continuar.",
+                            "não conseguiu se concentrar hoje.",
+                            "tentou, mas acabou frustrado."
+                        ];
+                        const randomFail = getRandomValue(failMessages);
+                        interaction.editReply(menus.pets.care(userId, newPet))
+                        interaction.followUp(res.danger(`${icon.denied} | Você treinou com seu pet, mas ele ${randomFail}`));
+                        return;
+                    }
+    
+                    const petSkillsNames: string[] = pet.skills.map(s => s.skill.name);
+    
+                    const allSkills = await prisma.petSkill.findMany({
+                        where: {
+                            name: { notIn: petSkillsNames }
+                        },
+                    });
+    
+                    if (allSkills.length === 0) {
+                        interaction.followUp(res.warning(`${icon.info} | Seu pet já aprendeu todas as habilidades possíveis!`));
+                        return;
+                    }
+    
+    
+                    const randomSkill = getRandomValue(allSkills);
+    
                     const [newPet] = await Promise.all([
                         prisma.userPet.update({
                             where: { id: pet.id },
                             data: {
                                 energy: newEnergy,
                                 happiness: newHappiness,
-                                hungry: newHungry
+                                hungry: newHungry,
+                                skills: {
+                                    create: {
+                                        skillId: randomSkill.id
+                                    }
+                                }
                             },
                             include: {
                                 personality: {
@@ -258,75 +326,141 @@ createResponder({
                                 pet: true,
                             }
                         }),
-                        redis.setex(xpKey, convertTime({ time: "24h", to: "seconds" }), newXp.toString()),
+                        redis.del(xpKey),
                         redis.setex(
                             cooldownKey,
                             convertTime({ time: "15s", to: "seconds" }),
                             new Date(Date.now() + convertTime({ time: "15s", to: "milliseconds" })).toISOString()
                         ),
                     ])
-
-                    const failMessages = [
-                        "se distraiu com um inseto e não aprendeu nada novo.",
-                        "ficou cansado demais para continuar.",
-                        "não conseguiu se concentrar hoje.",
-                        "tentou, mas acabou frustrado."
-                    ];
-                    const randomFail = getRandomValue(failMessages);
+    
                     interaction.editReply(menus.pets.care(userId, newPet))
-                    interaction.followUp(res.danger(`${icon.denied} | Você treinou com seu pet, mas ele ${randomFail}`));
+                    interaction.followUp(res.success(`${icon.Eris_happy} | Você treinou seu pet! ele adquiriu a habilidade: **${petSkillNameFormatted[randomSkill.name] || randomSkill.name}**!`));
                     return;
-                }
+                } else {
+                    if (pet.energy <= 20 || pet.happiness <= 20 || pet.hungry <= 20) {
+                        interaction.followUp(res.danger(`${icon.denied} | Seu pet não está em condições de treinar! Verifique se ele está descansado, feliz e bem alimentado.`));
+                        return;
+                    }
 
-                const petSkillsNames: string[] = pet.skills.map(s => s.skill.name);
+                    if (pet.powers.length > 5) {
+                        interaction.followUp(res.danger(`${icon.denied} | Seu pet já tem 6 poderes!`));
+                        return;
+                    }
+    
+                    const cooldownKey = `pet:trainCooldown:${pet.id}`
+                    const onCooldown = await redis.get(cooldownKey);
 
-                const allSkills = await prisma.petSkill.findMany({
-                    where: {
-                        name: { notIn: petSkillsNames }
-                    },
-                });
+                    if (onCooldown) {
+                        interaction.followUp(res.danger(`${icon.denied} | Seu pet está cansado! ele precisa descansar! volte novamente ${time(new Date(onCooldown), "R")}`))
+                        return;
+                    }
 
-                if (allSkills.length === 0) {
-                    interaction.followUp(res.warning(`${icon.info} | Seu pet já aprendeu todas as habilidades possíveis!`));
-                    return;
-                }
+                    const xpKey = `pet:powerXp:${pet.id}`;
+                    const xp = Number((await redis.get(xpKey)) ?? 0);
+    
+                    const chance = Math.min(xp / 25, 10);
+    
+                    const wonAPower = pet.powers.length === 0
+                        ? calculateProbability(chance + 35 + getRandomNumber(0, 10))
+                        : pet.powers.length === 1
+                            ? calculateProbability(chance + 30 + getRandomNumber(0, 10))
+                            : calculateProbability(chance + 15 + getRandomNumber(0, 10));
+    
+    
+                    const newEnergy = Math.max(pet.energy - getRandomNumber(8, 20), 4);
+                    const newHappiness = Math.max(pet.happiness - getRandomNumber(3, 7), 4);
+                    const newHungry = Math.max(pet.hungry - getRandomNumber(6, 18), 4);
+                    const newXp = xp + getRandomNumber(8, 24);
 
-
-                const randomSkill = getRandomValue(allSkills);
-
-                const [newPet] = await Promise.all([
-                    prisma.userPet.update({
-                        where: { id: pet.id },
-                        data: {
-                            energy: newEnergy,
-                            happiness: newHappiness,
-                            hungry: newHungry,
-                            skills: {
-                                create: {
-                                    skillId: randomSkill.id
-                                }
-                            }
-                        },
-                        include: {
-                            personality: {
+                    if (!wonAPower) {
+                        const [newPet] = await Promise.all([
+                            prisma.userPet.update({
+                                where: { id: pet.id },
+                                data: {
+                                    energy: newEnergy,
+                                    happiness: newHappiness,
+                                    hungry: newHungry
+                                },
                                 include: {
-                                    trait: true
+                                    personality: {
+                                        include: {
+                                            trait: true
+                                        }
+                                    },
+                                    pet: true,
+                                }
+                            }),
+                            redis.setex(xpKey, convertTime({ time: "24h", to: "seconds" }), newXp.toString()),
+                            redis.setex(
+                                cooldownKey,
+                                convertTime({ time: "15s", to: "seconds" }),
+                                new Date(Date.now() + convertTime({ time: "15s", to: "milliseconds" })).toISOString()
+                            ),
+                        ])
+    
+                        const failMessages = [
+                            "se distraiu com um inseto e não aprendeu nada novo.",
+                            "ficou cansado demais para continuar.",
+                            "não conseguiu se concentrar hoje.",
+                            "tentou, mas acabou frustrado."
+                        ];
+                        const randomFail = getRandomValue(failMessages);
+                        interaction.editReply(menus.pets.care(userId, newPet))
+                        interaction.followUp(res.danger(`${icon.denied} | Você treinou com seu pet, mas ele ${randomFail}`));
+                        return;
+                    }
+
+                    const petPowerNames: string[] = pet.powers.map(s => s.power.name);
+    
+                    const allPowers = await prisma.petPower.findMany({
+                        where: {
+                            name: { notIn: petPowerNames }
+                        },
+                    });
+    
+                    if (allPowers.length === 0) {
+                        interaction.followUp(res.warning(`${icon.info} | Seu pet já aprendeu todos os poderes possíveis!`));
+                        return;
+                    }
+    
+    
+                    const randomPower = getRandomValue(allPowers);
+    
+                    const [newPet] = await Promise.all([
+                        prisma.userPet.update({
+                            where: { id: pet.id },
+                            data: {
+                                energy: newEnergy,
+                                happiness: newHappiness,
+                                hungry: newHungry,
+                                powers: {
+                                    create: {
+                                        powerId: randomPower.id
+                                    }
                                 }
                             },
-                            pet: true,
-                        }
-                    }),
-                    redis.del(xpKey),
-                    redis.setex(
-                        cooldownKey,
-                        convertTime({ time: "15s", to: "seconds" }),
-                        new Date(Date.now() + convertTime({ time: "15s", to: "milliseconds" })).toISOString()
-                    ),
-                ])
-
-                interaction.editReply(menus.pets.care(userId, newPet))
-                interaction.followUp(res.success(`${icon.Eris_happy} | Você treinou seu pet! ele adquiriu a habilidade: **${petSkillNameFormatted[randomSkill.name] || randomSkill.name}**!`));
-                return;
+                            include: {
+                                personality: {
+                                    include: {
+                                        trait: true
+                                    }
+                                },
+                                pet: true,
+                            }
+                        }),
+                        redis.del(xpKey),
+                        redis.setex(
+                            cooldownKey,
+                            convertTime({ time: "15s", to: "seconds" }),
+                            new Date(Date.now() + convertTime({ time: "15s", to: "milliseconds" })).toISOString()
+                        ),
+                    ])
+    
+                    interaction.editReply(menus.pets.care(userId, newPet))
+                    interaction.followUp(res.success(`${icon.Eris_happy} | Você treinou seu pet! ele adquiriu o poder: **${petPowerFormatted[randomPower.name] || randomPower.name}**!`));
+                    return;
+                }
             }
             case "return": {
                 interaction.editReply(menus.pets.care(userId, pet))

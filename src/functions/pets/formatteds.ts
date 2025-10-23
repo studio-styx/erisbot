@@ -33,3 +33,24 @@ export const petSkillNameFormatted: Record<string, string> = {
     "horse_racing_luck": "Mais Chances de Ganhar a Corrida de Cavalos",
     "horse_racing_bonus": "Bônus de Aposta na Corrida de Cavalos"
 }
+
+export const petPowerFormatted: Record<string, string> = {
+  Fireball: "Bola de Fogo",
+  WaterJet: "Jato d'Água",
+  Thunderbolt: "Raio",
+  EarthSlam: "Impacto Terrestre",
+  PsychicBlast: "Explosão Psíquica",
+  MetalSlash: "Corte Metálico",
+  GhostStrike: "Golpe Fantasma",
+  PoisonSpit: "Cuspe Venenoso",
+  HealingLight: "Luz Curativa",
+  NaturesTouch: "Toque da Natureza",
+  SpiritMend: "Cura Espiritual",
+  FlameAura: "Aura de Chamas",
+  WindBoost: "Impulso de Vento",
+  PsychicShield: "Escudo Psíquico",
+  Frostbite: "Congelamento",
+  DarkVeil: "Véu Sombrio",
+  PoisonCloud: "Nuvem Venenosa",
+  Regeneration: "Regeneração"
+};
