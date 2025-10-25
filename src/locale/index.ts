@@ -6,19 +6,18 @@ import deleteToken from "./translate/commands/erisApi/deleteToken.js";
 import generateKeyModal from "./translate/commands/erisApi/generateKeyModal.js";
 import regenerateToken from "./translate/commands/erisApi/regenerateToken.js";
 import balance from "./translate/commands/generalEconomyCommands/balance.js";
-import bankManage from "./translate/commands/generalEconomyCommands/bankManage.js";
 import daily from "./translate/commands/generalEconomyCommands/daily.js";
 import dismiss from "./translate/commands/generalEconomyCommands/dismiss.js";
 import transfer from "./translate/commands/generalEconomyCommands/transfer.js";
 import work from "./translate/commands/generalEconomyCommands/work.js";
 import support from "./translate/commands/help/support.js";
+import transferResponder from "./translate/responders/economy/transferResponder.js";
 import generateTokenResponder from "./translate/responders/erisApi/generateTokenResponder.js";
 
 export const translate = {
     commands: {
         daily,
         balance,
-        bankManage,
         dismiss,
         transfer,
         work,
@@ -36,7 +35,8 @@ export const translate = {
     responders: {
         erisApi: {
             generateTokenResponder
-        }
+        },
+        transferResponder
     }
 }
 

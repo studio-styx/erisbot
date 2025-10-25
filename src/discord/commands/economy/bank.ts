@@ -1,32 +1,30 @@
 import { createCommand } from "#base";
 import { ApplicationCommandOptionType, ApplicationCommandType } from "discord.js";
 import { economyBalanceCommand } from "./generalCommands/balance.js";
-import { economyDepositCommand } from "./generalCommands/deposit.js";
-import { economyWithdrawCommand } from "./generalCommands/withdraw.js";
 import { economyTransferCommand } from "./generalCommands/transfer.js";
 
 createCommand({
-    name: "bank",
-    description: "view and manage your bank",
+    name: "balance",
+    description: "view and manage your balance",
     type: ApplicationCommandType.ChatInput,
     nameLocalizations: {
-        "pt-BR": "banco",
-        "en-US": "bank",
-        "es-ES": "banco",
+        "pt-BR": "saldo",
+        "en-US": "balance",
+        "es-ES": "saldo",
     },
     descriptionLocalizations: {
-        "pt-BR": "verifique e gerencie seu banco",
-        "en-US": "view and manage your bank",
-        "es-ES": "verifique y gestione su banco",
+        "pt-BR": "verifique e gerencie seu saldo",
+        "en-US": "view and manage your balance",
+        "es-ES": "verifique y gestione su saldo",
     },
     options: [
         {
-            name: "balance",
+            name: "view",
             description: "view your bank balance",
             type: ApplicationCommandOptionType.Subcommand,
             nameLocalizations: {
                 "pt-BR": "saldo",
-                "en-US": "balance",
+                "en-US": "view",
                 "es-ES": "saldo",
             },
             descriptionLocalizations: {
@@ -50,74 +48,6 @@ createCommand({
                         "es-ES": "usuario para obtener saldo",
                     },
                     required: false
-                }
-            ]
-        },
-        {
-            name: "deposit",
-            description: "deposit money into your bank",
-            type: ApplicationCommandOptionType.Subcommand,
-            nameLocalizations: {
-                "pt-BR": "depositar",
-                "en-US": "deposit",
-                "es-ES": "depositar",
-            },
-            descriptionLocalizations: {
-                "pt-BR": "deposite dinheiro no banco",
-                "en-US": "deposit money into your bank",
-                "es-ES": "depositar dinero en tu banco",
-            },
-            options: [
-                {
-                    name: "amount",
-                    description: "value to deposit",
-                    type: ApplicationCommandOptionType.Number,
-                    minValue: 1,
-                    nameLocalizations: {
-                        "pt-BR": "valor",
-                        "en-US": "value",
-                        "es-ES": "valor",
-                    },
-                    descriptionLocalizations: {
-                        "pt-BR": "valor a depositar",
-                        "en-US": "value to deposit",
-                        "es-ES": "valor para depositar",
-                    },
-                    required: true
-                }
-            ]
-        },
-        {
-            name: "withdraw",
-            description: "withdraw money from your bank",
-            type: ApplicationCommandOptionType.Subcommand,
-            nameLocalizations: {
-                "pt-BR": "sacar",
-                "en-US": "withdraw",
-                "es-ES": "retirar",
-            },
-            descriptionLocalizations: {
-                "pt-BR": "sacar dinheiro do banco",
-                "en-US": "withdraw money from your bank",
-                "es-ES": "retirar dinero del banco",
-            },
-            options: [
-                {
-                    name: "amount",
-                    description: "value to withdraw",
-                    type: ApplicationCommandOptionType.Number,
-                    minValue: 1,
-                    nameLocalizations: {
-                        "pt-BR": "valor",
-                        "en-US": "value",
-                        "es-ES": "valor",
-                    },
-                    descriptionLocalizations: {
-                        "pt-BR": "valor a sacar",
-                        "en-US": "value to withdraw",
-                        "es-ES": "valor para retirar",
-                    },
-                    required: true
                 }
             ]
         },
@@ -166,16 +96,8 @@ createCommand({
         const subCommand = interaction.options.getSubcommand();
 
         switch(subCommand) {
-            case "balance": {
+            case "view": {
                 await economyBalanceCommand(interaction)
-                break;
-            }
-            case "deposit": {
-                await economyDepositCommand(interaction)
-                break;
-            }
-            case "withdraw": {
-                await economyWithdrawCommand(interaction)
                 break;
             }
             case "transfer": {

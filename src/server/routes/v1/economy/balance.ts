@@ -22,7 +22,7 @@ export default async function balance(app: FastifyInstance, client: Client<true>
             create: { id: userId }
         });
 
-        return reply.status(StatusCodes.OK).send({ money: user.money.toNumber(), bank: user.bank.toNumber() });
+        return reply.status(StatusCodes.OK).send({ money: user.money.toNumber() });
     });
     app.get("/balance", async (req, reply) => {
         const app = req.application;

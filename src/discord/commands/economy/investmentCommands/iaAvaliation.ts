@@ -63,7 +63,7 @@ export async function iaAvaliationCommand(interaction: ChatInputCommandInteracti
     )).join("\n\n");
 
     const amountToBuy = options.getNumber("amount", true);
-    const totalMoney = user.money.toNumber() + user.bank.toNumber();
+    const totalMoney = user.money.toNumber();
 
     const prompt = brBuilder(
         `Você é um analista de investimentos e deve avaliar o desempenho de várias ações disponíveis no mercado.`,

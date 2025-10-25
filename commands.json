@@ -1,30 +1,14 @@
 [
   {
-    "name": "bank balance",
+    "name": "balance view",
     "id": 1,
-    "description": "Veja seu saldo ou de outra pessoa",
+    "description": "Veja seu saldo ou o de outra pessoa",
     "siteAvaible": false,
     "category": "economy",
     "isAvaible": true
   },
   {
-    "name": "bank deposit",
-    "id": 2,
-    "description": "Deposite dinheiro em sua conta",
-    "siteAvaible": false,
-    "category": "economy",
-    "isAvaible": true
-  },
-  {
-    "name": "bank withdraw",
-    "id": 3,
-    "description": "Saque dinheiro de sua conta",
-    "siteAvaible": false,
-    "category": "economy",
-    "isAvaible": true
-  },
-  {
-    "name": "bank transfer",
+    "name": "balance transfer",
     "id": 4,
     "description": "Transfira dinheiro para outra pessoa",
     "siteAvaible": false,
@@ -58,7 +42,7 @@
   {
     "id": 8,
     "name": "cassino blackjack",
-    "description": "Joque Blackjack contra o dealer ou contra a Éris",
+    "description": "Joque Blackjack contra o dealer, contra a Éris ou contra outro player",
     "category": "cassino",
     "isAvaible": true,
     "siteAvaible": false
@@ -144,12 +128,12 @@
     "isAvaible": true
   },
   {
-    "name": "jobs search",
     "id": 20,
+    "name": "jobs search",
     "description": "Procure por empregos",
-    "siteAvaible": false,
     "category": "economy",
-    "isAvaible": true
+    "isAvaible": true,
+    "siteAvaible": false
   },
   {
     "name": "leaderboard",
@@ -176,28 +160,28 @@
     "isAvaible": true
   },
   {
-    "name": "suporte reportar bug",
     "id": 24,
+    "name": "support report bug",
     "description": "Reportar um bug",
-    "siteAvaible": false,
     "category": "general",
-    "isAvaible": true
+    "isAvaible": true,
+    "siteAvaible": false
   },
   {
-    "name": "suporte reportar usuario",
     "id": 25,
+    "name": "support report user",
     "description": "Reportar um usuário",
-    "siteAvaible": false,
     "category": "general",
-    "isAvaible": true
+    "isAvaible": true,
+    "siteAvaible": false
   },
   {
-    "name": "suporte sugestao",
     "id": 26,
+    "name": "support suggestion",
     "description": "Enviar uma sugestão",
-    "siteAvaible": false,
     "category": "general",
-    "isAvaible": true
+    "isAvaible": true,
+    "siteAvaible": false
   },
   {
     "name": "user avatar",
@@ -224,12 +208,12 @@
     "isAvaible": true
   },
   {
-    "name": "work",
     "id": 30,
+    "name": "work",
     "description": "Trabalhe para ganhar dinheiro",
-    "siteAvaible": false,
     "category": "economy",
-    "isAvaible": true
+    "isAvaible": true,
+    "siteAvaible": false
   },
   {
     "name": "xp add",
@@ -459,6 +443,14 @@
     "name": "pet set_active_pet",
     "id": 59,
     "description": "Defina seu pet como ativo",
+    "siteAvaible": false,
+    "category": "pet",
+    "isAvaible": true
+  },
+  {
+    "name": "pet battle user",
+    "id": 60,
+    "description": "Lute com seu pet contra o pet de outro usuário",
     "siteAvaible": false,
     "category": "pet",
     "isAvaible": true

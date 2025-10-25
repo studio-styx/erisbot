@@ -1,6 +1,6 @@
 import { createResponder, ResponderType } from "#base";
 import { prisma } from "#database";
-import { calculateDate, getCommandId, icon, res } from "#functions";
+import { calculateDate, icon, res } from "#functions";
 import { settings } from "#settings";
 import { brBuilder, createContainer, createEmbed, createRow, createSeparator } from "@magicyan/discord";
 import { ButtonBuilder, ButtonStyle, GuildMember, userMention } from "discord.js";
@@ -82,12 +82,10 @@ createResponder({
             return;
         }
         const money = user.money.toNumber();
-        const bank = user.bank.toNumber();
         const totalToPay = amount * users.length;
 
         if (totalToPay > money) {
-            const bankCommandId = await getCommandId(interaction, "bank");
-            interaction.editReply(res.danger(`${icon.denied} Você não tem dinheiro suficiente para pagar os: **${users.length}** usuários! você precisa de **${totalToPay}** stx você precisa de mais: **${totalToPay - money}** para completar a transação ${bank + money > totalToPay ? `Por sorte você tem o restante no banco! você pode usar o comando **</bank withdraw:${bankCommandId}>** para retirar dinheiro do seu banco, e depois usar esse comando novamente` : ""}`))
+            interaction.editReply(res.danger(`${icon.denied} Você não tem dinheiro suficiente para pagar os: **${users.length}** usuários! você precisa de **${totalToPay}** stx você precisa de mais: **${totalToPay - money}** para completar a transação.`))
             return;
         }
 

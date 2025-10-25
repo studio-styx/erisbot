@@ -30,8 +30,8 @@
   },
   "sdk": {
     "version": {
-      "latest": "0.3.0",
-      "minimalRequired": "0.2.8"
+      "latest": "1.0.3",
+      "minimalRequired": "1.0.1"
     }
   }
 }

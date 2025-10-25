@@ -1,10 +1,10 @@
 import { createResponder, ResponderType, Store } from "#base";
 import { prisma } from "#database";
-import { icon, registerLog, res } from "#functions";
+import { getRandomValue, icon, registerLog, res } from "#functions";
+import { getLang, translate } from "#locale";
 import { Prisma } from "#prisma";
-import { settings } from "#settings";
-import { createEmbed, createRow } from "@magicyan/discord";
-import { ButtonBuilder, ButtonStyle, userMention } from "discord.js";
+import { createRow } from "@magicyan/discord";
+import { ButtonBuilder, ButtonStyle } from "discord.js";
 
 const trys = new Store<number>()
 
@@ -21,45 +21,23 @@ createResponder({
         }
     },
     async run(interaction, { authorId, authorAccepted, targetId, targetAccepted, transactionId }) {
-        const { user } = interaction;
+        const { user, locale } = interaction;
+
+        const lang = getLang(locale);
+        const t = translate.responders.transferResponder[lang];
 
         if (user.id !== authorId && user.id !== targetId) {
             const tries = trys.get(user.id);
             if (tries) {
-                const messages: string[] = []
-                if (tries === 1) {
-                    messages.push(
-                        `${icon.denied} | Eu já te disse que essa transação não é sua!`,
-                        `${icon.denied} | Ei por quê você ainda tá tentando roubar dinheiro dos outros? isso não é legal! ${icon.Eris_Angry_left}`,
-                        `${icon.denied} | Ei! tem usuários querendo paz aqui!`
-                    )
-                } else if (tries === 2) {
-                    messages.push(
-                        `${icon.Eris_Angry} | Ei volte pra onde veio seu ladrãozinho!`,
-                        `${icon.Eris_Angry} | Essa já é sua terceira tentativa tentando roubar dinheiro dos outros, já te disse que isso não é possivel!`,
-                        `${icon.Eris_Angry} | Você não conseguirá furar essa transação!`
-                    )
-                } else if (tries === 3) {
-                    messages.push(
-                        `${icon.Eris_Angry} | Eu não irei repetir! volte pra onde veio!`,
-                        `${icon.Eris_Angry} | Eu vou começar a te ignorar!`,
-                        `${icon.Eris_Angry} | Pode ficar ai tentando roubar, você não terá mais respostas.`,
-                    )
-                } else {
-                    trys.set(user.id, tries + 1, { time: 1000 * 2 });
-                    return;
-                }
+                const messages = t.manyAttempts(tries);
+                if (messages.length === 0) return;
 
-                interaction.reply(res.danger(`${icon.denied} | ${messages[Math.floor(Math.random() * messages.length)]}`));
+                interaction.reply(res.danger(`${icon.denied} | ${getRandomValue(messages)}`));
                 trys.set(user.id, tries + 1, { time: 1000 * 2 });
                 return;
             }
-            const messages: string[] = [
-                "Você não pode usar este botão!",
-                "Você está tentando pegar dinheiro dos outros? não tente mais isso!",
-                `Essa transação não é para você! ${icon.Eris_Angry_left}`,
-            ]
-            interaction.reply(res.danger(`${icon.denied} | ${messages[Math.floor(Math.random() * messages.length)]}`));
+            const messages: string[] = t.firstAttempt;
+            interaction.reply(res.danger(`${icon.denied} |  ${getRandomValue(messages)}`));
             trys.set(user.id, 1, { time: 1000 * 2 });
             return;
         }
@@ -78,7 +56,7 @@ createResponder({
         // Se ambos aceitaram, processa a transação
         if (newAuthorAccepted && newTargetAccepted) {
             await interaction.deferUpdate();
-            await interaction.editReply(res.warning(`${icon.waiting_white} | Processando a transação...`));
+            await interaction.editReply(res.warning(t.processing));
 
             const transaction = await prisma.transaction.findUniqueOrThrow({
                 where: { id: transactionId },
@@ -86,7 +64,7 @@ createResponder({
 
             try {
                 // Primeiro, executa a transação para atualizar os saldos
-                const { newAuthor, newTarget } = await prisma.$transaction<{
+                await prisma.$transaction<{
                     newAuthor: UserWithMoney;
                     newTarget: UserWithMoney;
                 }>(async (tx) => {
@@ -97,22 +75,22 @@ createResponder({
 
                     if (author.money.toNumber() < transaction.amount) {
                         await interaction.followUp(
-                            res.danger(`${icon.denied} | Saldo insuficiente!`)
+                            res.danger(t.insufficientFunds.followUpMessage)
                         );
-                        throw new Error('Saldo insuficiente');
+                        throw new Error(t.insufficientFunds.throwMessage);
                     }
 
                     if (transaction.status !== "PENDING") {
                         if (transaction.status === "EXPIRED") {
                             await interaction.followUp(
-                                res.danger(`${icon.Eris_cry} | Você demorou demais para aceitar essa transação, por isso ela foi fechada!`)
+                                res.danger(t.expired.followUpMessage)
                             )
-                            throw new Error('Essa transação foi expirada!');
+                            throw new Error(t.expired.throwMessage);
                         }
                         await interaction.followUp(
-                            res.danger(`${icon.denied} | Essa transação já foi concluída!`)
+                            res.danger(t.alreadyConcluded.followUpMessage)
                         );
-                        throw new Error('Essa transação já foi concluída');
+                        throw new Error(t.alreadyConcluded.throwMessage);
                     }
 
                     const [updatedAuthor, updatedTarget] = await Promise.all([
@@ -143,14 +121,14 @@ createResponder({
 
                 await Promise.all([
                     registerLog({
-                        message: `Deu **${transaction.amount} stx** para: ${userMention(targetId)}`,
+                        message: t.log.author(transaction, targetId),
                         level: 6,
                         type: "info",
                         user: authorId,
                         tags: ["transfer", "transaction", "economy", "sub"]
                     }),
                     registerLog({
-                        message: `Recebeu **${transaction.amount} stx** de: ${userMention(authorId)}`,
+                        message: t.log.targetId(transaction, authorId),
                         level: 6,
                         type: "info",
                         user: targetId,
@@ -158,31 +136,10 @@ createResponder({
                     })
                 ]);
 
-                const targetUser = interaction.client.users.cache.get(targetId);
-                const authorUser = interaction.user.id === authorId ? interaction.user : interaction.client.users.cache.get(authorId);
-
-                const embed = createEmbed({
-                    title: `${icon.Eris_happy} Transferência concluída`,
-                    description: `${userMention(authorId)} Enviou **${transaction.amount}** stx para ${userMention(targetId)}!`,
-                    fields: [
-                        {
-                            name: `Saldo de ${authorUser?.displayName}`,
-                            value: newAuthor.money.toString(),
-                            inline: true
-                        },
-                        {
-                            name: `Saldo de ${targetUser?.displayName}`,
-                            value: newTarget.money.toString(),
-                            inline: true
-                        }
-                    ],
-                    color: settings.colors.success
-                });
-
-                await interaction.editReply({ embeds: [embed], components: [] });
+                await interaction.editReply(res.success(t.success(transaction), { components: [] }));
             } catch (error: any) {
                 await interaction.followUp(
-                    res.danger(`${icon.denied} | Erro na transferência: ${error.message}`)
+                    res.danger(t.errorMessage(error.message))
                 );
             }
             return;
@@ -195,7 +152,7 @@ createResponder({
         const row = createRow(
             new ButtonBuilder({
                 customId: newCustomId,
-                label: `Confirmar ( ${acceptedCount}/2 )`,
+                label: t.buttonConfirm(acceptedCount),
                 style: ButtonStyle.Success,
                 disabled: (newAuthorAccepted && newTargetAccepted),
                 emoji: icon.paid

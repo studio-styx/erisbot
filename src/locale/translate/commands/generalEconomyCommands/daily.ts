@@ -1,4 +1,4 @@
-import { icon } from "#functions"
+import { formatNumber, icon } from "#functions"
 import { User } from "#prisma"
 import { time } from "discord.js"
 
@@ -55,15 +55,15 @@ export default {
         messages: (dailyValue: number, petName: string, newUser: User) => {
             return {
                 petDailyBonus: [
-                    `${icon.Eris_enchanted} | Você recebeu **${dailyValue}** stx no daily, incluindo um bônus trazido por **${petName}**! Agora você tem **${newUser.money}** stx. ${icon.Eris_ok_left}`,
-                    `${icon.Eris_enchanted} | Daily coletado: **${dailyValue}** stx (com bônus de **${petName}**) 🐾 Saldo atual: **${newUser.money}** stx.`,
-                    `${icon.Eris_enchanted} | Prêmio diário recebido (**${dailyValue}** stx)! **${petName}** deu aquela força extra. Total em carteira: **${newUser.money}** stx.`,
-                    `${icon.Eris_enchanted} | **${petName}** achou umas moedinhas perdidas 🐾 Você recebeu **${dailyValue}** stx no daily! Saldo: **${newUser.money}** stx.`,
-                    `${icon.Eris_enchanted} | Daily recebido: **${dailyValue}** stx ${icon.money_bag} **${petName}** até abriu a própria carteira 😎 Total: **${newUser.money}** stx.`,
-                    `${icon.Eris_enchanted} | Daily + bônus de **${petName}** ativado! Você recebeu **${dailyValue}** stx ✨ Saldo atual: **${newUser.money}** stx.`,
-                    `${icon.Eris_enchanted} | Até **${petName}** trabalha mais que você… Recebeu **${dailyValue}** stx (bônus incluso). Agora tem **${newUser.money}** stx 😏`,
+                    `${icon.Eris_enchanted} | Você recebeu **${dailyValue}** stx no daily, incluindo um bônus trazido por **${petName}**! Agora você tem **${formatNumber(newUser.money.toNumber())}** stx. ${icon.Eris_ok_left}`,
+                    `${icon.Eris_enchanted} | Daily coletado: **${dailyValue}** stx (com bônus de **${petName}**) 🐾 Saldo atual: **${formatNumber(newUser.money.toNumber())}** stx.`,
+                    `${icon.Eris_enchanted} | Prêmio diário recebido (**${dailyValue}** stx)! **${petName}** deu aquela força extra. Total em carteira: **${formatNumber(newUser.money.toNumber())}** stx.`,
+                    `${icon.Eris_enchanted} | **${petName}** achou umas moedinhas perdidas 🐾 Você recebeu **${dailyValue}** stx no daily! Saldo: **${formatNumber(newUser.money.toNumber())}** stx.`,
+                    `${icon.Eris_enchanted} | Daily recebido: **${dailyValue}** stx ${icon.money_bag} **${petName}** até abriu a própria carteira 😎 Total: **${formatNumber(newUser.money.toNumber())}** stx.`,
+                    `${icon.Eris_enchanted} | Daily + bônus de **${petName}** ativado! Você recebeu **${dailyValue}** stx ✨ Saldo atual: **${formatNumber(newUser.money.toNumber())}** stx.`,
+                    `${icon.Eris_enchanted} | Até **${petName}** trabalha mais que você… Recebeu **${dailyValue}** stx (bônus incluso). Agora tem **${formatNumber(newUser.money.toNumber())}** stx 😏`,
                     `${icon.Eris_enchanted} | **${petName}** cavou o quintal e trouxe **${dailyValue}** stx. Você só ficou parado olhando ${icon.paid}`,
-                    `${icon.Eris_enchanted} | Daily recebido: **${dailyValue}** stx. O bônus foi de **${petName}**, não seu. Total: **${newUser.money}** stx.`
+                    `${icon.Eris_enchanted} | Daily recebido: **${dailyValue}** stx. O bônus foi de **${petName}**, não seu. Total: **${formatNumber(newUser.money.toNumber())}** stx.`
                 ],
                 petDailyCooldownReduction: [
                     `${icon.Eris_enchanted} | Você recebeu **${dailyValue}** stx no daily! **${petName}** ainda reduziu o tempo de espera para o próximo ⏱️`,
@@ -77,10 +77,10 @@ export default {
                     `${icon.Eris_enchanted} | **${petName}** reduziu o cooldown. Você só pegou os **${dailyValue}** stx. Equilíbrio perfeito 🙄`
                 ],
                 petDailyBonusAndCooldownReduction: [
-                    `${icon.Eris_enchanted} | Você recebeu **${dailyValue}** stx (daily + bônus de **${petName}**) e ainda teve o cooldown reduzido 🐾 Saldo: **${newUser.money}** stx.`,
+                    `${icon.Eris_enchanted} | Você recebeu **${dailyValue}** stx (daily + bônus de **${petName}**) e ainda teve o cooldown reduzido 🐾 Saldo: **${formatNumber(newUser.money.toNumber())}** stx.`,
                     `${icon.Eris_enchanted} | Daily completo: **${dailyValue}** stx recebidos com bônus + cooldown reduzido graças a **${petName}**.`,
                     `${icon.Eris_enchanted} | Prêmio diário de **${dailyValue}** stx recebido com bônus extra e cooldown adiantado. **${petName}** foi incrível hoje.`,
-                    `${icon.Eris_enchanted} | Jackpot de **${petName}** 🐶💸 Você recebeu **${dailyValue}** stx e o próximo daily vem mais cedo! Total: **${newUser.money}** stx.`,
+                    `${icon.Eris_enchanted} | Jackpot de **${petName}** 🐶💸 Você recebeu **${dailyValue}** stx e o próximo daily vem mais cedo! Total: **${formatNumber(newUser.money.toNumber())}** stx.`,
                     `${icon.Eris_enchanted} | **${petName}** ativou modo turbo: **${dailyValue}** stx + bônus + cooldown reduzido 😳`,
                     `${icon.Eris_enchanted} | Daily recebido: **${dailyValue}** stx. **${petName}** fez tudo — só faltou te servir café ☕`,
                     `${icon.Eris_enchanted} | Nem você merecia tanto: **${dailyValue}** stx recebidos, bônus incluso, e cooldown cortado por **${petName}** 😏`,
@@ -88,11 +88,11 @@ export default {
                     `${icon.Eris_enchanted} | Daily + bônus + cooldown reduzido = **${dailyValue}** stx ganhos. Se dependesse de você, não vinha nada 🐾`
                 ],
                 normal: [
-                    `${icon.Eris_enchanted} | Você recebeu **${dailyValue}** stx no daily. Agora possui **${newUser.money}** stx na carteira. ${icon.Eris_ok_left}`,
-                    `${icon.Eris_enchanted} | Daily coletado com sucesso: **${dailyValue}** stx. Saldo atual: **${newUser.money}** stx.`,
+                    `${icon.Eris_enchanted} | Você recebeu **${dailyValue}** stx no daily. Agora possui **${formatNumber(newUser.money.toNumber())}** stx na carteira. ${icon.Eris_ok_left}`,
+                    `${icon.Eris_enchanted} | Daily coletado com sucesso: **${dailyValue}** stx. Saldo atual: **${formatNumber(newUser.money.toNumber())}** stx.`,
                     `${icon.Eris_enchanted} | Prêmio diário de **${dailyValue}** stx recebido ${icon.paid}`,
                     `${icon.Eris_enchanted} | Daily coletado ${icon.paid} Você recebeu **${dailyValue}** stx e saiu com o bolso mais feliz 😎`,
-                    `${icon.Eris_enchanted} | Você deu aquela passada diária e recebeu **${dailyValue}** stx ${icon.money_bag} Total: **${newUser.money}** stx.`,
+                    `${icon.Eris_enchanted} | Você deu aquela passada diária e recebeu **${dailyValue}** stx ${icon.money_bag} Total: **${formatNumber(newUser.money.toNumber())}** stx.`,
                     `${icon.Eris_enchanted} | A carteira sorriu 🤑 **${dailyValue}** stx direto pra sua conta.`,
                     `${icon.Eris_enchanted} | Parabéns… por existir. Aqui estão seus **${dailyValue}** stx 😏`
                 ]
@@ -152,15 +152,15 @@ export default {
         messages: (dailyValue: number, petName: string, newUser: User) => {
             return {
                 petDailyBonus: [
-                    `${icon.Eris_enchanted} | You received **${dailyValue}** stx in the daily, including a bonus brought by **${petName}**! Now you have **${newUser.money}** stx. ${icon.Eris_ok_left}`,
-                    `${icon.Eris_enchanted} | Daily collected: **${dailyValue}** stx (with **${petName}**'s bonus) 🐾 Current balance: **${newUser.money}** stx.`,
-                    `${icon.Eris_enchanted} | Daily prize received (**${dailyValue}** stx)! **${petName}** gave that extra boost. Total in wallet: **${newUser.money}** stx.`,
-                    `${icon.Eris_enchanted} | **${petName}** found some lost coins 🐾 You received **${dailyValue}** stx in the daily! Balance: **${newUser.money}** stx.`,
-                    `${icon.Eris_enchanted} | Daily received: **${dailyValue}** stx ${icon.money_bag} **${petName}** even opened their own wallet 😎 Total: **${newUser.money}** stx.`,
-                    `${icon.Eris_enchanted} | Daily + **${petName}** bonus activated! You received **${dailyValue}** stx ✨ Current balance: **${newUser.money}** stx.`,
-                    `${icon.Eris_enchanted} | Even **${petName}** works harder than you… Received **${dailyValue}** stx (bonus included). Now you have **${newUser.money}** stx 😏`,
+                    `${icon.Eris_enchanted} | You received **${dailyValue}** stx in the daily, including a bonus brought by **${petName}**! Now you have **${formatNumber(newUser.money.toNumber())}** stx. ${icon.Eris_ok_left}`,
+                    `${icon.Eris_enchanted} | Daily collected: **${dailyValue}** stx (with **${petName}**'s bonus) 🐾 Current balance: **${formatNumber(newUser.money.toNumber())}** stx.`,
+                    `${icon.Eris_enchanted} | Daily prize received (**${dailyValue}** stx)! **${petName}** gave that extra boost. Total in wallet: **${formatNumber(newUser.money.toNumber())}** stx.`,
+                    `${icon.Eris_enchanted} | **${petName}** found some lost coins 🐾 You received **${dailyValue}** stx in the daily! Balance: **${formatNumber(newUser.money.toNumber())}** stx.`,
+                    `${icon.Eris_enchanted} | Daily received: **${dailyValue}** stx ${icon.money_bag} **${petName}** even opened their own wallet 😎 Total: **${formatNumber(newUser.money.toNumber())}** stx.`,
+                    `${icon.Eris_enchanted} | Daily + **${petName}** bonus activated! You received **${dailyValue}** stx ✨ Current balance: **${formatNumber(newUser.money.toNumber())}** stx.`,
+                    `${icon.Eris_enchanted} | Even **${petName}** works harder than you… Received **${dailyValue}** stx (bonus included). Now you have **${formatNumber(newUser.money.toNumber())}** stx 😏`,
                     `${icon.Eris_enchanted} | **${petName}** dug the backyard and brought **${dailyValue}** stx. You just stood there watching ${icon.paid}`,
-                    `${icon.Eris_enchanted} | Daily received: **${dailyValue}** stx. The bonus was from **${petName}**, not you. Total: **${newUser.money}** stx.`
+                    `${icon.Eris_enchanted} | Daily received: **${dailyValue}** stx. The bonus was from **${petName}**, not you. Total: **${formatNumber(newUser.money.toNumber())}** stx.`
                 ],
                 petDailyCooldownReduction: [
                     `${icon.Eris_enchanted} | You received **${dailyValue}** stx in the daily! **${petName}** also reduced the waiting time for the next one ⏱️`,
@@ -174,10 +174,10 @@ export default {
                     `${icon.Eris_enchanted} | **${petName}** reduced the cooldown. You just took the **${dailyValue}** stx. Perfect balance 🙄`
                 ],
                 petDailyBonusAndCooldownReduction: [
-                    `${icon.Eris_enchanted} | You received **${dailyValue}** stx (daily + **${petName}**'s bonus) and also had the cooldown reduced 🐾 Balance: **${newUser.money}** stx.`,
+                    `${icon.Eris_enchanted} | You received **${dailyValue}** stx (daily + **${petName}**'s bonus) and also had the cooldown reduced 🐾 Balance: **${formatNumber(newUser.money.toNumber())}** stx.`,
                     `${icon.Eris_enchanted} | Complete daily: **${dailyValue}** stx received with bonus + cooldown reduced thanks to **${petName}**.`,
                     `${icon.Eris_enchanted} | Daily prize of **${dailyValue}** stx received with extra bonus and advanced cooldown. **${petName}** was amazing today.`,
-                    `${icon.Eris_enchanted} | **${petName}**'s jackpot 🐶💸 You received **${dailyValue}** stx and the next daily comes earlier! Total: **${newUser.money}** stx.`,
+                    `${icon.Eris_enchanted} | **${petName}**'s jackpot 🐶💸 You received **${dailyValue}** stx and the next daily comes earlier! Total: **${formatNumber(newUser.money.toNumber())}** stx.`,
                     `${icon.Eris_enchanted} | **${petName}** activated turbo mode: **${dailyValue}** stx + bonus + reduced cooldown 😳`,
                     `${icon.Eris_enchanted} | Daily received: **${dailyValue}** stx. **${petName}** did everything — just didn't serve you coffee ☕`,
                     `${icon.Eris_enchanted} | Not even you deserved that much: **${dailyValue}** stx received, bonus included, and cooldown cut by **${petName}** 😏`,
@@ -185,11 +185,11 @@ export default {
                     `${icon.Eris_enchanted} | Daily + bonus + reduced cooldown = **${dailyValue}** stx earned. If it depended on you, nothing would come 🐾`
                 ],
                 normal: [
-                    `${icon.Eris_enchanted} | You received **${dailyValue}** stx in the daily. You now have **${newUser.money}** stx in your wallet. ${icon.Eris_ok_left}`,
-                    `${icon.Eris_enchanted} | Daily successfully collected: **${dailyValue}** stx. Current balance: **${newUser.money}** stx.`,
+                    `${icon.Eris_enchanted} | You received **${dailyValue}** stx in the daily. You now have **${formatNumber(newUser.money.toNumber())}** stx in your wallet. ${icon.Eris_ok_left}`,
+                    `${icon.Eris_enchanted} | Daily successfully collected: **${dailyValue}** stx. Current balance: **${formatNumber(newUser.money.toNumber())}** stx.`,
                     `${icon.Eris_enchanted} | Daily prize of **${dailyValue}** stx received ${icon.paid}`,
                     `${icon.Eris_enchanted} | Daily collected ${icon.paid} You received **${dailyValue}** stx and left with a happier pocket 😎`,
-                    `${icon.Eris_enchanted} | You made that daily stop and received **${dailyValue}** stx ${icon.money_bag} Total: **${newUser.money}** stx.`,
+                    `${icon.Eris_enchanted} | You made that daily stop and received **${dailyValue}** stx ${icon.money_bag} Total: **${formatNumber(newUser.money.toNumber())}** stx.`,
                     `${icon.Eris_enchanted} | The wallet smiled 🤑 **${dailyValue}** stx straight to your account.`,
                     `${icon.Eris_enchanted} | Congratulations… for existing. Here are your **${dailyValue}** stx 😏`
                 ]
@@ -249,15 +249,15 @@ export default {
         messages: (dailyValue: number, petName: string, newUser: User) => {
             return {
                 petDailyBonus: [
-                    `${icon.Eris_enchanted} | Recibiste **${dailyValue}** stx en el daily, ¡incluyendo un bono traído por **${petName}**! Ahora tienes **${newUser.money}** stx. ${icon.Eris_ok_left}`,
-                    `${icon.Eris_enchanted} | Daily recolectado: **${dailyValue}** stx (con el bono de **${petName}**) 🐾 Saldo actual: **${newUser.money}** stx.`,
-                    `${icon.Eris_enchanted} | ¡Premio diario recibido (**${dailyValue}** stx)! **${petName}** dio ese impulso extra. Total en cartera: **${newUser.money}** stx.`,
-                    `${icon.Eris_enchanted} | **${petName}** encontró algunas monedas perdidas 🐾 ¡Recibiste **${dailyValue}** stx en el daily! Saldo: **${newUser.money}** stx.`,
-                    `${icon.Eris_enchanted} | Daily recibido: **${dailyValue}** stx ${icon.money_bag} **${petName}** hasta abrió su propia cartera 😎 Total: **${newUser.money}** stx.`,
-                    `${icon.Eris_enchanted} | ¡Daily + bono de **${petName}** activado! Recibiste **${dailyValue}** stx ✨ Saldo actual: **${newUser.money}** stx.`,
-                    `${icon.Eris_enchanted} | Hasta **${petName}** trabaja más que tú… Recibiste **${dailyValue}** stx (bono incluido). Ahora tienes **${newUser.money}** stx 😏`,
+                    `${icon.Eris_enchanted} | Recibiste **${dailyValue}** stx en el daily, ¡incluyendo un bono traído por **${petName}**! Ahora tienes **${formatNumber(newUser.money.toNumber())}** stx. ${icon.Eris_ok_left}`,
+                    `${icon.Eris_enchanted} | Daily recolectado: **${dailyValue}** stx (con el bono de **${petName}**) 🐾 Saldo actual: **${formatNumber(newUser.money.toNumber())}** stx.`,
+                    `${icon.Eris_enchanted} | ¡Premio diario recibido (**${dailyValue}** stx)! **${petName}** dio ese impulso extra. Total en cartera: **${formatNumber(newUser.money.toNumber())}** stx.`,
+                    `${icon.Eris_enchanted} | **${petName}** encontró algunas monedas perdidas 🐾 ¡Recibiste **${dailyValue}** stx en el daily! Saldo: **${formatNumber(newUser.money.toNumber())}** stx.`,
+                    `${icon.Eris_enchanted} | Daily recibido: **${dailyValue}** stx ${icon.money_bag} **${petName}** hasta abrió su propia cartera 😎 Total: **${formatNumber(newUser.money.toNumber())}** stx.`,
+                    `${icon.Eris_enchanted} | ¡Daily + bono de **${petName}** activado! Recibiste **${dailyValue}** stx ✨ Saldo actual: **${formatNumber(newUser.money.toNumber())}** stx.`,
+                    `${icon.Eris_enchanted} | Hasta **${petName}** trabaja más que tú… Recibiste **${dailyValue}** stx (bono incluido). Ahora tienes **${formatNumber(newUser.money.toNumber())}** stx 😏`,
                     `${icon.Eris_enchanted} | **${petName}** excavó el patio y trajo **${dailyValue}** stx. Tú solo te quedaste mirando ${icon.paid}`,
-                    `${icon.Eris_enchanted} | Daily recibido: **${dailyValue}** stx. El bono fue de **${petName}**, no tuyo. Total: **${newUser.money}** stx.`
+                    `${icon.Eris_enchanted} | Daily recibido: **${dailyValue}** stx. El bono fue de **${petName}**, no tuyo. Total: **${formatNumber(newUser.money.toNumber())}** stx.`
                 ],
                 petDailyCooldownReduction: [
                     `${icon.Eris_enchanted} | ¡Recibiste **${dailyValue}** stx en el daily! **${petName}** también redujo el tiempo de espera para el siguiente ⏱️`,
@@ -271,10 +271,10 @@ export default {
                     `${icon.Eris_enchanted} | **${petName}** redujo el cooldown. Tú solo tomaste los **${dailyValue}** stx. Equilibrio perfecto 🙄`
                 ],
                 petDailyBonusAndCooldownReduction: [
-                    `${icon.Eris_enchanted} | Recibiste **${dailyValue}** stx (daily + bono de **${petName}**) y también tuviste el cooldown reducido 🐾 Saldo: **${newUser.money}** stx.`,
+                    `${icon.Eris_enchanted} | Recibiste **${dailyValue}** stx (daily + bono de **${petName}**) y también tuviste el cooldown reducido 🐾 Saldo: **${formatNumber(newUser.money.toNumber())}** stx.`,
                     `${icon.Eris_enchanted} | Daily completo: **${dailyValue}** stx recibidos con bono + cooldown reducido gracias a **${petName}**.`,
                     `${icon.Eris_enchanted} | Premio diario de **${dailyValue}** stx recibido con bono extra y cooldown adelantado. **${petName}** fue increíble hoy.`,
-                    `${icon.Eris_enchanted} | Jackpot de **${petName}** 🐶💸 ¡Recibiste **${dailyValue}** stx y el próximo daily viene antes! Total: **${newUser.money}** stx.`,
+                    `${icon.Eris_enchanted} | Jackpot de **${petName}** 🐶💸 ¡Recibiste **${dailyValue}** stx y el próximo daily viene antes! Total: **${formatNumber(newUser.money.toNumber())}** stx.`,
                     `${icon.Eris_enchanted} | **${petName}** activó modo turbo: **${dailyValue}** stx + bono + cooldown reducido 😳`,
                     `${icon.Eris_enchanted} | Daily recibido: **${dailyValue}** stx. **${petName}** hizo todo — solo faltó servirte café ☕`,
                     `${icon.Eris_enchanted} | Ni tú merecías tanto: **${dailyValue}** stx recibidos, bono incluido, y cooldown cortado por **${petName}** 😏`,
@@ -282,11 +282,11 @@ export default {
                     `${icon.Eris_enchanted} | Daily + bono + cooldown reducido = **${dailyValue}** stx ganados. Si dependiera de ti, no vendría nada 🐾`
                 ],
                 normal: [
-                    `${icon.Eris_enchanted} | Recibiste **${dailyValue}** stx en el daily. Ahora tienes **${newUser.money}** stx en tu cartera. ${icon.Eris_ok_left}`,
-                    `${icon.Eris_enchanted} | Daily recolectado con éxito: **${dailyValue}** stx. Saldo actual: **${newUser.money}** stx.`,
+                    `${icon.Eris_enchanted} | Recibiste **${dailyValue}** stx en el daily. Ahora tienes **${formatNumber(newUser.money.toNumber())}** stx en tu cartera. ${icon.Eris_ok_left}`,
+                    `${icon.Eris_enchanted} | Daily recolectado con éxito: **${dailyValue}** stx. Saldo actual: **${formatNumber(newUser.money.toNumber())}** stx.`,
                     `${icon.Eris_enchanted} | Premio diario de **${dailyValue}** stx recibido ${icon.paid}`,
                     `${icon.Eris_enchanted} | Daily recolectado ${icon.paid} Recibiste **${dailyValue}** stx y saliste con el bolsillo más feliz 😎`,
-                    `${icon.Eris_enchanted} | Hiciste esa parada diaria y recibiste **${dailyValue}** stx ${icon.money_bag} Total: **${newUser.money}** stx.`,
+                    `${icon.Eris_enchanted} | Hiciste esa parada diaria y recibiste **${dailyValue}** stx ${icon.money_bag} Total: **${formatNumber(newUser.money.toNumber())}** stx.`,
                     `${icon.Eris_enchanted} | La cartera sonrió 🤑 **${dailyValue}** stx directo a tu cuenta.`,
                     `${icon.Eris_enchanted} | Felicitaciones… por existir. Aquí tienes tus **${dailyValue}** stx 😏`
                 ]

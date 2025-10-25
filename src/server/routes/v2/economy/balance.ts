@@ -26,7 +26,7 @@ export default async function balance(app: FastifyInstance, client: Client<true>
             create: { id: userId }
         });
 
-        return reply.status(StatusCodes.OK).send({ money: user.money.toNumber(), bank: user.bank.toNumber() });
+        return reply.status(StatusCodes.OK).send({ money: user.money.toNumber() });
     });
     app.get("/balance", async (req, reply) => {
         if (!req.application || (!req.application.data.permissions.includes("ALL") && !req.application.data.permissions.includes("ECONOMY.READ"))) {

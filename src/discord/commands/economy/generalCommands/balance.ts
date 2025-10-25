@@ -29,7 +29,6 @@ export async function economyBalanceCommand(interaction: ChatInputCommandInterac
         },
         select: {
             money: true,
-            bank: true
         },
         create: {
             id
@@ -38,9 +37,8 @@ export async function economyBalanceCommand(interaction: ChatInputCommandInterac
     });
 
     const money = userData?.money.toNumber()
-    const bank = userData?.bank.toNumber()
 
-    const messages = t.message(money, bank, id);
+    const messages = t.message(money, id);
 
     const embed = createEmbed({
         description: "### " + messages[Math.floor(Math.random() * messages.length)],
