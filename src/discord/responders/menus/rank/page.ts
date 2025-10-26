@@ -25,21 +25,21 @@ createResponder({
                     total: bigint;
                 }
 
-                // Raw query: Top 100 in this guild by total STX (money + bank)
+                // Raw query: Top 100 in this guild by total STX (money only)
                 const ranking = await prisma.$queryRaw<RankingResult[]>`
-            SELECT u.id, (u.money + u.bank) as total
-            FROM "User" u
-            INNER JOIN "GuildMember" gm ON gm.id = u.id AND gm."guildId" = ${interaction.guildId}
-            ORDER BY total DESC
-            LIMIT 100
-        `;
+                    SELECT u.id, u.money as total
+                    FROM "User" u
+                    INNER JOIN "GuildMember" gm ON gm.id = u.id AND gm."guildId" = ${interaction.guildId}
+                    ORDER BY total DESC
+                    LIMIT 100
+                `;
 
                 if (ranking.length === 0) {
                     interaction.followUp(res.danger(`${icon.error} | Não foi possível obter usuários para mostrar o ranking`));
                     return;
                 }
 
-                // Fetch members (same as before)
+                // Fetch members
                 const ids = ranking.map(user => user.id);
                 let fetchedMembers: Collection<string, GuildMember>;
                 try {
@@ -109,7 +109,7 @@ createResponder({
 
                 for (const gm of ranking) {
                     const member = fetchedMembers.get(gm.id);
-                    if (!member) continue; // Pular se o membro não estiver mais no servidor
+                    if (!member) continue;
 
                     users.push({
                         user: {
@@ -139,13 +139,13 @@ createResponder({
                     total: bigint;
                 }
 
-                // Raw query: Top 100 global by total STX (money + bank)
+                // Raw query: Top 100 global by STX (money only)
                 const ranking = await prisma.$queryRaw<RankingResult[]>`
-            SELECT id, (money + bank) as total
-            FROM "User"
-            ORDER BY total DESC
-            LIMIT 100
-        `;
+                    SELECT id, money as total
+                    FROM "User"
+                    ORDER BY total DESC
+                    LIMIT 100
+                `;
 
                 if (ranking.length === 0) {
                     interaction.followUp(res.danger(`${icon.error} | Não foi possível obter usuários para mostrar o ranking`));
@@ -166,10 +166,10 @@ createResponder({
                     users.push({
                         user: {
                             id: user.id,
-                            name: discordUser?.displayName || "desconhecido",
+                            name: discordUser?.username || "desconhecido", // Use username para usuários globais
                             avatarUrl: discordUser?.displayAvatarURL() || interaction.client.user.displayAvatarURL()
                         },
-                        amount: Number(user.total)  // Convert BigInt to number
+                        amount: Number(user.total)
                     });
                 }
 
@@ -183,7 +183,7 @@ createResponder({
                 interaction.editReply(menus.leaderboard.ranking("Global", type, filteredUsers, interaction.user.id, page));
                 return;
             } else {
-                // Define a interface para o resultado da query
+                // Define interface para o resultado da query
                 interface RankingResult {
                     id: string;
                     total: number;
@@ -191,12 +191,12 @@ createResponder({
 
                 // Para tipos que não são "stx" no global
                 const ranking = await prisma.$queryRaw<RankingResult[]>`
-        SELECT id, SUM(${type}) as total
-        FROM "GuildMember"
-        GROUP BY id
-        ORDER BY total DESC
-        LIMIT 100
-    `;
+                    SELECT id, SUM(${type}) as total
+                    FROM "GuildMember"
+                    GROUP BY id
+                    ORDER BY total DESC
+                    LIMIT 100
+                `;
 
                 if (ranking.length === 0) {
                     interaction.followUp(res.danger(`${icon.error} | Não foi possível obter usuários para mostrar o ranking`));
@@ -211,13 +211,13 @@ createResponder({
                         discordUser = interaction.client.users.cache.get(gm.id) || await interaction.client.users.fetch(gm.id);
                     } catch (error) {
                         console.error(error);
-                        continue; // Pular se o usuário não existir mais
+                        continue;
                     }
 
                     users.push({
                         user: {
                             id: gm.id,
-                            name: discordUser?.displayName || "desconhecido",
+                            name: discordUser?.username || "desconhecido", // Use username para usuários globais
                             avatarUrl: discordUser?.displayAvatarURL() || interaction.client.user.displayAvatarURL()
                         },
                         amount: gm.total

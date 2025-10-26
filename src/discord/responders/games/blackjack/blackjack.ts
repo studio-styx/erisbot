@@ -32,14 +32,25 @@ createResponder({
                 const card = game.erisTurn(erisAction.card);
                 if (!card) {
                     // éris perdeu
-                    await prisma.user.update({
-                        where: { id: userId },
-                        data: {
-                            money: {
-                                increment: game.amountAposted * multiplier
+                    await prisma.$transaction([
+                        prisma.user.update({
+                            where: { id: userId },
+                            data: {
+                                money: {
+                                    increment: game.amountAposted * multiplier
+                                }
                             }
-                        }
-                    })
+                        }),
+                        prisma.log.create({
+                            data: {
+                                userId,
+                                type: "info",
+                                message: `User won a blackjack game and earned ${game.amountAposted * multiplier} STX. beacuse the dealer busted.`,
+                                level: game.amountAposted > 500 ? game.amountAposted >= 1000 ? 5 : 4 : 3,
+                                tags: ["blackjack", "game", "win", "economy", "sum", "busted"]
+                            }
+                        })
+                    ])
 
                     removeBlackjackGame(userId);
                     const comentary = game.erisComentary("user");
@@ -73,14 +84,25 @@ createResponder({
 
                 if (!card) {
                     // usuário perdeu
-                    await prisma.user.update({
-                        where: { id: userId },
-                        data: {
-                            money: {
-                                decrement: game.amountAposted
+                    await prisma.$transaction([
+                        prisma.user.update({
+                            where: { id: userId },
+                            data: {
+                                money: {
+                                    decrement: game.amountAposted
+                                }
                             }
-                        }
-                    })
+                        }),
+                        prisma.log.create({
+                            data: {
+                                userId: userId,
+                                type: "info",
+                                message: `User lost a blackjack game and lost ${game.amountAposted} STX. because the user busted.`,
+                                level: game.amountAposted > 500 ? 4 : 3,
+                                tags: ["blackjack", "game", "loss", "economy", "sub", "busted"]
+                            }
+                        })
+                    ])
 
                     removeBlackjackGame(userId);
 
@@ -104,29 +126,60 @@ createResponder({
 
                     let comentary: string;
                     if (userWon === "user") {
-                        await prisma.user.update({
-                            where: { id: userId },
-                            data: {
-                                money: {
-                                    increment: game.amountAposted * multiplier
+                        await prisma.$transaction([
+                            prisma.user.update({
+                                where: { id: userId },
+                                data: {
+                                    money: {
+                                        increment: game.amountAposted * multiplier
+                                    }
                                 }
-                            }
-                        })
+                            }),
+                            prisma.log.create({
+                                data: {
+                                    userId,
+                                    type: "info",
+                                    message: `User won a blackjack game and earned ${game.amountAposted * multiplier} STX. because the hand value is bigger to dealer after both players passed.`,
+                                    level: game.amountAposted > 500 ? game.amountAposted >= 1000 ? 5 : 4 : 3,
+                                    tags: ["blackjack", "game", "win", "economy", "sum", "both_passed"]
+                                }
+                            })
+                        ])
 
                         comentary = game.erisComentary("user");
                     } else if (userWon === "eris") {
-                        await prisma.user.update({
-                            where: { id: userId },
-                            data: {
-                                money: {
-                                    decrement: game.amountAposted
+                        await prisma.$transaction([
+                            prisma.user.update({
+                                where: { id: userId },
+                                data: {
+                                    money: {
+                                        decrement: game.amountAposted
+                                    }
                                 }
-                            }
-                        })
+                            }),
+                            prisma.log.create({
+                                data: {
+                                    userId: userId,
+                                    type: "info",
+                                    message: `User lost a blackjack game and lost ${game.amountAposted} STX. because the hand value is smaller to dealer after both players passed.`,
+                                    level: game.amountAposted > 500 ? 4 : 3,
+                                    tags: ["blackjack", "game", "loss", "economy", "sub", "both_passed"]
+                                }
+                            })
+                        ])
 
                         comentary = game.erisComentary("eris");
                     } else {
                         comentary = game.erisComentary("push");
+                        await prisma.log.create({
+                            data: {
+                                userId,
+                                type: "info",
+                                message: `User pushed a blackjack game after both players passed.`,
+                                level: 2,
+                                tags: ["blackjack", "game", "push", "both_passed"]
+                            }
+                        })
                     } // empate não faz nada com o saldo do usuário
 
                     interaction.editReply(menus.cassino.blackjack(userId, game.amountAposted, lang, game, "thinking", { wins: userWon, comentary }))
@@ -147,29 +200,60 @@ createResponder({
 
                 let comentary: string;
                 if (userWon === "user") {
-                    await prisma.user.update({
-                        where: { id: userId },
-                        data: {
-                            money: {
-                                increment: game.amountAposted * multiplier
+                    await prisma.$transaction([
+                        prisma.user.update({
+                            where: { id: userId },
+                            data: {
+                                money: {
+                                    increment: game.amountAposted * multiplier
+                                }
                             }
-                        }
-                    });
+                        }),
+                        prisma.log.create({
+                            data: {
+                                userId,
+                                type: "info",
+                                message: `User won a blackjack game and earned ${game.amountAposted * multiplier} STX. because the hand value is bigger to dealer after stand.`,
+                                level: game.amountAposted > 500 ? game.amountAposted >= 1000 ? 5 : 4 : 3,
+                                tags: ["blackjack", "game", "win", "economy", "sum", "stand"]
+                            }
+                        })
+                    ])
 
                     comentary = game.erisComentary("user");
                 } else if (userWon === "eris") {
-                    await prisma.user.update({
-                        where: { id: userId },
-                        data: {
-                            money: {
-                                decrement: game.amountAposted
+                    await prisma.$transaction([
+                        prisma.user.update({
+                            where: { id: userId },
+                            data: {
+                                money: {
+                                    decrement: game.amountAposted
+                                }
                             }
-                        }
-                    })
+                        }),
+                        prisma.log.create({
+                            data: {
+                                userId: userId,
+                                type: "info",
+                                message: `User lost a blackjack game and lost ${game.amountAposted} STX. because the hand value is smaller to dealer after stand.`,
+                                level: game.amountAposted > 500 ? 4 : 3,
+                                tags: ["blackjack", "game", "loss", "economy", "sub", "stand"]
+                            }
+                        })
+                    ])
 
                     comentary = game.erisComentary("eris");
                 } else {
                     comentary = game.erisComentary("push");
+                    await prisma.log.create({
+                        data: {
+                            userId,
+                            type: "info",
+                            message: `User pushed a blackjack game after stand.`,
+                            level: 2,
+                            tags: ["blackjack", "game", "push", "stand"]
+                        }
+                    })
                 } // empate não faz nada com o saldo do usuário
 
 

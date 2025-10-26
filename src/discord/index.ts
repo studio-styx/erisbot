@@ -14,23 +14,45 @@ export const { createCommand, createEvent, createResponder } = setupCreators({
         onNotFound: (interaction) => {
             interaction.reply(res.danger(`${icon.error} | Command not found!`));
         },
-        onError(error, interaction) {
+        async onError(error, interaction) {
             console.error(`Error in: ${interaction.guild?.name || "Guild not found"} used by user: ${interaction.user.displayName}. error:`, error);
 
             const errorMessage = `**${icon.error} | An error occurred while executing the command: \`${error instanceof Error ? error.message : "Unknown error"}\`**`;
 
             if (interaction.deferred) {
                 try {
-                    interaction.editReply(res.danger(errorMessage));
+                    await interaction.editReply(res.danger(errorMessage));
                 } catch (_) {
                     try {
-                        interaction.editReply(resv2.danger(errorMessage));
+                        await interaction.editReply(resv2.danger(errorMessage));
                     } catch (_) {
-                        interaction.followUp(res.danger(errorMessage))
+                        await interaction.followUp(res.danger(errorMessage))
                     }
                 }
             } else if (!interaction.replied) {
-                interaction.reply(res.danger(errorMessage));
+                await interaction.reply(res.danger(errorMessage));
+            }
+
+            try {
+                const guild = interaction.client.guilds.cache.get("1395383469210865694")!;
+                const channel = guild.channels.cache.get("1431993706625368235") || await guild.channels.fetch("1431993706625368235");
+            
+                if (!channel || !channel.isTextBased()) return;
+
+                await channel.send(res.danger(brBuilder(
+                    `**Error in command \`${interaction.commandName}\` used by user \`${interaction.user.tag}\` in guild \`${interaction.guild?.name || "Direct Message"}\`**`,
+                    "```js",
+                    JSON.stringify({
+                        error: error instanceof Error ? error.message : error,
+                        stack: error instanceof Error ? error.stack : "No stack trace"
+                    }, null, 2),
+                    "```"
+                )));
+
+                await interaction.followUp(res.success(`${icon.success} | The error has been logged to the designated channel.`));
+            } catch (e) {
+                console.error("Failed to send error message to the log channel:", e);
+                await interaction.followUp(res.danger(`${icon.error} | Additionally, failed to log the error to the designated channel.`));
             }
         },
         async middleware(interaction, block) {
@@ -293,23 +315,45 @@ export const { createCommand, createEvent, createResponder } = setupCreators({
         onNotFound(interaction) {
             interaction.reply(res.danger(`${icon.error} | Responder not found!`, { flags: ["Ephemeral"] }));
         },
-        onError(error, interaction) {
+        async onError(error, interaction) {
             console.error(`Error in: ${interaction.guild?.name || "Guild not found"} used by user: ${interaction.user.displayName}. error:`, error);
 
             const errorMessage = `**${icon.error} | An error occurred while executing the responder: \`${error instanceof Error? error.message : "Unknown error"}\`**`;
 
             if (interaction.deferred) {
                 try {
-                    interaction.editReply(res.danger(errorMessage));
+                    await interaction.editReply(res.danger(errorMessage));
                 } catch (_) {
                     try {
-                        interaction.editReply(resv2.danger(errorMessage));
+                        await interaction.editReply(resv2.danger(errorMessage));
                     } catch (_) {
-                        interaction.followUp(res.danger(errorMessage))
+                        await interaction.followUp(res.danger(errorMessage))
                     }
                 }
             } else if (!interaction.replied) {
-                interaction.reply(res.danger(errorMessage));
+                await interaction.reply(res.danger(errorMessage));
+            }
+
+            try {
+                const guild = interaction.client.guilds.cache.get("1395383469210865694")!;
+                const channel = guild.channels.cache.get("1431993706625368235") || await guild.channels.fetch("1431993706625368235");
+            
+                if (!channel || !channel.isTextBased()) return;
+
+                await channel.send(res.danger(brBuilder(
+                    `**Error in the button id: \`${interaction.customId}\` used by user \`${interaction.user.tag}\` in guild \`${interaction.guild?.name || "Direct Message"}\`**`,
+                    "```js",
+                    JSON.stringify({
+                        error: error instanceof Error ? error.message : error,
+                        stack: error instanceof Error ? error.stack : "No stack trace"
+                    }, null, 2),
+                    "```"
+                )));
+
+                await interaction.followUp(res.success(`${icon.success} | The error has been logged to the designated channel.`));
+            } catch (e) {
+                console.error("Failed to send error message to the log channel:", e);
+                await interaction.followUp(res.danger(`${icon.error} | Additionally, failed to log the error to the designated channel.`));
             }
         },
         async middleware(interaction, block) {

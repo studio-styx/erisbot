@@ -209,6 +209,24 @@ export async function petSpin(interaction: ChatInputCommandInteraction<"cached">
     // Criar UserPet
     const userPet = await createUserPet(user.id, pet.id, petGender, petName);
 
+    const petRarityLogLevel: Record<Rarity, number> = {
+        LEGENDARY: 10,
+        EPIC: 8,
+        RARE: 6,
+        UNCOMUM: 4,
+        COMUM: 2
+    }
+
+    await prisma.log.create({
+        data: {
+            userId: user.id,
+            type: "info",
+            message: `Ganhou um pet ${petRarityFormatted[pet.rarity]} (${pet.animal}) ao girar a roleta de pets.`,
+            tags: ["pet", "spin", "reward", `PETID_${pet.id.toString()}`, `USERPETID_${userPet.id.toString()}`, `RARITY_${pet.rarity}`],
+            level: petRarityLogLevel[pet.rarity]
+        }
+    })
+
     // Aplicar cooldown
     const cooldownEnd = await setCooldown(user.id);
 

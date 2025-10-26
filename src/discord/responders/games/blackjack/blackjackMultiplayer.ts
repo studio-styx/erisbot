@@ -35,9 +35,13 @@ createResponder({
                 if (handValue > 21) {
                     deleteBlackjackGameMultiplayer(interaction.message.id);
                     await interaction.deferUpdate();
+                    
+                    const winnerId = game.turn === "user" ? game.targetId : game.userId;
+                    const loserId = game.turn === "user" ? game.userId : game.targetId;
+                    
                     await prisma.$transaction([
                         prisma.user.update({
-                            where: { id: game.turn === "user" ? game.userId : game.targetId },
+                            where: { id: winnerId },
                             data: {
                                 money: {
                                     increment: game.amount
@@ -45,14 +49,35 @@ createResponder({
                             }
                         }),
                         prisma.user.update({
-                            where: { id: game.turn === "user" ? game.targetId : game.userId },
+                            where: { id: loserId },
                             data: {
                                 money: {
                                     decrement: game.amount
                                 }
                             }
+                        }),
+                        // Log para o vencedor
+                        prisma.log.create({
+                            data: {
+                                userId: winnerId,
+                                type: "info",
+                                message: `User won a multiplayer blackjack game and earned ${game.amount} STX because ${userMention(loserId)} busted.`,
+                                level: game.amount > 500 ? game.amount >= 1000 ? 5 : 4 : 3,
+                                tags: ["blackjack", "multiplayer", "game", "win", "economy", "sum", "busted"]
+                            }
+                        }),
+                        // Log para o perdedor
+                        prisma.log.create({
+                            data: {
+                                userId: loserId,
+                                type: "info",
+                                message: `User lost a multiplayer blackjack game and lost ${game.amount} STX because user busted.`,
+                                level: game.amount > 500 ? 4 : 3,
+                                tags: ["blackjack", "multiplayer", "game", "loss", "economy", "sub", "busted"]
+                            }
                         })
                     ])
+                    
                     interaction.editReply(menus.cassino.blackjackMultiplayer(game, lang, `${icon.denied} | ${userMention(game.turn === "user" ? game.userId : game.targetId)} estourou! ${userMention(game.turn === "user" ? game.targetId : game.userId)} venceu a partida com **${calculateHandValue(game[game.turn === "user" ? "targetHand" : "userHand"])}** pontos e ganhou **${game.amount}** stx patrocinado por ${userMention(game.turn === "user" ? game.userId : game.targetId)}!`));
                     return;
                 }
@@ -76,7 +101,19 @@ createResponder({
                     const targetHandValue = calculateHandValue(game.targetHand);
 
                     await interaction.deferUpdate();
-                    await prisma.$transaction([
+                    
+                    let winnerId: string | null = null;
+                    let loserId: string | null = null;
+                    
+                    if (userHandValue > targetHandValue) {
+                        winnerId = game.userId;
+                        loserId = game.targetId;
+                    } else if (targetHandValue > userHandValue) {
+                        winnerId = game.targetId;
+                        loserId = game.userId;
+                    }
+
+                    const transactionQueries: any[] = [
                         prisma.user.update({
                             where: { id: game.userId },
                             data: {
@@ -97,7 +134,55 @@ createResponder({
                                 } : undefined
                             }
                         })
-                    ])
+                    ];
+
+                    // Adicionar logs apenas se houve um vencedor
+                    if (winnerId && loserId) {
+                        transactionQueries.push(
+                            prisma.log.create({
+                                data: {
+                                    userId: winnerId,
+                                    type: "info",
+                                    message: `User won a multiplayer blackjack game and earned ${game.amount} STX because both players passed and user had higher hand value.`,
+                                    level: game.amount > 500 ? game.amount >= 1000 ? 5 : 4 : 3,
+                                    tags: ["blackjack", "multiplayer", "game", "win", "economy", "sum", "both_passed"]
+                                }
+                            }),
+                            prisma.log.create({
+                                data: {
+                                    userId: loserId,
+                                    type: "info",
+                                    message: `User lost a multiplayer blackjack game and lost ${game.amount} STX because both players passed and user had lower hand value.`,
+                                    level: game.amount > 500 ? 4 : 3,
+                                    tags: ["blackjack", "multiplayer", "game", "loss", "economy", "sub", "both_passed"]
+                                }
+                            })
+                        );
+                    } else {
+                        // Log para empate
+                        transactionQueries.push(
+                            prisma.log.create({
+                                data: {
+                                    userId: game.userId,
+                                    type: "info",
+                                    message: `User tied in a multiplayer blackjack game with ${userMention(game.targetId)}, both players got their bets back.`,
+                                    level: 3,
+                                    tags: ["blackjack", "multiplayer", "game", "tie", "both_passed"]
+                                }
+                            }),
+                            prisma.log.create({
+                                data: {
+                                    userId: game.targetId,
+                                    type: "info",
+                                    message: `User tied in a multiplayer blackjack game with ${userMention(game.userId)}, both players got their bets back.`,
+                                    level: 3,
+                                    tags: ["blackjack", "multiplayer", "game", "tie", "both_passed"]
+                                }
+                            })
+                        );
+                    }
+
+                    await prisma.$transaction(transactionQueries);
 
                     if (userHandValue > targetHandValue) {
                         interaction.editReply(menus.cassino.blackjackMultiplayer(game, lang, `${icon.success} | Ambos os jogadores passaram a vez, ${userMention(game.userId)} venceu a partida com **${userHandValue}** contra **${targetHandValue}** de ${userMention(game.targetId)}! e ganhou **${game.amount}** stx patrocinado por ${userMention(game.targetId)}!`));
@@ -151,7 +236,18 @@ createResponder({
 
                 await interaction.deferUpdate();
 
-                await prisma.$transaction([
+                let winnerId: string | null = null;
+                let loserId: string | null = null;
+                
+                if (userHandValue > targetHandValue) {
+                    winnerId = game.userId;
+                    loserId = game.targetId;
+                } else if (targetHandValue > userHandValue) {
+                    winnerId = game.targetId;
+                    loserId = game.userId;
+                }
+
+                const transactionQueries: any[] = [
                     prisma.user.update({
                         where: { id: game.userId },
                         data: {
@@ -172,7 +268,55 @@ createResponder({
                             } : undefined
                         }
                     })
-                ])
+                ];
+
+                // Adicionar logs apenas se houve um vencedor
+                if (winnerId && loserId) {
+                    transactionQueries.push(
+                        prisma.log.create({
+                            data: {
+                                userId: winnerId,
+                                type: "info",
+                                message: `User won a multiplayer blackjack game and earned ${game.amount} STX because opponent decided to stop the game and user had higher hand value.`,
+                                level: game.amount > 500 ? game.amount >= 1000 ? 5 : 4 : 3,
+                                tags: ["blackjack", "multiplayer", "game", "win", "economy", "sum", "stand"]
+                            }
+                        }),
+                        prisma.log.create({
+                            data: {
+                                userId: loserId,
+                                type: "info",
+                                message: `User lost a multiplayer blackjack game and lost ${game.amount} STX because user decided to stop the game and had lower hand value.`,
+                                level: game.amount > 500 ? 4 : 3,
+                                tags: ["blackjack", "multiplayer", "game", "loss", "economy", "sub", "stand"]
+                            }
+                        })
+                    );
+                } else {
+                    // Log para empate
+                    transactionQueries.push(
+                        prisma.log.create({
+                            data: {
+                                userId: game.userId,
+                                type: "info",
+                                message: `User tied in a multiplayer blackjack game with ${userMention(game.targetId)} after stand, both players got their bets back.`,
+                                level: 3,
+                                tags: ["blackjack", "multiplayer", "game", "tie", "stand"]
+                            }
+                        }),
+                        prisma.log.create({
+                            data: {
+                                userId: game.targetId,
+                                type: "info",
+                                message: `User tied in a multiplayer blackjack game with ${userMention(game.userId)} after stand, both players got their bets back.`,
+                                level: 3,
+                                tags: ["blackjack", "multiplayer", "game", "tie", "stand"]
+                            }
+                        })
+                    );
+                }
+
+                await prisma.$transaction(transactionQueries);
 
                 if (userHandValue > targetHandValue) {
                     interaction.editReply(menus.cassino.blackjackMultiplayer(game, lang, `${icon.success} | ${userMention(interaction.user.id)} decidiu parar a partida! ${userMention(game.userId)} venceu a partida com **${userHandValue}** contra **${targetHandValue}** de ${userMention(game.targetId)}! e ganhou **${game.amount}** stx patrocinado por ${userMention(game.targetId)}!`));

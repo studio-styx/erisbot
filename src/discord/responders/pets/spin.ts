@@ -47,10 +47,21 @@ createResponder({
             } else {
                 await interaction.deferUpdate();
                 try {
-                    await prisma.userPet.update({
-                        where: { id: petId },
-                        data: { name }
-                    });
+                    await prisma.$transaction([
+                        prisma.userPet.update({
+                            where: { id: petId },
+                            data: { name }
+                        }),
+                        prisma.log.create({
+                            data: {
+                                userId: interaction.user.id,
+                                type: "info",
+                                message: `Pet ${petId} teve seu nome alterado para ${name} pelo usuário após adquiri-lo no spin.`,
+                                level: 1,
+                                tags: ["pet", "rename", "spin", `USERPETID_${petId}`]
+                            }
+                        })
+                    ])
 
                     interaction.editReply(resv2.success(`${icon.success} | Você trocou o nome de seu pet para **${name}**!`))
                 } catch (e) {
@@ -70,7 +81,7 @@ createResponder({
                         createLabel({
                             label: "Nome",
                             component: new TextInputBuilder({
-                                label: "Coloque o nome de seu pet",
+                                customId: "name",
                                 placeholder: `${getRandomValue(randomNames[getRandomValue(["MALE", "FEMALE"]) as Gender])}...`,
                                 style: TextInputStyle.Short,
                                 required: true,
@@ -99,6 +110,15 @@ createResponder({
                     prisma.userPet.update({
                         where: { id: pet.id },
                         data: { isPregnant: false, pregnantEndAt: null }
+                    }),
+                    prisma.log.create({
+                        data: {
+                            userId: interaction.user.id,
+                            type: "info",
+                            message: `Pet ${pet.id} foi colocado para adoção pelo usuário após adquirilo no spin.`,
+                            level: 2,
+                            tags: ["pet", "adoption_center", "spin", "release", `USERPETID_${pet.id}`]
+                        }
                     })
                 ])
 

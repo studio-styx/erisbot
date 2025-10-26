@@ -32,7 +32,7 @@ createResponder({
 
                     // Consulta crua: Top 100 no servidor por STX total (money + bank)
                     const ranking = await prisma.$queryRaw<RankingResult[]>`
-                        SELECT u.id, (u.money + u.bank) as total
+                        SELECT u.id, u.money as total
                         FROM "User" u
                         INNER JOIN "GuildMember" gm ON gm.id = u.id AND gm."guildId" = ${interaction.guildId}
                         ORDER BY total DESC
@@ -147,7 +147,7 @@ createResponder({
 
                     // Consulta crua: Top 100 global por STX total (money + bank)
                     const ranking = await prisma.$queryRaw<RankingResult[]>`
-                        SELECT id, (money + bank) as total
+                        SELECT id, money as total
                         FROM "User"
                         ORDER BY total DESC
                         LIMIT 100

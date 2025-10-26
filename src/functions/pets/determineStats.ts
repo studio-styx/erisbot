@@ -40,7 +40,7 @@ const multiplyerByPersonality: Record<string, { hungry: number; energy: number; 
 };
 
 export async function setAllPetsStats(client: Client) {
-    const allPets = await prisma.userPet.findMany({
+    const allDbPets = await prisma.userPet.findMany({
         where: {
             isDead: false,
             adoption: null,
@@ -50,6 +50,8 @@ export async function setAllPetsStats(client: Client) {
             pet: true
         },
     });
+
+    const allPets = allDbPets.filter(pet => !pet.flags.includes("IMMORTAL"));
 
     const currentDate = new Date();
 

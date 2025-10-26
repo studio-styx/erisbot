@@ -25,6 +25,14 @@ export async function realeasePetCommand(interaction: ChatInputCommandInteractio
         prisma.userPet.update({
             where: { id: pet.id },
             data: { isPregnant: false, pregnantEndAt: null}
+        }),
+        prisma.log.create({
+            data: {
+                type: "info",
+                userId: user.id,
+                message: `Usuário ${user.tag} (${user.id}) botou o pet ${pet.name} (ID: ${pet.id}) para adoção.`,
+                tags: ["pet", "release", "adoption_center", `USERPETID_${pet.id}`]
+            }
         })
     ])
 

@@ -220,7 +220,7 @@ createResponder({
                         return;
                     }
     
-                    if (pet.skills.length >= 3) {
+                    if (pet.skills.length >= 3 && !pet.flags.includes("UNLIMITED_SKILLS")) {
                         interaction.followUp(res.danger(`${icon.denied} | Seu pet já tem 3 habilidades!`));
                         return;
                     }
@@ -237,12 +237,20 @@ createResponder({
                     const xp = Number((await redis.get(xpKey)) ?? 0);
     
                     const chance = Math.min(xp / 25, 10);
+
+                    const petSkillQuantityAndChance: Record<number, number> = {
+                        0: 30,
+                        1: 20,
+                        2: 15,
+                        // a partir daqui depende das flags do pet, um pet comum não pode chegar aqui
+                        3: 10,
+                        4: 5,
+                        5: 2
+                    }
+
+                    const hasEasilyLearnSkillsFlag = pet.flags.includes("EASILY_LEARN_SKILLS");
     
-                    const wonASkill = pet.skills.length === 0
-                        ? calculateProbability(chance + 25 + getRandomNumber(0, 10))
-                        : pet.skills.length === 1
-                            ? calculateProbability(chance + 15 + getRandomNumber(0, 10))
-                            : calculateProbability(chance + 5 + getRandomNumber(0, 10));
+                    const wonASkill = calculateProbability(Math.min((petSkillQuantityAndChance[pet.skills.length] || 1.5) + chance + getRandomNumber(0, 10) + (hasEasilyLearnSkillsFlag ? 10 : 0), 100));
     
     
                     const newEnergy = Math.max(pet.energy - getRandomNumber(8, 20), 4);
@@ -343,7 +351,7 @@ createResponder({
                         return;
                     }
 
-                    if (pet.powers.length > 5) {
+                    if (pet.powers.length > 5 && !pet.flags.includes("UNLIMITED_POWERS")) {
                         interaction.followUp(res.danger(`${icon.denied} | Seu pet já tem 6 poderes!`));
                         return;
                     }
@@ -360,13 +368,24 @@ createResponder({
                     const xp = Number((await redis.get(xpKey)) ?? 0);
     
                     const chance = Math.min(xp / 25, 10);
-    
-                    const wonAPower = pet.powers.length === 0
-                        ? calculateProbability(chance + 35 + getRandomNumber(0, 10))
-                        : pet.powers.length === 1
-                            ? calculateProbability(chance + 30 + getRandomNumber(0, 10))
-                            : calculateProbability(chance + 15 + getRandomNumber(0, 10));
-    
+
+                    const petPowerQuantityAndChance: Record<number, number> = {
+                        0: 60,
+                        1: 45,
+                        2: 35,
+                        3: 30,
+                        4: 25,
+                        5: 20,
+                        // a partir daqui depende das flags do pet, um pet comum não pode chegar aqui
+                        6: 10,
+                        7: 5,
+                        8: 2,
+                        9: 1,
+                        10: 0.5
+                    }
+
+                    const hasEasilyLearnPowersFlag = pet.flags.includes("EASILY_LEARN_POWERS");
+                    const wonAPower = calculateProbability(Math.min((petPowerQuantityAndChance[pet.powers.length] || 0.2) + chance + getRandomNumber(0, 10) + (hasEasilyLearnPowersFlag ? 10 : 0), 100));
     
                     const newEnergy = Math.max(pet.energy - getRandomNumber(8, 20), 4);
                     const newHappiness = Math.max(pet.happiness - getRandomNumber(3, 7), 4);
