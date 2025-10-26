@@ -27,12 +27,19 @@ createResponder({
         simpleCooldown.set(interaction.user.id, new Date(Date.now() + 1000 * 10), {
             time: 1000 * 10
         })
+        await interaction.deferReply()
 
         const company = await prisma.company.findUnique({
             where: {
                 id: Number(companyId),
+                isEnabled: true
             },
         });
+        
+        if (!company) {
+            interaction.editReply(resv2.danger(`${icon.denied} | Empresa não encontrada!`));
+            return;
+        }
 
         const user = await prisma.user.upsert({
             where: {
@@ -56,20 +63,24 @@ createResponder({
             }
         })
 
-        if (!company) {
-            interaction.reply(resv2.danger(`${icon.denied} | Empresa não encontrada!`));
-            return;
-        }
         if (user.companyId) {
             const commandId = await getCommandId(interaction, "jobs")
-            interaction.reply(resv2.danger(`${icon.denied} | Você já está empregado! para sair de seu emprego use o comando ${commandId ? `</jobs dismiss:${commandId}>` : "\`/economy general dismiss\`"}`));
+            interaction.editReply(resv2.danger(`${icon.denied} | Você já está empregado! para sair de seu emprego use o comando ${commandId ? `</jobs dismiss:${commandId}>` : "\`/economy general dismiss\`"}`));
             return;
         }
         if (user.xp < company.experience) {
-            interaction.reply(resv2.danger(`${icon.denied} | Você não tem experiência suficiente para essa vaga! Você precisa de pelo menos ${company.experience} de experiência.`));
+            interaction.editReply(resv2.danger(`${icon.denied} | Você não tem experiência suficiente para essa vaga! Você precisa de pelo menos ${company.experience} de experiência.`));
             return;
         }
-        await interaction.deferReply()
+
+        if (company.flags.includes("NO_INTERVIEW")) {
+            await prisma.user.update({
+                where: { id: interaction.user.id },
+                data: { companyId: company.id }
+            });
+            interaction.editReply(resv2.success(`${icon.success} | Esta empresa não requer entrevista. Você foi contratado automaticamente!`));
+            return;
+        }
 
         await interaction.editReply(resv2.warning(`${icon.waiting_white} | Aguarde enquanto o entrevistador chama a sua vez.`));
 
@@ -102,6 +113,7 @@ createResponder({
                 ? brBuilder(
                     `Você é um entrevistador de IA. Você irá entrevistar o candidato "${interaction.user.displayName}" para uma vaga na empresa "${company.name}".`,
                     `Descrição da empresa: ${company.description}`,
+                    company.flags.length > 0 ? `Flags da empresa (importante): ${company.flags.join(", ")}` : "",
                     `A empresa espera que seus funcionários tenham os seguintes valores e qualidades: ${companyExpectationsFormatted}`,
                     `A dificuldade da entrevista deve ser ajustada para ser mais fácil, pois o candidato possui a habilidade "job_interview_easier".`,
                     `Gere exatamente 5 perguntas simples e relevantes para essa entrevista, levando em consideração o perfil da empresa e seus valores.`,
@@ -112,6 +124,7 @@ createResponder({
                 : brBuilder(
                     `Você é um entrevistador de IA. Você irá entrevistar o candidato "${interaction.user.displayName}" para uma vaga na empresa "${company.name}".`,
                     `Descrição da empresa: ${company.description}`,
+                    company.flags.length > 0 ? `Flags da empresa (importante): ${company.flags.join(", ")}` : "",
                     `A empresa espera que seus funcionários tenham os seguintes valores e qualidades: ${companyExpectationsFormatted}`,
                     `A dificuldade da entrevista é ${company.difficulty}/10 (1 é muito fácil, 10 é extremamente difícil).`,
                     `Gere exatamente 5 perguntas relevantes e desafiadoras para essa entrevista, levando em consideração o perfil da empresa e seus valores.`,

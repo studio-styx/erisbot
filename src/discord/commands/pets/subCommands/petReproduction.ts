@@ -126,7 +126,16 @@ export async function petReproductionCommand(interaction: ChatInputCommandIntera
         HAMSTER: 60 * 4,
         JAGUAR: 60 * 24 * 5,
         LION: 60 * 24 * 7,
-        RABBIT: 60 * 10
+        RABBIT: 60 * 10,
+        BAT: 60 * 6,
+        BLACK_CAT: 60 * 12,
+        GHOST_DOG: 60 * 12,
+        PUMPKIN_GOLEM: 60 * 24 * 10,
+        RAVEN: 60 * 8,
+        WOLF: 60 * 24 * 6,
+        SKELETON_HORSE: 60 * 24 * 8,
+        SPIDER: 60 * 5,
+        ZOMBIE_RABBIT: 60 * 10
     }
 
     const dateToPregnantEnd = new Date(Date.now() + 1000 * 60 * animalPregnantDurationInMinutes[female.pet.animal]);

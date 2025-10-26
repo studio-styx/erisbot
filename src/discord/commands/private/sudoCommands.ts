@@ -2,7 +2,7 @@ import { createCommand, createResponder, ResponderType } from "#base";
 import { prisma, redis } from "#database";
 import { stocksEventuals, res, icon, processApiQuestions, removeFromBlacklist, addToBlacklist, convertTime, commandsManager, shuffleArray } from "#functions";
 import { menus } from "#menus";
-import { Gender, Mails, PersonalityTrait, PetElement, PetPowerType } from "#prisma";
+import { Gender, Mails, PersonalityTrait } from "#prisma";
 import { settings } from "#settings";
 import { Command } from "#types/commands.js";
 import { brBuilder, createContainer, createLabel, createModalFields, createSeparator } from "@magicyan/discord";
@@ -1182,205 +1182,341 @@ createCommand({
                     // Promise com a transação
                     const txPromise = (async () => {
                         await prisma.$transaction(async (tx) => {
-                            // Lista de poderes a serem criados
-                            await tx.petPower.deleteMany();
-                            const powersToCreate = [
-                                // Poderes de DANO
-                                {
-                                    name: "Fireball",
-                                    description: "Lança uma bola de fogo que causa dano direto.",
-                                    type: PetPowerType.DAMAGE,
-                                    element: PetElement.FIRE,
-                                    details: { damage: 12, cooldown: 2, manaCost: 20 },
-                                },
-                                {
-                                    name: "WaterJet",
-                                    description: "Dispara um jato d'água poderoso.",
-                                    type: PetPowerType.DAMAGE,
-                                    element: PetElement.WATER,
-                                    details: { damage: 15, cooldown: 2, manaCost: 18 },
-                                },
-                                {
-                                    name: "Thunderbolt",
-                                    description: "Libera um raio elétrico.",
-                                    type: PetPowerType.DAMAGE,
-                                    element: PetElement.ELECTRIC,
-                                    details: { damage: 18, cooldown: 3, manaCost: 25 },
-                                },
-                                {
-                                    name: "EarthSlam",
-                                    description: "Golpeia o chão, causando tremor.",
-                                    type: PetPowerType.DAMAGE,
-                                    element: PetElement.EARTH,
-                                    details: { damage: 20, cooldown: 3, manaCost: 22 },
-                                },
-                                {
-                                    name: "PsychicBlast",
-                                    description: "Emite uma onda psíquica que causa dano mental.",
-                                    type: PetPowerType.DAMAGE,
-                                    element: PetElement.PSYCHIC,
-                                    details: { damage: 16, cooldown: 3, manaCost: 22 },
-                                },
-                                {
-                                    name: "MetalSlash",
-                                    description: "Corta com lâminas de metal afiadas.",
-                                    type: PetPowerType.DAMAGE,
-                                    element: PetElement.METAL,
-                                    details: { damage: 19, cooldown: 2, manaCost: 20 },
-                                },
-                                {
-                                    name: "GhostStrike",
-                                    description: "Ataque espectral que ignora defesas físicas.",
-                                    type: PetPowerType.DAMAGE,
-                                    element: PetElement.GHOST,
-                                    details: { damage: 14, cooldown: 3, manaCost: 18 },
-                                },
-                                {
-                                    name: "PoisonSpit",
-                                    description: "Cuspe venenoso que causa dano imediato.",
-                                    type: PetPowerType.DAMAGE,
-                                    element: PetElement.POISON,
-                                    details: { damage: 13, cooldown: 2, manaCost: 17 },
-                                },
-                                // Poderes de CURA
-                                {
-                                    name: "HealingLight",
-                                    description: "Cura o pet com luz restauradora.",
-                                    type: PetPowerType.HEAL,
-                                    element: PetElement.LIGHT,
-                                    details: { heal: 13, cooldown: 2, manaCost: 15 },
-                                },
-                                {
-                                    name: "NaturesTouch",
-                                    description: "Restaura vida com energia natural.",
-                                    type: PetPowerType.HEAL,
-                                    element: PetElement.EARTH,
-                                    details: { heal: 15, cooldown: 2, manaCost: 12 },
-                                },
-                                {
-                                    name: "SpiritMend",
-                                    description: "Restaura vida com energia espectral.",
-                                    type: PetPowerType.HEAL,
-                                    element: PetElement.GHOST,
-                                    details: { heal: 12, cooldown: 2, manaCost: 14 },
-                                },
-                                // Poderes de BUFF
-                                {
-                                    name: "FlameAura",
-                                    description: "Aumenta o dano de ataques de fogo.",
-                                    type: PetPowerType.BUFF,
-                                    element: PetElement.FIRE,
-                                    details: { duration: 3, cooldown: 4, manaCost: 10, elementBuffed: PetElement.FIRE },
-                                },
-                                {
-                                    name: "WindBoost",
-                                    description: "Aumenta a velocidade e dano de ataques de ar.",
-                                    type: PetPowerType.BUFF,
-                                    element: PetElement.AIR,
-                                    details: { duration: 2, cooldown: 3, manaCost: 8, elementBuffed: PetElement.AIR },
-                                },
-                                {
-                                    name: "PsychicShield",
-                                    description: "Aumenta a resistência a ataques psíquicos.",
-                                    type: PetPowerType.BUFF,
-                                    element: PetElement.PSYCHIC,
-                                    details: { duration: 3, cooldown: 4, manaCost: 12, elementBuffed: PetElement.PSYCHIC },
-                                },
-                                // Poderes de DEBUFF
-                                {
-                                    name: "Frostbite",
-                                    description: "Reduz o dano de ataques inimigos.",
-                                    type: PetPowerType.DEBUFF,
-                                    element: PetElement.ICE,
-                                    details: { duration: 2, cooldown: 3, manaCost: 10, elementDebuffed: PetElement.FIRE },
-                                },
-                                {
-                                    name: "DarkVeil",
-                                    description: "Diminui a precisão do inimigo.",
-                                    type: PetPowerType.DEBUFF,
-                                    element: PetElement.DARK,
-                                    details: { duration: 3, cooldown: 4, manaCost: 12, elementDebuffed: PetElement.LIGHT },
-                                },
-                                // Poderes de AUTODAMAGE
-                                {
-                                    name: "PoisonCloud",
-                                    description: "Causa dano contínuo ao longo do tempo.",
-                                    type: PetPowerType.AUTODAMAGE,
-                                    element: PetElement.DARK,
-                                    details: { damage: 4, turnsDuration: 3, cooldown: 4, manaCost: 15 },
-                                },
-                                // Poderes de AUTOHEAL
-                                {
-                                    name: "Regeneration",
-                                    description: "Restaura vida gradualmente.",
-                                    type: PetPowerType.AUTOHEAL,
-                                    element: PetElement.WATER,
-                                    details: { heal: 3, turnsDuration: 3, cooldown: 4, manaCost: 12 },
-                                },
-                            ];
-
-                            // Inserir poderes
-                            await tx.petPower.createMany({
-                                data: powersToCreate,
+                            // Lista de pets a serem criados
+                            await interaction.editReply(res.warning(`${icon.waiting_white} | Criando pets...`));
+                            await tx.pet.createMany({
+                                data: [
+                                    {
+                                        name: "Morcego Espectral",
+                                        rarity: "LEGENDARY",
+                                        price: 1500.0,
+                                        animal: "BAT",
+                                        specie: "Morcego",
+                                        flags: ["EVENT_HALLOWEN_2025"],
+                                        isEnabled: true,
+                                    },
+                                    {
+                                        name: "Corvo Sombrio",
+                                        rarity: "RARE",
+                                        price: 800.0,
+                                        animal: "RAVEN",
+                                        specie: "Corvo",
+                                        flags: ["EVENT_HALLOWEN_2025"],
+                                        isEnabled: true,
+                                    },
+                                    {
+                                        name: "Aranha Fantasmagórica",
+                                        rarity: "EPIC",
+                                        price: 1200.0,
+                                        animal: "SPIDER",
+                                        specie: "Aranha",
+                                        flags: ["EVENT_HALLOWEN_2025"],
+                                        isEnabled: true,
+                                    },
+                                    {
+                                        name: "Lobo Uivante",
+                                        rarity: "EPIC",
+                                        price: 1300.0,
+                                        animal: "WOLF",
+                                        specie: "Lobo",
+                                        flags: ["EVENT_HALLOWEN_2025"],
+                                        isEnabled: true,
+                                    },
+                                    {
+                                        name: "Gato Preto Místico",
+                                        rarity: "RARE",
+                                        price: 900.0,
+                                        animal: "BLACK_CAT",
+                                        specie: "Gato",
+                                        flags: ["EVENT_HALLOWEN_2025"],
+                                        isEnabled: true,
+                                    },
+                                    {
+                                        name: "Cão Fantasma",
+                                        rarity: "LEGENDARY",
+                                        price: 1600.0,
+                                        animal: "GHOST_DOG",
+                                        specie: "Cão",
+                                        flags: ["EVENT_HALLOWEN_2025"],
+                                        isEnabled: true,
+                                    },
+                                    {
+                                        name: "Coelho Zumbi",
+                                        rarity: "EPIC",
+                                        price: 1100.0,
+                                        animal: "ZOMBIE_RABBIT",
+                                        specie: "Coelho",
+                                        flags: ["EVENT_HALLOWEN_2025"],
+                                        isEnabled: true,
+                                    },
+                                    {
+                                        name: "Cavalo Esqueleto",
+                                        rarity: "LEGENDARY",
+                                        price: 1800.0,
+                                        animal: "SKELETON_HORSE",
+                                        specie: "Cavalo",
+                                        flags: ["EVENT_HALLOWEN_2025"],
+                                        isEnabled: true,
+                                    },
+                                    {
+                                        name: "Golem de Abóbora",
+                                        rarity: "LEGENDARY",
+                                        price: 2000.0,
+                                        animal: "PUMPKIN_GOLEM",
+                                        specie: "Golem",
+                                        flags: ["EVENT_HALLOWEN_2025"],
+                                        isEnabled: true,
+                                    },
+                                    // Novos pets de evento
+                                    {
+                                        name: "Bruxa Felina",
+                                        rarity: "EPIC",
+                                        price: 1400.0,
+                                        animal: "BLACK_CAT",
+                                        specie: "Gato",
+                                        flags: ["EVENT_HALLOWEN_2025"],
+                                        isEnabled: true,
+                                    },
+                                    {
+                                        name: "Corcel Fantasmal",
+                                        rarity: "LEGENDARY",
+                                        price: 1900.0,
+                                        animal: "SKELETON_HORSE",
+                                        specie: "Cavalo",
+                                        flags: ["EVENT_HALLOWEN_2025"],
+                                        isEnabled: true,
+                                    },
+                                    {
+                                        name: "Corvo do Crepúsculo",
+                                        rarity: "RARE",
+                                        price: 850.0,
+                                        animal: "RAVEN",
+                                        specie: "Corvo",
+                                        flags: ["EVENT_HALLOWEN_2025"],
+                                        isEnabled: true,
+                                    },
+                                ],
                             });
 
-                            // Lista de relações de efetividade entre elementos
-                            const effectivenessToCreate: { fromElement: PetElement; toElement: PetElement; multiplier: number }[] = [
-                                // Fogo é forte contra Gelo, fraco contra Água
-                                { fromElement: PetElement.FIRE, toElement: PetElement.ICE, multiplier: 1.5 },
-                                { fromElement: PetElement.FIRE, toElement: PetElement.WATER, multiplier: 0.5 },
-                                // Água é forte contra Fogo, fraca contra Elétrico
-                                { fromElement: PetElement.WATER, toElement: PetElement.FIRE, multiplier: 1.5 },
-                                { fromElement: PetElement.WATER, toElement: PetElement.ELECTRIC, multiplier: 0.5 },
-                                // Elétrico é forte contra Água, fraco contra Terra
-                                { fromElement: PetElement.ELECTRIC, toElement: PetElement.WATER, multiplier: 1.5 },
-                                { fromElement: PetElement.ELECTRIC, toElement: PetElement.EARTH, multiplier: 0.5 },
-                                // Terra é forte contra Elétrico, fraca contra Ar
-                                { fromElement: PetElement.EARTH, toElement: PetElement.ELECTRIC, multiplier: 1.5 },
-                                { fromElement: PetElement.EARTH, toElement: PetElement.AIR, multiplier: 0.5 },
-                                // Ar é forte contra Terra, fraco contra Fogo
-                                { fromElement: PetElement.AIR, toElement: PetElement.EARTH, multiplier: 1.5 },
-                                { fromElement: PetElement.AIR, toElement: PetElement.FIRE, multiplier: 0.5 },
-                                // Gelo é forte contra Ar, fraco contra Fogo
-                                { fromElement: PetElement.ICE, toElement: PetElement.AIR, multiplier: 1.5 },
-                                { fromElement: PetElement.ICE, toElement: PetElement.FIRE, multiplier: 0.5 },
-                                // Luz é forte contra Escuridão, fraca contra Normal
-                                { fromElement: PetElement.LIGHT, toElement: PetElement.DARK, multiplier: 1.5 },
-                                { fromElement: PetElement.LIGHT, toElement: PetElement.NORMAL, multiplier: 0.5 },
-                                // Escuridão é forte contra Normal, fraca contra Luz
-                                { fromElement: PetElement.DARK, toElement: PetElement.NORMAL, multiplier: 1.5 },
-                                { fromElement: PetElement.DARK, toElement: PetElement.LIGHT, multiplier: 0.5 },
-                                // Veneno é forte contra Terra, fraco contra Psíquico
-                                { fromElement: PetElement.POISON, toElement: PetElement.EARTH, multiplier: 1.5 },
-                                { fromElement: PetElement.POISON, toElement: PetElement.PSYCHIC, multiplier: 0.5 },
-                                // Psíquico é forte contra Veneno, fraco contra Fantasma
-                                { fromElement: PetElement.PSYCHIC, toElement: PetElement.POISON, multiplier: 1.5 },
-                                { fromElement: PetElement.PSYCHIC, toElement: PetElement.GHOST, multiplier: 0.5 },
-                                // Metal é forte contra Gelo, fraco contra Fogo
-                                { fromElement: PetElement.METAL, toElement: PetElement.ICE, multiplier: 1.5 },
-                                { fromElement: PetElement.METAL, toElement: PetElement.FIRE, multiplier: 0.5 },
-                                // Fantasma é forte contra Psíquico, fraco contra Escuridão
-                                { fromElement: PetElement.GHOST, toElement: PetElement.PSYCHIC, multiplier: 1.5 },
-                                { fromElement: PetElement.GHOST, toElement: PetElement.DARK, multiplier: 0.5 },
-                                // Normal é neutro contra todos (multiplicador 1.0)
-                                { fromElement: PetElement.NORMAL, toElement: PetElement.NORMAL, multiplier: 1.0 },
-                                { fromElement: PetElement.NORMAL, toElement: PetElement.FIRE, multiplier: 1.0 },
-                                { fromElement: PetElement.NORMAL, toElement: PetElement.WATER, multiplier: 1.0 },
-                                { fromElement: PetElement.NORMAL, toElement: PetElement.ELECTRIC, multiplier: 1.0 },
-                                { fromElement: PetElement.NORMAL, toElement: PetElement.EARTH, multiplier: 1.0 },
-                                { fromElement: PetElement.NORMAL, toElement: PetElement.AIR, multiplier: 1.0 },
-                                { fromElement: PetElement.NORMAL, toElement: PetElement.ICE, multiplier: 1.0 },
-                                { fromElement: PetElement.NORMAL, toElement: PetElement.DARK, multiplier: 1.0 },
-                                { fromElement: PetElement.NORMAL, toElement: PetElement.LIGHT, multiplier: 1.0 },
-                                { fromElement: PetElement.NORMAL, toElement: PetElement.POISON, multiplier: 1.0 },
-                                { fromElement: PetElement.NORMAL, toElement: PetElement.PSYCHIC, multiplier: 1.0 },
-                                { fromElement: PetElement.NORMAL, toElement: PetElement.METAL, multiplier: 1.0 },
-                                { fromElement: PetElement.NORMAL, toElement: PetElement.GHOST, multiplier: 1.0 },
-                            ];
+                            // Obter IDs dos pets criados
+                            const createdPets = await tx.pet.findMany({
+                                where: { flags: { has: "EVENT_HALLOWEN_2025" } },
+                                select: { id: true, name: true },
+                            });
 
-                            // Inserir relações de efetividade
-                            await tx.petPowerEffectiveness.createMany({
-                                data: effectivenessToCreate,
+                            // Mapear pets para suas genéticas
+                            const geneticsData = [];
+                            for (const pet of createdPets) {
+                                let petGenetics: any[] = [];
+                                switch (pet.name) {
+                                    case "Morcego Espectral":
+                                        petGenetics = [
+                                            { trait: "Asas Brilhantes", colorPart: "COLOR1", geneType: "DOMINANT" },
+                                            { trait: "Olhos Vermelhos", colorPart: "EYE", geneType: "RECESSIVE" },
+                                            { trait: "Pelo Fosforescente", colorPart: "COLOR2", geneType: "CODOMINANT" },
+                                        ];
+                                        break;
+                                    case "Corvo Sombrio":
+                                        petGenetics = [
+                                            { trait: "Penas Negras", colorPart: "COLOR1", geneType: "DOMINANT" },
+                                            { trait: "Bico Prateado", colorPart: "COLOR2", geneType: "NEUTRAL" },
+                                            { trait: "Olhos Ambar", colorPart: "EYE", geneType: "RECESSIVE" },
+                                        ];
+                                        break;
+                                    case "Aranha Fantasmagórica":
+                                        petGenetics = [
+                                            { trait: "Corpo Espectral", colorPart: "COLOR1", geneType: "CODOMINANT" },
+                                            { trait: "Patas Roxas", colorPart: "COLOR2", geneType: "DOMINANT" },
+                                            { trait: "Olhos Multicolor", colorPart: "EYE", geneType: "RECESSIVE" },
+                                        ];
+                                        break;
+                                    case "Lobo Uivante":
+                                        petGenetics = [
+                                            { trait: "Pelo Cinzento", colorPart: "COLOR1", geneType: "DOMINANT" },
+                                            { trait: "Marcas Lunares", colorPart: "COLOR2", geneType: "CODOMINANT" },
+                                            { trait: "Olhos Amarelos", colorPart: "EYE", geneType: "NEUTRAL" },
+                                        ];
+                                        break;
+                                    case "Gato Preto Místico":
+                                        petGenetics = [
+                                            { trait: "Pelo Ébano", colorPart: "COLOR1", geneType: "DOMINANT" },
+                                            { trait: "Cauda Brilhante", colorPart: "COLOR2", geneType: "RECESSIVE" },
+                                            { trait: "Olhos Esmeralda", colorPart: "EYE", geneType: "CODOMINANT" },
+                                        ];
+                                        break;
+                                    case "Cão Fantasma":
+                                        petGenetics = [
+                                            { trait: "Pelo Translúcido", colorPart: "COLOR1", geneType: "CODOMINANT" },
+                                            { trait: "Marcas Esfumaçadas", colorPart: "COLOR2", geneType: "DOMINANT" },
+                                            { trait: "Olhos Brancos", colorPart: "EYE", geneType: "RECESSIVE" },
+                                        ];
+                                        break;
+                                    case "Coelho Zumbi":
+                                        petGenetics = [
+                                            { trait: "Pelo Esfarrapado", colorPart: "COLOR1", geneType: "DOMINANT" },
+                                            { trait: "Orelhas Rasgadas", colorPart: "COLOR2", geneType: "NEUTRAL" },
+                                            { trait: "Olhos Vermelhos", colorPart: "EYE", geneType: "RECESSIVE" },
+                                        ];
+                                        break;
+                                    case "Cavalo Esqueleto":
+                                        petGenetics = [
+                                            { trait: "Ossos Brilhantes", colorPart: "COLOR1", geneType: "CODOMINANT" },
+                                            { trait: "Crina Fantasmal", colorPart: "COLOR2", geneType: "DOMINANT" },
+                                            { trait: "Olhos de Fogo", colorPart: "EYE", geneType: "RECESSIVE" },
+                                        ];
+                                        break;
+                                    case "Golem de Abóbora":
+                                        petGenetics = [
+                                            { trait: "Corpo de Abóbora", colorPart: "COLOR1", geneType: "DOMINANT" },
+                                            { trait: "Vinhas Brilhantes", colorPart: "COLOR2", geneType: "CODOMINANT" },
+                                            { trait: "Olhos Flamejantes", colorPart: "EYE", geneType: "NEUTRAL" },
+                                        ];
+                                        break;
+                                    case "Bruxa Felina":
+                                        petGenetics = [
+                                            { trait: "Pelo Roxo Místico", colorPart: "COLOR1", geneType: "DOMINANT" },
+                                            { trait: "Cauda de Bruxa", colorPart: "COLOR2", geneType: "RECESSIVE" },
+                                            { trait: "Olhos Safira", colorPart: "EYE", geneType: "CODOMINANT" },
+                                        ];
+                                        break;
+                                    case "Corcel Fantasmal":
+                                        petGenetics = [
+                                            { trait: "Ossos Fosforescentes", colorPart: "COLOR1", geneType: "CODOMINANT" },
+                                            { trait: "Crina de Névoa", colorPart: "COLOR2", geneType: "DOMINANT" },
+                                            { trait: "Olhos Azuis Brilhantes", colorPart: "EYE", geneType: "RECESSIVE" },
+                                        ];
+                                        break;
+                                    case "Corvo do Crepúsculo":
+                                        petGenetics = [
+                                            { trait: "Penas Crepusculares", colorPart: "COLOR1", geneType: "DOMINANT" },
+                                            { trait: "Bico de Sombras", colorPart: "COLOR2", geneType: "NEUTRAL" },
+                                            { trait: "Olhos Violetas", colorPart: "EYE", geneType: "RECESSIVE" },
+                                        ];
+                                        break;
+                                }
+
+                                // Adicionar genéticas ao pet
+                                for (const genetic of petGenetics) {
+                                    geneticsData.push({
+                                        petId: pet.id,
+                                        trait: genetic.trait,
+                                        colorPart: genetic.colorPart,
+                                        geneType: genetic.geneType,
+                                    });
+                                }
+                            }
+
+                            // Criar as genéticas
+                            await interaction.editReply(res.warning(`${icon.waiting_white} | Criando genéticas...`));
+                            await tx.genetics.createMany({
+                                data: geneticsData,
+                            });
+
+                            await interaction.editReply(res.warning(`${icon.waiting_white} | Criando empresas`));
+
+                            await tx.company.createMany({
+                                data: [
+                                    {
+                                        name: "Loja de Poções Mágicas",
+                                        description: "Especializada em poções encantadas e elixires místicos, crie, e venda poções poderosas.",
+                                        difficulty: 3,
+                                        experience: 1,
+                                        isEnabled: true,
+                                        wage: 60,
+                                        expectations: ["CREATIVITY", "FOCUS"],
+                                        flags: ["EVENT_HALLOWEN_2025", "NO_INTERVIEW"],
+                                    },
+                                    {
+                                        name: "Taberna do Dragão Adormecido",
+                                        description: "Um ponto de encontro para aventureiros e entusiastas de criaturas mágicas, seja um atendente ou garçonete atendendo os diferenciados tipos de clientes.",
+                                        difficulty: 3,
+                                        experience: 20,
+                                        isEnabled: true,
+                                        wage: 70,
+                                        expectations: ["CREATIVITY", "FOCUS"],
+                                        flags: ["EVENT_HALLOWEN_2025", "NO_INTERVIEW"],
+                                    },
+                                    {
+                                        name: "Clube dos Aventureiros Noturnos",
+                                        description: "Organiza expedições e explorações em busca de criaturas lendárias.",
+                                        difficulty: 4,
+                                        experience: 30,
+                                        isEnabled: true,
+                                        wage: 80,
+                                        expectations: ["CREATIVITY", "FOCUS"],
+                                        flags: ["EVENT_HALLOWEN_2025"],
+                                    },
+                                    {
+                                        name: "Escola de Magia e Criaturas",
+                                        description: "Ensina sobre magia e o cuidado com criaturas mágicas.",
+                                        difficulty: 4,
+                                        experience: 40,
+                                        isEnabled: true,
+                                        wage: 90,
+                                        expectations: [{ skill: "magic", level: 2 }, { skill: "creature_handling", level: 2 }, { skill: "mentality", level: 4 }],
+                                        flags: ["EVENT_HALLOWEN_2025"],
+                                    },
+                                    {
+                                        name: "Expedições Místicas",
+                                        description: "Lidera expedições para descobrir e estudar criaturas mágicas.",
+                                        difficulty: 5,
+                                        experience: 50,
+                                        isEnabled: true,
+                                        wage: 100,
+                                        expectations: [{ skill: "magic", level: 3 }, { skill: "creature_handling", level: 3 }, { skill: "mentality", level: 5 }],
+                                        flags: ["EVENT_HALLOWEN_2025", "100%_SITUATION"],
+                                    },
+                                    {
+                                        name: "Ateliê de Encantamentos Sombrios",
+                                        description: "Criação de artefatos mágicos com propriedades sobrenaturais.",
+                                        difficulty: 4,
+                                        experience: 25,
+                                        isEnabled: true,
+                                        wage: 85,
+                                        expectations: ["CREATIVITY", "FOCUS", { skill: "magic", level: 2 }],
+                                        flags: ["EVENT_HALLOWEN_2025", "NO_INTERVIEW"],
+                                    },
+                                    {
+                                        name: "Cemitério dos Encantados",
+                                        description: "Guardiões de relíquias e espíritos de criaturas mágicas.",
+                                        difficulty: 5,
+                                        experience: 45,
+                                        isEnabled: true,
+                                        wage: 95,
+                                        expectations: [{ skill: "magic", level: 3 }, { skill: "mentality", level: 4 }, { skill: "creature_handling", level: 2 }],
+                                        flags: ["EVENT_HALLOWEN_2025"],
+                                    },
+                                    {
+                                        name: "Feira das Abóboras Encantadas",
+                                        description: "Mercado de itens mágicos e abóboras encantadas para rituais.",
+                                        difficulty: 3,
+                                        experience: 15,
+                                        isEnabled: true,
+                                        wage: 65,
+                                        expectations: ["CREATIVITY", "COMMUNICATION"],
+                                        flags: ["EVENT_HALLOWEN_2025", "NO_INTERVIEW"],
+                                    },
+                                    {
+                                        name: "Templo das Sombras",
+                                        description: "Santuário para rituais místicos e conexão com o além, deixe os visitantes explorarem seus poderes ocultos, e mantenha o local limpo.",
+                                        difficulty: 5,
+                                        experience: 55,
+                                        isEnabled: true,
+                                        wage: 110,
+                                        expectations: [{ skill: "magic", level: 4 }, { skill: "mentality", level: 5 }],
+                                        flags: ["EVENT_HALLOWEN_2025", "100%_SITUATION"],
+                                    },
+                                    {
+                                        name: "Biblioteca das Almas Perdidas",
+                                        description: "Repositório de conhecimentos proibidos e magias ancestrais, organize os livros, manuscritos e pergaminhos, também não deixe ninguém roubar algum conhecimento proibido.",
+                                        difficulty: 4,
+                                        experience: 35,
+                                        isEnabled: true,
+                                        wage: 90,
+                                        expectations: [{ skill: "magic", level: 2 }, { skill: "mentality", level: 3 }, { skill: "research", level: 2 }],
+                                        flags: ["EVENT_HALLOWEN_2025"],
+                                    },
+                                ],
                             });
                         });
                     })();

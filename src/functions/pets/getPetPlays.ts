@@ -47,5 +47,50 @@ export const petPlays: Record<Animal, PetPlay[]> = {
         { id: "jaguar_climb", name: "Escalar árvores", fun: 7, energy: 6 },
         { id: "jaguar_hunt", name: "Caçar silenciosamente", fun: 8, energy: 7 },
         { id: "jaguar_swim", name: "Nadar no rio", fun: 6, energy: 5 }
+    ],
+    [Animal.BAT]: [
+        { id: "bat_fly_night", name: "Voar sob a lua", fun: 6, energy: 4 },
+        { id: "bat_hang", name: "Pendurar-se de cabeça pra baixo", fun: 4, energy: 2 },
+        { id: "bat_screech", name: "Gritar no escuro", fun: 5, energy: 3 }
+    ],
+    [Animal.RAVEN]: [
+        { id: "raven_steal", name: "Roubar brilhantes", fun: 6, energy: 3 },
+        { id: "raven_talk", name: "Imitar vozes", fun: 5, energy: 2 },
+        { id: "raven_fly_night", name: "Voar sobre cemitérios", fun: 7, energy: 4 }
+    ],
+    [Animal.SPIDER]: [
+        { id: "spider_web", name: "Tecendo teia", fun: 4, energy: 3 },
+        { id: "spider_climb", name: "Escalar paredes", fun: 5, energy: 4 },
+        { id: "spider_hide", name: "Esconder-se nas sombras", fun: 3, energy: 2 }
+    ],
+    [Animal.WOLF]: [
+        { id: "wolf_howl", name: "Uivar para a lua", fun: 8, energy: 5 },
+        { id: "wolf_run_pack", name: "Correr com a alcateia", fun: 7, energy: 6 },
+        { id: "wolf_hunt", name: "Caçar à noite", fun: 9, energy: 7 }
+    ],
+    [Animal.BLACK_CAT]: [
+        { id: "blackcat_shadow", name: "Perseguir sombras", fun: 5, energy: 3 },
+        { id: "blackcat_broom", name: "Passear na vassoura", fun: 7, energy: 4 },
+        { id: "blackcat_potion", name: "Misturar poções", fun: 6, energy: 5 }
+    ],
+    [Animal.GHOST_DOG]: [
+        { id: "ghostdog_haunt", name: "Assombrar corredores", fun: 7, energy: 4 },
+        { id: "ghostdog_glow", name: "Brincar com luzes", fun: 5, energy: 3 },
+        { id: "ghostdog_fly", name: "Flutuar pelo cemitério", fun: 8, energy: 5 }
+    ],
+    [Animal.ZOMBIE_RABBIT]: [
+        { id: "zombierabbit_dig", name: "Sair da cova", fun: 6, energy: 4 },
+        { id: "zombierabbit_stumble", name: "Cambalear por aí", fun: 4, energy: 2 },
+        { id: "zombierabbit_scary", name: "Assustar visitantes", fun: 7, energy: 5 }
+    ],
+    [Animal.SKELETON_HORSE]: [
+        { id: "skeletonhorse_gallop", name: "Galopar sob trovões", fun: 8, energy: 6 },
+        { id: "skeletonhorse_rattle", name: "Chacoalhar ossos", fun: 5, energy: 3 },
+        { id: "skeletonhorse_ride", name: "Levar almas em passeio", fun: 9, energy: 7 }
+    ],
+    [Animal.PUMPKIN_GOLEM]: [
+        { id: "pumpkingolem_light", name: "Acender a cabeça", fun: 6, energy: 3 },
+        { id: "pumpkingolem_guard", name: "Proteger o portão", fun: 5, energy: 4 },
+        { id: "pumpkingolem_smile", name: "Fazer caretas assustadoras", fun: 7, energy: 5 }
     ]
 };

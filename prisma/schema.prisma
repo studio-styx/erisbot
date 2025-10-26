@@ -11,7 +11,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+  url      = env("DEV_DATABASE_URL")
 }
 
 
@@ -571,8 +571,18 @@ enum Animal {
   DRAGON
   LION
   JAGUAR
-}
 
+  // 🎃 Halloween Event Exclusives
+  BAT
+  RAVEN
+  SPIDER
+  WOLF
+  BLACK_CAT
+  GHOST_DOG
+  ZOMBIE_RABBIT
+  SKELETON_HORSE
+  PUMPKIN_GOLEM
+}
 enum Gender {
   MALE
   FEMALE

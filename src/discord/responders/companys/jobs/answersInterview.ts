@@ -135,6 +135,7 @@ createResponder({
                 ? brBuilder(
                     `Você é um entrevistador de IA. Sua tarefa é avaliar o candidato "${interaction.user.displayName}" para uma vaga na empresa "${company.name}".`,
                     `Descrição da empresa: ${company.description}`,
+                    company.flags.length > 0 ? `Flags da empresa (importante): ${company.flags.join(", ")}` : "",
                     `A empresa espera que seus funcionários tenham os seguintes valores e qualidades: ${companyExpectationsFormatted}`,
                     `A avaliação deve ser mais branda, pois o candidato possui a habilidade "job_interview_easier".`,
                     `Sua função é analisar as respostas do candidato com base nas perguntas feitas. Avalie se:`,
@@ -160,6 +161,7 @@ createResponder({
                 : brBuilder(
                     `Você é um entrevistador de IA. Sua tarefa é avaliar o candidato "${interaction.user.displayName}" para uma vaga na empresa "${company.name}".`,
                     `Descrição da empresa: ${company.description}`,
+                    company.flags.length > 0 ? `Flags da empresa (importante): ${company.flags.join(", ")}` : "",
                     `A empresa espera que seus funcionários tenham os seguintes valores e qualidades: ${companyExpectationsFormatted}`,
                     `A dificuldade da entrevista é ${company.difficulty}/10 (sendo 1 muito fácil e 10 extremamente difícil).`,
                     `Dificuldade 3 ou menos não requer muito profissionalismo nas respostas, prefira analisar a intenção e não capacidade. De 4 para cima, analise a intenção e capacidade, mas não seja muito rígido nos critérios.`,

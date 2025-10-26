@@ -16,8 +16,20 @@ export const petAnimalFormatted: Record<Animal, string> = {
     DRAGON: "Dragão",
     HAMSTER: "Hamster",
     JAGUAR: "Onça",
-    LION: "Leão"
+    LION: "Leão",
+
+    // 🎃 Halloween
+    BAT: "Morcego",
+    RAVEN: "Corvo",
+    SPIDER: "Aranha",
+    WOLF: "Lobo",
+    BLACK_CAT: "Gato Preto",
+    GHOST_DOG: "Cachorro Fantasma",
+    ZOMBIE_RABBIT: "Coelho Zumbi",
+    SKELETON_HORSE: "Cavalo Esqueleto",
+    PUMPKIN_GOLEM: "Golem de Abóbora"
 };
+
 
 export const petSkillNameFormatted: Record<string, string> = {
     "daily_bonus": "Bônus no Prêmio Diário",

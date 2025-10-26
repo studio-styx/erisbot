@@ -1,18 +1,8 @@
 import { res, icon } from "#functions";
-import { Prisma } from "#prisma";
+import { Company } from "#prisma";
 import { settings } from "#settings";
 import { brBuilder, createContainer, createRow, createSection, createSeparator } from "@magicyan/discord";
 import { ButtonBuilder, ButtonStyle, type InteractionReplyOptions } from "discord.js";
-
-interface Company {
-    description: string | null;
-    name: string;
-    id: number;
-    difficulty: number;
-    experience: number;
-    wage: Prisma.Decimal;
-    expectations: Prisma.JsonValue;
-}
 
 export function avaibleJobsMenu<R>(companys: Company[], page: number): R {
     const jobsPerPage = 6;
@@ -41,6 +31,11 @@ export function avaibleJobsMenu<R>(companys: Company[], page: number): R {
                     `> **Descrição:** ${job.description || "\`sem descrição\`"}`,
                     `> **Xp necessário:** ${job.experience}`,
                     `> **Salário:** Ꞩ ${job.wage}`,
+                    job.flags.filter(f => f.startsWith("EVENT_")).length > 0 ? `> **Evento:** ${job.flags.filter(f => f.startsWith("EVENT_")).map(f => f.replace("EVENT_", "").replaceAll("_", " ")).join(", ")}` : null,
+                    job.flags.filter(f => f === "100%_SITUATION").length > 0 ? `> **Chance de desafio:** 100% garantida` : null,
+                    job.flags.filter(f => f === "NO_SITUATION").length > 0 ? `> **Chance de desafio:** 0%` : null,
+                    job.flags.filter(f => f === "NO_INTERVIEW").length > 0 ? `> **Entrevista não é necessária**` : null,
+                    job.flags.filter(f => !f.startsWith("EVENT_") && f !== "100%_SITUATION" && f !== "NO_SITUATION").length > 0 ? `> **Flags:** ${job.flags.filter(f => !f.startsWith("EVENT_") && f !== "100%_SITUATION" && f !== "NO_SITUATION").join(", ")}` : null,
                 ),
                 button: new ButtonBuilder({
                     customId: `companys/interview/${job.id}`,

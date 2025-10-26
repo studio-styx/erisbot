@@ -161,7 +161,9 @@ export async function EconomyWorkCommand(interaction: ChatInputCommandInteractio
 
         const hasWorkChallangeAvoid = activePet?.skills.some(s => s.skill.name === "work_challenge_avoid");
 
-        const percentage = hasWorkChallangeAvoid ? 0 : 30 + (user.company.difficulty - 1) * 5;
+        const percentage = company.flags.includes("100%_SITUATION") ? 100
+            :  company.flags.includes("NO_SITUATION") ? 0
+            : hasWorkChallangeAvoid ? 0 : 30 + (user.company.difficulty - 1) * 5;
 
         if (calculateProbability(percentage)) {
             cooldowns.set(interaction.user.id, new Date(Date.now() + 1000 * 60 * 4), { time: 1000 * 60 * 4 });

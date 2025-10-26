@@ -43,13 +43,29 @@ function getRandomRarity(): Rarity {
     return weights[weights.length - 1][0]; // Fallback
 }
 
-async function getRandomPet(rarity: Rarity) {
+async function getRandomPet(rarity: Rarity, hallowenEvent = false) {
     const pets = await prisma.pet.findMany({
-        where: { rarity },
+        where: {
+            rarity,
+            flags: hallowenEvent ? { has: "EVENT_HALLOWEN_2025" } : undefined
+        },
         take: 1,
         orderBy: { id: 'asc' }, // Simula random com take 1
-        skip: Math.floor(Math.random() * await prisma.pet.count({ where: { rarity } }))
+        skip: Math.floor(Math.random() * await prisma.pet.count({ where: { rarity, flags: hallowenEvent ? { has: "EVENT_HALLOWEN_2025" } : undefined } }))
     });
+
+    if (pets.length === 0 && hallowenEvent) {
+        const hallowenPets = await prisma.pet.findMany({
+            where: {
+                flags: { has: "EVENT_HALLOWEN_2025" }
+            },
+            take: 1,
+            orderBy: { id: 'asc' }, // Simula random com take 1
+            skip: Math.floor(Math.random() * await prisma.pet.count({ where: { flags: { has: "EVENT_HALLOWEN_2025" } } }))
+        });
+
+        return hallowenPets[0] || null;
+    }
     return pets[0] || null;
 }
 
@@ -193,7 +209,8 @@ export async function petSpin(interaction: ChatInputCommandInteraction<"cached">
     // Sortear raridade e pet
     await interaction.editReply(resv2.warning(`${icon.waiting_white} | Girando roleta...`));
     const rarity = getRandomRarity();
-    const pet = await getRandomPet(rarity);
+    const hallowenEvent = calculateProbability(45); // 45% de chance de ser de evento
+    const pet = await getRandomPet(rarity, hallowenEvent);
 
     if (!pet) {
         await interaction.editReply(resv2.danger(
