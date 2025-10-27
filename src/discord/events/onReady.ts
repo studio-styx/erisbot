@@ -1,10 +1,9 @@
 import { createEvent } from "#base";
-import { commandsManager, determineMoodInterval, scheduleAllEndGiveaways, 
+import { commandsManager, determineMoodInterval, formatNumber, scheduleAllEndGiveaways, 
     scheduleReproductionsDate, scheduleTransactionExpires, setAllPetsStats, setAllServerSettings 
 } from "#functions";
 import { settings } from "#settings";
 import { Command } from "#types/commands.js";
-import { ActivityType } from "discord.js";
 import fs from "node:fs/promises"
 
 createEvent({
@@ -44,24 +43,20 @@ createEvent({
         async function setNextPresence() {
             const presences = [
                 {
-                    name: `Em ${client.guilds.cache.size} servidores`,
-                    type: ActivityType.Playing,
+                    name: `Estou em ${client.guilds.cache.size} servidores`,
                     time: 32
                 },
                 {
-                    name: `${client.users.cache.size} usuários`,
-                    type: ActivityType.Watching,
+                    name: `Estou vendo ${formatNumber(client.users.cache.size)} usuários`,
                     time: 16,
                 },
                 {
-                    name: `Versão ${settings.bot.version}`,
+                    name: `Minha versão ${settings.bot.version}`,
                     time: 34,
-                    type: ActivityType.Listening
                 },
                 {
-                    name: "Novo sistema de sorteios!",
+                    name: "Crie já seu sorteio usando /sorteio criar!",
                     time: 25,
-                    type: ActivityType.Playing
                 },
                 {
                     name: "Jogue agora uma partida de termo! use /termo",
@@ -82,6 +77,10 @@ createEvent({
                 {
                     name: "Novo sistema de pets! use o comando /pet",
                     time: 30
+                },
+                {
+                    name: "Evento de halloween acontecendo! novos empregos e novos pets!",
+                    time: 40
                 }
             ];
 
