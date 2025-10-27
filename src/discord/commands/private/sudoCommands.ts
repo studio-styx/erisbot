@@ -998,6 +998,7 @@ createCommand({
                                     }
                                 })
                                 usersCount++;
+                                if (!user.dmNotification) continue;
                                 try {
                                     const discordUser = await interaction.client.users.fetch(user.id);
                                     if (discordUser) {
@@ -1010,6 +1011,9 @@ createCommand({
                             }
 
                             interaction.editReply(res.success(`Sent ${usersCount} mails`));
+                        }, {
+                            timeout: 1_200_000,
+                            maxWait: 1_200_000
                         })
                     } catch (error) {
                         console.error(error);

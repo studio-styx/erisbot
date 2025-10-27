@@ -42,6 +42,7 @@ createResponder({
 
         await prisma.$transaction([
             prisma.adoptionCenter.delete({ where: { id: pet.id } }),
+            prisma.user.upsert({ where: { id: user.id }, create: { id: user.id }, update: {} }),
             prisma.userPet.update({
                 where: {
                     id: pet.userPet.id
