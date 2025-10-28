@@ -24,5 +24,7 @@ export const envSchema = z.object({
     WEBHOOK_TRYVIA_PIPELINE_URL: z.string("Webhook Tryvia Pipeline URL is required").min(1),
     TOPGG_API_TOKEN: z.string("Topgg API Token is required").min(1),
     TOPGG_AUTHORIZATION: z.string("Topgg Authorization is required").min(1),
-    LORITTA_API_KEY: z.string("Loritta api keys is required").min(1)
+    LORITTA_API_KEY: z.string("Loritta api keys is required").min(1),
+    API_FOOTBALL_KEY: z.string("API Football Key is required").min(1),
+    API_FOOTBALL_DATA_KEY: z.string("API Football Data Key is required").min(1),
 });

@@ -748,3 +748,327 @@ model CombatPowerHistory {
   pet         UserPet       @relation(fields: [petId], references: [id], onDelete: Cascade)
   userPetPower UserPetPower? @relation(fields: [userPetPowerId], references: [id], onDelete: SetNull)
 }
+
+// ------------------------
+// SISTEMA DE APOSTAS DE FUTEBOL EM JOGOS REAIS
+// ------------------------
+
+// Times de futebol
+model FootballTeam {
+  id        BigInt @id @default(autoincrement())
+  name      String
+  apiId     String @unique
+  createdAt DateTime @default(now())
+  code      String?
+  country   String
+  founded   Int?
+  national  Boolean @default(false)
+  logo      String
+  stadiumId BigInt?
+  stadium   FootballTeamStadium? @relation(fields: [stadiumId], references: [id], onDelete: SetNull)
+
+  homeFixtures FootballFixture[] @relation("HomeTeamFixture")
+  awayFixtures FootballFixture[] @relation("AwayTeamFixture")
+  standings    FootballLeagueStanding[]
+  players      FootballPlayer[]
+}
+
+// Jogadores de futebol
+model FootballPlayer {
+  id            BigInt @id @default(autoincrement())
+  apiId         String @unique
+  name          String
+  firstName     String?
+  lastName      String?
+  age           Int?
+  birthDate     DateTime?
+  nationality   String?
+  height        String?   // ex: "185 cm"
+  weight        String?   // ex: "78 kg"
+  injured       Boolean @default(false)
+  photo         String?
+  createdAt     DateTime @default(now())
+  
+  // Relação com time atual (um jogador pode estar em apenas um time por temporada)
+  teamId        BigInt
+  team          FootballTeam @relation(fields: [teamId], references: [id], onDelete: Cascade)
+
+  // Eventos (gols, cartões, substituições)
+  events        FootballEvent[]
+
+  // Estatísticas por fixture
+  statistics    FootballPlayerStatistics[]
+
+  // Standings individuais (top scorers, assists, etc.)
+  topScorer     FootballTopScorer?
+  topAssist     FootballTopAssist?
+  topCard       FootballTopCard?
+
+  @@index([teamId])
+  @@index([name])
+}
+
+// Estádios de futebol
+model FootballTeamStadium {
+  id        BigInt @id @default(autoincrement())
+  name      String
+  capacity  Int?
+  address   String?
+  createdAt DateTime @default(now())
+  apiId     String @unique
+  image     String?
+  surface   String?
+  teams     FootballTeam[]
+}
+
+// Ligas de futebol
+model FootballLeague {
+  id        BigInt @id @default(autoincrement())
+  name      String
+  country   String
+  apiId     String @unique
+  logo      String
+  createdAt DateTime @default(now())
+  seasons   FootballLeagueSeason[]
+
+  fixtures  FootballFixture[]
+  standings FootballLeagueStanding[]
+}
+
+// Temporadas de ligas de futebol
+model FootballLeagueSeason {
+  id        BigInt @id @default(autoincrement())
+  name      String
+  start     DateTime
+  end       DateTime
+  current   Boolean @default(true)
+  
+  leagueId  BigInt
+  league    FootballLeague @relation(fields: [leagueId], references: [id], onDelete: Cascade)
+  fixtures  FootballFixture[]
+  standings FootballLeagueStanding[]
+
+  // Cobertura de dados por temporada
+  coverage  FootballLeagueCoverage?
+  fixtureCoverage FootballFixtureCoverage?
+}
+
+// Cobertura de dados por liga e temporada
+model FootballLeagueCoverage {
+  id            BigInt @id @default(autoincrement())
+  leagueId      BigInt
+  seasonId      BigInt
+  league        FootballLeague @relation(fields: [leagueId], references: [id], onDelete: Cascade)
+  season        FootballLeagueSeason @relation(fields: [seasonId], references: [id], onDelete: Cascade)
+  
+  fixtures      Boolean @default(false)
+  standings     Boolean @default(false)
+  players       Boolean @default(false)
+  top_scorers   Boolean @default(false)
+  top_assists   Boolean @default(false)
+  top_cards     Boolean @default(false)
+  injuries      Boolean @default(false)
+  predictions   Boolean @default(false)
+  odds          Boolean @default(false)
+  
+  @@unique([leagueId, seasonId])
+}
+
+// Cobertura de dados de fixtures por temporada
+model FootballFixtureCoverage {
+  id                   BigInt @id @default(autoincrement())
+  events               Boolean @default(false)
+  lineups              Boolean @default(false)
+  statistics_fixtures  Boolean @default(false)
+  statistics_players   Boolean @default(false)
+  
+  seasonId BigInt? @unique
+  season   FootballLeagueSeason? @relation(fields: [seasonId], references: [id])
+}
+
+// Jogos/Partidas
+model FootballFixture {
+  id            BigInt @id @default(autoincrement())
+  apiId         String @unique
+  date          DateTime
+  timestamp     Int?
+  referee       String?
+  venueId       BigInt?
+  venue         FootballTeamStadium? @relation(fields: [venueId], references: [id], onDelete: SetNull)
+  status        String
+  statusShort   String
+  elapsed       Int?
+  round         String?
+  periods       Json?
+  
+  goalsHome     Int?
+  goalsAway     Int?
+  scoreHalftime Json?
+  scoreFulltime Json?
+  scoreExtratime Json?
+  scorePenalty  Json?
+  
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  leagueId      BigInt
+  league        FootballLeague @relation(fields: [leagueId], references: [id], onDelete: Cascade)
+  seasonId      BigInt
+  season        FootballLeagueSeason @relation(fields: [seasonId], references: [id], onDelete: Cascade)
+  homeTeamId    BigInt
+  homeTeam      FootballTeam @relation("HomeTeamFixture", fields: [homeTeamId], references: [id], onDelete: Cascade)
+  awayTeamId    BigInt
+  awayTeam      FootballTeam @relation("AwayTeamFixture", fields: [awayTeamId], references: [id], onDelete: Cascade)
+  
+  odds          FootballOdds[]
+  statistics    FootballFixtureStatistics[]
+  events        FootballEvent[]
+  playerStats   FootballPlayerStatistics[]
+  bets          FootballBet[]
+}
+
+// Estatísticas por time em um fixture
+model FootballFixtureStatistics {
+  id        BigInt @id @default(autoincrement())
+  fixtureId BigInt
+  teamId    BigInt
+  fixture   FootballFixture @relation(fields: [fixtureId], references: [id], onDelete: Cascade)
+  team      FootballTeam @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  
+  statistics Json
+  
+  @@unique([fixtureId, teamId])
+}
+
+// Estatísticas por jogador em um fixture
+model FootballPlayerStatistics {
+  id         BigInt @id @default(autoincrement())
+  fixtureId  BigInt
+  playerId   BigInt
+  teamId     BigInt
+  fixture    FootballFixture @relation(fields: [fixtureId], references: [id], onDelete: Cascade)
+  player     FootballPlayer @relation(fields: [playerId], references: [id], onDelete: Cascade)
+  team       FootballTeam @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  
+  // Estatísticas como JSON para flexibilidade
+  statistics Json // ex: { goals: 1, assists: 0, yellowCards: 1, shots: 3 }
+  
+  @@unique([fixtureId, playerId])
+}
+
+// Eventos do jogo (gols, cartões, substituições)
+model FootballEvent {
+  id          BigInt @id @default(autoincrement())
+  fixtureId   BigInt
+  fixture     FootballFixture @relation(fields: [fixtureId], references: [id], onDelete: Cascade)
+  
+  time        Int?
+  elapsed     Int?
+  type        String // "Goal", "Card", "Substitution", "Var"
+  teamId      BigInt?
+  team        FootballTeam? @relation(fields: [teamId], references: [id])
+  playerId    BigInt?
+  player      FootballPlayer? @relation(fields: [playerId], references: [id])
+  assistId    BigInt? // Para gols com assistência
+  assist      FootballPlayer? @relation("Assist", fields: [assistId], references: [id])
+  description String?
+  
+  @@index([fixtureId, type])
+}
+
+// Odds
+model FootballOdds {
+  id         BigInt @id @default(autoincrement())
+  fixtureId  BigInt
+  fixture    FootballFixture @relation(fields: [fixtureId], references: [id], onDelete: Cascade)
+  bookmaker  String
+  lastUpdate DateTime?
+  bets       Json
+}
+
+// Standings
+model FootballLeagueStanding {
+  id        BigInt @id @default(autoincrement())
+  leagueId  BigInt
+  seasonId  BigInt
+  teamId    BigInt
+  league    FootballLeague @relation(fields: [leagueId], references: [id])
+  season    FootballLeagueSeason @relation(fields: [seasonId], references: [id])
+  team      FootballTeam @relation(fields: [teamId], references: [id])
+  
+  position     Int
+  played       Int
+  won          Int
+  draw         Int
+  lost         Int
+  goalsFor     Int
+  goalsAgainst Int
+  goalDiff     Int
+  points       Int
+  form         String?
+  
+  @@unique([leagueId, seasonId, teamId])
+  @@index([leagueId, seasonId])
+}
+
+// Top Scorers, Assists, Cards (por liga e temporada)
+model FootballTopScorer {
+  id        BigInt @id @default(autoincrement())
+  leagueId  BigInt
+  seasonId  BigInt
+  playerId  BigInt
+  player    FootballPlayer @relation(fields: [playerId], references: [id], onDelete: Cascade)
+  
+  goals     Int
+  penalties Int?
+  
+  @@unique([leagueId, seasonId, playerId])
+}
+
+model FootballTopAssist {
+  id        BigInt @id @default(autoincrement())
+  leagueId  BigInt
+  seasonId  BigInt
+  playerId  BigInt
+  player    FootballPlayer @relation(fields: [playerId], references: [id], onDelete: Cascade)
+  
+  assists   Int
+  
+  @@unique([leagueId, seasonId, playerId])
+}
+
+model FootballTopCard {
+  id        BigInt @id @default(autoincrement())
+  leagueId  BigInt
+  seasonId  BigInt
+  playerId  BigInt
+  player    FootballPlayer @relation(fields: [playerId], references: [id], onDelete: Cascade)
+  
+  yellowCards Int
+  redCards    Int
+  
+  @@unique([leagueId, seasonId, playerId])
+}
+
+// Aposta
+model FootballBet {
+  id              BigInt @id @default(autoincrement())
+  userId          BigInt
+  fixtureId       BigInt
+  user            User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  fixture         FootballFixture @relation(fields: [fixtureId], references: [id])
+  
+  betType         String
+  selection       String
+  stake           Decimal
+  odds            Decimal
+  potentialPayout Decimal
+  status          String @default("Pending")
+  placedAt        DateTime @default(now())
+  settledAt       DateTime?
+  won             Boolean?
+  
+  @@index([userId])
+  @@index([fixtureId])
+  @@index([status])
+}
