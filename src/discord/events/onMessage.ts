@@ -5,7 +5,7 @@ import { xpSystem } from "./chat/xpSystem.js";
 import { onAfkMentioned } from "./onAfkMentioned.js";
 import { onResponseTryviaGame } from "./tryvia/response.js";
 import { Gender, PersonalityTrait } from "#prisma";
-import { icon, res } from "#functions";
+import { icon, registerGames, res } from "#functions";
 
 createEvent({
     name: "onMessage",
@@ -152,6 +152,17 @@ createEvent({
                     } catch (error: any) {
                         message.reply(res.danger(`${icon.error} | Error to set the redis key: \`${key}\` the value: \`${value}\`: ${error.message || error}`));
                         console.error(error);
+                    }
+                    break;
+                }
+                case "s.fixturegames": {
+                    const msg = await message.reply(res.warning(`${icon.waiting_white} | Iniciando registramento das partidas....`));
+                    try {
+                        await registerGames();
+                        await msg.edit(res.success(`${icon.success} | Partidas registradas com sucesso!`));
+                    } catch (error) {
+                        console.error(error);
+                        await msg.edit(res.danger(`${icon.error} | Erro ao registrar partidas!`));
                     }
                     break;
                 }
