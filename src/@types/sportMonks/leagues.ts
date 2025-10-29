@@ -1,32 +1,26 @@
 import { ApiResponse } from "./apiResponse.js";
 
+export interface Country {
+  id: number;
+  name: string;
+  iso_code: string;
+}
+
 export interface League {
-    id: number;
-    name: string;
-    short_name: string | null;
-    symbol: string | null;
-    country_id: number;
-    country: {
-        id: number;
-        name: string;
-        iso_code: string;
-    };
-    tv_station: string | null;
-    is_popular: boolean;
-    meta: {
-        category: {
-            id: number;
-            name: string;
-            parent_id: number | null;
-        };
-    };
-    seasons: {
-        id: number;
-        name: string;
-        start_date: string;
-        end_date: string;
-        current: boolean;
-    }[];
+  id: number;
+  sport_id: number;
+  country_id: number;
+  name: string;
+  active: boolean;
+  short_code: string | null;
+  image_path: string;
+  type: string;
+  sub_type: string;
+  last_played_at: string;
+  category: number;
+  has_jerseys: boolean;
+
+  country?: Country;
 }
 
 export type LeaguesResponse = ApiResponse<League[]>;

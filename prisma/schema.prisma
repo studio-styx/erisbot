@@ -808,29 +808,9 @@ model FootballLeague {
   logo      String
   createdAt DateTime @default(now())
 
-  seasons   FootballLeagueSeason[]
   fixtures  FootballFixture[]
   standings FootballLeagueStanding[]
   coverage  FootballLeagueCoverage[]
-}
-
-// ========================
-// TEMPORADAS
-// ========================
-model FootballLeagueSeason {
-  id        BigInt   @id @default(autoincrement())
-  name      String
-  start     DateTime
-  end       DateTime
-  current   Boolean  @default(true)
-
-  leagueId  BigInt
-  league    FootballLeague @relation(fields: [leagueId], references: [id], onDelete: Cascade)
-
-  fixtures  FootballFixture[]
-  standings FootballLeagueStanding[]
-  coverage  FootballLeagueCoverage?   @relation("SeasonCoverage") // one-to-one
-  fixtureCoverage FootballFixtureCoverage?
 }
 
 // ========================
@@ -839,9 +819,7 @@ model FootballLeagueSeason {
 model FootballLeagueCoverage {
   id            BigInt   @id @default(autoincrement())
   leagueId      BigInt
-  seasonId      BigInt   @unique // one-to-one
   league        FootballLeague @relation(fields: [leagueId], references: [id], onDelete: Cascade)
-  season        FootballLeagueSeason @relation("SeasonCoverage", fields: [seasonId], references: [id], onDelete: Cascade)
 
   fixtures      Boolean  @default(false)
   standings     Boolean  @default(false)
@@ -853,21 +831,7 @@ model FootballLeagueCoverage {
   predictions   Boolean  @default(false)
   odds          Boolean  @default(false)
 
-  @@unique([leagueId, seasonId])
-}
-
-// ========================
-// COBERTURA DE FIXTURES
-// ========================
-model FootballFixtureCoverage {
-  id                   BigInt   @id @default(autoincrement())
-  events               Boolean  @default(false)
-  lineups              Boolean  @default(false)
-  statistics_fixtures  Boolean  @default(false)
-  statistics_players   Boolean  @default(false)
-
-  seasonId BigInt? @unique
-  season   FootballLeagueSeason? @relation(fields: [seasonId], references: [id])
+  @@unique([leagueId])
 }
 
 // ========================
@@ -894,9 +858,6 @@ model FootballPlayer {
   events        FootballEvent[]
   assistEvents  FootballEvent[]   @relation("AssistEvent")
   statistics    FootballPlayerStatistics[]
-  topScorer     FootballTopScorer?
-  topAssist     FootballTopAssist?
-  topCard       FootballTopCard?
 
   @@index([teamId])
   @@index([name])
@@ -931,8 +892,6 @@ model FootballFixture {
 
   leagueId      BigInt
   league        FootballLeague @relation(fields: [leagueId], references: [id], onDelete: Cascade)
-  seasonId      BigInt
-  season        FootballLeagueSeason @relation(fields: [seasonId], references: [id], onDelete: Cascade)
   homeTeamId    BigInt
   homeTeam      FootballTeam @relation("HomeTeamFixture", fields: [homeTeamId], references: [id], onDelete: Cascade)
   awayTeamId    BigInt
@@ -1017,10 +976,8 @@ model FootballOdds {
 model FootballLeagueStanding {
   id        BigInt   @id @default(autoincrement())
   leagueId  BigInt
-  seasonId  BigInt
   teamId    BigInt
   league    FootballLeague @relation(fields: [leagueId], references: [id])
-  season    FootballLeagueSeason @relation(fields: [seasonId], references: [id])
   team      FootballTeam @relation(fields: [teamId], references: [id])
 
   position     Int
@@ -1034,49 +991,8 @@ model FootballLeagueStanding {
   points       Int
   form         String?
 
-  @@unique([leagueId, seasonId, teamId])
-  @@index([leagueId, seasonId])
-}
-
-// ========================
-// TOPS (GOLS, ASSIST, CARTÕES)
-// ========================
-model FootballTopScorer {
-  id        BigInt   @id @default(autoincrement())
-  leagueId  BigInt
-  seasonId  BigInt
-  playerId  BigInt   @unique // one-to-one
-  player    FootballPlayer @relation(fields: [playerId], references: [id], onDelete: Cascade)
-
-  goals     Int
-  penalties Int?
-
-  @@unique([leagueId, seasonId, playerId])
-}
-
-model FootballTopAssist {
-  id        BigInt   @id @default(autoincrement())
-  leagueId  BigInt
-  seasonId  BigInt
-  playerId  BigInt   @unique
-  player    FootballPlayer @relation(fields: [playerId], references: [id], onDelete: Cascade)
-
-  assists   Int
-
-  @@unique([leagueId, seasonId, playerId])
-}
-
-model FootballTopCard {
-  id          BigInt   @id @default(autoincrement())
-  leagueId    BigInt
-  seasonId    BigInt
-  playerId    BigInt   @unique
-  player      FootballPlayer @relation(fields: [playerId], references: [id], onDelete: Cascade)
-
-  yellowCards Int
-  redCards    Int
-
-  @@unique([leagueId, seasonId, playerId])
+  @@unique([leagueId, teamId])
+  @@index([leagueId])
 }
 
 // ========================

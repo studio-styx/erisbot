@@ -4,135 +4,103 @@ import { LeaguesResponse } from "#types/sportMonks/leagues.js";
 import { PlayersResponse } from "#types/sportMonks/players.js";
 import { TeamsResponse } from "#types/sportMonks/teams.js";
 import { FixturesResponse } from "#types/sportMonks/fixtures.js";
-import axios from "axios";
 import { OddsResponse } from "#types/sportMonks/odds.js";
+import axios from "axios";
 
 export class FootballSdk {
     private readonly token: string;
     private readonly baseUrl = "https://api.sportmonks.com/v3/football";
 
     constructor() {
-        this.token = env.SPORTMONKS_API_KEY ;
+        this.token = env.SPORTMONKS_API_KEY;
         if (!this.token) {
-            throw new Error(
-                "SPORTMONKS_API_KEY não encontrada no .env. Registre-se em https://www.sportmonks.com/register"
-            );
+            throw new Error("SPORTMONKS_API_KEY não encontrada no .env");
         }
     }
 
-    /** --------------------------------------------------------------
-     *  SPORTMONKS
-     *  -------------------------------------------------------------- */
     public sportmonks = {
-        /* ---------- FIXTURES ---------- */
         fixtures: {
-            /** Jogos entre duas datas (máx 7 dias) */
             byDateRange: async (from: Date, to: Date): Promise<FixturesResponse> => {
-                return this.get("/fixtures", {
-                    from: this.fmt(from),
-                    to: this.fmt(to),
-                    include:
-                        "league,season,homeTeam,awayTeam,venue,events,lineups", // nomes EXATOS da doc
+                const endpoint = `/fixtures/between/${this.fmt(from)}/${this.fmt(to)}`;
+                return this.get(endpoint, {
+                    include: "league.country;season;venue;participants", // ← AQUI
+                    per_page: 50,
                 });
             },
 
-            /** Jogos ao vivo */
-            live: async (): Promise<FixturesResponse> => {
-                return this.get("/fixtures", {
-                    status: "LIVE",
-                    include: "league,season,homeTeam,awayTeam,venue",
+            byDate: async (date: Date): Promise<FixturesResponse> => {
+                const endpoint = `/fixtures/dates/${this.fmt(date)}`;
+                return this.get(endpoint, {
+                    include: "league.country;season;venue;participants",
+                    per_page: 50,
                 });
             },
 
-            /** Fixture por ID */
-            byId: async (id: number): Promise<FixturesResponse> => {
-                return this.get(`/fixtures/${id}`, {
-                    include:
-                        "league,season,homeTeam,awayTeam,venue,events,lineups,odds",
-                });
-            },
+            live: async (): Promise<FixturesResponse> =>
+                this.get("/fixtures/live", {
+                    include: "league.country;season;venue;participants",
+                }),
+
+            byId: async (id: number): Promise<FixturesResponse> =>
+                this.get(`/fixtures/${id}`, {
+                    include: "league.country;season;venue;events;lineups;odds;participants",
+                }),
         },
 
-        /* ---------- LEAGUES ---------- */
         leagues: {
-            list: async (): Promise<LeaguesResponse> => this.get("/leagues"),
+            list: async (): Promise<LeaguesResponse> =>
+                this.get("/leagues", { include: "country,seasons" }),
             byId: async (id: number): Promise<LeaguesResponse> =>
-                this.get(`/leagues/${id}`),
+                this.get(`/leagues/${id}`, { include: "country,seasons" }),
         },
 
-        /* ---------- TEAMS ---------- */
         teams: {
+            byId: async (id: number): Promise<TeamsResponse> =>
+                this.get(`/teams/${id}`, { include: "venue,players" }),
             byLeagueAndSeason: async (
                 leagueId: number,
                 seasonId: number
             ): Promise<TeamsResponse> =>
-                this.get("/teams", { league_id: leagueId, season_id: seasonId }),
-
-            byId: async (id: number): Promise<TeamsResponse> =>
-                this.get(`/teams/${id}`, { include: "venue,players" }),
-
-            search: async (name: string): Promise<TeamsResponse> =>
-                this.get("/teams/search", { name }),
-        },
-
-        /* ---------- PLAYERS ---------- */
-        players: {
-            byTeam: async (teamId: number): Promise<PlayersResponse> =>
-                this.get(`/teams/${teamId}/squad`),
-
-            topScorers: async (
-                leagueId: number,
-                seasonId: number
-            ): Promise<PlayersResponse> =>
-                this.get("/players/topscorers", {
+                this.get("/teams", {
                     league_id: leagueId,
                     season_id: seasonId,
+                    include: "venue",
                 }),
         },
 
-        /* ---------- ODDS ---------- */
-        odds: {
-            byFixture: async (fixtureId: number): Promise<OddsResponse> =>
-                this.get(`/odds/fixture/${fixtureId}`),
+        players: {
+            byTeam: async (teamId: number): Promise<PlayersResponse> =>
+                this.get(`/teams/${teamId}/squad`),
         },
 
-        /* ---------- EVENTS ---------- */
+        odds: {
+            byFixture: async (fixtureId: number): Promise<OddsResponse> =>
+                this.get(`/odds/pre-match/fixtures/${fixtureId}`),
+        },
+
         events: {
             byFixture: async (fixtureId: number): Promise<EventsResponse> =>
                 this.get(`/fixtures/${fixtureId}/events`),
         },
-
-        /* ---------- POLLING ---------- */
-        startLivePolling: async (
-            cb: (fixtures: any[]) => void,
-            ms = 30_000
-        ) => {
-            const poll = async () => {
-                try {
-                    const r = await this.sportmonks.fixtures.live();
-                    cb(r.data);
-                } catch (e) {
-                    console.error("Polling error:", e);
-                }
-            };
-            await poll();
-            setInterval(poll, ms);
-        },
     };
 
-    /* --------------------------------------------------------------
-     *  UTILIDADES
-     *  -------------------------------------------------------------- */
     private async get<T>(endpoint: string, params?: Record<string, any>): Promise<T> {
         const url = `${this.baseUrl}${endpoint}`;
+        const fullParams = {
+            ...params,
+            api_token: this.token,
+            tz: "America/Sao_Paulo",
+        };
+
         const response = await axios.get<T>(url, {
-            params: { ...params, tz: "America/Sao_Paulo" },
-            headers: { Authorization: `Bearer ${this.token}` },
+            params: fullParams,
+            timeout: 10_000,
         });
+
         return response.data;
     }
 
     private fmt(d: Date): string {
-        return d.toISOString().split("T")[0]; // 2025-10-28
+        return d.toISOString().split("T")[0];
     }
 }

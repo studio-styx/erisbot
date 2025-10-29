@@ -1,43 +1,40 @@
 import { ApiResponse } from "./apiResponse.js";
-import { Team } from "./teams.js";
 import { League } from "./leagues.js";
+import { Venue } from "./venue.js";
+import { Participant } from "./participants.js";
 
 export interface Fixture {
     id: number;
     sport_id: number;
     league_id: number;
     season_id: number;
-    date: string; // ISO: "2025-10-28T19:00:00+00:00"
-    minute: number | null;
-    status: string; // "LIVE", "FINISHED", "NS" (Not Started)
-    referee_id: number | null;
+    stage_id: number;
+    group_id: number | null;
+    aggregate_id: number | null;
+    round_id: number;
+    state_id: number;
     venue_id: number | null;
-    aggregate: number | null;
-    attendance: number | null;
-    league: League;
-    season: {
+    name: string;
+    starting_at: string;
+    result_info: string | null;
+    leg: string;
+    details: any | null;
+    length: number;
+    placeholder: boolean;
+    has_odds: boolean;
+    has_premium_odds: boolean;
+    starting_at_timestamp: number;
+
+    // Relacionados
+    league?: League;
+    season?: {
         id: number;
         name: string;
         league_id: number;
+        is_current: boolean;
     };
-    home_team: Team;
-    away_team: Team;
-    formation: {
-        home: string | null;
-        away: string | null;
-    };
-    goals: {
-        home: number | null;
-        away: number | null;
-    };
-    scores: {
-        halftime: { home: number | null; away: number | null };
-        regular: { home: number | null; away: number | null };
-        overtime: { home: number | null; away: number | null };
-        penalties: { home: number | null; away: number | null };
-    };
-    lineups: any[]; // Array de players
-    events: any[]; // Array de events
+    venue?: Venue;
+    participants?: Participant[];
 }
 
 export type FixturesResponse = ApiResponse<Fixture[]>;
