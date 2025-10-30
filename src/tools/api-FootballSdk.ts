@@ -1,106 +1,174 @@
 import { env } from "#settings";
-import { EventsResponse } from "#types/sportMonks/events.js";
-import { LeaguesResponse } from "#types/sportMonks/leagues.js";
-import { PlayersResponse } from "#types/sportMonks/players.js";
-import { TeamsResponse } from "#types/sportMonks/teams.js";
-import { FixturesResponse } from "#types/sportMonks/fixtures.js";
-import { OddsResponse } from "#types/sportMonks/odds.js";
+import { CompetitionResponse } from "#types/footballData/competition.js";
+import { MatchResponse, MatchStatus } from "#types/footballData/match.js";
+import { MatchesResponse } from "#types/footballData/matches.js";
+import { ClubResponse } from "#types/footballData/teamInfo.js";
 import axios from "axios";
 
-export class FootballSdk {
-    private readonly token: string;
-    private readonly baseUrl = "https://api.sportmonks.com/v3/football";
+export class ApiFootballSdk {
+    private baseUrl = "https://api.football-data.org/v4";
+    private apiKey: string;
 
-    constructor() {
-        this.token = env.SPORTMONKS_API_KEY;
-        if (!this.token) {
-            throw new Error("SPORTMONKS_API_KEY não encontrada no .env");
+    constructor(apiKey?: string) {
+        this.apiKey = apiKey || env.API_FOOTBALL_DATA_KEY!;
+    }
+
+    get matches() {
+        return {
+            /**
+             * Pegar os dados de uma partida especifica
+             * @argument id da partida
+             * @returns dados da partida
+             */
+            get: async (id: number | string) => {
+                const response = await axios.get<MatchResponse>(`${this.baseUrl}/matches/${id}`, {
+                    headers: {
+                        "X-Auth-Token": this.apiKey
+                    }
+                });
+
+                return response.data;
+            },
+
+            /**
+             * Pega todos os jogos de hoje
+             * @returns Array de partidas
+             */
+            getTodayGames: async () => {
+                const response = await axios.get<MatchesResponse>(`${this.baseUrl}/matches`, {
+                    headers: {
+                        "X-Auth-Token": this.apiKey
+                    }
+                });
+
+                return response.data;
+            },
+
+            /**
+             * Retorna todos os jogos de um intervalo previamente definido
+             * @param dateFrom data inicial
+             * @param dateTo data final
+             * @returns Array de partidas
+             */
+            getGamesByRange: async (dateFrom: string | Date, dateTo: string | Date) => {
+                // Formatar as datas para estarem no formato: yyyy-MM-dd
+                const formatDate = (d: string | Date) => {
+                    if (d instanceof Date) {
+                        const y = d.getFullYear();
+                        const m = String(d.getMonth() + 1).padStart(2, "0");
+                        const day = String(d.getDate()).padStart(2, "0");
+                        return `${y}-${m}-${day}`;
+                    }
+                    return d;
+                };
+
+                const formattedFrom = formatDate(dateFrom);
+                const formattedTo = formatDate(dateTo);
+
+                const response = await axios.get<MatchesResponse[]>(`${this.baseUrl}/matches`, {
+                    params: {
+                        dateFrom: formattedFrom,
+                        dateTo: formattedTo
+                    },
+                    headers: {
+                        "X-Auth-Token": this.apiKey
+                    }
+                });
+
+                return response.data;
+            }
         }
     }
 
-    public sportmonks = {
-        fixtures: {
-            byDateRange: async (from: Date, to: Date): Promise<FixturesResponse> => {
-                const endpoint = `/fixtures/between/${this.fmt(from)}/${this.fmt(to)}`;
-                return this.get(endpoint, {
-                    include: "league.country;season;venue;participants", // ← AQUI
-                    per_page: 50,
-                });
-            },
+    get teams() {
+        return {
+            /**
+             * Pegar dados sonbre um time IMPORTANTE: não retorna dados sobre ele, e sim seus métodos
+             * @param id Retorna metódos sobre o id
+             * @returns Rotas para as informações do time
+             */
+            get: (id: number | string) => {
+                return {
+                    /**
+                     * Pegar os jogos do determinado time
+                     * @param options Opções de partidas
+                     * @returns Partidas do time
+                     */
+                    getMatches: async (options: {
+                        status: MatchStatus;
+                        limit: number;
+                    }) => {
+                        const response = await axios.get<MatchesResponse>(`${this.baseUrl}/teams/${id}/matches`, {
+                            params: {
+                                status: options.status,
+                                limit: options.limit
+                            },
+                            headers: {
+                                "X-Auth-Token": this.apiKey
+                            }
+                        });
 
-            byDate: async (date: Date): Promise<FixturesResponse> => {
-                const endpoint = `/fixtures/dates/${this.fmt(date)}`;
-                return this.get(endpoint, {
-                    include: "league.country;season;venue;participants",
-                    per_page: 50,
-                });
-            },
+                        return response.data;
+                    },
 
-            live: async (): Promise<FixturesResponse> =>
-                this.get("/fixtures/live", {
-                    include: "league.country;season;venue;participants",
-                }),
+                    /**
+                     * Pegar informações sobre o time
+                     * @returns Informações do time
+                     */
+                    getInfo: async () => {
+                        const response = await axios.get<ClubResponse>(`${this.baseUrl}/teams/${id}`, {
+                            headers: {
+                                "X-Auth-Token": this.apiKey
+                            }
+                        });
 
-            byId: async (id: number): Promise<FixturesResponse> =>
-                this.get(`/fixtures/${id}`, {
-                    include: "league.country;season;venue;events;lineups;odds;participants",
-                }),
-        },
-
-        leagues: {
-            list: async (): Promise<LeaguesResponse> =>
-                this.get("/leagues", { include: "country,seasons" }),
-            byId: async (id: number): Promise<LeaguesResponse> =>
-                this.get(`/leagues/${id}`, { include: "country,seasons" }),
-        },
-
-        teams: {
-            byId: async (id: number): Promise<TeamsResponse> =>
-                this.get(`/teams/${id}`, { include: "venue,players" }),
-            byLeagueAndSeason: async (
-                leagueId: number,
-                seasonId: number
-            ): Promise<TeamsResponse> =>
-                this.get("/teams", {
-                    league_id: leagueId,
-                    season_id: seasonId,
-                    include: "venue",
-                }),
-        },
-
-        players: {
-            byTeam: async (teamId: number): Promise<PlayersResponse> =>
-                this.get(`/teams/${teamId}/squad`),
-        },
-
-        odds: {
-            byFixture: async (fixtureId: number): Promise<OddsResponse> =>
-                this.get(`/odds/pre-match/fixtures/${fixtureId}`),
-        },
-
-        events: {
-            byFixture: async (fixtureId: number): Promise<EventsResponse> =>
-                this.get(`/fixtures/${fixtureId}/events`),
-        },
+                        return response.data;
+                    }
+                }
+            }
+        }
     };
 
-    private async get<T>(endpoint: string, params?: Record<string, any>): Promise<T> {
-        const url = `${this.baseUrl}${endpoint}`;
-        const fullParams = {
-            ...params,
-            api_token: this.token,
-            tz: "America/Sao_Paulo",
-        };
+    get competitions() {
+        return {
+            /**
+             * Pegar todos os metódos de uma determinada competição
+             */
+            get: (code: string) => {
+                return {
+                    /**
+                     * Obter todos os dados da competição
+                     * @returns Retorna todos os dados da competição
+                     */
+                    getInfo: async () => {
+                        const response = await axios.get<CompetitionResponse>(`${this.baseUrl}/competitions/${code}`, {
+                            headers: {
+                                "X-Auth-Token": this.apiKey
+                            }
+                        });
 
-        const response = await axios.get<T>(url, {
-            params: fullParams,
-            timeout: 10_000,
-        });
+                        return response.data;
+                    },
 
-        return response.data;
-    }
+                    /**
+                     * Obter todos os jogos de uma rodada
+                     * @param matchday Rodada dos jogos, ex: rodada 38 (A ultima)
+                     * @returns Todos os jogos da rodada
+                     */
+                    getMatchday: async (matchday: number) => {
+                        const response = await axios.get<MatchesResponse>(`${this.baseUrl}/competitions/${code}/matches`, {
+                            params: {
+                                matchday
+                            },
+                            headers: {
+                                "X-Auth-Token": this.apiKey
+                            }
+                        });
 
-    private fmt(d: Date): string {
-        return d.toISOString().split("T")[0];
+                        return response.data;
+                    }
+                }
+            }
+        }
     }
 }
