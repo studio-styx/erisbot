@@ -5,7 +5,8 @@ import { xpSystem } from "./chat/xpSystem.js";
 import { onAfkMentioned } from "./onAfkMentioned.js";
 import { onResponseTryviaGame } from "./tryvia/response.js";
 import { Gender, PersonalityTrait } from "#prisma";
-import { icon, registerGames, res } from "#functions";
+import { icon, registerFootballGames, res } from "#functions";
+import { brBuilder } from "@magicyan/discord";
 
 createEvent({
     name: "onMessage",
@@ -158,8 +159,13 @@ createEvent({
                 case "s.fixturegames": {
                     const msg = await message.reply(res.warning(`${icon.waiting_white} | Iniciando registramento das partidas....`));
                     try {
-                        await registerGames();
-                        await msg.edit(res.success(`${icon.success} | Partidas registradas com sucesso!`));
+                        const result = await registerFootballGames(message.client);
+                        await msg.edit(res.success(brBuilder(
+                            `## ${icon.success} | Partidas registradas com sucesso!`,
+                            `Sucesso: ${result.success.length}`,
+                            `Falhas: ${result.failed.length}`,
+                            `Erros: ${result.errors.length}`,
+                        )));
                     } catch (error) {
                         console.error(error);
                         await msg.edit(res.danger(`${icon.error} | Erro ao registrar partidas!`));

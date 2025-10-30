@@ -36,11 +36,17 @@ export const { createCommand, createEvent, createResponder } = setupCreators({
             try {
                 const guild = interaction.client.guilds.cache.get("1395383469210865694")!;
                 const channel = guild.channels.cache.get("1431993706625368235") || await guild.channels.fetch("1431993706625368235");
-            
+
                 if (!channel || !channel.isTextBased()) return;
 
+                const commandName = interaction.commandName;
+                const subCommand = (interaction as ChatInputCommandInteraction).options.getSubcommand(false);
+                const subCommandGroup = (interaction as ChatInputCommandInteraction).options.getSubcommandGroup(false);
+
+                const fullCommandName = subCommandGroup ? `${commandName} ${subCommandGroup} ${subCommand}` : subCommand ? `${commandName} ${subCommand}` : commandName;
+
                 await channel.send(res.danger(brBuilder(
-                    `**Error in command \`${interaction.commandName}\` used by user \`${interaction.user.tag}\` in guild \`${interaction.guild?.name || "Direct Message"}\`**`,
+                    `**Error in command \`${fullCommandName}\` used by user \`${interaction.user.tag}\` in guild \`${interaction.guild?.name || "Direct Message"}\`**`,
                     "```js",
                     JSON.stringify({
                         error: error instanceof Error ? error.message : error,
@@ -57,7 +63,7 @@ export const { createCommand, createEvent, createResponder } = setupCreators({
         },
         async middleware(interaction, block) {
             console.log(`Comando usado no server: ${interaction.guild?.name} pelo usuário: ${interaction.user.displayName} o comando: ${interaction.commandName}, data: ${new Date().toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo" })}`)
-            
+
             const blacklisted = isBlacklisted(interaction.user.id);
             if (blacklisted) {
                 await interaction.deferReply({ flags })
@@ -104,7 +110,7 @@ export const { createCommand, createEvent, createResponder } = setupCreators({
             if (!interaction.guildId) return;
 
             const setSettings = async () => {
-                await prisma.guildSettings.upsert({ where: { id: interaction.guildId! }, create: { id: interaction.guildId! }, update: {}} );
+                await prisma.guildSettings.upsert({ where: { id: interaction.guildId! }, create: { id: interaction.guildId! }, update: {} });
                 setServerSettings(interaction.guildId!, defaultServerSettings)
                 return defaultServerSettings;
             }
@@ -133,7 +139,7 @@ export const { createCommand, createEvent, createResponder } = setupCreators({
                         asRead: false
                     }
                 })
-    
+
                 if (mails.length === 0) return;
                 const random = Math.random();
                 const chance = 0.3;
@@ -233,11 +239,11 @@ export const { createCommand, createEvent, createResponder } = setupCreators({
                         adoption: null
                     }
                 });
-                
+
                 const userUse = lessUse.get(interaction.user.id);
                 if (userUse) return;
                 if (pets.length === 0) return;
-                
+
                 // verificar pets com fome
                 const hungryPets = pets.filter(pet => pet.hungry < 30);
                 // verificar pets com felicidade baixa
@@ -318,7 +324,7 @@ export const { createCommand, createEvent, createResponder } = setupCreators({
         async onError(error, interaction) {
             console.error(`Error in: ${interaction.guild?.name || "Guild not found"} used by user: ${interaction.user.displayName}. error:`, error);
 
-            const errorMessage = `**${icon.error} | An error occurred while executing the responder: \`${error instanceof Error? error.message : "Unknown error"}\`**`;
+            const errorMessage = `**${icon.error} | An error occurred while executing the responder: \`${error instanceof Error ? error.message : "Unknown error"}\`**`;
 
             if (interaction.deferred) {
                 try {
@@ -337,7 +343,7 @@ export const { createCommand, createEvent, createResponder } = setupCreators({
             try {
                 const guild = interaction.client.guilds.cache.get("1395383469210865694")!;
                 const channel = guild.channels.cache.get("1431993706625368235") || await guild.channels.fetch("1431993706625368235");
-            
+
                 if (!channel || !channel.isTextBased()) return;
 
                 await channel.send(res.danger(brBuilder(

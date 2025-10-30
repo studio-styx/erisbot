@@ -55,23 +55,25 @@ export interface TeamSide {
     formation: string;             // Formação tática (ex: "3-4-1-2")
     lineup: Player[];              // Jogadores titulares
     bench: Player[];               // Jogadores no banco
-    statistics: {                  // Estatísticas do time na partida
-        corner_kicks: number;        // Escanteios
-        free_kicks: number;          // Faltas cobradas
-        goal_kicks: number;          // Tiros de meta
-        offsides: number;            // Impedimentos
-        fouls: number;               // Faltas cometidas
-        ball_possession: number;     // Posse de bola (%)
-        saves: number;               // Defesas do goleiro
-        throw_ins: number;           // Laterais
-        shots: number;               // Chutes totais
-        shots_on_goal: number;       // Chutes no gol
-        shots_off_goal: number;      // Chutes pra fora
-        yellow_cards: number;        // Cartões amarelos
-        yellow_red_cards: number;    // Segundo amarelo (conta como 1)
-        red_cards: number;           // Cartões vermelhos diretos
-    };
+    statistics: MatchStatistics;   // Estatísticas do time na partida
 }
+
+export interface MatchStatistics {  // Estatísticas do time na partida
+    corner_kicks: number;           // Escanteios
+    free_kicks: number;             // Faltas cobradas
+    goal_kicks: number;             // Tiros de meta
+    offsides: number;               // Impedimentos
+    fouls: number;                  // Faltas cometidas
+    ball_possession: number;        // Posse de bola (%)
+    saves: number;                  // Defesas do goleiro
+    throw_ins: number;              // Laterais
+    shots: number;                  // Chutes totais
+    shots_on_goal: number;          // Chutes no gol
+    shots_off_goal: number;         // Chutes pra fora
+    yellow_cards: number;           // Cartões amarelos
+    yellow_red_cards: number;       // Segundo amarelo (conta como 1)
+    red_cards: number;              // Cartões vermelhos diretos
+};
 
 // Placar detalhado (tempo integral e meio-tempo)
 interface ScoreDetail {
@@ -198,28 +200,28 @@ export interface MatchResponse {
 export type MatchStatus = 'SCHEDULED' | 'LIVE' | 'IN_PLAY' | 'PAUSED' | 'FINISHED' | 'POSTPONED' | 'SUSPENDED' | 'CANCELED' | 'AWARDED';
 
 export type MatchStages =
-    | "FINAL" 
-    | "THIRD_PLACE" 
-    | "SEMI_FINALS" 
-    | "QUARTER_FINALS" 
-    | "LAST_16" 
-    | "LAST_32" 
-    | "LAST_64" 
-    | "ROUND_4" 
-    | "ROUND_3" 
-    | "ROUND_2" 
-    | "ROUND_1" 
-    | "GROUP_STAGE" 
-    | "PRELIMINARY_ROUND" 
-    | "QUALIFICATION" 
-    | "QUALIFICATION_ROUND_1" 
-    | "QUALIFICATION_ROUND_2" 
-    | "QUALIFICATION_ROUND_3" 
-    | "PLAYOFF_ROUND_1" 
-    | "PLAYOFF_ROUND_2" 
-    | "PLAYOFFS" 
-    | "REGULAR_SEASON" 
-    | "CLAUSURA" 
-    | "APERTURA" 
-    | "CHAMPIONSHIP_ROUND" 
+    | "FINAL"
+    | "THIRD_PLACE"
+    | "SEMI_FINALS"
+    | "QUARTER_FINALS"
+    | "LAST_16"
+    | "LAST_32"
+    | "LAST_64"
+    | "ROUND_4"
+    | "ROUND_3"
+    | "ROUND_2"
+    | "ROUND_1"
+    | "GROUP_STAGE"
+    | "PRELIMINARY_ROUND"
+    | "QUALIFICATION"
+    | "QUALIFICATION_ROUND_1"
+    | "QUALIFICATION_ROUND_2"
+    | "QUALIFICATION_ROUND_3"
+    | "PLAYOFF_ROUND_1"
+    | "PLAYOFF_ROUND_2"
+    | "PLAYOFFS"
+    | "REGULAR_SEASON"
+    | "CLAUSURA"
+    | "APERTURA"
+    | "CHAMPIONSHIP_ROUND"
     | "RELEGATION_ROUND"

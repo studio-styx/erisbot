@@ -1,199 +1,236 @@
 import { prisma } from "#database";
 import { Prisma, PrismaClient } from "#prisma";
 import { footballSdk } from "#tools";
-import { MatchResponse, TeamSide } from "#types/footballData/match.js";
-import { ClubResponse } from "#types/footballData/teamInfo.js";
-import { AxiosError } from "axios";
+import { MatchResponse } from "#types/footballData/match.js";
+import { Client } from "discord.js";
 import { DefaultArgs } from "../../../../prisma/eris/runtime/library.js";
+import { res } from "functions/utils/embed.js";
 
-export async function registerFootballGames() {
-    // Pegar os dados da partida
-    const response = await footballSdk.matches.getTodayGames();
-
-    const games = response.matches;
-
-    // Dividir em um array dimencional com 10 jogos cada
-    const chunkSize = 10;
-    const chunks: MatchResponse[][] = [];
-
-    for (let i = 0; i < games.length; i += chunkSize) {
-        chunks.push(games.slice(i, i + chunkSize));
-    }
-
-    // Dividir em várias transações prismas diferentes
-    await Promise.all(chunks.map((chunk, index) => async () => {
-        console.log(`Registrando o chunk [${index}/${chunks.length}] com ${chunk.length} jogos`)
-        await prisma.$transaction(async (tx) => {
-            for (const game of chunk) {
-                await registerGame(tx, game);
-            }
-        })
-    }))
+interface FootballGamesPipelineResult {
+    success: MatchResponse[];
+    failed: MatchResponse[];
+    errors: Error[];
+    minutes: number;
+    startedAt: Date;
+    endedAt: Date;
 }
 
-async function registerGame(tx: Omit<PrismaClient<Prisma.PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends">, game: MatchResponse) {
-    // ==== Registrar a liga ==== //
+export async function registerFootballGames(client: Client): Promise<FootballGamesPipelineResult> {
+    console.log("Iniciando registro de partidas da semana...");
 
-    // Verificar se a liga já existe
-    const league = await tx.footballLeague.findUnique({
-        where: {
-            apiId: game.competition.id
+    const { matches } = await footballSdk.matches.getGamesByRange(new Date(), new Date(new Date().setDate(new Date().getDate() + 7)));
+
+    const success: MatchResponse[] = [];
+    const failed: MatchResponse[] = [];
+    const errors: Error[] = [];
+
+    const sendMessage = async (message: string, style: "success" | "danger" | "primary") => {
+        try {
+            const guild = client.guilds.cache.get("1395383469210865694");
+            if (!guild) return;
+            const channel = guild.channels.cache.get("1410405644758159410") || await guild.channels.fetch("1410405644758159410");
+            if (!channel || !channel.isTextBased()) return;
+            await channel.send(res[style](message));
+        } catch (e) {
+            console.error("Erro ao enviar mensagem para o canal:", e);
         }
+    }
+
+    sendMessage(`Iniciando registro de ${matches.length} partidas da semana...`, "primary");
+    console.log("Registrando:", matches.length, "partidas...");
+
+    const beforeTime = new Date();
+
+    for (const game of matches) {
+        await prisma.$transaction(
+            async (tx) => {
+                console.log(`Registrando partida entre ${game.homeTeam.name} e ${game.awayTeam.name}...`)
+                try {
+                    await registerGame(tx, game);
+                    success.push(game);
+                    console.log(`Partida entre ${game.homeTeam.name} e ${game.awayTeam.name} registrada com sucesso.`);
+                    sendMessage(`Registrada a partida: **${game.homeTeam.name}** x **${game.awayTeam.name}** no banco de dados`, "success")
+                } catch (error) {
+                    console.error(`Erro ao registrar partida entre ${game.homeTeam.name} e ${game.awayTeam.name}:`, error);
+                    failed.push(game);
+                    errors.push(error as Error);
+                    sendMessage(`Erro ao registrar a partida: ${game.homeTeam.name} x ${game.awayTeam.name} no banco de dados`, "danger")
+                }
+            },
+            { timeout: 120_000 }
+        );
+    }
+
+    const afterTime = new Date();
+    const timeDifference = afterTime.getTime() - beforeTime.getTime();
+    const minutes = Math.floor(timeDifference / (1000 * 60));
+
+    console.log("Todas as partidas registradas com sucesso.");
+    await sendMessage(`Todas as partidas registradas com sucesso. Duração: ${minutes} minutos.`, "success");
+
+    return { success, failed, errors, minutes, startedAt: beforeTime, endedAt: afterTime };
+}
+
+async function registerGame(tx: Omit<PrismaClient<Prisma.PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$extends">, game: MatchResponse) {
+    const leagueId = await getOrCreateLeague(tx, game);
+    const [homeTeam, awayTeam] = await Promise.all([
+        getOrCreateTeam(tx, game.homeTeam, game.competition.id),
+        getOrCreateTeam(tx, game.awayTeam, game.competition.id),
+    ]);
+
+    await tx.footballMatch.upsert({
+        where: { apiId: game.id },
+        create: {
+            apiId: game.id,
+            goalsHome: game.score.fullTime.home,
+            goalsAway: game.score.fullTime.away,
+            status: game.status,
+            startAt: game.utcDate,
+            homeTeam: { connect: { id: homeTeam.id } },
+            awayTeam: { connect: { id: awayTeam.id } },
+            competition: { connect: { id: BigInt(leagueId) } },
+        },
+        update: {
+            goalsHome: game.score.fullTime.home,
+            goalsAway: game.score.fullTime.away,
+            status: game.status,
+            startAt: game.utcDate,
+        },
+    });
+    const { homeTeam: h, awayTeam: a } = game;
+    if (h.statistics && a.statistics) {
+        await Promise.all([
+            upsertStats(tx, game.id, h.id, h.statistics),
+            upsertStats(tx, game.id, a.id, a.statistics),
+        ]);
+    }
+}
+
+async function getOrCreateLeague(tx: Omit<PrismaClient<Prisma.PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$extends">, game: MatchResponse): Promise<bigint> {
+    const existing = await tx.footballLeague.findUnique({
+        where: { apiId: game.competition.id },
     });
 
-    // Se a liga não existir, buscar por informações dela na api
-    if (!league) {
-        const leagueInfo = await footballSdk.competitions.get(game.competition.code).getInfo();
-
-        // Registrar a area
-        const area = await prisma.footballArea.upsert({
-            where: {
-                code: leagueInfo.area.code
-            },
-            update: {
-                name: leagueInfo.area.name,
-                code: leagueInfo.area.code,
-                flag: leagueInfo.area.flag
-            },
-            create: {
-                id: leagueInfo.area.id,
-                name: leagueInfo.area.name,
-                code: leagueInfo.area.code,
-                flag: leagueInfo.area.flag
-            },
-        })
-
-        // Registrar a liga
-        await prisma.footballLeague.create({
-            data: {
-                apiId: game.competition.id,
-                name: game.competition.name,
-                code: game.competition.code,
-                type: game.competition.type,
-                emblem: game.competition.emblem,
-                areaId: area.id
-            }
-        })
+    if (existing) {
+        return existing.id;
     }
 
-    const registerTeam = async (team: TeamSide) => {
-        // procurar por informações na api cuidando com o rate limit baixo
-        let response: ClubResponse | undefined;
-        try {
-            response = await footballSdk.teams.get(team.id).getInfo();
-        } catch (e) {
-            // Se der erro, verificar se foi por rate limit
-            if (e instanceof AxiosError) {
-                if (e.response?.status === 429) {
-                    // Tentar de novo se foi por rate limit
-                    const retry = async (attempts: number = 0) => {
-                        await new Promise(resolve => setTimeout(resolve, 5000));
-                        if (attempts > 70 / 5) {
-                            // Se em 70 segundos ainda não conseguir fazer conexão, então abandonar
-                            throw new Error("Rate limit exceeded");
-                        }
-                        try {
-                            response = await footballSdk.teams.get(team.id).getInfo();
-                        } catch (e) {
-                            await retry(attempts++);
-                        }
-                    }
-
-                    await retry();
-                } else {
-                    throw e;
-                }
-            } else {
-                throw e;
-            }
-        }
-
-        await tx.footballTeam.upsert({
-            where: {
-                apiId: team.id
-            },
-            create: {
-                apiId: team.id,
-                name: team.name,
-                shortName: team.shortName,
-                tla: team.tla,
-                crest: team.crest,
-                competitions: {
-                    connect: {
-                        apiId: game.competition.id
-                    }
-                },
-                address: response?.address ?? "Desconhecido",
-                clubColors: response?.clubColors ?? "Desconhecido",
-                venue: response?.venue ?? "Desconhecido",
-                players: {
-                    create: response?.squad.map(player => ({
-                        name: player.name,
-                        apiId: player.id,
-                        dateOfBirth: player.dateOfBirth,
-                        nationality: player.nationality ?? "Desconhecido",
-                        contractStarted: player.contract.start,
-                        contractUntil: player.contract.until,
-                        firstName: player.firstName,
-                        lastName: player.lastName ?? "Desconhecido",
-                        position: player.position ?? "Desconhecido",
-                        shirtNumber: player.shirtNumber,
-                        marketValue: player.marketValue ?? 0
-                    })) ?? []
-                }
-            },
-            update: {
-                apiId: team.id,
-                name: team.name,
-                shortName: team.shortName,
-                tla: team.tla,
-                crest: team.crest,
-                competitions: {
-                    connect: {
-                        apiId: game.competition.id
-                    }
-                },
-                address: response?.address ?? "Desconhecido",
-                clubColors: response?.clubColors ?? "Desconhecido",
-                venue: response?.venue ?? "Desconhecido",
-                players: {
-                    upsert: response?.squad.map(player => ({
-                        where: { apiId: player.id },
-                        create: {
-                            name: player.name,
-                            apiId: player.id,
-                            dateOfBirth: player.dateOfBirth,
-                            nationality: player.nationality ?? "Desconhecido",
-                            contractStarted: player.contract.start,
-                            contractUntil: player.contract.until,
-                            firstName: player.firstName,
-                            lastName: player.lastName ?? "Desconhecido",
-                            position: player.position ?? "Desconhecido",
-                            shirtNumber: player.shirtNumber,
-                            marketValue: player.marketValue ?? 0
-                        },
-                        update: {
-                            name: player.name,
-                            apiId: player.id,
-                            dateOfBirth: player.dateOfBirth,
-                            nationality: player.nationality ?? "Desconhecido",
-                            contractStarted: player.contract.start,
-                            contractUntil: player.contract.until,
-                            firstName: player.firstName,
-                            lastName: player.lastName ?? "Desconhecido",
-                            position: player.position ?? "Desconhecido",
-                            shirtNumber: player.shirtNumber,
-                            marketValue: player.marketValue ?? 0
-                        }
-                    })) ?? []
-                }
-            },
-        })
+    let info;
+    try {
+        info = await footballSdk.competitions.get(game.competition.code).getInfo();
+    } catch (error) {
+        console.warn(`Liga ${game.competition.code} não encontrada. Usando dados básicos.`);
+        info = {
+            area: { id: 0, code: "UNK", name: "Desconhecida", flag: null },
+            id: game.competition.id,
+            name: game.competition.name,
+            code: game.competition.code,
+            type: game.competition.type,
+            emblem: game.competition.emblem,
+        };
     }
 
-    // Registrar os dois times
-    await Promise.all([
-        registerTeam(game.homeTeam),
-        registerTeam(game.awayTeam)
-    ])
+    const area = await tx.footballArea.upsert({
+        where: { code: info.area.code },
+        update: {},
+        create: {
+            id: info.area.id || 0,
+            code: info.area.code,
+            name: info.area.name,
+            flag: info.area.flag || "",
+        },
+    });
+
+    const league = await tx.footballLeague.create({
+        data: {
+            apiId: info.id,
+            name: info.name,
+            code: info.code,
+            type: info.type,
+            emblem: info.emblem,
+            areaId: area.id,
+        },
+    });
+
+    return league.id;
+}
+
+async function getOrCreateTeam(tx: any, team: any, competitionId: number) {
+    const existing = await tx.footballTeam.findUnique({ where: { apiId: team.id } });
+    if (existing) {
+        return existing;
+    }
+
+    let info;
+    try {
+        info = await footballSdk.teams.get(team.id).getInfo();
+    } catch (error) {
+        console.warn(`Time ${team.id} não encontrado. Usando dados básicos.`);
+        info = {
+            area: { code: "UNK", name: "Desconhecido", flag: null },
+            address: "", clubColors: "", venue: "", squad: [],
+        };
+    }
+
+    const area = await tx.footballArea.upsert({
+        where: { code: info.area?.code || "UNK" },
+        update: {},
+        create: {
+            id: info.area?.id || 0,
+            code: info.area?.code || "UNK",
+            name: info.area?.name || "Desconhecido",
+            flag: info.area?.flag || null,
+        },
+    });
+
+    const dbTeam = await tx.footballTeam.upsert({
+        where: { apiId: team.id },
+        create: {
+            apiId: team.id,
+            name: team.name,
+            shortName: team.shortName,
+            tla: team.tla,
+            crest: team.crest,
+            address: info.address || "Desconhecido",
+            clubColors: info.clubColors || "Desconhecido",
+            venue: info.venue || "Desconhecido",
+            areaId: area.id,
+            competitions: { connect: { apiId: competitionId } },
+            players: {
+                create: (info.squad || []).map(p => ({
+                    apiId: p.id,
+                    name: p.name,
+                    firstName: p.firstName || p.name.split(" ")[0] || "Desconhecido",
+                    lastName: p.lastName || p.name.split(" ").slice(1).join(" ") || "Desconhecido",
+                    position: p.position ?? "Desconhecido",
+                    dateOfBirth: p.dateOfBirth ? new Date(p.dateOfBirth) : null,
+                    nationality: p.nationality ?? "Desconhecido",
+                    shirtNumber: p.shirtNumber,
+                    marketValue: p.marketValue ?? 0,
+                    contractStarted: p.contract?.start,
+                    contractUntil: p.contract?.until,
+                })),
+            },
+        },
+        update: {
+            name: team.name,
+            shortName: team.shortName,
+            tla: team.tla,
+            crest: team.crest,
+            address: info.address || "Desconhecido",
+            clubColors: info.clubColors || "Desconhecido",
+            venue: info.venue || "Desconhecido",
+            competitions: { connect: { apiId: competitionId } },
+        },
+    });
+
+    return dbTeam;
+}
+
+async function upsertStats(tx: any, matchId: number, teamId: number, stats: any) {
+    await tx.footballMatchStatistics.upsert({
+        where: { matchId_teamId: { matchId, teamId } },
+        create: { ...stats, matchId, teamId },
+        update: stats,
+    });
 }

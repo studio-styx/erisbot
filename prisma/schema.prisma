@@ -753,54 +753,106 @@ model CombatPowerHistory {
 // SISTEMA DE APOSTAS DE FUTEBOL EM JOGOS REAIS
 // ------------------------
 
-// ==== Ligas de futebol ==== //
 model FootballLeague {
-  id            BigInt  @id   @default(autoincrement())
-  name          String
-  code          String  @unique
-  type          String
-  emblem        String
-  apiId         Int     @unique
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt()
-  areaId        Int
+  id        BigInt   @id @default(autoincrement())
+  apiId     BigInt   @unique
+  name      String
+  code      String   @unique
+  type      String   @default("LEAGUE")
+  emblem    String?
+  areaId    Int   @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt()
 
-  area          FootballArea @relation(fields: [areaId], references: [id], onDelete: Cascade)
-  teams         FootballTeam[]
+  area      FootballArea @relation(fields: [areaId], references: [id], onDelete: Cascade)
+  teams     FootballTeam[]
+  matches   FootballMatch[]
 }
 
-// ==== Times de futebol ==== //
+// ==== TIME DE FUTEBOL ====
 model FootballTeam {
-  id            BigInt  @id   @default(autoincrement())
-  name          String
-  shortName     String
-  tla           String
-  crest         String
-  address       String
-  clubColors    String
-  venue         String
-  apiId         Int     @unique
+  id         BigInt   @id @default(autoincrement())
+  apiId      BigInt   @unique
+  name       String
+  shortName  String   @default("Unknown")
+  tla        String   @default("UNK")
+  crest      String   @default("")
+  address    String   @default("Desconhecido")
+  clubColors String?
+  venue      String   @default("Desconhecido")
+  areaId     Int   @default(0)
 
-  competitions  FootballLeague[]
-  players       FootballPlayer[]
+  area           FootballArea           @relation(fields: [areaId], references: [id], onDelete: Cascade)
+  competitions   FootballLeague[]
+  players        FootballPlayer[]
+  matchesAsHome  FootballMatch[]        @relation("MatchesAsHome")
+  matchesAsAway  FootballMatch[]        @relation("MatchesAsAway")
+  statistics     FootballMatchStatistics[]
 }
 
+// ==== Jogadores de futebol ==== //
 model FootballPlayer {
   id            BigInt  @id   @default(autoincrement())
   name          String
   firstName     String
   lastName      String
   position      String
-  dateOfBirth   DateTime
+  dateOfBirth   DateTime?
   nationality   String
-  shirtNumber   Int
+  shirtNumber   Int?
   marketValue   Int?
   apiId         Int     @unique
-  contractStarted DateTime
-  contractUntil DateTime
+  contractStarted DateTime?
+  contractUntil DateTime?
 
   teamId        BigInt
   team          FootballTeam @relation(fields: [teamId], references: [id], onDelete: Cascade)
+}
+
+// ==== Jogos de futebol ==== //
+model FootballMatch {
+  id            BigInt  @id   @default(autoincrement())
+  apiId         Int     @unique
+  startAt       DateTime
+  status        String
+  homeTeamId    BigInt
+  awayTeamId    BigInt
+  competitionId BigInt
+  goalsHome     Int?
+  goalsAway     Int?
+  statistics    FootballMatchStatistics[]
+  venue         String?
+
+  homeTeam      FootballTeam @relation("MatchesAsHome", fields: [homeTeamId], references: [id], onDelete: Cascade)
+  awayTeam      FootballTeam @relation("MatchesAsAway", fields: [awayTeamId], references: [id], onDelete: Cascade)
+  competition   FootballLeague @relation(fields: [competitionId], references: [id], onDelete: Cascade)
+}
+
+// === Estatisticas de jogo === // 
+model FootballMatchStatistics {
+  id            BigInt  @id   @default(autoincrement())
+  matchId       BigInt
+  teamId        BigInt
+
+  match         FootballMatch @relation(fields: [matchId], references: [id], onDelete: Cascade)
+  team          FootballTeam @relation(fields: [teamId], references: [id], onDelete: Cascade)
+
+  corner_kicks          Int       // Escanteios
+  free_kicks            Int       // Faltas cobradas
+  goal_kicks            Int       // Tiros de meta
+  offsides              Int       // Impedimentos
+  fouls                 Int       // Faltas cometidas
+  ball_possession       Int       // Posse de bola (%)
+  saves                 Int       // Defesas do goleiro
+  throw_ins             Int       // Laterais
+  shots                 Int       // Chutes totais
+  shots_on_goal         Int       // Chutes no gol
+  shots_off_goal        Int       // Chutes pra fora
+  yellow_cards          Int       // Cartões amarelos
+  yellow_red_cards      Int       // Segundo amarelo (conta como 1)
+  red_cards             Int       // Cartões vermelhos diretos
+
+  @@unique([matchId, teamId])
 }
 
 // ==== Areas ==== //
@@ -808,7 +860,8 @@ model FootballArea {
   id            Int   @id   @default(autoincrement())
   name          String
   code          String  @unique
-  flag          String
+  flag          String?
 
   leagues       FootballLeague[]
+  teams         FootballTeam[]
 }
