@@ -1,4 +1,5 @@
 // src/tools/footballSdk.ts
+import { redis } from "#database";
 import { env } from "#settings";
 import { CompetitionResponse } from "#types/footballData/competition.js";
 import { MatchResponse, MatchStatus } from "#types/footballData/match.js";
@@ -83,6 +84,23 @@ export class ApiFootballSdk {
                     url: `${this.baseUrl}/matches/${id}`,
                     headers: { "X-Auth-Token": this.apiKey },
                 }),
+            
+            getAndUseCache: async (id: number | string) => {
+                // Verificar o cache redis
+                const key = `football:match:${id}`;
+                const raw = await redis.get(key);
+
+                if (raw) return JSON.parse(raw) as MatchResponse;
+                
+                const response = this.request<MatchResponse>({
+                    url: `${this.baseUrl}/matches/${id}`,
+                    headers: { "X-Auth-Token": this.apiKey },
+                });
+
+                await redis.setex(key, 60 * 60, JSON.stringify(response));
+
+                return response;
+            },
 
             getTodayGames: () =>
                 this.request<MatchesResponse>({

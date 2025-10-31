@@ -4,7 +4,7 @@ import { footballSdk } from "#tools";
 import { MatchResponse } from "#types/footballData/match.js";
 import { Client } from "discord.js";
 import { DefaultArgs } from "../../../../prisma/eris/runtime/library.js";
-import { res } from "functions/utils/embed.js";
+import { res } from "#functions";
 
 interface FootballGamesPipelineResult {
     success: MatchResponse[];
@@ -89,6 +89,9 @@ async function registerGame(tx: Omit<PrismaClient<Prisma.PrismaClientOptions, ne
             homeTeam: { connect: { id: homeTeam.id } },
             awayTeam: { connect: { id: awayTeam.id } },
             competition: { connect: { id: BigInt(leagueId) } },
+            oddsHomeWin: game.odds?.homeWin || null,
+            oddsDraw: game.odds?.draw || null,
+            oddsAwayWin: game.odds?.awayWin || null,
         },
         update: {
             goalsHome: game.score.fullTime.home,

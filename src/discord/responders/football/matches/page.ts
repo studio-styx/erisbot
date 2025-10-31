@@ -4,6 +4,7 @@ import { icon, res } from "#functions";
 import { menus } from "#menus";
 import { createLabel, createModalFields } from "@magicyan/discord";
 import { StringSelectMenuBuilder, TextInputBuilder, TextInputStyle } from "discord.js";
+import z from "zod";
 
 createResponder({
     customId: "football/menu/date/:date",
@@ -89,14 +90,20 @@ createResponder({
         } else {
             const day = interaction.fields.getTextInputValue("day");
             const month = interaction.fields.getStringSelectValues("month")[0];
-            
-            if (parseInt(day) > 31 || parseInt(day) < 1 || isNaN(parseInt(day))) {
-                await interaction.reply(res.danger(`${icon.error} | Digite um dia do mês válido!`))
+
+            const daySchema = z.coerce.number("Você precisa informar um dia válido")
+                .min(1, "Você precisa informar um dia maior que 0")
+                .max(31, "Você precisa informar um dia menor que 31");
+
+            const dayParsed = daySchema.safeParse(day);
+
+            if (!dayParsed.success) {
+                await interaction.reply(res.danger(`${icon.error} | ${dayParsed.error.issues.map(i => i.message).join(", ")}`))
                 return;
             }
             
             const date = new Date();
-            date.setDate(parseInt(day));
+            date.setDate(dayParsed.data);
             date.setMonth(parseInt(month));
             
             const dateFrom = new Date(date);

@@ -8,6 +8,7 @@ import { editQuestionMenu } from "./dev/tryvia/editQuestion.js";
 import { fetchAllPendingQuestionsMenu } from "./dev/tryvia/fetchAllPendingQuestions.js";
 import { fetchAllQuestionsMenu } from "./dev/tryvia/fetchAllQuestions.js";
 import { getMatchesMenuMenu } from "./football/ matches/getMatchesMenu.js";
+import { matchMenu } from "./football/ matches/matchMenu.js";
 import { giveawayEndMenu } from "./giveaway/giveawayEndMenu.js";
 import { giveawayInterfaceMenu } from "./giveaway/giveawayInterface.js";
 import { giveawayManageMenu } from "./giveaway/giveawayManage.js";
@@ -91,7 +92,8 @@ export const menus = {
     },
     football: {
         matches: {
-            matchesMenu: getMatchesMenuMenu
+            matchesMenu: getMatchesMenuMenu,
+            matchMenu
         }
     }
 }

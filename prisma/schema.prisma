@@ -51,6 +51,8 @@ model User {
   pets               UserPet[]      @relation("UserPetsRelation")
   combatsAsUser1     CombatHistory[] @relation("User1Relation")
   combatsAsUser2     CombatHistory[] @relation("User2Relation")
+
+  bets               FootballBet[]
 }
 
 model TryviaQuestions {
@@ -781,6 +783,7 @@ model FootballTeam {
   clubColors String?
   venue      String   @default("Desconhecido")
   areaId     Int   @default(0)
+  points     Int      @default(0)
 
   area           FootballArea           @relation(fields: [areaId], references: [id], onDelete: Cascade)
   competitions   FootballLeague[]
@@ -814,7 +817,7 @@ model FootballMatch {
   id            BigInt  @id   @default(autoincrement())
   apiId         Int     @unique
   startAt       DateTime
-  status        String
+  status        MatchStatus @default(SCHEDULED)
   homeTeamId    BigInt
   awayTeamId    BigInt
   competitionId BigInt
@@ -822,10 +825,14 @@ model FootballMatch {
   goalsAway     Int?
   statistics    FootballMatchStatistics[]
   venue         String?
+  oddsHomeWin   Float?
+  oddsDraw      Float?
+  oddsAwayWin   Float?
 
   homeTeam      FootballTeam @relation("MatchesAsHome", fields: [homeTeamId], references: [id], onDelete: Cascade)
   awayTeam      FootballTeam @relation("MatchesAsAway", fields: [awayTeamId], references: [id], onDelete: Cascade)
   competition   FootballLeague @relation(fields: [competitionId], references: [id], onDelete: Cascade)
+  bets          FootballBet[]
 }
 
 // === Estatisticas de jogo === // 
@@ -864,4 +871,47 @@ model FootballArea {
 
   leagues       FootballLeague[]
   teams         FootballTeam[]
+}
+
+// ==== Status de jogos ==== //
+enum MatchStatus {
+  SCHEDULED
+  LIVE
+  IN_PLAY
+  PAUSED
+  FINISHED
+  POSTPONED
+  SUSPENDED
+  CANCELED
+  AWARDED
+}
+
+// ==== Apostas nos jogos ==== //
+model FootballBet {
+  id            BigInt  @id   @default(autoincrement())
+  matchId       BigInt
+  userId        String
+  
+  amount        Decimal @db.Decimal(12, 2)
+  type          FootballBetType
+  odds          Decimal @db.Decimal(12, 2)
+
+  quantity      String?    // Depois pode ser parseado para number
+
+  match         FootballMatch @relation(fields: [matchId], references: [id], onDelete: Cascade)
+  user          User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([type, userId, matchId])
+}
+
+enum FootballBetType {
+  HOME_WIN
+  DRAW
+  AWAY_WIN
+  GOALS
+  EXACT_GOALS
+  HOME_GOALS
+  AWAY_GOALS
+  YELLOW_CARDS
+  RED_CARDS
 }

@@ -61,8 +61,8 @@ export function getMatchesMenuMenu<R>(matches: MatchesType, defaultImageUrl: str
                         : `**Começa:** ${time(m.startAt, TimestampStyles.RelativeTime)}  | ${time(m.startAt, TimestampStyles.LongDateTime)}`,         
                 ), m.competition.emblem || m.homeTeam.crest || m.awayTeam.crest || defaultImageUrl),
                 new ButtonBuilder({
-                    customId: `football/bet/${m.id}`,
-                    label: "Apostar",
+                    customId: `football/match/view/${m.id}`,
+                    label: "Mais informações",
                     style: ButtonStyle.Primary,
                     disabled: m.startAt < new Date()
                 }),
@@ -71,7 +71,7 @@ export function getMatchesMenuMenu<R>(matches: MatchesType, defaultImageUrl: str
         });
     } else {
         components.push(brBuilder(
-            `Nenhum jogo agendado para hoje`
+            `Nenhum jogo agendado para esse dia`
         ))
     }
 
