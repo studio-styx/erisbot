@@ -1,4 +1,3 @@
-// src/tools/footballSdk.ts
 import { redis } from "#database";
 import { env } from "#settings";
 import { CompetitionResponse } from "#types/footballData/competition.js";
@@ -108,18 +107,34 @@ export class ApiFootballSdk {
                     headers: { "X-Auth-Token": this.apiKey },
                 }),
 
-            getGamesByRange: (dateFrom: string | Date, dateTo: string | Date) => {
-                const format = (d: string | Date) =>
-                    d instanceof Date
-                        ? `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`
-                        : d;
-
-                return this.request<MatchesResponse>({
+            getGamesByRange: (dateFrom: string | Date, dateTo: string | Date) => 
+                this.request<MatchesResponse>({
                     url: `${this.baseUrl}/matches`,
-                    params: { dateFrom: format(dateFrom), dateTo: format(dateTo) },
+                    params: { dateFrom: this.formatDate(dateFrom), dateTo: this.formatDate(dateTo) },
                     headers: { "X-Auth-Token": this.apiKey },
-                });
-            },
+                }),
+
+            getMany: async (fields: {
+                dateFrom?: Date;
+                dateTo?: Date;
+                season?: number; // year
+                competitions?: string[];
+                status?: MatchStatus;
+                limit?: number;
+                venue?: string;
+            }) => this.request<MatchesResponse>({
+                url: `${this.baseUrl}/matches`,
+                params: {
+                    dateFrom: fields.dateFrom ? this.formatDate(fields.dateFrom) : undefined,
+                    dateTo: fields.dateTo ? this.formatDate(fields.dateTo) : undefined,
+                    season: fields.season,
+                    competitions: fields.competitions ? fields.competitions.join(",") : undefined,
+                    status: fields.status,
+                    limit: fields.limit,
+                    venue: fields.venue
+                },
+                headers: { "X-Auth-Token": this.apiKey },
+            }),
         };
     }
 
@@ -159,6 +174,12 @@ export class ApiFootballSdk {
                     }),
             }),
         };
+    }
+
+    private formatDate = (d: string | Date) => {
+        return d instanceof Date
+                        ? `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`
+                        : d;
     }
 }
 

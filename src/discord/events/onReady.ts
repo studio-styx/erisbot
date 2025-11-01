@@ -1,6 +1,8 @@
 import { createEvent } from "#base";
-import { commandsManager, determineMoodInterval, formatNumber, scheduleAllEndGiveaways, 
-    scheduleReproductionsDate, scheduleTransactionExpires, setAllPetsStats, setAllServerSettings 
+import {
+    commandsManager, determineMoodInterval, formatNumber, registerFootballGames, scheduleAllEndGiveaways,
+    scheduleReproductionsDate, scheduleTransactionExpires, setAllPetsStats, setAllServerSettings,
+    updateGames, verifyIfHasGames
 } from "#functions";
 import { settings } from "#settings";
 import { Command } from "#types/commands.js";
@@ -14,7 +16,7 @@ createEvent({
 
         const raw = await fs.readFile(`${__rootname}/commands.json`, "utf-8");
         const commands = JSON.parse(raw) as Command[];
-        
+
         commandsManager.addMany(commands);
 
         scheduleTransactionExpires(client);
@@ -37,6 +39,31 @@ createEvent({
         setInterval(async () => {
             await setAllPetsStats(client);
         }, 1000 * 60 * 60 * 4)
+        setInterval(async () => {
+            const hasGames = await verifyIfHasGames();
+            if (hasGames) {
+                await updateGames(client);
+            }
+        }, 1000 * 60 * 10)
+
+        function scheduleNextMonday() {
+            const now = new Date();
+            const nextMonday = new Date(now);
+
+            // Ajusta para próxima segunda-feira
+            nextMonday.setDate(now.getDate() + ((1 + 7 - now.getDay()) % 7 || 7));
+            nextMonday.setHours(2, 0, 0, 0);
+
+            const delay = nextMonday.getTime() - now.getTime();
+
+            setTimeout(() => {
+                registerFootballGames(client);
+                scheduleNextMonday(); // reagenda
+            }, delay);
+        }
+
+        // Inicia
+        scheduleNextMonday();
 
         let currentIndex = 0;
 

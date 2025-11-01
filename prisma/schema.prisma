@@ -283,8 +283,8 @@ model Mails {
   asRead       Boolean  @default(false)
   tags         String[]
 
-  whoSendId    String
-  whoSendUser  User     @relation("SentMails", fields: [whoSendId], references: [id], onDelete: Cascade)
+  whoSendId    String?
+  whoSendUser  User?     @relation("SentMails", fields: [whoSendId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
 }
@@ -790,7 +790,6 @@ model FootballTeam {
   players        FootballPlayer[]
   matchesAsHome  FootballMatch[]        @relation("MatchesAsHome")
   matchesAsAway  FootballMatch[]        @relation("MatchesAsAway")
-  statistics     FootballMatchStatistics[]
 }
 
 // ==== Jogadores de futebol ==== //
@@ -807,6 +806,7 @@ model FootballPlayer {
   apiId         Int     @unique
   contractStarted DateTime?
   contractUntil DateTime?
+  points         Int       @default(0)
 
   teamId        BigInt
   team          FootballTeam @relation(fields: [teamId], references: [id], onDelete: Cascade)
@@ -823,7 +823,6 @@ model FootballMatch {
   competitionId BigInt
   goalsHome     Int?
   goalsAway     Int?
-  statistics    FootballMatchStatistics[]
   venue         String?
   oddsHomeWin   Float?
   oddsDraw      Float?
@@ -833,33 +832,6 @@ model FootballMatch {
   awayTeam      FootballTeam @relation("MatchesAsAway", fields: [awayTeamId], references: [id], onDelete: Cascade)
   competition   FootballLeague @relation(fields: [competitionId], references: [id], onDelete: Cascade)
   bets          FootballBet[]
-}
-
-// === Estatisticas de jogo === // 
-model FootballMatchStatistics {
-  id            BigInt  @id   @default(autoincrement())
-  matchId       BigInt
-  teamId        BigInt
-
-  match         FootballMatch @relation(fields: [matchId], references: [id], onDelete: Cascade)
-  team          FootballTeam @relation(fields: [teamId], references: [id], onDelete: Cascade)
-
-  corner_kicks          Int       // Escanteios
-  free_kicks            Int       // Faltas cobradas
-  goal_kicks            Int       // Tiros de meta
-  offsides              Int       // Impedimentos
-  fouls                 Int       // Faltas cometidas
-  ball_possession       Int       // Posse de bola (%)
-  saves                 Int       // Defesas do goleiro
-  throw_ins             Int       // Laterais
-  shots                 Int       // Chutes totais
-  shots_on_goal         Int       // Chutes no gol
-  shots_off_goal        Int       // Chutes pra fora
-  yellow_cards          Int       // Cartões amarelos
-  yellow_red_cards      Int       // Segundo amarelo (conta como 1)
-  red_cards             Int       // Cartões vermelhos diretos
-
-  @@unique([matchId, teamId])
 }
 
 // ==== Areas ==== //
@@ -908,10 +880,7 @@ enum FootballBetType {
   HOME_WIN
   DRAW
   AWAY_WIN
-  GOALS
   EXACT_GOALS
-  HOME_GOALS
-  AWAY_GOALS
-  YELLOW_CARDS
-  RED_CARDS
+  GOALS_HOME
+  GOALS_AWAY
 }

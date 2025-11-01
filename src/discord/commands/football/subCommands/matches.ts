@@ -1,7 +1,6 @@
 import { prisma } from "#database";
 import { icon, res } from "#functions";
 import { menus } from "#menus";
-import { footballSdk } from "#tools";
 import { ChatInputCommandInteraction } from "discord.js";
 
 export async function footballMatchesCommand(interaction: ChatInputCommandInteraction<"cached">) {
@@ -10,28 +9,36 @@ export async function footballMatchesCommand(interaction: ChatInputCommandIntera
     const match = interaction.options.getString("match");
     if (match) {
         const matchId = BigInt(match);
-        const matchData = await prisma.footballMatch.findUnique({
-            where: { id: matchId },
-            include: {
-                homeTeam: true,
-                awayTeam: true,
-                competition: true
-            }
-        });
+        const [matchData, userData] = await prisma.$transaction([
+            prisma.footballMatch.findUnique({
+                where: { id: matchId },
+                include: {
+                    homeTeam: true,
+                    awayTeam: true,
+                    competition: true
+                }
+            }),
+            prisma.user.upsert({
+                where: { id: interaction.user.id },
+                create: { id: interaction.user.id },
+                update: {},
+                select: {
+                    bets: {
+                        where: {
+                            matchId
+                        }
+                    }
+                }
+            })
+        ])
 
         if (!matchData) return await interaction.editReply(res.danger(`${icon.error} | Partida não encontrada.`));
-        const matchApiInfo = await footballSdk.matches.getAndUseCache(matchData.apiId);
-        await interaction.editReply(menus.football.matches.matchMenu({
-            ...matchData,
-            homeTeam: {
-                ...matchData.homeTeam,
-                statistics: matchApiInfo.homeTeam.statistics
-            },
-            awayTeam: {
-                ...matchData.awayTeam,
-                statistics: matchApiInfo.awayTeam.statistics
-            }
-        }, interaction.user.id, interaction.user.displayAvatarURL()))
+
+        await interaction.editReply(menus.football.matches.matchMenu(matchData, {
+            bets: userData.bets,
+            id: interaction.user.id,
+            displayAvatarURL: interaction.user.displayAvatarURL
+        }))
         return
     }
 

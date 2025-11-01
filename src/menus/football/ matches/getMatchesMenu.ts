@@ -63,8 +63,7 @@ export function getMatchesMenuMenu<R>(matches: MatchesType, defaultImageUrl: str
                 new ButtonBuilder({
                     customId: `football/match/view/${m.id}`,
                     label: "Mais informações",
-                    style: ButtonStyle.Primary,
-                    disabled: m.startAt < new Date()
+                    style: ButtonStyle.Primary
                 }),
                 createSeparator()
             )

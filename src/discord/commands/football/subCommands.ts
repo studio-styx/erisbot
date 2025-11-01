@@ -33,7 +33,7 @@ createCommand({
                 const matches = await prisma.footballMatch.findMany({
                     where: {
                         startAt: {
-                            gte: new Date(new Date().setDate(new Date().getDate() - 3)),
+                            gte: new Date(new Date().setHours(0, 0, 0, 0)),
                             lte: new Date(new Date().setDate(new Date().getDate() + 7))
                         },
                         OR: [

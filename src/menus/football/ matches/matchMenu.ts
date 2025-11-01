@@ -1,14 +1,20 @@
-import { FootballLeague, FootballMatch, FootballTeam, MatchStatus } from "#prisma";
+import { formatNumber } from "#functions";
+import { FootballBet, FootballBetType, FootballLeague, FootballMatch, FootballTeam, MatchStatus, Prisma } from "#prisma";
 import { settings } from "#settings";
-import { MatchStatistics } from "#types/footballData/match.js";
 import { brBuilder, createContainer, createRow, createSection, createSeparator } from "@magicyan/discord";
 import { ButtonBuilder, ButtonStyle, time, TimestampStyles, type InteractionReplyOptions } from "discord.js";
 
 type MatchType = (FootballMatch & {
-    homeTeam: FootballTeam & { statistics?: MatchStatistics },
-    awayTeam: FootballTeam & { statistics?: MatchStatistics },
+    homeTeam: FootballTeam
+    awayTeam: FootballTeam
     competition: FootballLeague,
 })
+
+type User = {
+    id: string,
+    displayAvatarURL: () => string,
+    bets: FootballBet[]
+}
 
 const matchStatusFormatted: Record<MatchStatus, string> = {
     CANCELED: "Cancelado",     // Partida foi oficialmente cancelada (não será disputada)
@@ -22,100 +28,54 @@ const matchStatusFormatted: Record<MatchStatus, string> = {
     SUSPENDED: "Suspenso",      // Partida interrompida (ex: chuva, briga) — pode continuar depois
 };
 
+const betFormatted: Record<FootballBetType, string> = {
+    AWAY_WIN: "Vitória do visitante",
+    DRAW: "Empate",
+    HOME_WIN: "Vitória da casa",
+    EXACT_GOALS: "Gols exatos",
+    GOALS_AWAY: "Gols do visitante",
+    GOALS_HOME: "Gols da casa",
+}
 
-export function matchMenu<R>(match: MatchType, userId: string, defaultImageUrl: string, page?: "homeStatistics" | "awayStatistics" | "odds"): R {
-    const components: any[] = [createSeparator()];
-
-    switch (page) {
-        case "homeStatistics":
-            components.push(
-                brBuilder(
-                    `### Estatísticas da casa:`,
-                    `**Chutes ao gol:** ${match.homeTeam.statistics?.shots_on_goal || 0}`,
-                    `**Chutes fora do gol:** ${match.homeTeam.statistics?.shots_off_goal || 0}`,
-                    `**Chutes totais:** ${match.homeTeam.statistics?.shots || 0}`,
-                    `**Escanteios:** ${match.homeTeam.statistics?.corner_kicks || 0}`,
-                    `**Faltas cometidas:** ${match.homeTeam.statistics?.fouls || 0}`,
-                    `**Faltas cobradas:** ${match.homeTeam.statistics?.free_kicks || 0}`,
-                    `**Gols marcados:** ${match.homeTeam.statistics?.goal_kicks || 0}`,
-                    `**Impedimentos:** ${match.homeTeam.statistics?.offsides || 0}`,
-                    `**Posse de bola:** ${match.homeTeam.statistics?.ball_possession || 0}%`,
-                    `**Cartões amarelos:** ${match.homeTeam.statistics?.yellow_cards || 0}`,
-                    `**Cartões vermelhos:** ${match.homeTeam.statistics?.red_cards || 0}`,
-                    `**Defesas do goleiro:** ${match.homeTeam.statistics?.saves || 0}`,
-                    `**Laterais:** ${match.homeTeam.statistics?.throw_ins || 0}`,
-                )
-            );
-            break;
-        case "awayStatistics": 
-            components.push(
-                brBuilder(
-                    `### Estatísticas ddo visitante:`,
-                    `**Chutes ao gol:** ${match.awayTeam.statistics?.shots_on_goal || 0}`,
-                    `**Chutes fora do gol:** ${match.awayTeam.statistics?.shots_off_goal || 0}`,
-                    `**Chutes totais:** ${match.awayTeam.statistics?.shots || 0}`,
-                    `**Escanteios:** ${match.awayTeam.statistics?.corner_kicks || 0}`,
-                    `**Faltas cometidas:** ${match.awayTeam.statistics?.fouls || 0}`,
-                    `**Faltas cobradas:** ${match.awayTeam.statistics?.free_kicks || 0}`,
-                    `**Gols marcados:** ${match.awayTeam.statistics?.goal_kicks || 0}`,
-                    `**Impedimentos:** ${match.awayTeam.statistics?.offsides || 0}`,
-                    `**Posse de bola:** ${match.awayTeam.statistics?.ball_possession || 0}%`,
-                    `**Cartões amarelos:** ${match.awayTeam.statistics?.yellow_cards || 0}`,
-                    `**Cartões vermelhos:** ${match.awayTeam.statistics?.red_cards || 0}`,
-                    `**Defesas do goleiro:** ${match.awayTeam.statistics?.saves || 0}`,
-                    `**Laterais:** ${match.awayTeam.statistics?.throw_ins || 0}`,
-                )
-            );
-            break;
-        case "odds": 
-            components.push(
-                brBuilder(
-                    `### Odds da partida`,
-                    `**Odd para vitória do mandante:** ${match.oddsHomeWin || 0}`,
-                    `**Odd para empate:** ${match.oddsDraw || 0}`,
-                    `**Odd para vitória do visitante:** ${match.oddsAwayWin || 0}`,
-                )
-            );
-            break;
-    }
-
+export function matchMenu<R>(match: MatchType, user: User): R {
     const container = createContainer(settings.colors.fuchsia,
         brBuilder(
-            `## Partida: ${match.homeTeam.name} x ${match.awayTeam.name}`,
+            `## Partida: ${match.homeTeam.name}${match.goalsHome ? ` ${match.goalsHome}` : ""} x${match.goalsAway ? ` ${match.goalsAway}` : ""} ${match.awayTeam.name}`,
+            `**Estádio:** ${match.venue || "Desconhecido"}`,
+            match.startAt < new Date()
+                ? `**Começou:** ${time(match.startAt, TimestampStyles.RelativeTime)} | ${time(match.startAt, TimestampStyles.LongDateTime)}`
+                : `**Começa:** ${time(match.startAt, TimestampStyles.RelativeTime)}  | ${time(match.startAt, TimestampStyles.LongDateTime)}`,
+            `**Campeonato:** ${match.competition.name}`,
+            `**Status:** ${matchStatusFormatted[match.status]}`,
         ),
         createSeparator(),
-        createSection(brBuilder(
-            match.goalsHome && match.goalsAway ? `**Placar: ${match.goalsHome} x ${match.goalsAway}**` : null,
-            `**Estádio:** ${match.venue || "Desconhecido"}`,
-            `**Status:** ${matchStatusFormatted[match.status] || "Desconhecido"}`,
-            match.startAt < new Date() ?
-                `**Começou:** ${time(match.startAt, TimestampStyles.RelativeTime)} | ${time(match.startAt, TimestampStyles.LongDateTime)}`
-                : `**Começa:** ${time(match.startAt, TimestampStyles.RelativeTime)} | ${time(match.startAt, TimestampStyles.LongDateTime)}`
-        ), match.competition.emblem || match.homeTeam.crest || match.awayTeam.crest || defaultImageUrl),
-        components.length > 1 ? components : null,
-        createSeparator(),
+        `## Suas apostas:`,
+        user.bets.length > 0 && [...user.bets.map(b => createSection(
+            brBuilder(
+                `> **Tipo:** ${betFormatted[b.type]}`,
+                `> **Quantia:** ${formatNumber(b.amount.toNumber())}`,
+                b.type !== "HOME_WIN" && b.type !== "AWAY_WIN" && b.type !== "DRAW"
+                    ? `> **Aposta:** ${b.quantity}`
+                    : null,
+                `> **Odd:** ${b.odds}`,
+                `> **Valor de pagamento estimado**: ${formatNumber(new Prisma.Decimal(b.amount.toNumber() * b.odds.toNumber()).toNumber())}`
+            ),
+            new ButtonBuilder({
+                customId: `football/bet/remove/${b.id}/${user.id}`,
+                label: "Remover",
+                style: ButtonStyle.Danger
+            })
+        ))],
         createRow(
             new ButtonBuilder({
-                customId: `football/match/menu/homeStatistics/${match.id}/${userId}`,
-                label: "Estatisticas da casa",
-                style: page === "homeStatistics" ? ButtonStyle.Secondary : ButtonStyle.Primary,
-                disabled: page === "homeStatistics" || !match.homeTeam.statistics
-            }),
-            new ButtonBuilder({
-                customId: `football/match/menu/awayStatistics/${match.id}/${userId}`,
-                label: "Estatisticas do visitante",
-                style: page === "awayStatistics" ? ButtonStyle.Secondary : ButtonStyle.Primary,
-                disabled: page === "awayStatistics" || !match.awayTeam.statistics
-            }),
-            new ButtonBuilder({
-                customId: `football/match/menu/odds/${match.id}/${userId}`,
-                label: "Odds",
-                style: page === "odds" ? ButtonStyle.Secondary : ButtonStyle.Primary,
-                disabled: page === "odds"
-            }),
-            new ButtonBuilder({
-                customId: `football/match/menu/bet/${match.id}/${userId}`,
+                customId: `football/match/menu/bet/${match.id}/${user.id}`,
                 label: "Apostar",
+                style: ButtonStyle.Secondary,
+                disabled: match.startAt < new Date()
+            }),
+            new ButtonBuilder({
+                customId: `football/match/menu/simulate/${match.id}/${user.id}`,
+                label: "Simular resultado",
                 style: ButtonStyle.Success,
                 disabled: match.startAt < new Date()
             })

@@ -965,11 +965,12 @@ createCommand({
                 await interaction.deferReply({ flags });
                 const users = interaction.options.getString("users", true);
                 const content = interaction.options.getString("content", true);
+                const systemMail = interaction.options.getBoolean("system") || false;
 
                 const sendMailDm = (mail: Mails) => {
                     const components: any[] = [
                         brBuilder(
-                            `# ${icon.mail} | Carta recebida de: ${interaction.user.username}`,
+                            `# ${icon.mail} | Carta recebida de: ${systemMail ? "Sistema" : interaction.user.username}`,
                             `-# ╰ ID da carta: ${mail.id}`,
                             `-# ╰ Data de recebimento: ${time(mail.createdAt, "D")}`
                         ),
@@ -994,7 +995,7 @@ createCommand({
                                     data: {
                                         content,
                                         userId: user.id,
-                                        whoSendId: interaction.user.id
+                                        whoSendId: systemMail ? null : interaction.user.id
                                     }
                                 })
                                 usersCount++;

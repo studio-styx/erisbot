@@ -26,7 +26,7 @@ export function userMailsMenu<R>(mails: Mails[], user: User, page = 0): R {
         ),
         createSeparator(),
         brBuilder(
-            `-# De: ${userMention(mail.userId)}`,
+            `-# De: ${mail.whoSendId ? userMention(mail.whoSendId) : "Sistema"}`,
             `-# Enviado em: ${time(mail.createdAt, "D")}`
         ),
         createSeparator(),

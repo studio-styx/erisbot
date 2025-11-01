@@ -71,7 +71,7 @@ export async function registerFootballGames(client: Client): Promise<FootballGam
     return { success, failed, errors, minutes, startedAt: beforeTime, endedAt: afterTime };
 }
 
-async function registerGame(tx: Omit<PrismaClient<Prisma.PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$extends">, game: MatchResponse) {
+export async function registerGame(tx: Omit<PrismaClient<Prisma.PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$extends">, game: MatchResponse) {
     const leagueId = await getOrCreateLeague(tx, game);
     const [homeTeam, awayTeam] = await Promise.all([
         getOrCreateTeam(tx, game.homeTeam, game.competition.id),

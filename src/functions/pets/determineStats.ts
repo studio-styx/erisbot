@@ -125,7 +125,6 @@ export async function setAllPetsStats(client: Client) {
                         content: brBuilder(
                             `${pet.gender === "FEMALE" ? "Sua pet" : "Seu pet"} **${pet.name}** (${petAnimalFormatted[pet.pet.animal]}) morreu de **${newLife <= 0 ? `velhice` : newHungry <= 0 ? "fome" : "desconhecido"}**!`
                         ),
-                        whoSendId: "1171963692984844401"
                     }
                 }),
                 prisma.user.update({
