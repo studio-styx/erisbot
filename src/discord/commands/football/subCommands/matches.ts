@@ -1,5 +1,5 @@
 import { prisma } from "#database";
-import { icon, res } from "#functions";
+import { ErisError } from "#functions";
 import { menus } from "#menus";
 import { ChatInputCommandInteraction } from "discord.js";
 import z from "zod";
@@ -36,7 +36,7 @@ export async function footballMatchesCommand(interaction: ChatInputCommandIntera
             })
         ])
 
-        if (!matchData) return await interaction.editReply(res.danger(`${icon.error} | Partida não encontrada.`));
+        if (!matchData) throw new ErisError("Eu não consegui encontrar essa partida!")
 
         await interaction.editReply(menus.football.matches.matchMenu(matchData, {
             bets: userData.bets,

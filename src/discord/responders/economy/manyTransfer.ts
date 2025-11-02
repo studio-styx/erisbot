@@ -1,6 +1,6 @@
 import { createResponder, ResponderType } from "#base";
 import { prisma } from "#database";
-import { calculateDate, icon, res } from "#functions";
+import { calculateDate, ErisError, icon } from "#functions";
 import { settings } from "#settings";
 import { brBuilder, createContainer, createEmbed, createRow, createSeparator } from "@magicyan/discord";
 import { ButtonBuilder, ButtonStyle, GuildMember, userMention } from "discord.js";
@@ -19,20 +19,11 @@ createResponder({
             interaction.reply(`Esse comando deve ser usado em um canal válido`)
             return;
         }
-        if (!interaction.guild) {
-            interaction.reply(res.danger(`${icon.denied} | Esse comando deve ser usado em um server!`))
-            return;
-        }
-        if (interaction.user.id !== userId) {
-            interaction.reply(res.danger(`${icon.denied} | Você não é o dono desse comando!`));
-            return;
-        }
+        if (!interaction.guild) throw new ErisError("Esse comando deve ser usado em um server!");
+        if (interaction.user.id !== userId) throw new ErisError("Você não é o dono desse comando!");
         const ids = interaction.values.filter(id => id !== userId);
 
-        if (ids.length < 1) {
-            interaction.reply(`${icon.denied} | Usuários insuficientes para a transação!`)
-            return;
-        };
+        if (ids.length < 1) throw new ErisError("Usuários insuficientes para a transação!");
 
         const users: GuildMember[] = [];
         const errors: { userId: string; reason: string }[] = [];
@@ -77,17 +68,11 @@ createResponder({
         const user = await prisma.user.findUnique({
             where: { id: userId }
         });
-        if (!user) {
-            interaction.editReply(res.danger(`${icon.denied} | Primeira vez aqui e já quer transferir dinheiro para os outros? por quê você não explora meus comandos primeiro, antes de iniciar uma transação com alguém?`))
-            return;
-        }
+        if (!user) throw new ErisError("Primeira vez aqui e já quer transferir dinheiro para os outros? por quê você não explora meus comandos primeiro, antes de iniciar uma transação com alguém?");
         const money = user.money.toNumber();
         const totalToPay = amount * users.length;
 
-        if (totalToPay > money) {
-            interaction.editReply(res.danger(`${icon.denied} Você não tem dinheiro suficiente para pagar os: **${users.length}** usuários! você precisa de **${totalToPay}** stx você precisa de mais: **${totalToPay - money}** para completar a transação.`))
-            return;
-        }
+        if (totalToPay > money) throw new ErisError(`Você não tem dinheiro suficiente para pagar os: **${users.length}** usuários! você precisa de **${totalToPay}** stx você precisa de mais: **${totalToPay - money}** para completar a transação.`);
 
         const container = createContainer({
             accentColor: users.length > 0 ? settings.colors.fuchsia : settings.colors.danger,

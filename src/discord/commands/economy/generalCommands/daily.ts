@@ -1,6 +1,6 @@
 import { Store } from "#base";
 import { prisma } from "#database";
-import { res, registerLog, getRandomNumber, calculateDate, getRandomValue } from "#functions";
+import { res, registerLog, getRandomNumber, calculateDate, getRandomValue, ErisError } from "#functions";
 import { getLang, translate } from "#locale";
 import { Rarity } from "#prisma";
 import { ChatInputCommandInteraction } from "discord.js";
@@ -45,9 +45,8 @@ export async function economyDailyCommand(interaction: ChatInputCommandInteracti
     if (userTrys) {
         const messages = t.manyAttempts(userTrys.attempts, userTrys.cooldown);
         if (messages.length === 0) return;
-        interaction.reply(res.danger(getRandomValue(messages), { flags: [] }));
         trys.set(`${id}:daily`, { attempts: userTrys.attempts + 1, cooldown: userTrys.cooldown }, { time: 1000 * 60 * 2 });
-        return;
+        throw new ErisError(getRandomValue(messages), false)
     }
 
     await interaction.deferReply();
@@ -60,9 +59,8 @@ export async function economyDailyCommand(interaction: ChatInputCommandInteracti
     });
 
     if (cooldownData?.willEndIn && cooldownData.willEndIn > now) {
-        interaction.editReply(res.danger(t.cooldown(cooldownData.willEndIn)));
         trys.set(`${id}:daily`, { attempts: 1, cooldown: cooldownData.willEndIn }, { time: 1000 * 60 * 2 });
-        return;
+        throw new ErisError(t.cooldown(cooldownData.willEndIn));
     }
 
     const user = await prisma.user.findUnique({
@@ -145,7 +143,7 @@ export async function economyDailyCommand(interaction: ChatInputCommandInteracti
 
     const messages = t.messages(dailyValue, petName, newUser);
 
-    interaction.editReply(res.fuchsia(
+    await interaction.editReply(res.fuchsia(
         hasDailyBonus && hasDailyDecrementCooldown ? getRandomValue(messages.petDailyBonusAndCooldownReduction)
             : hasDailyBonus ? getRandomValue(messages.petDailyBonus)
                 : hasDailyDecrementCooldown ? getRandomValue(messages.petDailyCooldownReduction)

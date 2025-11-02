@@ -1,6 +1,6 @@
 import { Store } from "#base";
 import { prisma } from "#database";
-import { res, getCache, getCommandId, resv2, generateGeminiContent, registerLog, setCache, calculateProbability, getRandomValue } from "#functions";
+import { res, getCache, getCommandId, resv2, generateGeminiContent, registerLog, setCache, calculateProbability, getRandomValue, ErisError } from "#functions";
 import { getLang, LangCode, translate } from "#locale";
 import { Company, Rarity } from "#prisma";
 import { settings } from "#settings";
@@ -25,13 +25,13 @@ function calculateSkillBonus({ rarity, level }: { rarity: Rarity, level: number 
     return 1 + rarityMultiplier + levelMultiplier;
 }
 
-function getWorkChallengePrompt({ userName, company, expectations, hasEasierSkill, lang }: { userName: string, company: Company, expectations: string, hasEasierSkill: boolean, lang: LangCode}) {
-    const langPrompt = lang === "enus" 
+function getWorkChallengePrompt({ userName, company, expectations, hasEasierSkill, lang }: { userName: string, company: Company, expectations: string, hasEasierSkill: boolean, lang: LangCode }) {
+    const langPrompt = lang === "enus"
         ? "O prompt está todo em português, mas você deve retornar o conteúdo em INGLÊS, sem nenhuma palavra em algum idioma diferente"
-        : lang === "eses" 
+        : lang === "eses"
             ? "O prompt está todo em português, mas você deve retornar o conteúdo em ESPANHOL, sem nenhuma palavra em algum idioma diferente"
             : "Responda em português:"
-    
+
     const basePrompts = [
         brBuilder(
             `${langPrompt}`,
@@ -119,201 +119,188 @@ export async function EconomyWorkCommand(interaction: ChatInputCommandInteractio
 
     const situation: string | null | undefined = getCache(`${interaction.user.id}-situation`);
 
-    if (situation) {
-        interaction.reply(res.danger(t.alreadyAsInASituation))
-        return;
-    }
+    if (situation) throw new ErisError(t.alreadyAsInASituation, false);
     await interaction.deferReply();
 
-    try {
-        const user = await prisma.user.findUnique({
-            where: {
-                id: interaction.user.id
-            },
-            include: {
-                company: true,
-                cooldowns: true,
-                activePet: {
-                    include: {
-                        skills: { include: { skill: true } },
-                        pet: { select: { rarity: true } }
-                    }
+    const user = await prisma.user.findUnique({
+        where: {
+            id: interaction.user.id
+        },
+        include: {
+            company: true,
+            cooldowns: true,
+            activePet: {
+                include: {
+                    skills: { include: { skill: true } },
+                    pet: { select: { rarity: true } }
                 }
             }
-        })
-
-        if (!user || !user.companyId || !user.company) {
-            const commandId = await getCommandId(interaction, "jobs")
-            interaction.editReply(res.danger(t.doNotHaveWork(commandId)))
-            return;
         }
+    })
 
-        const now = new Date();
+    if (!user || !user.companyId || !user.company) {
+        const commandId = await getCommandId(interaction, "jobs")
+        throw new ErisError(t.doNotHaveWork(commandId), false)
+    }
 
-        const cooldown = user.cooldowns.find(cooldown => cooldown.name === "work");
+    const now = new Date();
 
-        if (cooldown && cooldown.willEndIn > now) {
-            interaction.editReply(res.danger(t.cooldown(cooldown.willEndIn)));
-            return;
-        }
+    const cooldown = user.cooldowns.find(cooldown => cooldown.name === "work");
 
-        const { company, activePet } = user;
+    if (cooldown && cooldown.willEndIn > now) throw new ErisError(t.cooldown(cooldown.willEndIn), false);
 
-        const hasWorkChallangeAvoid = activePet?.skills.some(s => s.skill.name === "work_challenge_avoid");
+    const { company, activePet } = user;
 
-        const percentage = company.flags.includes("100%_SITUATION") ? 100
-            :  company.flags.includes("NO_SITUATION") ? 0
+    const hasWorkChallangeAvoid = activePet?.skills.some(s => s.skill.name === "work_challenge_avoid");
+
+    const percentage = company.flags.includes("100%_SITUATION") ? 100
+        : company.flags.includes("NO_SITUATION") ? 0
             : hasWorkChallangeAvoid ? 0 : 30 + (user.company.difficulty - 1) * 5;
 
-        if (calculateProbability(percentage)) {
-            cooldowns.set(interaction.user.id, new Date(Date.now() + 1000 * 60 * 4), { time: 1000 * 60 * 4 });
-            await interaction.editReply(resv2.warning(t.situationOccured));
+    if (calculateProbability(percentage)) {
+        cooldowns.set(interaction.user.id, new Date(Date.now() + 1000 * 60 * 4), { time: 1000 * 60 * 4 });
+        await interaction.editReply(resv2.warning(t.situationOccured));
 
-            const companyExpectations = (company?.expectations as string[] | { level: number, skill: string }[]);
-            const companyExpectationsFormatted = t.expectationsFormatted(companyExpectations);
+        const companyExpectations = (company?.expectations as string[] | { level: number, skill: string }[]);
+        const companyExpectationsFormatted = t.expectationsFormatted(companyExpectations);
 
-            const workChallengeEasier = activePet?.skills.some(s => s.skill.name === "work_challenge_easier");
+        const workChallengeEasier = activePet?.skills.some(s => s.skill.name === "work_challenge_easier");
 
-            const prompt = getWorkChallengePrompt({
-                userName: interaction.user.displayName,
-                company,
-                expectations: companyExpectationsFormatted,
-                hasEasierSkill: !!workChallengeEasier,
-                lang
-            });
+        const prompt = getWorkChallengePrompt({
+            userName: interaction.user.displayName,
+            company,
+            expectations: companyExpectationsFormatted,
+            hasEasierSkill: !!workChallengeEasier,
+            lang
+        });
 
 
-            const result = await generateGeminiContent(prompt);
+        const result = await generateGeminiContent(prompt);
 
-            if (!result.success || !result.text) {
-                await prisma.user.update({
-                    where: { id: interaction.user.id },
-                    data: { money: { increment: company.wage } }
-                });
-                interaction.editReply(resv2.danger(t.apiErrorMessage(company.wage.toNumber())));
-                console.error(result.error);
-
-                await Promise.all([
-                    registerLog({
-                        level: 5,
-                        message: t.log(company.wage.toNumber()),
-                        tags: ["economy", "work"],
-                        type: "info",
-                        user: interaction.user.id
-                    }),
-                    registerLog({
-                        level: 999,
-                        message: t.logApiError,
-                        tags: ["economy", "work"],
-                        type: "error",
-                        user: interaction.user.id
-                    })
-                ])
-
-                return;
-            }
-
-            const response = result.text;
-
-            const container = createContainer({
-                accentColor: settings.colors.warning,
-                components: [
-                    t.situation.container.title,
-                    createSeparator(),
-                    createTextDisplay(response, 1),
-                    createRow(
-                        new ButtonBuilder({
-                            customId: `company/work/${interaction.user.id}`,
-                            label: t.situation.container.button,
-                            style: ButtonStyle.Primary
-                        })
-                    )
-                ]
-            });
-
-            setCache(`${interaction.user.id}-situation`, response);
-
-            interaction.editReply({ flags: ["IsComponentsV2"], components: [container] });
-        } else {
-            const workXpBonus = activePet?.skills.find(s => s.skill.name === "work_xp_bonus");
-            const workWageBonus = activePet?.skills.find(s => s.skill.name === "work_bonus");
-
-            const petRarity = activePet?.pet.rarity;
-            const baseWage = company.wage.toNumber();
-            let wage = baseWage;
-            let xpGain = Math.floor(Math.random() * (25 - 10 + 1)) + 10; // base de 10 a 25 XP
-
-            // 💰 Bônus de salário
-            if (workWageBonus && petRarity) {
-                const multiplier = calculateSkillBonus({
-                    rarity: petRarity,
-                    level: workWageBonus.level
-                });
-
-                const newWage = Math.floor(baseWage * multiplier);
-                wage = newWage;
-            }
-
-            // ⭐ Bônus de XP
-            if (workXpBonus && petRarity) {
-                const multiplier = calculateSkillBonus({
-                    rarity: petRarity,
-                    level: workXpBonus.level
-                });
-
-                const newXp = Math.floor(xpGain * multiplier);
-                xpGain = newXp;
-            }
-
-            // Atualizar usuário com valores já bonificados
-            const newUser = await prisma.user.update({
+        if (!result.success || !result.text) {
+            await prisma.user.update({
                 where: { id: interaction.user.id },
-                data: {
-                    money: { increment: wage },
-                    xp: { increment: xpGain }
-                }
+                data: { money: { increment: company.wage } }
             });
+            interaction.editReply(resv2.danger(t.apiErrorMessage(company.wage.toNumber())));
+            console.error(result.error);
 
+            await Promise.all([
+                registerLog({
+                    level: 5,
+                    message: t.log(company.wage.toNumber()),
+                    tags: ["economy", "work"],
+                    type: "info",
+                    user: interaction.user.id
+                }),
+                registerLog({
+                    level: 999,
+                    message: t.logApiError,
+                    tags: ["economy", "work"],
+                    type: "error",
+                    user: interaction.user.id
+                })
+            ])
 
-            interaction.editReply({
-                flags: ["IsComponentsV2"],
-                components: [
-                    createContainer({
-                        accentColor: settings.colors.success,
-                        components: [t.message(newUser.money.toNumber(), newUser.xp, wage)]
-                    })
-                ]
-            });
-
-            await registerLog({
-                level: 5,
-                message: t.log(wage),
-                tags: ["economy", "work"],
-                type: "info",
-                user: interaction.user.id
-            });
+            return;
         }
 
-        await prisma.cooldown.upsert({
-            where: {
-                userId_name: {
-                    userId: interaction.user.id,
-                    name: "work"
-                }
-            },
-            update: {
-                willEndIn: new Date(now.getTime() + (1000 * 60 * 60) * 2)
-            },
-            create: {
-                userId: interaction.user.id,
-                name: "work",
-                willEndIn: new Date(now.getTime() + (1000 * 60 * 60) * 2)
+        const response = result.text;
+
+        const container = createContainer({
+            accentColor: settings.colors.warning,
+            components: [
+                t.situation.container.title,
+                createSeparator(),
+                createTextDisplay(response, 1),
+                createRow(
+                    new ButtonBuilder({
+                        customId: `company/work/${interaction.user.id}`,
+                        label: t.situation.container.button,
+                        style: ButtonStyle.Primary
+                    })
+                )
+            ]
+        });
+
+        setCache(`${interaction.user.id}-situation`, response);
+
+        interaction.editReply({ flags: ["IsComponentsV2"], components: [container] });
+    } else {
+        const workXpBonus = activePet?.skills.find(s => s.skill.name === "work_xp_bonus");
+        const workWageBonus = activePet?.skills.find(s => s.skill.name === "work_bonus");
+
+        const petRarity = activePet?.pet.rarity;
+        const baseWage = company.wage.toNumber();
+        let wage = baseWage;
+        let xpGain = Math.floor(Math.random() * (25 - 10 + 1)) + 10; // base de 10 a 25 XP
+
+        // 💰 Bônus de salário
+        if (workWageBonus && petRarity) {
+            const multiplier = calculateSkillBonus({
+                rarity: petRarity,
+                level: workWageBonus.level
+            });
+
+            const newWage = Math.floor(baseWage * multiplier);
+            wage = newWage;
+        }
+
+        // ⭐ Bônus de XP
+        if (workXpBonus && petRarity) {
+            const multiplier = calculateSkillBonus({
+                rarity: petRarity,
+                level: workXpBonus.level
+            });
+
+            const newXp = Math.floor(xpGain * multiplier);
+            xpGain = newXp;
+        }
+
+        // Atualizar usuário com valores já bonificados
+        const newUser = await prisma.user.update({
+            where: { id: interaction.user.id },
+            data: {
+                money: { increment: wage },
+                xp: { increment: xpGain }
             }
         });
-        return;
-    } catch (error) {
-        console.error(error);
-        interaction.editReply(res.danger(t.error));
-        return;
+
+
+        interaction.editReply({
+            flags: ["IsComponentsV2"],
+            components: [
+                createContainer({
+                    accentColor: settings.colors.success,
+                    components: [t.message(newUser.money.toNumber(), newUser.xp, wage)]
+                })
+            ]
+        });
+
+        await registerLog({
+            level: 5,
+            message: t.log(wage),
+            tags: ["economy", "work"],
+            type: "info",
+            user: interaction.user.id
+        });
     }
+
+    await prisma.cooldown.upsert({
+        where: {
+            userId_name: {
+                userId: interaction.user.id,
+                name: "work"
+            }
+        },
+        update: {
+            willEndIn: new Date(now.getTime() + (1000 * 60 * 60) * 2)
+        },
+        create: {
+            userId: interaction.user.id,
+            name: "work",
+            willEndIn: new Date(now.getTime() + (1000 * 60 * 60) * 2)
+        }
+    });
+    return;
 }

@@ -1,10 +1,9 @@
 import { Store, setupCreators } from "#base";
 import { prisma } from "#database";
-import { commandsManager, defaultServerSettings, getCommandId, getRandomNumber, getServerSettings, icon, isBlacklisted, PrismaBlacklistValue, res, resv2, setServerSettings } from "#functions";
+import { commandsManager, defaultServerSettings, discordErrorHandler, getCommandId, getRandomNumber, getServerSettings, icon, isBlacklisted, PrismaBlacklistValue, res, resv2, setServerSettings } from "#functions";
 import { PetSkill, UserPetSkill } from "#prisma";
 import { brBuilder, createSeparator } from "@magicyan/discord";
 import { channelMention, Interaction, time, ChatInputCommandInteraction } from "discord.js";
-import { ZodError } from "zod";
 
 const cooldown = new Store<Date>();
 const lessUse = new Store<Date>();
@@ -16,71 +15,7 @@ export const { createCommand, createEvent, createResponder } = setupCreators({
             interaction.reply(res.danger(`${icon.error} | Command not found!`));
         },
         async onError(error, interaction) {
-            if (error instanceof ZodError) {
-                const errors = error.issues.map(e => `**\`${e.message}\`**`).join("\n");
-
-                const errorMessage = `${icon.error} | Informações inválidas! \n${errors}`
-
-                if (interaction.deferred) {
-                    try {
-                        await interaction.editReply(res.danger(errorMessage));
-                    } catch (_) {
-                        try {
-                            await interaction.editReply(resv2.danger(errorMessage));
-                        } catch (_) {
-                            await interaction.followUp(res.danger(errorMessage))
-                        }
-                    }
-                } else if (!interaction.replied) {
-                    await interaction.reply(res.danger(errorMessage));
-                }
-                return;
-            }
-            console.error(`Error in: ${interaction.guild?.name || "Guild not found"} used by user: ${interaction.user.displayName}. error:`, error);
-
-            const errorMessage = `**${icon.error} | An error occurred while executing the command: \`${error instanceof Error ? error.message : "Unknown error"}\`**`;
-
-            if (interaction.deferred) {
-                try {
-                    await interaction.editReply(res.danger(errorMessage));
-                } catch (_) {
-                    try {
-                        await interaction.editReply(resv2.danger(errorMessage));
-                    } catch (_) {
-                        await interaction.followUp(res.danger(errorMessage))
-                    }
-                }
-            } else if (!interaction.replied) {
-                await interaction.reply(res.danger(errorMessage));
-            }
-
-            try {
-                const guild = interaction.client.guilds.cache.get("1395383469210865694")!;
-                const channel = guild.channels.cache.get("1431993706625368235") || await guild.channels.fetch("1431993706625368235");
-
-                if (!channel || !channel.isTextBased()) return;
-
-                const commandName = interaction.commandName;
-                const subCommand = (interaction as ChatInputCommandInteraction).options.getSubcommand(false);
-                const subCommandGroup = (interaction as ChatInputCommandInteraction).options.getSubcommandGroup(false);
-
-                const fullCommandName = subCommandGroup ? `${commandName} ${subCommandGroup} ${subCommand}` : subCommand ? `${commandName} ${subCommand}` : commandName;
-
-                await channel.send(res.danger(brBuilder(
-                    `**Error in command \`${fullCommandName}\` used by user \`${interaction.user.tag}\` in guild \`${interaction.guild?.name || "Direct Message"}\`**`,
-                    "```js",
-                    JSON.stringify({
-                        error: error instanceof Error ? error.message : error,
-                        stack: error instanceof Error ? error.stack : "No stack trace"
-                    }, null, 2),
-                    "```"
-                )));
-
-                await interaction.followUp(res.success(`${icon.success} | The error has been logged to the designated channel.`));
-            } catch (e) {
-                console.error("Failed to send error message to the log channel:", e);
-                await interaction.followUp(res.danger(`${icon.error} | Additionally, failed to log the error to the designated channel.`));
-            }
+            return await discordErrorHandler(interaction, error);
         },
         async middleware(interaction, block) {
             console.log(`Comando usado no server: ${interaction.guild?.name} pelo usuário: ${interaction.user.displayName} o comando: ${interaction.commandName}, data: ${new Date().toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo" })}`)
@@ -343,66 +278,7 @@ export const { createCommand, createEvent, createResponder } = setupCreators({
             interaction.reply(res.danger(`${icon.error} | Responder not found!`, { flags: ["Ephemeral"] }));
         },
         async onError(error, interaction) {
-            if (error instanceof ZodError) {
-                const errors = error.issues.map(e => `**\`${e.message}\`**`).join("\n");
-
-                const errorMessage = `${icon.error} | Informações inválidas! \n${errors}`
-
-                if (interaction.deferred) {
-                    try {
-                        await interaction.editReply(res.danger(errorMessage));
-                    } catch (_) {
-                        try {
-                            await interaction.editReply(resv2.danger(errorMessage));
-                        } catch (_) {
-                            await interaction.followUp(res.danger(errorMessage))
-                        }
-                    }
-                } else if (!interaction.replied) {
-                    await interaction.reply(res.danger(errorMessage));
-                }
-                return;
-            }
-
-            console.error(`Error in: ${interaction.guild?.name || "Guild not found"} used by user: ${interaction.user.displayName}. error:`, error);
-
-            const errorMessage = `**${icon.error} | An error occurred while executing the responder: \`${error instanceof Error ? error.message : "Unknown error"}\`**`;
-
-            if (interaction.deferred) {
-                try {
-                    await interaction.editReply(res.danger(errorMessage));
-                } catch (_) {
-                    try {
-                        await interaction.editReply(resv2.danger(errorMessage));
-                    } catch (_) {
-                        await interaction.followUp(res.danger(errorMessage))
-                    }
-                }
-            } else if (!interaction.replied) {
-                await interaction.reply(res.danger(errorMessage));
-            }
-
-            try {
-                const guild = interaction.client.guilds.cache.get("1395383469210865694")!;
-                const channel = guild.channels.cache.get("1431993706625368235") || await guild.channels.fetch("1431993706625368235");
-
-                if (!channel || !channel.isTextBased()) return;
-
-                await channel.send(res.danger(brBuilder(
-                    `**Error in the button id: \`${interaction.customId}\` used by user \`${interaction.user.tag}\` in guild \`${interaction.guild?.name || "Direct Message"}\`**`,
-                    "```js",
-                    JSON.stringify({
-                        error: error instanceof Error ? error.message : error,
-                        stack: error instanceof Error ? error.stack : "No stack trace"
-                    }, null, 2),
-                    "```"
-                )));
-
-                await interaction.followUp(res.success(`${icon.success} | The error has been logged to the designated channel.`));
-            } catch (e) {
-                console.error("Failed to send error message to the log channel:", e);
-                await interaction.followUp(res.danger(`${icon.error} | Additionally, failed to log the error to the designated channel.`));
-            }
+            return await discordErrorHandler(interaction, error);
         },
         async middleware(interaction, block) {
             const blacklisted = isBlacklisted(interaction.user.id);

@@ -1,6 +1,6 @@
 import { createCommand } from "#base";
 import { prisma, redis } from "#database";
-import { icon, res, resv2, selectWinner } from "#functions";
+import { ErisError, icon, res, resv2, selectWinner } from "#functions";
 import { menus } from "#menus";
 import { GuildGiveaway, RoleMultipleEntry } from "#prisma";
 import { GiveawayManageDataInfo } from "#types/giveawayManageDataType.js";
@@ -466,10 +466,7 @@ createCommand({
 
         const hasPerms = member.permissions.has("ManageEvents") || user.id === "1171963692984844401";
 
-        if (!hasPerms) {
-            interaction.reply(res.danger(`${icon.denied} | Você precisa da permissão de **gerenciar eventos** para poder gerenciar sorteios!`));
-            return;
-        }
+        if (!hasPerms) throw new ErisError(`${icon.denied} | Você precisa da permissão de **gerenciar eventos** para poder gerenciar sorteios!`);
 
         await interaction.deferReply();
 
@@ -489,17 +486,11 @@ createCommand({
                     }
                 });
 
-                if (!giveaway) {
-                    interaction.editReply(res.danger(`${icon.error} | Não foi possivel encontrar esse sorteio!`))
-                    return;
-                }
+                if (!giveaway) throw new ErisError(`Procurei por toda parte, mas não consegui encontrar esse sorteio!`);
 
                 const guildConnected = giveaway.connectedGuilds.find(g => g.guildId === guild.id);
 
-                if (!guildConnected) {
-                    interaction.editReply(res.danger(`${icon.error} | Esse server não faz parte desse sorteio!`))
-                    return;
-                }
+                if (!guildConnected) throw new ErisError(`Esse server não faz parte desse sorteio!`);
 
                 const guildIsHost = guildConnected.isHost;
 
@@ -556,30 +547,18 @@ createCommand({
                     }
                 });
 
-                if (!giveaway) {
-                    interaction.editReply(res.danger(`${icon.error} | Não foi possivel encontrar esse sorteio!`))
-                    return;
-                }
+                if (!giveaway) throw new ErisError(`Procurei por toda parte, mas não consegui encontrar esse sorteio!`);
+
+                const guildConnected = giveaway.connectedGuilds.find(g => g.guildId === guild.id);
+
+                if (!guildConnected) throw new ErisError(`Esse server não faz parte desse sorteio!`);
 
                 const participant = giveaway.participants.find(p => p.userId === userId);
 
-                if (!participant) {
-                    interaction.editReply(res.danger(`${icon.error} | Esse usuário não existe ou não faz parte desse sorteio!`))
-                    return;
-                }
-
-                const giveawayGuildInfo = giveaway.connectedGuilds.find(g => g.guildId === interaction.guildId);
-
-                if (!giveawayGuildInfo) {
-                    interaction.editReply(res.danger(`${icon.error} | Esse server não faz parte desse sorteio!`))
-                    return;
-                }
+                if (!participant) throw new ErisError("Esse usuário não existe ou não faz parte desse sorteio!");
 
                 const newWinner = await selectWinner(client, giveaway, giveaway.participants, giveaway.connectedGuilds, 1)
-                if (!newWinner) {
-                    interaction.editReply(res.danger(`${icon.error} | Não existe outros usuários que se adequem aos requisitos para possuir o lugar desse usuário!`))
-                    return;
-                }
+                if (!newWinner) throw new ErisError(`Não existe outros usuários que se adequem aos requisitos para possuir o lugar desse usuário!`);
 
                 const winner = newWinner[0];
 
@@ -658,24 +637,15 @@ createCommand({
                     }
                 });
 
-                if (!giveaway) {
-                    interaction.editReply(res.danger(`${icon.error} | Não foi possivel encontrar esse sorteio!`))
-                    return;
-                }
+                if (!giveaway) throw new ErisError(`Procurei por toda parte, mas não consegui encontrar esse sorteio!`);
 
-                const giveawayGuildInfo = giveaway.connectedGuilds.find(g => g.guildId === interaction.guildId);
+                const guildConnected = giveaway.connectedGuilds.find(g => g.guildId === guild.id);
 
-                if (!giveawayGuildInfo) {
-                    interaction.editReply(res.danger(`${icon.error} | Esse server não faz parte desse sorteio!`))
-                    return;
-                }
+                if (!guildConnected) throw new ErisError(`Esse server não faz parte desse sorteio!`);
 
                 const winners = await selectWinner(client, giveaway, giveaway.participants, giveaway.connectedGuilds, giveaway.usersWins);
 
-                if (!winners || winners.length < 1) {
-                    interaction.editReply(res.danger(`${icon.error} | Não há participantes elegiveis para ganhar o sorteio!`));
-                    return;
-                }
+                if (!winners || winners.length < 1) throw new ErisError("Não há participantes elegiveis para ganhar o sorteio!");
 
                 try {
                     const errors: { guildName: string; error: string }[] = []
@@ -765,10 +735,7 @@ createCommand({
                 // verificar se o servidor é convidado
                 const key = `connectedGiveaway:solicitation:${guild.id}:${giveawayId}`;
                 const solicitation = await redis.get(key);
-                if (!solicitation) {
-                    interaction.editReply(res.danger(`${icon.error} | Esse convite não existe!`))
-                    return;
-                }
+                if (!solicitation) throw new ErisError("Esse convite não existe!");
 
                 let success = true;
                 try {
@@ -781,15 +748,9 @@ createCommand({
                         }
                     });
 
-                    if (!giveaway) {
-                        interaction.editReply(res.danger(`${icon.error} | Esse convite leva para um sorteio que foi deletado!`));
-                        return;
-                    }
+                    if (!giveaway) throw new ErisError("Esse convite leva para um sorteio que foi deletado!");
 
-                    if (giveaway.connectedGuilds.some(cn => cn.guildId === guild.id)) {
-                        interaction.editReply(res.danger(`${icon.error} | Esse server já faz parte desse sorteio!`))
-                        return;
-                    }
+                    if (giveaway.connectedGuilds.some(cn => cn.guildId === guild.id)) throw new ErisError("Esse server já faz parte desse sorteio!");
 
                     const channel = options.getChannel("channel", true) as TextChannel;
                     const errors: string[] = [];
@@ -801,10 +762,7 @@ createCommand({
                     const userPermissions = member.permissionsIn(channel);
                     if (!userPermissions.has("SendMessages")) errors.push("Você não tem a permissão de enviar mensagens nesse canal!");
 
-                    if (errors.length > 0) {
-                        interaction.editReply(res.danger(`${icon.error} | Um total de **${errors.length}** ocorreram!\n ${errors.join("\n")}`));
-                        return;
-                    }
+                    if (errors.length > 0) throw new ErisError(`Um total de **${errors.length}** ocorreram!\n ${errors.join("\n")}`);
 
                     async function getRoleNames(
                         roleEntries: RoleMultipleEntry[],
@@ -882,9 +840,8 @@ createCommand({
                             },
                         });
 
-                        if (!freshGiveaway) {
+                        if (!freshGiveaway) 
                             throw new Error("Falha ao recarregar os dados do sorteio após atualizações.");
-                        }
 
                         const connectedGuildsWithNames = await getGuildNames(freshGiveaway.connectedGuilds, client);
                         const roleEntriesWithNames = await getRoleNames(freshGiveaway.roleEntries, freshGiveaway.connectedGuilds, client);
@@ -940,17 +897,11 @@ createCommand({
                         }
                     });
 
-                    if (!giveaway) {
-                        interaction.editReply(res.danger(`${icon.error} | Não foi possivel encontrar esse sorteio!`))
-                        return;
-                    }
+                    if (!giveaway) throw new ErisError("Não foi possivel encontrar esse sorteio!");
 
                     const guildConnected = giveaway.connectedGuilds.find(g => g.guildId === guild.id);
 
-                    if (!guildConnected) {
-                        interaction.editReply(res.danger(`${icon.error} | Esse server não faz parte desse sorteio!`))
-                        return;
-                    }
+                    if (!guildConnected) throw new ErisError("Esse server não faz parte desse sorteio!")
 
                     async function getRoleNames(roleEntries: RoleMultipleEntry[], guild: Guild): Promise<(RoleMultipleEntry & { roleName: string })[]> {
                         return Promise.all(roleEntries.map(async (roleEntry) => {

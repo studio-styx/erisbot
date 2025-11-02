@@ -1,6 +1,6 @@
 import { createResponder, ResponderType, Store } from "#base";
 import { prisma } from "#database";
-import { getRandomValue, icon, registerLog, res } from "#functions";
+import { ErisError, getRandomValue, icon, registerLog, res } from "#functions";
 import { getLang, translate } from "#locale";
 import { Prisma } from "#prisma";
 import { createRow } from "@magicyan/discord";
@@ -37,9 +37,8 @@ createResponder({
                 return;
             }
             const messages: string[] = t.firstAttempt;
-            interaction.reply(res.danger(`${icon.denied} |  ${getRandomValue(messages)}`));
             trys.set(user.id, 1, { time: 1000 * 2 });
-            return;
+            throw new ErisError(`${icon.denied} | ${getRandomValue(messages)}`, false);
         }
 
         // Corrigindo a lógica de toggle

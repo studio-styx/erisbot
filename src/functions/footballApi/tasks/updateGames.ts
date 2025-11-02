@@ -57,7 +57,7 @@ export async function updateGames(client: Client): Promise<{
                     apiId: match.id
                 },
             });
-            
+
             if (game) {
                 console.log("Partida já estagnada, pulando ela")
                 continue;
@@ -96,6 +96,102 @@ export async function updateGames(client: Client): Promise<{
             const homeWin = homeGoals > awayGoals;
             const draw = homeGoals === awayGoals;
             const awayWin = homeGoals < awayGoals;
+
+            const teamPointsDistribuction: Record<string, number> = {
+                win: 5,
+                draw: 3,
+                lose: 2, // negativo
+                manyGoalsScored: 8,
+                manyGoalsSuffered: 5, // negativo
+            }
+
+            const playerPointsDistribuction: Record<string, number> = {
+                pointsPerGoal: 2,
+                pointsPerOwnGoal: 3, // negativo
+                pointerPerAssist: 1
+            }
+
+            const goals = match.goals;
+
+            for (const goal of goals) {
+                try {
+                    await prisma.footballPlayer.update({
+                        where: {
+                            apiId: goal.scorer.id
+                        },
+                        data: {
+                            points: goal.type === "OWN_GOAL" ? {
+                                decrement: playerPointsDistribuction.pointsPerOwnGoal
+                            } : {
+                                increment: playerPointsDistribuction.pointsPerGoal
+                            }
+                        }
+                    });
+                    if (goal.assist) {
+                        await prisma.footballPlayer.update({
+                            where: {
+                                apiId: goal.assist.id
+                            },
+                            data: {
+                                points: {
+                                    increment: playerPointsDistribuction.pointerPerAssist
+                                }
+                            }
+                        });
+                    }
+                } catch (e) {
+                    console.error(e);
+                    continue;
+                }
+            }
+
+            let homeTeamPoints = 0;
+            let awayTeamPoints = 0;
+
+            if (homeWin) {
+                homeTeamPoints += teamPointsDistribuction.win;
+                awayTeamPoints -= teamPointsDistribuction.lose;
+            } else if (draw) {
+                homeTeamPoints += teamPointsDistribuction.draw;
+                awayTeamPoints += teamPointsDistribuction.draw;
+            } else {
+                homeTeamPoints -= teamPointsDistribuction.lose;
+                awayTeamPoints += teamPointsDistribuction.win;
+            }
+
+            // calcular se a diferença de gols é maior que 4
+            if (Math.abs(homeGoals - awayGoals) >= 4) {
+                if (homeGoals > awayGoals) {
+                    homeTeamPoints += teamPointsDistribuction.manyGoalsScored;
+                    awayTeamPoints -= teamPointsDistribuction.manyGoalsSuffered;
+                } else {
+                    homeTeamPoints -= teamPointsDistribuction.manyGoalsSuffered;
+                    awayTeamPoints += teamPointsDistribuction.manyGoalsScored;
+                }
+            }
+
+            await prisma.$transaction([
+                prisma.footballTeam.update({
+                    where: {
+                        id: dbGame.homeTeamId
+                    },
+                    data: {
+                        points: {
+                            increment: homeTeamPoints
+                        }
+                    }
+                }),
+                prisma.footballTeam.update({
+                    where: {
+                        id: dbGame.awayTeamId
+                    },
+                    data: {
+                        points: {
+                            increment: awayTeamPoints
+                        }
+                    }
+                })
+            ])
 
             for (const bet of bets) {
                 try {

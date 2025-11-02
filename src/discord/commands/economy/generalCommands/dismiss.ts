@@ -1,5 +1,5 @@
 import { prisma } from "#database";
-import { res, registerLog } from "#functions";
+import { res, registerLog, ErisError } from "#functions";
 import { getLang, translate } from "#locale";
 import { ChatInputCommandInteraction } from "discord.js";
 
@@ -14,10 +14,7 @@ export async function EconomyDismissCommand(interaction: ChatInputCommandInterac
         select: { companyId: true }
     });
 
-    if (!user || !user.companyId) {
-        await interaction.editReply(res.danger(t.noHasWork));
-        return;
-    }
+    if (!user || !user.companyId) throw new ErisError(t.noHasWork, false);
 
     await prisma.user.update({
         where: { id: interaction.user.id },

@@ -44,7 +44,7 @@ createEvent({
             if (hasGames) {
                 await updateGames(client);
             }
-        }, 1000 * 60 * 10)
+        }, 1000 * 60 * 4)
 
         function scheduleNextMonday() {
             const now = new Date();

@@ -1,6 +1,6 @@
 import { Store } from "#base";
 import { prisma } from "#database";
-import { res, icon, calculateDate } from "#functions";
+import { icon, calculateDate, ErisError } from "#functions";
 import { getLang, translate } from "#locale";
 import { settings } from "#settings";
 import { createEmbed, createRow, createContainer, createSeparator } from "@magicyan/discord";
@@ -14,10 +14,7 @@ export async function economyTransferCommand(interaction: ChatInputCommandIntera
     const lang = getLang(interaction.locale);
     const t = translate.commands.transfer[lang];
 
-    if (inCooldown && inCooldown > new Date()) {
-        interaction.reply(res.fuchsia(t.cooldown(inCooldown)));
-        return;
-    }
+    if (inCooldown && inCooldown > new Date()) throw new ErisError(t.cooldown(inCooldown), false);
 
     const { options } = interaction
 
@@ -29,19 +26,14 @@ export async function economyTransferCommand(interaction: ChatInputCommandIntera
 
         const author = await prisma.user.findUnique({ where: { id: interaction.user.id } })
 
-        if (!author) {
-            interaction.editReply(res.danger(t.firstUse));
-            return;
-        }
+        if (!author) throw new ErisError(t.firstUse, false);
 
         if (value > author.money.toNumber()) {
             value = author.money.toNumber();
         }
 
-        if (value < 15) {
-            interaction.editReply(res.danger(t.notEnoughMoney));
-            return;
-        }
+        if (value < 15) throw new ErisError(t.notEnoughMoney, false);
+
         const container = createContainer(settings.colors.bravery, [
             t.manyTransferContainer.title,
             createSeparator(),
@@ -62,18 +54,9 @@ export async function economyTransferCommand(interaction: ChatInputCommandIntera
         return;
     }
 
-    if (user.id === interaction.user.id) {
-        interaction.reply(res.fuchsia(t.ownTransfer));
-        return;
-    }
-    if (user.id === interaction.client.user?.id) {
-        interaction.reply(res.fuchsia(t.erisTransfer));
-        return;
-    }
-    if (user.bot) {
-        interaction.reply(res.fuchsia(t.botTransfer));
-        return;
-    }
+    if (user.id === interaction.user.id) throw new ErisError(t.ownTransfer, false);
+    if (user.id === interaction.client.user?.id) throw new ErisError(t.erisTransfer, false);
+    if (user.bot) throw new ErisError(t.botTransfer);
 
     const authorId: string = interaction.user.id;
     const targetId: string = user.id;
@@ -82,19 +65,13 @@ export async function economyTransferCommand(interaction: ChatInputCommandIntera
 
     const author = await prisma.user.findUnique({ where: { id: authorId } })
 
-    if (!author) {
-        interaction.editReply(res.danger(t.firstUse));
-        return;
-    }
+    if (!author) throw new ErisError(t.firstUse, false);
 
     if (value > author.money.toNumber()) {
         value = author.money.toNumber();
     }
 
-    if (value < 15) {
-        interaction.editReply(res.danger(t.notEnoughMoney));
-        return;
-    }
+    if (value < 15) throw new ErisError(t.notEnoughMoney, false);
 
     const [_target, transaction] = await prisma.$transaction([
         prisma.user.upsert({

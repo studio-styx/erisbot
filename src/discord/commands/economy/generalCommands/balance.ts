@@ -1,5 +1,5 @@
 import { prisma } from "#database";
-import { registerLog, res } from "#functions";
+import { ErisError, registerLog } from "#functions";
 import { getLang, translate } from "#locale";
 import { settings } from "#settings";
 import { createEmbed } from "@magicyan/discord";
@@ -12,14 +12,8 @@ export async function economyBalanceCommand(interaction: ChatInputCommandInterac
     const lang = getLang(interaction.locale);
     const t = translate.commands.balance[lang];
     
-    if (id === interaction.client.user?.id) {
-        interaction.reply(res.fuchsia(t.erisMoney))
-        return;
-    }
-    if (options.getUser("user")?.bot) {
-        interaction.reply(res.danger(t.botMoney))
-        return;
-    }
+    if (id === interaction.client.user?.id) throw new ErisError(t.erisMoney, false);
+    if (options.getUser("user")?.bot) throw new ErisError(t.botMoney, false)
 
     await interaction.deferReply();
 
@@ -47,7 +41,7 @@ export async function economyBalanceCommand(interaction: ChatInputCommandInterac
         thumbnail: options.getUser("user")?.avatarURL() || interaction.user.avatarURL(),
     })
 
-    interaction.editReply({ embeds: [embed] });
+    await interaction.editReply({ embeds: [embed] });
 
     await registerLog({
         level: 1,
