@@ -1,18 +1,20 @@
-import { createResponder, ResponderType } from "#base";
+import { createResponder, ResponderType, Store } from "#base";
 import { prisma } from "#database";
-import { icon, res, resv2 } from "#functions";
+import { Event, icon, res, resv2, simulateMatchResultWithIa } from "#functions";
 import { menus } from "#menus";
 import { FootballBetType } from "#prisma";
-import { createLabel, createModalFields, randomNumber } from "@magicyan/discord";
-import { StringSelectMenuBuilder, TextInputBuilder, TextInputStyle } from "discord.js";
-import z from "zod";
+import { brBuilder, createLabel, createModalFields, createSeparator, randomNumber } from "@magicyan/discord";
+import { StringSelectMenuBuilder, TextInputBuilder, TextInputStyle, time } from "discord.js";
+import z, { ZodError } from "zod";
+
+const simulateMatchCooldown = new Store<Date>();
 
 createResponder({
     customId: "football/match/menu/:page/:matchId/:userId",
     types: [ResponderType.Button, ResponderType.ModalComponent], cache: "cached",
     parse(params) {
         return {
-            page: params.page as "homeStatistics" | "awayStatistics" | "odds" | "bet",
+            page: params.page as "bet" | "simulate",
             matchId: BigInt(params.matchId),
             userId: params.userId
         }
@@ -354,42 +356,104 @@ createResponder({
                 }));
                 return;
             }
-        }
-        if (!interaction.isButton()) return;
-        await interaction.deferUpdate();
-        const [match, userData] = await prisma.$transaction([
-            prisma.footballMatch.findUnique({
-                where: { id: matchId },
-                include: {
-                    homeTeam: true,
-                    awayTeam: true,
-                    competition: true
-                }
-            }),
-            prisma.user.upsert({
-                where: { id: user.id },
-                create: { id: user.id },
-                update: {},
-                select: {
-                    bets: {
-                        where: {
-                            matchId
+        } else {
+            if (!interaction.isButton()) return;
+
+            const cooldown = simulateMatchCooldown.get(interaction.user.id);
+            if (cooldown && cooldown > new Date()) {
+                await interaction.reply(res.danger(`${icon.denied} | Você já simulou uma partida recentemente! tente novamente ${time(cooldown, "R")}`))
+            }
+
+            await interaction.deferReply();
+            
+            const [match] = await prisma.$transaction([
+                prisma.footballMatch.findUnique({
+                    where: {
+                        id: matchId
+                    },
+                    include: {
+                        awayTeam: {
+                            include: {
+                                players: true
+                            }
+                        },
+                        homeTeam: {
+                            include: {
+                                players: true
+                            }
+                        },
+                        competition: true,
+
+                    }
+                }),
+                prisma.user.upsert({
+                    where: {
+                        id: userId
+                    },
+                    create: { id: userId },
+                    update: {},
+                    include: {
+                        bets: {
+                            where: {
+                                matchId
+                            }
                         }
                     }
+                })
+            ]);
+
+            if (!match) {
+                await interaction.editReply(resv2.danger(`${icon.error} | Eu não consegui achar essa partida!`))
+                return
+            }
+            try {
+                const result = await simulateMatchResultWithIa(match);
+                
+                const eventFormatted: Record<Event, string> = {
+                    GOAL: "Gol",
+                    YELLOW_CARD: "Cartão amarelo",
+                    RED_CARD: "Cartão vermelho",
+                    FIGHT: "Briga",
+                    MISSED_PENALTY: "Penâlti perdido",
+                    OWN_GOAL: "Gol contra",
+                    PENALTY: "Gol de penâlti",
+                    SUBSTITUTION: "Substituição"
                 }
-            })
-        ])
 
-        if (!match) {
-            await interaction.editReply(res.danger(`${icon.error} | Partida não encontrada.`));
-            return;
+                await interaction.editReply(resv2.fuchsia(
+                    `## Simulação da partida: **${match.homeTeam.name}** x **${match.awayTeam.name}** da competição: ${match.competition.name}`,
+                    createSeparator(),
+                    brBuilder(
+                        result.timeline.map((t, i) => brBuilder(
+                            `> **\`Minuto\`**: **${t.minute}**`,
+                            `> **\`Evento\`**: **${eventFormatted[t.event]}**`,
+                            `> **\`Motivo:\`** **${t.reason}**`,
+                            t.player ? `> **\`Jogador\`**: **${t.player}**` : null,
+                            i !== result.timeline.length - 1 ? "=======================" : null
+                        ))
+                    ),
+                    brBuilder(
+                        `Placar final: **${result.score.fullTime.home}** x **${result.score.fullTime.away}**`,
+                        `Opinião: **${result.opinion}**`
+                    )
+                ));
+
+                const cooldownDate = new Date();
+                cooldownDate.setMinutes(cooldownDate.getMinutes() + 5);
+                simulateMatchCooldown.set(interaction.user.id, cooldownDate, {
+                    time: 1000 * 60 * 5
+                })
+            } catch (error) {
+                console.error(error);
+                if (error instanceof ZodError) {
+                    const errors = error.issues.map(e => `**\`${e.message}\`**`).join("\n");
+
+                    await interaction.editReply(resv2.danger(`${icon.error} | Ops! parece que a IA retornou informações erradas sobre a partida! \n${errors}`));
+                    return;
+                }
+                await interaction.editReply(resv2.danger(`${icon.error} | Ocorreu um erro ao tentar fazer requisição a IA!`));
+            }
         }
-
-        await interaction.editReply(menus.football.matches.matchMenu(match, {
-            bets: userData.bets,
-            id: user.id,
-            displayAvatarURL: user.displayAvatarURL
-        }));
         return;
     }
 });

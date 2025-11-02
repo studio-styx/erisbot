@@ -1,4 +1,4 @@
-import { formatNumber } from "#functions";
+import { formatNumber, icon } from "#functions";
 import { FootballBet, FootballBetType, FootballLeague, FootballMatch, FootballTeam, MatchStatus, Prisma } from "#prisma";
 import { settings } from "#settings";
 import { brBuilder, createContainer, createRow, createSection, createSeparator } from "@magicyan/discord";
@@ -41,18 +41,18 @@ export function matchMenu<R>(match: MatchType, user: User): R {
     const container = createContainer(settings.colors.fuchsia,
         createSection(
             brBuilder(
-                `## Partida: ${match.homeTeam.name} ${match.goalsHome ?? "NDA"} x ${match.goalsAway ?? "NDA"} ${match.awayTeam.name}`,
-                `**Estádio:** ${match.venue || "Desconhecido"}`,
+                `## ${icon.dragon} ╺╸ Partida: ${match.homeTeam.name} ${match.goalsHome ?? "NDA"} x ${match.goalsAway ?? "NDA"} ${match.awayTeam.name}`,
+                `${icon.stadium} | **Estádio:** ${match.venue || "Desconhecido"}`,
                 match.startAt < new Date()
-                    ? `**Começou:** ${time(match.startAt, TimestampStyles.RelativeTime)} | ${time(match.startAt, TimestampStyles.LongDateTime)}`
-                    : `**Começa:** ${time(match.startAt, TimestampStyles.RelativeTime)}  | ${time(match.startAt, TimestampStyles.LongDateTime)}`,
-                `**Campeonato:** ${match.competition.name}`,
-                `**Status:** ${matchStatusFormatted[match.status]}`,
+                    ? `${icon.alarm} | **Começou:** ${time(match.startAt, TimestampStyles.RelativeTime)} | ${time(match.startAt, TimestampStyles.LongDateTime)}`
+                    : `${icon.alarm} | **Começa:** ${time(match.startAt, TimestampStyles.RelativeTime)}  | ${time(match.startAt, TimestampStyles.LongDateTime)}`,
+                `${icon.trophy} | **Campeonato:** ${match.competition.name}`,
+                `${icon.event_list} | **Status:** ${matchStatusFormatted[match.status]}`,
             ),
             match.competition.emblem || match.homeTeam.crest || match.awayTeam.crest || user.displayAvatarURL()
         ),
         createSeparator(),
-        `## Suas apostas:`,
+        `## ${icon.solar_money_bag_bold} ╺╸ Suas apostas:`,
         user.bets.length > 0 && [...user.bets.map(b => createSection(
             brBuilder(
                 `> **Tipo:** ${betFormatted[b.type]}`,
@@ -67,7 +67,8 @@ export function matchMenu<R>(match: MatchType, user: User): R {
                 customId: `football/bet/remove/${b.id}/${user.id}`,
                 label: "Remover",
                 style: ButtonStyle.Danger,
-                disabled: match.startAt < new Date()
+                disabled: match.startAt < new Date(),
+                emoji: icon.trash
             })
         ))],
         createRow(

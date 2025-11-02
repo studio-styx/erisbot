@@ -1,3 +1,4 @@
+import { icon } from "#functions";
 import { FootballLeague, FootballMatch, FootballTeam } from "#prisma";
 import { settings } from "#settings";
 import { brBuilder, createContainer, createRow, createSection, createSeparator } from "@magicyan/discord";
@@ -53,12 +54,12 @@ export function getMatchesMenuMenu<R>(matches: MatchesType, defaultImageUrl: str
         paginatedMatches.forEach(m => {
             components.push(
                 createSection(brBuilder(
-                    `## ${m.competition.name}`,
-                    `**${m.homeTeam.name}** ${m.goalsHome ?? ""} x ${m.goalsAway ?? ""} **${m.awayTeam.name}**`,
-                    `**Estádio:** ${m.venue || "Desconhecido"}`,
+                    `## ${icon.trophy} - ${m.competition.name}`,
+                    `${icon.soccer_field} - **${m.homeTeam.name}** ${m.goalsHome ?? ""} x ${m.goalsAway ?? ""} **${m.awayTeam.name}**`,
+                    `${icon.stadium} - **Estádio:** ${m.venue || "Desconhecido"}`,
                     m.startAt < new Date() ?
-                        `**Começou:** ${time(m.startAt, TimestampStyles.RelativeTime)} | ${time(m.startAt, TimestampStyles.LongDateTime)}`
-                        : `**Começa:** ${time(m.startAt, TimestampStyles.RelativeTime)}  | ${time(m.startAt, TimestampStyles.LongDateTime)}`,         
+                        `${icon.alarm} - **Começou:** ${time(m.startAt, TimestampStyles.RelativeTime)} | ${time(m.startAt, TimestampStyles.LongDateTime)}`
+                        : `${icon.alarm} - **Começa:** ${time(m.startAt, TimestampStyles.RelativeTime)}  | ${time(m.startAt, TimestampStyles.LongDateTime)}`,         
                 ), m.competition.emblem || m.homeTeam.crest || m.awayTeam.crest || defaultImageUrl),
                 new ButtonBuilder({
                     customId: `football/match/view/${m.id}`,

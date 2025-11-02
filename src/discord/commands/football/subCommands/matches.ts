@@ -2,13 +2,17 @@ import { prisma } from "#database";
 import { icon, res } from "#functions";
 import { menus } from "#menus";
 import { ChatInputCommandInteraction } from "discord.js";
+import z from "zod";
 
 export async function footballMatchesCommand(interaction: ChatInputCommandInteraction<"cached">) {
     await interaction.deferReply();
 
-    const match = interaction.options.getString("match");
-    if (match) {
-        const matchId = BigInt(match);
+    const matchSelected = interaction.options.getString("match");
+    if (matchSelected) {
+        const matchSchema = z.coerce.bigint("O id da partida deve ser um número inteiro.")
+            .positive("O id da partida deve ser maior que 0.");
+            
+        const matchId = matchSchema.parse(matchSelected);
         const [matchData, userData] = await prisma.$transaction([
             prisma.footballMatch.findUnique({
                 where: { id: matchId },

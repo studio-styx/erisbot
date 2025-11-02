@@ -4,6 +4,7 @@ import { commandsManager, defaultServerSettings, getCommandId, getRandomNumber, 
 import { PetSkill, UserPetSkill } from "#prisma";
 import { brBuilder, createSeparator } from "@magicyan/discord";
 import { channelMention, Interaction, time, ChatInputCommandInteraction } from "discord.js";
+import { ZodError } from "zod";
 
 const cooldown = new Store<Date>();
 const lessUse = new Store<Date>();
@@ -15,6 +16,26 @@ export const { createCommand, createEvent, createResponder } = setupCreators({
             interaction.reply(res.danger(`${icon.error} | Command not found!`));
         },
         async onError(error, interaction) {
+            if (error instanceof ZodError) {
+                const errors = error.issues.map(e => `**\`${e.message}\`**`).join("\n");
+
+                const errorMessage = `${icon.error} | Informações inválidas! \n${errors}`
+
+                if (interaction.deferred) {
+                    try {
+                        await interaction.editReply(res.danger(errorMessage));
+                    } catch (_) {
+                        try {
+                            await interaction.editReply(resv2.danger(errorMessage));
+                        } catch (_) {
+                            await interaction.followUp(res.danger(errorMessage))
+                        }
+                    }
+                } else if (!interaction.replied) {
+                    await interaction.reply(res.danger(errorMessage));
+                }
+                return;
+            }
             console.error(`Error in: ${interaction.guild?.name || "Guild not found"} used by user: ${interaction.user.displayName}. error:`, error);
 
             const errorMessage = `**${icon.error} | An error occurred while executing the command: \`${error instanceof Error ? error.message : "Unknown error"}\`**`;
@@ -322,6 +343,27 @@ export const { createCommand, createEvent, createResponder } = setupCreators({
             interaction.reply(res.danger(`${icon.error} | Responder not found!`, { flags: ["Ephemeral"] }));
         },
         async onError(error, interaction) {
+            if (error instanceof ZodError) {
+                const errors = error.issues.map(e => `**\`${e.message}\`**`).join("\n");
+
+                const errorMessage = `${icon.error} | Informações inválidas! \n${errors}`
+
+                if (interaction.deferred) {
+                    try {
+                        await interaction.editReply(res.danger(errorMessage));
+                    } catch (_) {
+                        try {
+                            await interaction.editReply(resv2.danger(errorMessage));
+                        } catch (_) {
+                            await interaction.followUp(res.danger(errorMessage))
+                        }
+                    }
+                } else if (!interaction.replied) {
+                    await interaction.reply(res.danger(errorMessage));
+                }
+                return;
+            }
+
             console.error(`Error in: ${interaction.guild?.name || "Guild not found"} used by user: ${interaction.user.displayName}. error:`, error);
 
             const errorMessage = `**${icon.error} | An error occurred while executing the responder: \`${error instanceof Error ? error.message : "Unknown error"}\`**`;
