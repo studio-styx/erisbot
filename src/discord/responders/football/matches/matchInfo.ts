@@ -176,7 +176,8 @@ createResponder({
                                 select: {
                                     name: true
                                 }
-                            }
+                            },
+                            startAt: true
                         }
                     }),
                     prisma.user.upsert({
@@ -184,7 +185,10 @@ createResponder({
                             id: userId
                         },
                         create: { id: userId },
-                        update: {}
+                        update: {},
+                        include: {
+                            bets: true
+                        }
                     })
                 ])
 
@@ -198,46 +202,88 @@ createResponder({
                     return;
                 }
 
-                if (data.target === "awayWin" || data.target === "homeWin" || data.target === "draw") {
+                if (match.startAt < new Date()) {
+                    await interaction.editReply(resv2.danger(`${icon.error} | Você não pode apostar em uma partida que já começou!`));
+                    return;
+                }
+
+                if (["awayWin", "homeWin", "draw"].includes(data.target)) {
+                    const targetType = typeFormated[data.target]; // Ex: "AWAY_WIN"
+                    const betMap = {
+                        awayWin: "AWAY_WIN",
+                        homeWin: "HOME_WIN",
+                        draw: "DRAW"
+                    };
+
+                    const conflicts = {
+                        AWAY_WIN: ["HOME_WIN", "DRAW"],
+                        HOME_WIN: ["AWAY_WIN", "DRAW"],
+                        DRAW: ["AWAY_WIN", "HOME_WIN"]
+                    };
+
+                    const teamNames = {
+                        AWAY_WIN: match.awayTeam.name,
+                        HOME_WIN: match.homeTeam.name,
+                        DRAW: "empate"
+                    };
+
+                    const currentBetType = betMap[data.target as "awayWin" | "homeWin" | "draw"] as "AWAY_WIN" | "HOME_WIN" | "DRAW";
+                    const conflictingTypes = conflicts[currentBetType];
+
+                    // Verifica se já existe aposta em qualquer tipo conflitante
+                    const existingConflict = user.bets.find(b =>
+                        conflictingTypes.includes(b.type) && b.matchId === matchId
+                    );
+
+                    if (existingConflict) {
+                        const targetName = data.target === "awayWin" ? "fora" : data.target === "homeWin" ? "casa" : "empate";
+                        const conflictName = existingConflict.type === "AWAY_WIN" ? "fora" :
+                            existingConflict.type === "HOME_WIN" ? "casa" : "empate";
+
+                        await interaction.editReply(resv2.danger(
+                            `${icon.error} | Você não pode apostar no time de **${targetName}**! ` +
+                            `Você já apostou no **${conflictName}**, remova essa aposta para continuar.`
+                        ));
+                        return;
+                    }
+
+                    // Prossegue com a aposta
                     await prisma.$transaction([
                         prisma.footballBet.upsert({
                             where: {
                                 type_userId_matchId: {
                                     matchId,
                                     userId: interaction.user.id,
-                                    type: typeFormated[data.target]
+                                    type: targetType
                                 }
                             },
                             create: {
                                 amount: data.amount,
-                                type: typeFormated[data.target],
-                                matchId, userId,
-                                odds: (data.target === "awayWin" ?
-                                    match.oddsAwayWin
-                                    : data.target === "homeWin" ?
-                                        match.oddsHomeWin
-                                        : match.oddsDraw ? match.oddsDraw : 2) || 2,
+                                type: targetType,
+                                matchId,
+                                userId: interaction.user.id,
+                                odds: (data.target === "awayWin" ? match.oddsAwayWin :
+                                    data.target === "homeWin" ? match.oddsHomeWin :
+                                        match.oddsDraw || 2) || 2
                             },
                             update: {
                                 amount: data.amount,
-                                odds: (data.target === "awayWin" ?
-                                    match.oddsAwayWin
-                                    : data.target === "homeWin" ?
-                                        match.oddsHomeWin
-                                        : match.oddsDraw) || 2
+                                odds: (data.target === "awayWin" ? match.oddsAwayWin :
+                                    data.target === "homeWin" ? match.oddsHomeWin :
+                                        match.oddsDraw || 2) || 2
                             }
                         }),
                         prisma.user.update({
-                            where: {
-                                id: userId
-                            },
-                            data: {
-                                money: { decrement: data.amount }
-                            }
+                            where: { id: interaction.user.id },
+                            data: { money: { decrement: data.amount } }
                         })
-                    ])
+                    ]);
 
-                    await interaction.editReply(resv2.success(`${icon.success} | Você apostou **${data.amount}** stx no jogo: **${match.homeTeam.name}** x **${match.awayTeam.name}** da competição: **${match.competition.name}**`));
+                    await interaction.editReply(resv2.success(
+                        `${icon.success} | Você apostou **${data.amount}** stx no jogo: ` +
+                        `**${teamNames.HOME_WIN}** x **${teamNames.AWAY_WIN}** ` +
+                        `da competição: **${match.competition.name}**`
+                    ));
                 } else {
                     await prisma.$transaction([
                         prisma.footballBet.upsert({

@@ -84,7 +84,7 @@ export async function registerGame(tx: Omit<PrismaClient<Prisma.PrismaClientOpti
             apiId: game.id,
             goalsHome: game.score.fullTime.home,
             goalsAway: game.score.fullTime.away,
-            status: game.status,
+            status: game.status === "TIMED" ? "FINISHED" : game.status,
             startAt: game.utcDate,
             homeTeam: { connect: { id: homeTeam.id } },
             awayTeam: { connect: { id: awayTeam.id } },
@@ -96,7 +96,7 @@ export async function registerGame(tx: Omit<PrismaClient<Prisma.PrismaClientOpti
         update: {
             goalsHome: game.score.fullTime.home,
             goalsAway: game.score.fullTime.away,
-            status: game.status,
+            status: game.status === "TIMED" ? "FINISHED" : game.status,
             startAt: game.utcDate,
         },
     });

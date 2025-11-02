@@ -5,7 +5,7 @@ import { xpSystem } from "./chat/xpSystem.js";
 import { onAfkMentioned } from "./onAfkMentioned.js";
 import { onResponseTryviaGame } from "./tryvia/response.js";
 import { Gender, PersonalityTrait } from "#prisma";
-import { icon, registerFootballGames, res } from "#functions";
+import { icon, registerFootballGames, res, updateGames } from "#functions";
 import { brBuilder } from "@magicyan/discord";
 
 createEvent({
@@ -165,6 +165,19 @@ createEvent({
                             `Sucesso: ${result.success.length}`,
                             `Falhas: ${result.failed.length}`,
                             `Erros: ${result.errors.length}`,
+                        )));
+                    } catch (error) {
+                        console.error(error);
+                        await msg.edit(res.danger(`${icon.error} | Erro ao registrar partidas!`));
+                    }
+                    break;
+                }
+                case "s.updategames": {
+                    const msg = await message.reply(res.warning(`${icon.waiting_white} | Iniciando atualização das partidas....`));
+                    try {
+                        const result = await updateGames(message.client);
+                        await msg.edit(res.success(brBuilder(
+                            `## ${icon.success} | ${result?.matchesUpdated?.length || 0} Partidas atualizadas com sucesso!`,
                         )));
                     } catch (error) {
                         console.error(error);

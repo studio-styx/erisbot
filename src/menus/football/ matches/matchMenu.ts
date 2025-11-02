@@ -39,14 +39,17 @@ const betFormatted: Record<FootballBetType, string> = {
 
 export function matchMenu<R>(match: MatchType, user: User): R {
     const container = createContainer(settings.colors.fuchsia,
-        brBuilder(
-            `## Partida: ${match.homeTeam.name}${match.goalsHome ? ` ${match.goalsHome}` : ""} x${match.goalsAway ? ` ${match.goalsAway}` : ""} ${match.awayTeam.name}`,
-            `**Estádio:** ${match.venue || "Desconhecido"}`,
-            match.startAt < new Date()
-                ? `**Começou:** ${time(match.startAt, TimestampStyles.RelativeTime)} | ${time(match.startAt, TimestampStyles.LongDateTime)}`
-                : `**Começa:** ${time(match.startAt, TimestampStyles.RelativeTime)}  | ${time(match.startAt, TimestampStyles.LongDateTime)}`,
-            `**Campeonato:** ${match.competition.name}`,
-            `**Status:** ${matchStatusFormatted[match.status]}`,
+        createSection(
+            brBuilder(
+                `## Partida: ${match.homeTeam.name} ${match.goalsHome ?? "NDA"} x ${match.goalsAway ?? "NDA"} ${match.awayTeam.name}`,
+                `**Estádio:** ${match.venue || "Desconhecido"}`,
+                match.startAt < new Date()
+                    ? `**Começou:** ${time(match.startAt, TimestampStyles.RelativeTime)} | ${time(match.startAt, TimestampStyles.LongDateTime)}`
+                    : `**Começa:** ${time(match.startAt, TimestampStyles.RelativeTime)}  | ${time(match.startAt, TimestampStyles.LongDateTime)}`,
+                `**Campeonato:** ${match.competition.name}`,
+                `**Status:** ${matchStatusFormatted[match.status]}`,
+            ),
+            match.competition.emblem || match.homeTeam.crest || match.awayTeam.crest || user.displayAvatarURL()
         ),
         createSeparator(),
         `## Suas apostas:`,
@@ -63,7 +66,8 @@ export function matchMenu<R>(match: MatchType, user: User): R {
             new ButtonBuilder({
                 customId: `football/bet/remove/${b.id}/${user.id}`,
                 label: "Remover",
-                style: ButtonStyle.Danger
+                style: ButtonStyle.Danger,
+                disabled: match.startAt < new Date()
             })
         ))],
         createRow(

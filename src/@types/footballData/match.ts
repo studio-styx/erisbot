@@ -197,7 +197,7 @@ export interface MatchResponse {
     referees: Referee[];           // Equipe de arbitragem
 }
 
-export type MatchStatus = 'SCHEDULED' | 'LIVE' | 'IN_PLAY' | 'PAUSED' | 'FINISHED' | 'POSTPONED' | 'SUSPENDED' | 'CANCELED' | 'AWARDED';
+export type MatchStatus = 'SCHEDULED' | 'LIVE' | 'IN_PLAY' | 'PAUSED' | 'FINISHED' | 'POSTPONED' | 'SUSPENDED' | 'CANCELED' | 'AWARDED' | 'TIMED';
 
 export type MatchStages =
     | "FINAL"

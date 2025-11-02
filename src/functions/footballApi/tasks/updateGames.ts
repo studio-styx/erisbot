@@ -2,7 +2,7 @@ import { prisma } from "#database";
 import { footballSdk } from "#tools";
 import { brBuilder } from "@magicyan/discord";
 import { registerGame } from "./registerGames.js";
-import { Prisma } from "#prisma";
+import { FootballMatch, Prisma } from "#prisma";
 import { Client } from "discord.js";
 import { menus } from "#menus";
 
@@ -21,7 +21,10 @@ export async function verifyIfHasGames() {
     return matches > 0;
 }
 
-export async function updateGames(client: Client) {
+export async function updateGames(client: Client): Promise<{
+    matchesUpdated: FootballMatch[],
+    matchesNotUpdated: FootballMatch[]
+}> {
     // Pegar todos os jogos da db que estão ao vivo ou ainda não começaram
     const matches = await prisma.footballMatch.findMany({
         where: {
@@ -34,27 +37,36 @@ export async function updateGames(client: Client) {
         }
     });
 
-    if (matches.length === 0) return;
-
-    const oldestMatch = matches.sort((a, b) => a.startAt.getTime() - b.startAt.getTime())[0];
-    const newestMatch = matches.sort((a, b) => b.startAt.getTime() - a.startAt.getTime())[0];
-
-    const dateFrom = oldestMatch ? new Date(oldestMatch.startAt.getTime() - 1000 * 60 * 10) : new Date();
-    const dateTo = newestMatch ? new Date(newestMatch.startAt.getTime() + 1000 * 60 * 10) : new Date();
+    if (matches.length === 0) return {
+        matchesUpdated: [],
+        matchesNotUpdated: []
+    };
 
     // Pegar todas as partidas ocorrendo, posteriomente ignorar as partidas da db que não foram retornadas nessa rota
-    const apiMatches = await footballSdk.matches.getMany({
-        dateFrom, dateTo,
-        status: "IN_PLAY"
-    });
+    const apiMatches = await footballSdk.matches.getTodayGames();
+
+    const matchesUpdated: FootballMatch[] = [];
 
     for (const match of apiMatches.matches) {
+        console.log(`Atualizando partida entre ${match.homeTeam.name} ${match.score?.fullTime?.home} x ${match.score?.fullTime?.away} ${match.awayTeam.name}`)
         const dbGame = matches.find((m => m.apiId === match.id));
         if (!dbGame) {
+            console.log("Partida não encontrada na db")
+            const game = await prisma.footballMatch.findUnique({
+                where: {
+                    apiId: match.id
+                },
+            });
+            
+            if (game) {
+                console.log("Partida já estagnada, pulando ela")
+                continue;
+            };
+            console.log("Partida não existe, criando ela")
             await prisma.$transaction(async (tx) => {
                 await registerGame(tx, match);
             }, { timeout: 120_000 });
-            return;
+            continue;
         }
 
         await prisma.footballMatch.update({
@@ -64,12 +76,14 @@ export async function updateGames(client: Client) {
             data: {
                 goalsHome: match.score.fullTime.home,
                 goalsAway: match.score.fullTime.away,
-                status: match.status,
+                status: match.status === "TIMED" ? "FINISHED" : match.status,
                 startAt: match.utcDate,
             }
         });
 
-        if (match.status === "FINISHED") {
+        matchesUpdated.push(dbGame);
+
+        if (match.status === "FINISHED" || match.status === "TIMED") {
             const bets = await prisma.footballBet.findMany({
                 where: {
                     matchId: dbGame.id
@@ -263,5 +277,30 @@ export async function updateGames(client: Client) {
                 }
             }
         }
+    }
+
+    const matchesNotUpdated = matches.filter(m => !matchesUpdated.some(m2 => m2.id === m.id));
+
+    for (const match of matchesNotUpdated) {
+        // serão poucos os jogos que não foram atualizados, e já tem o sistema de anti many request na requisição
+        // então é seguro
+        const matchInfo = await footballSdk.matches.get(match.apiId);
+
+        await prisma.footballMatch.update({
+            where: {
+                id: match.id
+            },
+            data: {
+                goalsHome: matchInfo.score.fullTime.home,
+                goalsAway: matchInfo.score.fullTime.away,
+                status: matchInfo.status === "TIMED" ? "FINISHED" : matchInfo.status,
+                startAt: matchInfo.utcDate,
+            }
+        });
+    }
+
+    return {
+        matchesUpdated,
+        matchesNotUpdated
     }
 }

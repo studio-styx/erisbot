@@ -2,6 +2,7 @@ import { createCommand } from "#base";
 import { ApplicationCommandOptionType, ApplicationCommandType } from "discord.js";
 import { footballMatchesCommand } from "./subCommands/matches.js";
 import { prisma } from "#database";
+import { limitText } from "@magicyan/discord";
 
 createCommand({
     name: "football",
@@ -79,16 +80,48 @@ createCommand({
                                 name: true
                             }
                         },
-                        id: true
+                        id: true,
+                        startAt: true
                     },
-                    take: 25
+                    take: 25,
+                    orderBy: [
+                        {
+                            bets: {
+                                _count: "desc"
+                            }
+                        },
+                        {
+                            startAt: "asc"
+                        },
+                        {
+                            goalsHome: "desc"
+                        },
+                        {
+                            goalsAway: "desc"
+                        },
+                        {
+                            homeTeam: {
+                                name: "asc"
+                            }
+                        },
+                        {
+                            awayTeam: {
+                                name: "asc"
+                            }
+                        },
+                        {
+                            competition: {
+                                name: "asc"
+                            }
+                        }
+                    ]
                 });
 
                 if (matches.length === 0) {
                     return await interaction.respond([{ name: "Nenhuma partida encontrada", value: "" }]);
                 }
 
-                return await interaction.respond(matches.map(m => ({ name: `${m.homeTeam.name} x ${m.awayTeam.name}`, value: m.id.toString() })));
+                return await interaction.respond(matches.map(m => ({ name: limitText(`${m.homeTeam.name} x ${m.awayTeam.name} || ${m.competition.name} ||| ${m.startAt.toLocaleString()}`, 97, "..."), value: m.id.toString() })));
             }
         }
     },

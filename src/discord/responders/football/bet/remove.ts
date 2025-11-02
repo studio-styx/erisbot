@@ -42,12 +42,26 @@ createResponder({
             return;
         }
 
-        const [userBets] = await prisma.$transaction([
-            prisma.footballBet.findMany({
+        if (bet.match.startAt < new Date()) {
+            await interaction.followUp(res.danger(`${icon.error} | Não é possível remover uma aposta de uma partida que já começou!`));
+            return;
+        }
+
+        const [userData] = await prisma.$transaction([
+            prisma.user.upsert({
                 where: {
-                    userId,
-                    id: { not: betId },
-                    matchId: bet.matchId
+                    id: userId
+                },
+                include: {
+                    bets: true
+                },
+                create: {
+                    id: userId
+                },
+                update: {
+                    money: {
+                        increment: bet.amount
+                    }
                 }
             }),
             prisma.footballBet.delete({
@@ -57,12 +71,12 @@ createResponder({
             })
         ])
 
-        await interaction.followUp(res.success(`${icon.success} | Aposta removida com sucesso!`));
+        await interaction.followUp(res.success(`${icon.success} | Aposta removida com sucesso! com isso, o valor de **${bet.amount}** stx foi retornando na sua conta!`));
 
         await interaction.editReply(menus.football.matches.matchMenu(bet.match, {
             id: user.id,
             displayAvatarURL: () => user.displayAvatarURL(),
-            bets: userBets
+            bets: userData.bets
         }))
     },
 });
