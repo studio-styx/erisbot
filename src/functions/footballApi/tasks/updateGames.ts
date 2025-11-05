@@ -97,6 +97,8 @@ export async function updateGames(client: Client): Promise<{
                         `**${match.homeTeam.name}**: ${match.score.fullTime.home}`,
                         `**${match.awayTeam.name}**: ${match.score.fullTime.away}`,
                         `**Horário de inicio da partida:** ${time(new Date(match.utcDate), "F")}`,
+                        `**Status da partida na api:** ${match.status}`,
+                        `**Status da partida na db:** ${dbGame.status}`
                     )));
 
                     await prisma.footballMatch.update({
