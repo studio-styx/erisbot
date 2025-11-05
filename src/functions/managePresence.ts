@@ -109,7 +109,7 @@ export async function setNextPresence(client: Client<true>) {
             time: 15
         },
         {
-            name: `Já foram criados ${giveawaysCount} com meu sistema!`,
+            name: `Já foram criados ${giveawaysCount} sorteios com meu sistema!`,
             time: 17
         },
     ]
