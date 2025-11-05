@@ -67,6 +67,8 @@ export async function updateGames(client: Client): Promise<{
             continue;
         }
 
+        console.log("Status da partida na api:", match.status, "Status da partida na db:", dbGame.status)
+
         await prisma.footballMatch.update({
             where: {
                 apiId: match.id
@@ -74,14 +76,14 @@ export async function updateGames(client: Client): Promise<{
             data: {
                 goalsHome: match.score.fullTime.home,
                 goalsAway: match.score.fullTime.away,
-                status: match.status === "TIMED" ? "FINISHED" : match.status,
+                status: match.status === "TIMED" ? "SCHEDULED" : match.status,
                 startAt: match.utcDate,
             }
         });
 
         matchesUpdated.push(dbGame);
 
-        if (match.status === "FINISHED" || match.status === "TIMED") {
+        if (match.status === "FINISHED") {
             if (match.score.fullTime.home === null || match.score.fullTime.away === null) {
                 try {
                     const guild = client.guilds.cache.get("1395383469210865694");

@@ -22,12 +22,16 @@ export async function footballBetsCommand(interaction: ChatInputCommandInteracti
                 }
             }
         },
-        orderBy: {
-            match: {
-                startAt: "asc"
+        orderBy: [
+            {
+                match: {
+                    startAt: "asc"
+                }
             },
-            createdAt: "desc"
-        }
+            {
+                createdAt: "desc"
+            }
+        ]
     });
 
     if (userBets.length < 1) throw new ErisError("Você não possui nenhuma aposta!");

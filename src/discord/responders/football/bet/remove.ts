@@ -64,12 +64,16 @@ createResponder({
                                 }
                             }
                         },
-                        orderBy: {
-                            match: {
-                                startAt: "asc"
+                        orderBy: [
+                            {
+                                match: {
+                                    startAt: "asc"
+                                }
                             },
-                            createdAt: "desc"
-                        }
+                            {
+                                createdAt: "desc"
+                            }
+                        ]
                     }
                 },
                 create: {

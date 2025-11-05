@@ -85,10 +85,18 @@ export async function discordErrorHandler(interaction: GenericResponderInteracti
             errorLocale = interaction.customId;
         }
 
+        const errMessage = error instanceof Error
+            ? error.message
+            : (typeof error === "object" ? JSON.stringify(error, Object.getOwnPropertyNames(error)) : String(error));
+        const errStack = error instanceof Error
+            ? (error.stack ?? "No stack available")
+            : "No stack available";
+
         await channel.send(res.danger(brBuilder(
             `**Error in ${interaction.isCommand() ? "the command" : "the interaction"} \`${errorLocale}\` used by user \`${interaction.user.tag}\` in guild \`${interaction.guild?.name || "Direct Message"}\`**`,
-            "```js",
-            JSON.stringify(error, null, 2),
+            "```json",
+            `"message": ${JSON.stringify(errMessage)}`,
+            `"stack": ${JSON.stringify(errStack)}`,
             "```"
         )));
 

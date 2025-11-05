@@ -7,6 +7,7 @@ import { onResponseTryviaGame } from "./tryvia/response.js";
 import { Gender, PersonalityTrait } from "#prisma";
 import { icon, registerFootballGames, res, updateGames } from "#functions";
 import { brBuilder } from "@magicyan/discord";
+import { footballSdk } from "#tools";
 
 createEvent({
     name: "onMessage",
@@ -183,6 +184,23 @@ createEvent({
                         console.error(error);
                         await msg.edit(res.danger(`${icon.error} | Erro ao registrar partidas!`));
                     }
+                    break;
+                }
+                case "s.viewgames": {
+                    const response = await footballSdk.matches.getGamesByRange(new Date(Date.now() - 24 * 60 * 60 * 1000), new Date());
+
+                    const lastDayGames = response.matches;
+
+                    const text = lastDayGames.map(game => `**${game.homeTeam.name}** ${game.score.fullTime.home} x ${game.score.fullTime.away} **${game.awayTeam.name}** status: **${game.status}**`).join("\n");
+                    
+                    const maxLength = 2500;
+                    for (let i = 0; i < text.length; i += maxLength) {
+                        const chunk = text.slice(i, i + maxLength);
+                        await message.channel.send(chunk);
+                    }
+                    break;
+                }
+                default: {
                     break;
                 }
             }

@@ -8,17 +8,41 @@ import { footballUserFavoriteTeam } from "./subCommands/favoriteTeam.js";
 
 createCommand({
     name: "football",
+    nameLocalizations: {
+        "pt-BR": "futebol",
+        "es-ES": "fútbol"
+    },
     description: "football api bet commands",
+    descriptionLocalizations: {
+        "pt-BR": "comandos de apostas da API de futebol",
+        "es-ES": "comandos de apuestas de la API de fútbol"
+    },
     type: ApplicationCommandType.ChatInput,
     options: [
         {
             name: "matches",
+            nameLocalizations: {
+                "pt-BR": "partidas",
+                "es-ES": "partidos"
+            },
             description: "see all football matches",
+            descriptionLocalizations: {
+                "pt-BR": "veja todas as partidas de futebol",
+                "es-ES": "ver todos los partidos de fútbol"
+            },
             type: ApplicationCommandOptionType.Subcommand,
             options: [
                 {
                     name: "match",
+                    nameLocalizations: {
+                        "pt-BR": "partida",
+                        "es-ES": "partido"
+                    },
                     description: "select a match",
+                    descriptionLocalizations: {
+                        "pt-BR": "selecione uma partida",
+                        "es-ES": "selecciona un partido"
+                    },
                     type: ApplicationCommandOptionType.String,
                     required: false,
                     autocomplete: true
@@ -27,17 +51,41 @@ createCommand({
         },
         {
             name: "bets",
+            nameLocalizations: {
+                "pt-BR": "apostas",
+                "es-ES": "apuestas"
+            },
             description: "view your bets",
-            type: ApplicationCommandOptionType.Subcommand,
+            descriptionLocalizations: {
+                "pt-BR": "veja suas apostas",
+                "es-ES": "ver tus apuestas"
+            },
+            type: ApplicationCommandOptionType.Subcommand
         },
         {
             name: "favorite_team",
+            nameLocalizations: {
+                "pt-BR": "time_favorito",
+                "es-ES": "equipo_favorito"
+            },
             description: "favorite a team",
+            descriptionLocalizations: {
+                "pt-BR": "defina um time favorito",
+                "es-ES": "marca un equipo como favorito"
+            },
             type: ApplicationCommandOptionType.Subcommand,
             options: [
                 {
                     name: "team",
+                    nameLocalizations: {
+                        "pt-BR": "time",
+                        "es-ES": "equipo"
+                    },
                     description: "select a team",
+                    descriptionLocalizations: {
+                        "pt-BR": "selecione um time",
+                        "es-ES": "selecciona un equipo"
+                    },
                     type: ApplicationCommandOptionType.String,
                     required: true,
                     autocomplete: true
@@ -172,7 +220,7 @@ createCommand({
             case "matches":
                 await footballMatchesCommand(interaction);
                 break;
-            case "bets": 
+            case "bets":
                 await footballBetsCommand(interaction);
                 break;
             case "favorite_team":

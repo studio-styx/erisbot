@@ -32,6 +32,7 @@ model User {
   blacklist          Json?
   createdAt          DateTime       @default(now())
   updatedAt          DateTime       @updatedAt
+  showNameInPresence Boolean        @default(false)
 
   company            Company?       @relation(fields: [companyId], references: [id], onDelete: SetNull)
   activePet          UserPet?       @relation("ActivePetRelation", fields: [activePetId], references: [id], onDelete: SetNull)
