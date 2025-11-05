@@ -7,7 +7,10 @@ type ExpectedValue = {
         activePet: UserPet | null; 
         pets: UserPet[];
         fishs: UserFish[]; 
-        giveaways: UserGiveaway[]
+        giveaways: UserGiveaway[],
+        favoriteTeam: {
+            name: string;
+        } | null;
     };
     lorittaUser: LorittaApiSDKUserInfo | null
 }

@@ -191,7 +191,8 @@ createCommand({
                             activePet: true,
                             pets: true,
                             fishs: true,
-                            giveaways: true
+                            giveaways: true,
+                            favoriteTeam: true
                         },
                         create: {
                             id: user.id
