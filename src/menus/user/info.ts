@@ -19,7 +19,17 @@ function abbreviateNumber(num: number) {
     return num.toString();
 }
 
-export function userInfoMenu<R>(authorId: string, discordUser: User, memberUser: GuildMember, erisUser: PrismaUser & { activePet: UserPet | null; pets: UserPet[], fishs: UserFish[], giveaways: UserGiveaway[] }, lorittaUser: LorittaApiSDKUserInfo | null, page: "discord" | "eris" | "loritta" | "guild"): R {
+type UserData = PrismaUser & { 
+    activePet: UserPet | null; 
+    pets: UserPet[];
+    fishs: UserFish[];
+    giveaways: UserGiveaway[];
+    favoriteTeam: {
+        name: string;
+    } | null;
+}
+
+export function userInfoMenu<R>(authorId: string, discordUser: User, memberUser: GuildMember, erisUser: UserData, lorittaUser: LorittaApiSDKUserInfo | null, page: "discord" | "eris" | "loritta" | "guild"): R {
     const components: any[] = [
         `# Informações de: ${sanitizeUserName(discordUser.displayName)}`,
         createSeparator()
@@ -49,7 +59,8 @@ export function userInfoMenu<R>(authorId: string, discordUser: User, memberUser:
                     `> - **Quantidade de pets:** ${erisUser.pets.length}`,
                     `> - **Quantidade de peixes:** ${erisUser.fishs.length}`,
                     `> - **Já participou de:** ${erisUser.giveaways.length} sorteios`,
-                    `> - **E ganhou:** ${erisUser.giveaways.filter(g => g.isWinner).length} sorteios`
+                    `> - **E ganhou:** ${erisUser.giveaways.filter(g => g.isWinner).length} sorteios`,
+                    `> - **Torce para o time:** ${erisUser.favoriteTeam?.name ?? "Nenhum"}`
                 )
             )
             break;

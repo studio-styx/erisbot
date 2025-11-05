@@ -52,7 +52,13 @@ model User {
   combatsAsUser1     CombatHistory[] @relation("User1Relation")
   combatsAsUser2     CombatHistory[] @relation("User2Relation")
 
+  readFootballBetTerms  Boolean @default(false)
+  acceptedFootballTermsAt DateTime?
+  favoriteTeamId     BigInt?
+  favoriteTeam       FootballTeam? @relation(fields: [favoriteTeamId], references: [id], onDelete: SetNull)
+
   bets               FootballBet[]
+  betsLogs           FootballBetLog[]
 }
 
 model TryviaQuestions {
@@ -790,6 +796,7 @@ model FootballTeam {
   players        FootballPlayer[]
   matchesAsHome  FootballMatch[]        @relation("MatchesAsHome")
   matchesAsAway  FootballMatch[]        @relation("MatchesAsAway")
+  favoritedUsers User[]
 }
 
 // ==== Jogadores de futebol ==== //
@@ -832,6 +839,7 @@ model FootballMatch {
   awayTeam      FootballTeam @relation("MatchesAsAway", fields: [awayTeamId], references: [id], onDelete: Cascade)
   competition   FootballLeague @relation(fields: [competitionId], references: [id], onDelete: Cascade)
   bets          FootballBet[]
+  betsLogs      FootballBetLog[]
 }
 
 // ==== Areas ==== //
@@ -867,11 +875,18 @@ model FootballBet {
   amount        Decimal @db.Decimal(12, 2)
   type          FootballBetType
   odds          Decimal @db.Decimal(12, 2)
+  status           FootballBetStatus @default(PENDING)
 
   quantity      String?    // Depois pode ser parseado para number
 
   match         FootballMatch @relation(fields: [matchId], references: [id], onDelete: Cascade)
   user          User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt @default(now())
+
+  logs           FootballBetLog[]
+
 
   @@unique([type, userId, matchId])
 }
@@ -883,4 +898,35 @@ enum FootballBetType {
   EXACT_GOALS
   GOALS_HOME
   GOALS_AWAY
+}
+
+enum FootballBetStatus {
+  PENDING
+  WON
+  LOST
+  CANCELED
+}
+
+model FootballBetLog {
+  id            BigInt  @id   @default(autoincrement())
+
+  matchId       BigInt
+  userId        String
+  betId         BigInt
+
+  match         FootballMatch @relation(fields: [matchId], references: [id], onDelete: Cascade)
+  user          User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  bet           FootballBet @relation(fields: [betId], references: [id], onDelete: Cascade)
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  action        FootballBetLogAction
+  description   String
+}
+
+enum FootballBetLogAction {
+  CREATED
+  UPDATED
+  CANCELED
 }

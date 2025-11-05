@@ -29,7 +29,10 @@ createResponder({
                 select: {
                     bets: {
                         where: {
-                            matchId: id
+                            matchId: id,
+                            status: {
+                                not: "CANCELED"
+                            }
                         }
                     }
                 }

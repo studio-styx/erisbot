@@ -23,9 +23,9 @@ export default async function giveStx(app: FastifyInstance, client: Client<true>
             expiresAt: z.enum(["1m", "2m", "3m", "4m", "5m", "10m", "15m", "20m", "30m", "45m", "60m", "1h", "2h", "4h", "6h", "8h", "12h", "24h"])
         });
 
-        try {
-            const { guildId, channelId, memberId, amount, reason, expiresAt } = giveStxBodySchema.parse(req.body);
+        const { guildId, channelId, memberId, amount, reason, expiresAt } = giveStxBodySchema.parse(req.body);
 
+        try {
             const guild = client.guilds.cache.get(guildId);
             if (!guild) {
                 reply.code(StatusCodes.NOT_FOUND);

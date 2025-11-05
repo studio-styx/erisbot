@@ -1,24 +1,22 @@
 import { createResponder, ResponderType } from "#base";
 import { prisma } from "#database";
-import { icon, res } from "#functions";
+import { ErisError, icon, res } from "#functions";
 import { menus } from "#menus";
 
 createResponder({
-    customId: "football/bet/remove/:betId/:userId",
+    customId: "football/bet/remove/:betId/:userId/:menu",
     types: [ResponderType.Button], cache: "cached",
     parse(params) {
         return {
             betId: BigInt(params.betId),
-            userId: params.userId
+            userId: params.userId,
+            menu: params.menu as "match" | "bet"
         }
     },
-    async run(interaction, { betId, userId }) {
+    async run(interaction, { betId, userId, menu }) {
         const { user } = interaction;
 
-        if (user.id !== userId) {
-            await interaction.reply(res.danger(`${icon.denied} | Boa tentativa, mas você não pode excluir a aposta de outros usuários!`));
-            return;
-        }
+        if (user.id !== userId) throw new ErisError(`Boa tentativa, mas você não pode excluir a aposta de outros usuários!`)
 
         await interaction.deferUpdate();
 
@@ -37,15 +35,9 @@ createResponder({
             }
         });
 
-        if (!bet) {
-            await interaction.followUp(res.danger(`${icon.error} | Aposta não encontrada!`));
-            return;
-        }
+        if (!bet) throw new ErisError("Eu não consegui encontrar essa aposta!")
 
-        if (bet.match.startAt < new Date()) {
-            await interaction.followUp(res.danger(`${icon.error} | Não é possível remover uma aposta de uma partida que já começou!`));
-            return;
-        }
+        if (bet.match.startAt < new Date()) throw new ErisError(`Não é possível remover uma aposta de uma partida que ${bet.match.status === "IN_PLAY" ? "está em andamento" : "que já terminou"}!`)
 
         const [userData] = await prisma.$transaction([
             prisma.user.upsert({
@@ -53,7 +45,32 @@ createResponder({
                     id: userId
                 },
                 include: {
-                    bets: true
+                    bets: {
+                        where: {
+                            matchId: bet.matchId,
+                            status: {
+                                not: "CANCELED"
+                            },
+                            id: {
+                                not: betId
+                            }
+                        },
+                        include: {
+                            match: {
+                                include: {
+                                    homeTeam: true,
+                                    awayTeam: true,
+                                    competition: true
+                                }
+                            }
+                        },
+                        orderBy: {
+                            match: {
+                                startAt: "asc"
+                            },
+                            createdAt: "desc"
+                        }
+                    }
                 },
                 create: {
                     id: userId
@@ -64,19 +81,25 @@ createResponder({
                     }
                 }
             }),
-            prisma.footballBet.delete({
+            prisma.footballBet.update({
                 where: {
                     id: betId
+                },
+                data: {
+                    status: "CANCELED"
                 }
             })
         ])
 
         await interaction.followUp(res.success(`${icon.success} | Aposta removida com sucesso! com isso, o valor de **${bet.amount}** stx foi retornando na sua conta!`));
 
-        await interaction.editReply(menus.football.matches.matchMenu(bet.match, {
-            id: user.id,
-            displayAvatarURL: () => user.displayAvatarURL(),
-            bets: userData.bets
-        }))
+        if (menu === "bet")
+            await interaction.editReply(menus.football.bets.betsMenu(userData.bets));
+        else
+            await interaction.editReply(menus.football.matches.matchMenu(bet.match, {
+                id: user.id,
+                displayAvatarURL: user.displayAvatarURL,
+                bets: userData.bets
+            }))
     },
 });

@@ -59,7 +59,10 @@ export function getMatchesMenuMenu<R>(matches: MatchesType, defaultImageUrl: str
                     `${icon.stadium} - **Estádio:** ${m.venue || "Desconhecido"}`,
                     m.startAt < new Date() ?
                         `${icon.alarm} - **Começou:** ${time(m.startAt, TimestampStyles.RelativeTime)} | ${time(m.startAt, TimestampStyles.LongDateTime)}`
-                        : `${icon.alarm} - **Começa:** ${time(m.startAt, TimestampStyles.RelativeTime)}  | ${time(m.startAt, TimestampStyles.LongDateTime)}`,         
+                        : `${icon.alarm} - **Começa:** ${time(m.startAt, TimestampStyles.RelativeTime)}  | ${time(m.startAt, TimestampStyles.LongDateTime)}`,
+                    `**Odd para o time da casa:** ${m.oddsHomeWin || "Desconhecido"}`,
+                    `**Odd para o empate:** ${m.oddsDraw || "Desconhecido"}`,
+                    `**Odd para o time visitante:** ${m.oddsAwayWin || "Desconhecido"}`,
                 ), m.competition.emblem || m.homeTeam.crest || m.awayTeam.crest || defaultImageUrl),
                 new ButtonBuilder({
                     customId: `football/match/view/${m.id}`,

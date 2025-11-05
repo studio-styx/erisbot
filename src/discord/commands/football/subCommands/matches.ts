@@ -1,10 +1,15 @@
+import { Store } from "#base";
 import { prisma } from "#database";
 import { ErisError } from "#functions";
 import { menus } from "#menus";
-import { ChatInputCommandInteraction } from "discord.js";
+import { ChatInputCommandInteraction, time } from "discord.js";
 import z from "zod";
 
+const cooldowns = new Store<Date>();
+
 export async function footballMatchesCommand(interaction: ChatInputCommandInteraction<"cached">) {
+    const cooldown = cooldowns.get(interaction.user.id);
+    if (cooldown) throw new ErisError(`Hey! você está sendo muito rápido! tente novamente ${time(cooldown, "R")}`)
     await interaction.deferReply();
 
     const matchSelected = interaction.options.getString("match");
@@ -29,7 +34,10 @@ export async function footballMatchesCommand(interaction: ChatInputCommandIntera
                 select: {
                     bets: {
                         where: {
-                            matchId
+                            matchId,
+                            status: {
+                                not: "CANCELED"
+                            }
                         }
                     }
                 }
@@ -68,6 +76,10 @@ export async function footballMatchesCommand(interaction: ChatInputCommandIntera
             { competition: { name: "asc" } },
             { startAt: "asc" }
         ]
+    });
+
+    cooldowns.set(interaction.user.id, new Date(new Date().getTime() + 1000 * 60), {
+        time: 1000 * 60
     });
 
     await interaction.editReply(menus.football.matches.matchesMenu(matches, interaction.user.displayAvatarURL(), new Date()))

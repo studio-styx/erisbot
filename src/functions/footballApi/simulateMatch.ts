@@ -1,7 +1,7 @@
 import { FootballLeague, FootballMatch, FootballPlayer, FootballTeam } from "#prisma";
 import { generateGeminiContent } from "#functions";
 import { brBuilder } from "@magicyan/discord";
-import z from "zod";
+import z, { ZodError } from "zod";
 import { redis } from "#database";
 
 type Team = FootballTeam & {
@@ -18,7 +18,7 @@ type Match = FootballMatch & {
     competition: League;
 };
 
-interface SimulatedMatch {
+export interface SimulatedMatch {
     score: {
         fullTime: { home: number; away: number };
         halfTime: { home: number; away: number };
@@ -26,6 +26,7 @@ interface SimulatedMatch {
         penalties?: { home: number; away: number };
     };
     opinion: string;
+    explanation: string;
     timeline: Timeline[];
 }
 
@@ -76,6 +77,7 @@ export async function simulateMatchResultWithIa(match: Match): Promise<Simulated
                 "penalties": { "home": number, "away": number }
             },
             "opinion": "string com uma análise breve e coerente da partida (2 a 3 frases).",
+            "explanation": "string contendo uma explicação breve do por quê você acha que vai ser esse resultado",
             "timeline": [
                 {
                     "minute": number,
@@ -137,6 +139,7 @@ export async function simulateMatchResultWithIa(match: Match): Promise<Simulated
             penalties: scoreGoalsSchema.default({ home: 0, away: 0 })
         }),
         opinion: z.string().min(1, "Opinião ausente ou vazia."),
+        explanation: z.string().min(1, "Explicação ausente ou vazia."),
         timeline: z.array(
             z.object({
                 minute: z.number().min(0, "Minuto negativo ou inválido."),
@@ -161,7 +164,7 @@ export async function simulateMatchResultWithIa(match: Match): Promise<Simulated
         await redis.set(key, JSON.stringify(simulatedMatch));
         return simulatedMatch;
     } catch (err) {
-        if (err instanceof z.ZodError) {
+        if (err instanceof ZodError) {
             console.error("Erros de validação da simulação:", err.issues.map(issue => issue.message));
         }
         throw err;

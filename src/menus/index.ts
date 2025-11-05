@@ -9,6 +9,9 @@ import { fetchAllPendingQuestionsMenu } from "./dev/tryvia/fetchAllPendingQuesti
 import { fetchAllQuestionsMenu } from "./dev/tryvia/fetchAllQuestions.js";
 import { getMatchesMenuMenu } from "./football/ matches/getMatchesMenu.js";
 import { matchMenu } from "./football/ matches/matchMenu.js";
+import { simulatedMatchMenu } from "./football/ matches/simulatedMatch.js";
+import { getBetsMenu } from "./football/bets/getBets.js";
+import { termsMenu } from "./football/terms.js";
 import { giveawayEndMenu } from "./giveaway/giveawayEndMenu.js";
 import { giveawayInterfaceMenu } from "./giveaway/giveawayInterface.js";
 import { giveawayManageMenu } from "./giveaway/giveawayManage.js";
@@ -93,7 +96,12 @@ export const menus = {
     football: {
         matches: {
             matchesMenu: getMatchesMenuMenu,
-            matchMenu
-        }
+            matchMenu,
+            simulatedMatch: simulatedMatchMenu
+        },
+        bets: {
+            betsMenu: getBetsMenu
+        },
+        terms: termsMenu
     }
 }

@@ -41,18 +41,18 @@ export function matchMenu<R>(match: MatchType, user: User): R {
     const container = createContainer(settings.colors.fuchsia,
         createSection(
             brBuilder(
-                `## ${icon.dragon} ╺╸ Partida: ${match.homeTeam.name} ${match.goalsHome ?? "NDA"} x ${match.goalsAway ?? "NDA"} ${match.awayTeam.name}`,
+                `## ${icon.dragon} ╺╸ Partida: ${match.homeTeam.name} ${match.goalsHome ?? ""} x ${match.goalsAway ?? ""} ${match.awayTeam.name}`,
                 `${icon.stadium} | **Estádio:** ${match.venue || "Desconhecido"}`,
                 match.startAt < new Date()
                     ? `${icon.alarm} | **Começou:** ${time(match.startAt, TimestampStyles.RelativeTime)} | ${time(match.startAt, TimestampStyles.LongDateTime)}`
                     : `${icon.alarm} | **Começa:** ${time(match.startAt, TimestampStyles.RelativeTime)}  | ${time(match.startAt, TimestampStyles.LongDateTime)}`,
                 `${icon.trophy} | **Campeonato:** ${match.competition.name}`,
-                `${icon.event_list} | **Status:** ${matchStatusFormatted[match.status]}`,
+                `${icon.event_list} | **Status:** ${matchStatusFormatted[match.status]}`
             ),
             match.competition.emblem || match.homeTeam.crest || match.awayTeam.crest || user.displayAvatarURL()
         ),
         createSeparator(),
-        `## ${icon.solar_money_bag_bold} ╺╸ Suas apostas:`,
+        user.bets.length > 0 && `## ${icon.solar_money_bag_bold} ╺╸ Suas apostas:`,
         user.bets.length > 0 && [...user.bets.map(b => createSection(
             brBuilder(
                 `> **Tipo:** ${betFormatted[b.type]}`,
@@ -64,7 +64,7 @@ export function matchMenu<R>(match: MatchType, user: User): R {
                 `> **Valor de pagamento estimado**: ${formatNumber(new Prisma.Decimal(b.amount.toNumber() * b.odds.toNumber()).toNumber())}`
             ),
             new ButtonBuilder({
-                customId: `football/bet/remove/${b.id}/${user.id}`,
+                customId: `football/bet/remove/${b.id}/${user.id}/match`,
                 label: "Remover",
                 style: ButtonStyle.Danger,
                 disabled: match.startAt < new Date(),
@@ -83,6 +83,12 @@ export function matchMenu<R>(match: MatchType, user: User): R {
                 label: "Simular resultado",
                 style: ButtonStyle.Success,
                 disabled: match.startAt < new Date()
+            }),
+            new ButtonBuilder({
+                customId: `football/match/menu/reload/${match.id}/${user.id}`,
+                style: ButtonStyle.Secondary,
+                disabled: match.startAt < new Date(),
+                emoji: icon.reload
             })
         )
     );

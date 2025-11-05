@@ -3,6 +3,8 @@ import { ApplicationCommandOptionType, ApplicationCommandType } from "discord.js
 import { footballMatchesCommand } from "./subCommands/matches.js";
 import { prisma } from "#database";
 import { limitText } from "@magicyan/discord";
+import { footballBetsCommand } from "./subCommands/footballBetsCommand.js";
+import { footballUserFavoriteTeam } from "./subCommands/favoriteTeam.js";
 
 createCommand({
     name: "football",
@@ -19,6 +21,25 @@ createCommand({
                     description: "select a match",
                     type: ApplicationCommandOptionType.String,
                     required: false,
+                    autocomplete: true
+                }
+            ]
+        },
+        {
+            name: "bets",
+            description: "view your bets",
+            type: ApplicationCommandOptionType.Subcommand,
+        },
+        {
+            name: "favorite_team",
+            description: "favorite a team",
+            type: ApplicationCommandOptionType.Subcommand,
+            options: [
+                {
+                    name: "team",
+                    description: "select a team",
+                    type: ApplicationCommandOptionType.String,
+                    required: true,
                     autocomplete: true
                 }
             ]
@@ -123,6 +144,25 @@ createCommand({
 
                 return await interaction.respond(matches.map(m => ({ name: limitText(`${m.homeTeam.name} x ${m.awayTeam.name} || ${m.competition.name} ||| ${m.startAt.toLocaleString()}`, 97, "..."), value: m.id.toString() })));
             }
+            case "favorite_team": {
+                const teams = await prisma.footballTeam.findMany({
+                    where: {
+                        name: {
+                            contains: focused.value,
+                            mode: "insensitive"
+                        }
+                    },
+                    select: {
+                        name: true,
+                        id: true
+                    },
+                    take: 25
+                });
+
+                if (teams.length === 0) return await interaction.respond([{ name: "Nenhum time encontrado", value: "x" }]);
+
+                return await interaction.respond(teams.map(t => ({ name: t.name, value: t.id.toString() })))
+            }
         }
     },
     async run(interaction) {
@@ -131,6 +171,12 @@ createCommand({
         switch (subCommand) {
             case "matches":
                 await footballMatchesCommand(interaction);
+                break;
+            case "bets": 
+                await footballBetsCommand(interaction);
+                break;
+            case "favorite_team":
+                await footballUserFavoriteTeam(interaction);
                 break;
         }
     }
