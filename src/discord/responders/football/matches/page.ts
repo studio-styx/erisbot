@@ -1,6 +1,6 @@
 import { createResponder, ResponderType } from "#base";
 import { prisma } from "#database";
-import { getBrazilTime, icon, res } from "#functions";
+import { getBrazilTime, icon, res, transformDateToBrazilTime } from "#functions";
 import { menus } from "#menus";
 import { createLabel, createModalFields } from "@magicyan/discord";
 import { StringSelectMenuBuilder, TextInputBuilder, TextInputStyle } from "discord.js";
@@ -155,7 +155,7 @@ createResponder({
     async run(interaction, { date, page }) {
         await interaction.deferUpdate();
       
-        const dateFrom = new Date(date);
+        const dateFrom = transformDateToBrazilTime(new Date(date));
         dateFrom.setHours(0, 0, 0, 0);
 
         const dateTo = new Date(date);

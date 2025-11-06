@@ -2,8 +2,7 @@ import { formatNumber, getBrazilTime, icon } from "#functions";
 import { FootballBet, FootballBetType, FootballLeague, FootballMatch, FootballTeam, MatchStatus, Prisma } from "#prisma";
 import { settings } from "#settings";
 import { brBuilder, createContainer, createRow, createSection, createSeparator } from "@magicyan/discord";
-import { AttachmentBuilder, ButtonBuilder, ButtonStyle, time, TimestampStyles, type InteractionReplyOptions } from "discord.js";
-import fs from "node:fs"
+import { ButtonBuilder, ButtonStyle, time, TimestampStyles, type InteractionReplyOptions } from "discord.js";
 
 type MatchType = (FootballMatch & {
     homeTeam: FootballTeam

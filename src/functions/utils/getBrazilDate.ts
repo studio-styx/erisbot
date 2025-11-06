@@ -1,14 +1,15 @@
-export function getBrazilTime(): Date {
-  // Cria a data atual em UTC
-  const now = new Date();
+const production = !(process.env.ENV === "true");
 
-  // Cria uma data formatada no timezone brasileiro (America/Sao_Paulo)
-  // e reconverte para Date real (com a hora ajustada)
-  const brazilTimeString = now.toLocaleString("en-US", { timeZone: "America/Sao_Paulo" });
-  return new Date(brazilTimeString);
+export function getBrazilTime(): Date {
+    const now = new Date();
+    if (!production) return now;
+
+    // Host em UTC → subtrai 3h para ter horário de Brasília
+    return new Date(now.getTime() - 3 * 60 * 60 * 1000);
 }
 
 export function transformDateToBrazilTime(date: Date): Date {
-  const brazilTimeString = date.toLocaleString("en-US", { timeZone: "America/Sao_Paulo" });
-  return new Date(brazilTimeString);
+    if (!production) return date;
+    // Interpreta como se fosse em Brasília → ajusta para UTC
+    return new Date(date.getTime() + 3 * 60 * 60 * 1000);
 }

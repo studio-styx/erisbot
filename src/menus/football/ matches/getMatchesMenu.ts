@@ -99,7 +99,7 @@ export function getMatchesMenuMenu<R>(matches: MatchesType, defaultImageUrl: str
             new ButtonBuilder({
                 customId: `football/menu/page/${page + 1}/${date.toISOString()}`,
                 label: "avançar",
-                disabled: page === pages - 1,
+                disabled: page === pages - 1 || pages === 0,
                 style: ButtonStyle.Primary
             })
         ),

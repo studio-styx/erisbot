@@ -1,6 +1,6 @@
 import { createResponder, ResponderType } from "#base";
 import { prisma, redis } from "#database";
-import { getMutualGuilds, icon, res, resv2 } from "#functions";
+import { getBrazilTime, getMutualGuilds, icon, res, resv2 } from "#functions";
 import { menus } from "#menus";
 import { GiveawayManageDataInfo } from "#types/giveawayManageDataType.js";
 import { brBuilder, createLabel, createModalFields } from "@magicyan/discord";
@@ -205,80 +205,65 @@ createResponder({
 
             function parseExpiresAt(input: string): Date | null {
                 input = input.trim().toLowerCase();
+                const now = getBrazilTime(); // ← horário de Brasília
+                const maxFuture = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
 
-                // Offset fixo para Brasil (UTC-3 em ms)
-                const brazilOffsetMs = -3 * 60 * 60 * 1000;
-
-                // Now ajustado para Brasil
-                const now = new Date(Date.now() + brazilOffsetMs);
-                const maxFuture = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000); // 30 dias
-
-                // Formato absoluto: dd/mm/yyyy HH:mm
-                let absMatch = input.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})\s+(\d{1,2}):(\d{2})$/);
-                if (absMatch) {
-                    const [, d, m, y, h, min] = absMatch.map(Number);
-                    let date = new Date(y, m - 1, d, h, min);
-                    date = new Date(date.getTime() + brazilOffsetMs); // Ajusta para Brasil
-                    if (date > now && date <= maxFuture) return new Date(date.getTime() - brazilOffsetMs); // Retorna em UTC para salvar
+                // === ABSOLUTO: dd/mm/yyyy HH:mm ===
+                let match = input.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})\s+(\d{1,2}):(\d{2})$/);
+                if (match) {
+                    const [, d, m, y, h, min] = match.map(Number);
+                    const date = createBrazilDate(y, m - 1, d, h, min);
+                    if (date > now && date <= maxFuture) return date;
                     return null;
                 }
 
-                // Formato absoluto sem ano: dd/mm HH:mm
-                absMatch = input.match(/^(\d{1,2})[\/\-](\d{1,2})\s+(\d{1,2}):(\d{2})$/);
-                if (absMatch) {
-                    const [, d, m, h, min] = absMatch.map(Number);
-                    let date = new Date(now.getFullYear(), m - 1, d, h, min);
-                    date = new Date(date.getTime() + brazilOffsetMs);
-                    if (date > now && date <= maxFuture) return new Date(date.getTime() - brazilOffsetMs);
+                // === ABSOLUTO: dd/mm HH:mm ===
+                match = input.match(/^(\d{1,2})[\/\-](\d{1,2})\s+(\d{1,2}):(\d{2})$/);
+                if (match) {
+                    const [, d, m, h, min] = match.map(Number);
+                    const date = createBrazilDate(now.getFullYear(), m - 1, d, h, min);
+                    if (date > now && date <= maxFuture) return date;
                     return null;
                 }
 
-                // Formato absoluto sem ano e sem hora: dd/mm (assume 12:00)
-                absMatch = input.match(/^(\d{1,2})[\/\-](\d{1,2})$/);
-                if (absMatch) {
-                    const [, d, m] = absMatch.map(Number);
-                    let date = new Date(now.getFullYear(), m - 1, d, 12, 0);
-                    date = new Date(date.getTime() + brazilOffsetMs);
-                    if (date > now && date <= maxFuture) return new Date(date.getTime() - brazilOffsetMs);
+                // === DATA: dd/mm (12:00) ===
+                match = input.match(/^(\d{1,2})[\/\-](\d{1,2})$/);
+                if (match) {
+                    const [, d, m] = match.map(Number);
+                    const date = createBrazilDate(now.getFullYear(), m - 1, d, 12, 0);
+                    if (date > now && date <= maxFuture) return date;
                     return null;
                 }
 
-                // Apenas horário do dia (ex: 18:20 ou 00:00)
+                // === HORÁRIO: 20:00 (hoje ou amanhã) ===
                 const timeMatch = input.match(/^(\d{1,2}):(\d{2})$/);
                 if (timeMatch) {
                     const [, h, min] = timeMatch.map(Number);
-                    let date = new Date(now.getFullYear(), now.getMonth(), now.getDate(), h, min);
+                    let date = createBrazilDate(now.getFullYear(), now.getMonth(), now.getDate(), h, min);
                     if (date <= now) {
-                        date.setDate(date.getDate() + 1);
+                        date = new Date(date.getTime() + 24 * 60 * 60 * 1000); // amanhã
                     }
-                    date = new Date(date.getTime() + brazilOffsetMs);
-                    if (date > now && date <= maxFuture) return new Date(date.getTime() - brazilOffsetMs);
+                    if (date > now && date <= maxFuture) return date;
                     return null;
                 }
 
-                // Relativos: múltiplos blocos (com ou sem espaço)
+                // === RELATIVO: 20m, 2h, 3d ===
                 const relPattern = /(\d+)\s*(h|hora|horas|m|min|minuto|minutos|d|dia|dias|w|semana|semanas)/g;
                 let totalMs = 0;
-                let match: RegExpExecArray | null;
-
-                while ((match = relPattern.exec(input)) !== null) {
-                    const value = Number(match[1]);
-                    const unit = match[2];
+                let relMatch: RegExpExecArray | null;
+                while ((relMatch = relPattern.exec(input)) !== null) {
+                    const value = Number(relMatch[1]);
+                    const unit = relMatch[2];
                     switch (unit) {
-                        case "h": case "hora": case "horas":
-                            totalMs += value * 60 * 60 * 1000; break;
-                        case "m": case "min": case "minuto": case "minutos":
-                            totalMs += value * 60 * 1000; break;
-                        case "d": case "dia": case "dias":
-                            totalMs += value * 24 * 60 * 60 * 1000; break;
-                        case "w": case "semana": case "semanas":
-                            totalMs += value * 7 * 24 * 60 * 1000; break;
+                        case "h": case "hora": case "horas": totalMs += value * 3600000; break;
+                        case "m": case "min": case "minuto": case "minutos": totalMs += value * 60000; break;
+                        case "d": case "dia": case "dias": totalMs += value * 86400000; break;
+                        case "w": case "semana": case "semanas": totalMs += value * 604800000; break;
                     }
                 }
-
                 if (totalMs > 0) {
                     const date = new Date(now.getTime() + totalMs);
-                    if (date > now && date <= maxFuture) return new Date(date.getTime() - brazilOffsetMs); // Retorna em UTC
+                    if (date > now && date <= maxFuture) return date;
                     return null;
                 }
 
@@ -389,3 +374,12 @@ createResponder({
         }
     },
 });
+
+function createBrazilDate(
+    year: number, month: number, day: number,
+    hours: number, minutes: number
+): Date {
+    const iso = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}T` +
+                `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:00-03:00`;
+    return new Date(iso); // já está em UTC internamente
+}

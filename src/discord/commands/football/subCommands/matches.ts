@@ -56,10 +56,10 @@ export async function footballMatchesCommand(interaction: ChatInputCommandIntera
 
     const now = getBrazilTime();
 
-    const dateFrom = now;
+    const dateFrom = new Date(now);
     dateFrom.setHours(0, 0, 0, 0);
 
-    const dateTo = now;
+    const dateTo = new Date(now);
     dateTo.setHours(23, 59, 59, 999);
 
     const matches = await prisma.footballMatch.findMany({
