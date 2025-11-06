@@ -1,8 +1,9 @@
-import { formatNumber, icon } from "#functions";
+import { formatNumber, getBrazilTime, icon } from "#functions";
 import { FootballBet, FootballBetType, FootballLeague, FootballMatch, FootballTeam, MatchStatus, Prisma } from "#prisma";
 import { settings } from "#settings";
 import { brBuilder, createContainer, createRow, createSection, createSeparator } from "@magicyan/discord";
-import { ButtonBuilder, ButtonStyle, time, TimestampStyles, type InteractionReplyOptions } from "discord.js";
+import { AttachmentBuilder, ButtonBuilder, ButtonStyle, time, TimestampStyles, type InteractionReplyOptions } from "discord.js";
+import fs from "node:fs"
 
 type MatchType = (FootballMatch & {
     homeTeam: FootballTeam
@@ -67,7 +68,7 @@ export function matchMenu<R>(match: MatchType, user: User): R {
                 customId: `football/bet/remove/${b.id}/${user.id}/match`,
                 label: "Remover",
                 style: ButtonStyle.Danger,
-                disabled: match.startAt < new Date(),
+                disabled: match.startAt < getBrazilTime(),
                 emoji: icon.trash
             })
         ))],
@@ -76,25 +77,33 @@ export function matchMenu<R>(match: MatchType, user: User): R {
                 customId: `football/match/menu/bet/${match.id}/${user.id}`,
                 label: "Apostar",
                 style: ButtonStyle.Secondary,
-                disabled: match.startAt < new Date()
+                disabled: match.startAt < getBrazilTime()
             }),
             new ButtonBuilder({
                 customId: `football/match/menu/simulate/${match.id}/${user.id}`,
                 label: "Simular resultado",
                 style: ButtonStyle.Success,
-                disabled: match.startAt < new Date()
+                disabled: match.startAt < getBrazilTime()
             }),
             new ButtonBuilder({
                 customId: `football/match/menu/reload/${match.id}/${user.id}`,
                 style: ButtonStyle.Secondary,
                 disabled: match.status === "FINISHED" || match.status === "CANCELED",
                 emoji: icon.reload
-            })
+            }),
         )
     );
 
+    const invisibleChar = "ㅤ";
+
+    const footer = createSection(invisibleChar, new ButtonBuilder({
+        customId: `football/match/menu/return/${match.id}/${user.id}`,
+        style: ButtonStyle.Secondary,
+        emoji: "◀️"
+    }))
+
     return ({
         flags: ["Ephemeral", "IsComponentsV2"],
-        components: [container]
+        components: [container, footer],
     } satisfies InteractionReplyOptions) as R;
 }

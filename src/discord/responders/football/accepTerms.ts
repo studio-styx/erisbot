@@ -1,6 +1,6 @@
 import { createResponder, ResponderType } from "#base";
 import { prisma } from "#database";
-import { ErisError, icon, resv2 } from "#functions";
+import { ErisError, getBrazilTime, icon, resv2 } from "#functions";
 
 createResponder({
     customId: "football/terms/accept/:userId/:date",
@@ -16,7 +16,7 @@ createResponder({
 
         if (user.id !== userId) throw new ErisError("Você não pode aceitar os termos de condições pelos outros!");
 
-        const now = new Date();
+        const now = getBrazilTime();
 
         // Calcular em segundos o tempo que o usuário levou para aceitar os termos
         const seconds = (now.getTime() - date.getTime()) / 1000;

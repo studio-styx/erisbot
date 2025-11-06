@@ -1,6 +1,6 @@
 import { createResponder, ResponderType } from "#base";
 import { prisma } from "#database";
-import { icon, res } from "#functions";
+import { getBrazilTime, icon, res } from "#functions";
 import { menus } from "#menus";
 import { createLabel, createModalFields } from "@magicyan/discord";
 import { StringSelectMenuBuilder, TextInputBuilder, TextInputStyle } from "discord.js";
@@ -102,7 +102,7 @@ createResponder({
                 return;
             }
             
-            const date = new Date();
+            const date = getBrazilTime();
             date.setDate(dayParsed.data);
             date.setMonth(parseInt(month));
             

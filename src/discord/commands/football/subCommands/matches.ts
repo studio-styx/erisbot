@@ -1,6 +1,6 @@
 import { Store } from "#base";
 import { prisma } from "#database";
-import { ErisError } from "#functions";
+import { ErisError, getBrazilTime } from "#functions";
 import { menus } from "#menus";
 import { ChatInputCommandInteraction, time } from "discord.js";
 import z from "zod";
@@ -54,10 +54,12 @@ export async function footballMatchesCommand(interaction: ChatInputCommandIntera
         return
     }
 
-    const dateFrom = new Date();
+    const now = getBrazilTime();
+
+    const dateFrom = now;
     dateFrom.setHours(0, 0, 0, 0);
 
-    const dateTo = new Date();
+    const dateTo = now;
     dateTo.setHours(23, 59, 59, 999);
 
     const matches = await prisma.footballMatch.findMany({
@@ -82,6 +84,6 @@ export async function footballMatchesCommand(interaction: ChatInputCommandIntera
         time: 1000 * 60
     });
 
-    await interaction.editReply(menus.football.matches.matchesMenu(matches, interaction.user.displayAvatarURL(), new Date()))
+    await interaction.editReply(menus.football.matches.matchesMenu(matches, interaction.user.displayAvatarURL(), now))
     return;
 }

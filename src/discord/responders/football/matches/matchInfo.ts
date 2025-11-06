@@ -1,6 +1,6 @@
 import { createResponder, ResponderType, Store } from "#base";
 import { prisma } from "#database";
-import { ErisError, icon, res, resv2, simulateMatchResultWithIa } from "#functions";
+import { ErisError, getBrazilTime, icon, res, resv2, simulateMatchResultWithIa } from "#functions";
 import { menus } from "#menus";
 import { FootballBetType, FootballBet } from "#prisma";
 import { createLabel, createModalFields } from "@magicyan/discord";
@@ -14,7 +14,7 @@ createResponder({
     types: [ResponderType.Button, ResponderType.ModalComponent], cache: "cached",
     parse(params) {
         return {
-            page: params.page as "bet" | "simulate" | "reload",
+            page: params.page as "bet" | "simulate" | "reload" | "return",
             matchId: BigInt(params.matchId),
             userId: params.userId
         }
@@ -502,7 +502,7 @@ createResponder({
                         update: {}
                     })
                 ]);
-                
+
                 if (!match) throw new ErisError("Eu não consegui achar essa partida!");
 
                 const cooldownDate = new Date();
@@ -572,6 +572,76 @@ createResponder({
                     id: user.id,
                     displayAvatarURL: interaction.user.displayAvatarURL
                 }))
+                return;
+            }
+            case "return": {
+                await interaction.deferUpdate();
+
+                const match = await prisma.footballMatch.findUnique({
+                    where: {
+                        id: matchId
+                    },
+                    select: {
+                        startAt: true
+                    }
+                });
+
+                if (!match) {
+                    const now = getBrazilTime();
+
+                    const dateFrom = now;
+                    dateFrom.setHours(0, 0, 0, 0);
+
+                    const dateTo = now;
+                    dateTo.setHours(23, 59, 59, 999);
+
+                    const matches = await prisma.footballMatch.findMany({
+                        where: {
+                            startAt: {
+                                gte: dateFrom,
+                                lte: dateTo
+                            }
+                        },
+                        include: {
+                            homeTeam: true,
+                            awayTeam: true,
+                            competition: true
+                        },
+                        orderBy: [
+                            { competition: { name: "asc" } },
+                            { startAt: "asc" }
+                        ]
+                    })
+
+                    await interaction.editReply(menus.football.matches.matchesMenu(matches, interaction.user.displayAvatarURL(), now));
+                    return;
+                }
+
+                const dateFrom = new Date(match.startAt);
+                dateFrom.setHours(0, 0, 0, 0);
+
+                const dateTo = new Date(match.startAt);
+                dateTo.setHours(23, 59, 59, 999);
+
+                const matches = await prisma.footballMatch.findMany({
+                    where: {
+                        startAt: {
+                            gte: dateFrom,
+                            lte: dateTo
+                        }
+                    },
+                    include: {
+                        homeTeam: true,
+                        awayTeam: true,
+                        competition: true
+                    },
+                    orderBy: [
+                        { competition: { name: "asc" } },
+                        { startAt: "asc" }
+                    ]
+                })
+
+                await interaction.editReply(menus.football.matches.matchesMenu(matches, interaction.user.displayAvatarURL(), match.startAt));
                 return;
             }
         }
