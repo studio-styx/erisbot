@@ -51,6 +51,7 @@ export async function updateGames(client: Client): Promise<{
     for (const match of apiMatches.matches) {
         console.log(`Atualizando partida entre ${match.homeTeam.name} ${match.score?.fullTime?.home} x ${match.score?.fullTime?.away} ${match.awayTeam.name}`)
         const dbGame = matches.find((m => m.apiId === match.id));
+        
         if (!dbGame) {
             console.log("Partida não encontrada na db preparada")
             const game = await prisma.footballMatch.findUnique({
@@ -67,7 +68,8 @@ export async function updateGames(client: Client): Promise<{
             continue;
         }
 
-        console.log("Status da partida na api:", match.status, "Status da partida na db:", dbGame.status)
+        console.log("API MATCH", { id: match.id, status: match.status, fullTime: match.score.fullTime });
+        console.log("DB MATCH ", { id: dbGame.id, status: dbGame.status });
 
         await prisma.footballMatch.update({
             where: {
@@ -85,62 +87,14 @@ export async function updateGames(client: Client): Promise<{
 
         if (match.status === "FINISHED") {
             if (match.score.fullTime.home === null || match.score.fullTime.away === null) {
-                try {
-                    const guild = client.guilds.cache.get("1395383469210865694");
-                    if (!guild) continue;
-                    const channel = guild.channels.cache.get("1431993706625368235") 
-                        || await guild.channels.fetch("1431993706625368235");
-                    if (!channel || !channel.isTextBased()) continue;
-
-                    await channel.send(res.danger(brBuilder(
-                        `Partida: **${match.homeTeam.name}** ${match.score.fullTime.home} x ${match.score.fullTime.away} ${match.awayTeam.name}`,
-                        `Está errado, o status de finalização foi acionado mas o placar final não está definido`,
-                        `Dados da partida:`,
-                        `**${match.homeTeam.name}**: ${match.score.fullTime.home}`,
-                        `**${match.awayTeam.name}**: ${match.score.fullTime.away}`,
-                        `**Horário de inicio da partida:** ${time(new Date(match.utcDate), "F")}`,
-                        `**Status da partida na api:** ${match.status}`,
-                        `**Status da partida na db:** ${dbGame.status}`
-                    )));
-
-                    await prisma.footballMatch.update({
-                        where: {
-                            id: dbGame.id
-                        },
-                        data: {
-                            status: "IN_PLAY"
-                        }
-                    })
-                } catch (e) {
-                    console.error(e)
-                }
+                await handleInvalidScore(client, match, dbGame);
                 continue;
             }
             try {
-                try {
-                    const guild = client.guilds.cache.get("1435395562789928990");
-                    if (guild) {
-                        const channel = guild.channels.cache.get("1435395562789928990") || await guild.channels.fetch("1435395562789928990");
-                        if (channel && channel.isTextBased()) {
-                            await channel.send(res.success(brBuilder(
-                                `Atualizando o fim da partida: **${match.homeTeam.name}** ${match.score.fullTime.home} x ${match.score.fullTime.away} ${match.awayTeam.name}`,
-                                `Dados da partida:`,
-                                `**${match.homeTeam.name}**: ${match.score.fullTime.home}`,
-                                `**${match.awayTeam.name}**: ${match.score.fullTime.away}`,
-                                `**Horário de inicio da partida:** ${time(new Date(match.utcDate), "F")}`,
-                                `**Horário de término da partida:** ${time(new Date(), "F")}`,
-                                `**Status na api:** ${match.status}`,
-                                `**Status na db:** ${dbGame.status}`,
-                            )))
-                        }
-                    }
-                } catch (e) {
-                    console.error(e)
-                }
-
                 const bets = await prisma.footballBet.findMany({
                     where: {
-                        matchId: dbGame.id
+                        matchId: dbGame.id,
+                        status: "PENDING"
                     },
                 });
 
@@ -410,7 +364,7 @@ export async function updateGames(client: Client): Promise<{
                                 data: {
                                     content: brBuilder(...baseContent),
                                     userId: bet.userId,
-                                    tags: tags
+                                    tags
                                 }
                             }),
                             prisma.footballBet.update({
@@ -483,11 +437,33 @@ export async function updateGames(client: Client): Promise<{
                     }
                 }
             }
+
+            try {
+                const guild = client.guilds.cache.get("1395383469210865694");
+                if (guild) {
+                    const channel = guild.channels.cache.get("1435395562789928990") || await guild.channels.fetch("1435395562789928990");
+                    if (channel && channel.isTextBased()) {
+                        await channel.send(res.success(brBuilder(
+                            `Atualizando o fim da partida: **${match.homeTeam.name}** ${match.score.fullTime.home} x ${match.score.fullTime.away} ${match.awayTeam.name}`,
+                            `Dados da partida:`,
+                            `**${match.homeTeam.name}**: ${match.score.fullTime.home}`,
+                            `**${match.awayTeam.name}**: ${match.score.fullTime.away}`,
+                            `**Horário de inicio da partida:** ${time(new Date(match.utcDate), "F")}`,
+                            `**Horário de término da partida:** ${time(new Date(), "F")}`,
+                            `**Status na api:** ${match.status}`,
+                            `**Status na db:** ${dbGame.status}`,
+                        )))
+                    }
+                }
+            } catch (e) {
+                console.error(e)
+            }
         }
     }
 
     const matchesNotUpdated = matches.filter(m => !matchesUpdated.some(m2 => m2.id === m.id));
 
+    /*
     for (const match of matchesNotUpdated) {
         // serão poucos os jogos que não foram atualizados, e já tem o sistema de anti many request na requisição
         // então é seguro
@@ -505,9 +481,37 @@ export async function updateGames(client: Client): Promise<{
             }
         });
     }
+        */
 
     return {
         matchesUpdated,
         matchesNotUpdated
+    }
+}
+
+async function handleInvalidScore(client: Client, apiMatch: any, dbMatch: FootballMatch) {
+    console.warn(`Placar nulo em partida FINISHED (apiId ${apiMatch.id})`);
+
+    try {
+        const guild = client.guilds.cache.get("1395383469210865694");
+        if (!guild) return;
+
+        const channel = guild.channels.cache.get("1431993706625368235")
+            ?? await guild.channels.fetch("1431993706625368235");
+        if (!channel?.isTextBased()) return;
+
+        await channel.send(res.danger(brBuilder(
+            `Partida: **${apiMatch.homeTeam.name}** ${apiMatch.score.fullTime.home} x ${apiMatch.score.fullTime.away} ${apiMatch.awayTeam.name}`,
+            `Status FINISHED mas placar nulo`,
+            `Início: ${time(new Date(apiMatch.utcDate), "F")}`,
+            `API: ${apiMatch.status} | DB: ${dbMatch.status}`
+        )));
+
+        await prisma.footballMatch.update({
+            where: { id: dbMatch.id },
+            data: { status: "IN_PLAY" }
+        });
+    } catch (e) {
+        console.error("Erro ao tratar placar nulo:", e instanceof Error ? e.stack : e);
     }
 }

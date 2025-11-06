@@ -64,7 +64,7 @@ export async function discordErrorHandler(interaction: GenericResponderInteracti
         return;
     }
 
-    await sendMessage(`${icon.error} | Um erro inesperado ocorreu ao executar ${interaction.isCommand() ? "esse comando!" : "essa interação!"}: \`${error instanceof Error ? error.message : "Unknown error"}\``);
+    await sendMessage(`Um erro inesperado ocorreu ao executar ${interaction.isCommand() ? "esse comando!" : "essa interação!"}: \`${error instanceof Error ? error.message : "Unknown error"}\``);
 
     try {
         const guild = interaction.client.guilds.cache.get("1395383469210865694")!;

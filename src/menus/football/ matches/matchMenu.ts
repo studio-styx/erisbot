@@ -87,7 +87,7 @@ export function matchMenu<R>(match: MatchType, user: User): R {
             new ButtonBuilder({
                 customId: `football/match/menu/reload/${match.id}/${user.id}`,
                 style: ButtonStyle.Secondary,
-                disabled: match.startAt < new Date(),
+                disabled: match.status === "FINISHED" || match.status === "CANCELED",
                 emoji: icon.reload
             })
         )
