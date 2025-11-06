@@ -1,3 +1,4 @@
+import { getBrazilTime } from "#functions";
 import { settings } from "#settings";
 import { brBuilder, createContainer, createRow, createSeparator } from "@magicyan/discord";
 import { ButtonBuilder, ButtonStyle, type InteractionReplyOptions } from "discord.js";
@@ -33,7 +34,7 @@ export function termsMenu<R>(userId: string): R {
         ),
         createRow(
             new ButtonBuilder({
-                customId: `football/terms/accept/${userId}/${new Date().getTime()}`,
+                customId: `football/terms/accept/${userId}/${getBrazilTime().getTime()}`,
                 label: "Aceitar",
                 style: ButtonStyle.Success
             })
