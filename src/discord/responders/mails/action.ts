@@ -23,10 +23,6 @@ createResponder({
         switch (action) {
             case "deleteall": {
                 if (!interaction.isButton()) return;
-                if (user.mails.find(m => !m.asRead)) {
-                    interaction.followUp(res.danger(`${icon.denied} | você tem cartas não lidas!`));
-                    return;
-                };
 
                 await prisma.mails.deleteMany({
                     where: { userId }

@@ -61,9 +61,8 @@ export function userMailsMenu<R>(mails: Mails[], user: User, page = 0): R {
             }),
             new ButtonBuilder({
                 customId: `mail/action/deleteall/${user.id}/0`,
-                label: mails.find(m => !m.asRead) ? "Você tem cartas não lidas" : "Apagar todas as cartas",
+                label: "Apagar todas as cartas",
                 style: ButtonStyle.Danger,
-                disabled: mails.find(m => !m.asRead) ? true : false
             }),
             new ButtonBuilder({
                 customId: `mail/action/enableDmNotification/${user.id}/${page}`,

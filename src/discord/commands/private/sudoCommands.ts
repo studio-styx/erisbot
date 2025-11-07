@@ -1,13 +1,14 @@
 import { createCommand, createResponder, ResponderType } from "#base";
 import { prisma, redis } from "#database";
-import { stocksEventuals, res, icon, processApiQuestions, removeFromBlacklist, addToBlacklist, convertTime, commandsManager, shuffleArray } from "#functions";
+import { stocksEventuals, res, icon, processApiQuestions, removeFromBlacklist, addToBlacklist, convertTime, commandsManager, shuffleArray, ErisError } from "#functions";
 import { menus } from "#menus";
 import { Gender, Mails, PersonalityTrait } from "#prisma";
 import { settings } from "#settings";
 import { Command } from "#types/commands.js";
-import { brBuilder, createContainer, createLabel, createModalFields, createSeparator } from "@magicyan/discord";
+import { brBuilder, createContainer, createLabel, createModalFields, createSeparator, limitText } from "@magicyan/discord";
 import { ApplicationCommandOptionType, ApplicationCommandType, StringSelectMenuBuilder, TextInputBuilder, TextInputStyle, time } from "discord.js";
 import crypto from "node:crypto";
+import z from "zod";
 
 function generateToken() {
     const apiKey = `ErisApiKey-${crypto.randomBytes(16).toString("hex")}`;
@@ -371,6 +372,40 @@ createCommand({
                     ]
                 }
             ]
+        },
+        {
+            name: "football",
+            description: "football sudo commands",
+            type: ApplicationCommandOptionType.SubcommandGroup,
+            options: [
+                {
+                    name: "edit_match",
+                    description: "edit a match",
+                    type: ApplicationCommandOptionType.Subcommand,
+                    options: [
+                        {
+                            name: "match",
+                            description: "match to edit",
+                            type: ApplicationCommandOptionType.String,
+                            required: true,
+                            autocomplete
+                        },
+                        {
+                            name: "data",
+                            description: "data to edit",
+                            type: ApplicationCommandOptionType.String,
+                            required: true,
+                            autocomplete
+                        },
+                        {
+                            name: "value",
+                            description: "new value to the data",
+                            type: ApplicationCommandOptionType.String,
+                            required: true
+                        }
+                    ]
+                }
+            ]
         }
     ],
     async autocomplete(interaction) {
@@ -443,6 +478,42 @@ createCommand({
                             await interaction.respond(list.map(c => ({ name: c.name, value: c.id })));
                             return;
                         }
+                    }
+                }
+            }
+            case "football": {
+                switch (subcommand) {
+                    case "edit_match": {
+                        switch (focused.name) {
+                            case "match": {
+                                const matches = await prisma.footballMatch.findMany({
+                                    where: {
+                                        OR: [
+                                            { homeTeam: { name: { contains: focused.value, mode: "insensitive" } } },
+                                            { awayTeam: { name: { contains: focused.value, mode: "insensitive" } } }
+                                        ],
+                                        startAt: {
+                                            gt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 30)
+                                        }
+                                    },
+                                    select: { homeTeam: true, awayTeam: true, id: true, competition: true, startAt: true }
+                                });
+
+                                return await interaction.respond(matches.map(m => ({ name: limitText(`${m.homeTeam.name} x ${m.awayTeam.name} || ${m.competition.name} || ${new Date(m.startAt).toLocaleDateString()}`, 97, "..."), value: m.id.toString() })));
+                            }
+                            case "data": {
+                                const data = [
+                                    "startAt", "status", "goalsHome", "goalsAway", "venue",
+                                    "oddsHomeWin", "oddsAwayWin", "oddsDraw", "homeTeamId",
+                                    "awayTeamId", "competitionId", "apiId", "id"
+                                ]
+
+                                const filtered = data.filter(d => d.toLowerCase().includes(focused.value.toLowerCase()));
+                                await interaction.respond(filtered.map(d => ({ name: d, value: d })));
+                                return;
+                            }
+                        }
+                        break;
                     }
                 }
             }
@@ -661,6 +732,74 @@ createCommand({
                             break;
                         }
                     }
+                }
+                case "football": {
+                    await interaction.deferReply();
+                    switch (subcommand) {
+                        case "edit_match": {
+                            const prismaMatchData = [
+                                "startAt", "status", "goalsHome", "goalsAway", "venue",
+                                "oddsHomeWin", "oddsAwayWin", "oddsDraw", "homeTeamId",
+                                "awayTeamId", "competitionId", "apiId", "id"
+                            ]
+                            const matchInput = options.getString("match", true);
+                            const dataInput = options.getString("data", true);
+                            const valueInput = options.getString("value", true);
+
+                            const schema = z.object({
+                                matchId: z.coerce.bigint(),
+                                data: z.enum(prismaMatchData),
+                                value: z.string()
+                            });
+
+                            const { matchId, data, value } = schema.parse({ matchId: matchInput, data: dataInput, value: valueInput });
+
+                            const match = await prisma.footballMatch.findUnique({ where: { id: matchId } });
+
+                            if (!match) throw new ErisError("Não foi possivel encontrar essa partida");
+
+                            let valueFormatted: string | number | null | Date | bigint = null;
+                            
+                            if (value !== "null") {
+                                switch (data) {
+                                    case "startAt": {
+                                        valueFormatted = new Date(value);
+                                        break;
+                                    }
+                                    case "awayTeamId":
+                                    case "homeTeamId":
+                                    case "competitionId":
+                                    case "id": {
+                                        valueFormatted = BigInt(value);
+                                        break;
+                                    }
+                                    case "oddsHomeWin":
+                                    case "oddsAwayWin":
+                                    case "oddsDraw": {
+                                        valueFormatted = parseFloat(value);
+                                        break;
+                                    }
+                                    default: {
+                                        valueFormatted = value;
+                                        break;
+                                    }
+                                }
+                            } else {
+                                valueFormatted = null;
+                            }
+
+                            await prisma.footballMatch.update({
+                                where: { id: matchId },
+                                data: {
+                                    [data]: valueFormatted
+                                }
+                            });
+
+                            await interaction.editReply(res.success(`Partida editada com sucesso!`));
+                            return;
+                        }
+                    }
+                    break;
                 }
             }
             return;
