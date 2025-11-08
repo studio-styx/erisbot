@@ -496,7 +496,8 @@ createCommand({
                                             gt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 30)
                                         }
                                     },
-                                    select: { homeTeam: true, awayTeam: true, id: true, competition: true, startAt: true }
+                                    select: { homeTeam: true, awayTeam: true, id: true, competition: true, startAt: true },
+                                    take: 25
                                 });
 
                                 return await interaction.respond(matches.map(m => ({ name: limitText(`${m.homeTeam.name} x ${m.awayTeam.name} || ${m.competition.name} || ${new Date(m.startAt).toLocaleDateString()}`, 97, "..."), value: m.id.toString() })));
