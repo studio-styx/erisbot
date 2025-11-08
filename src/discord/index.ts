@@ -8,6 +8,8 @@ import { channelMention, Interaction, time, ChatInputCommandInteraction } from "
 const cooldown = new Store<Date>();
 const lessUse = new Store<Date>();
 
+const isReseting = false;
+
 export const { createCommand, createEvent, createResponder } = setupCreators({
     commands: {
         // guilds: [ "1395383469210865694" ],
@@ -19,6 +21,12 @@ export const { createCommand, createEvent, createResponder } = setupCreators({
         },
         async middleware(interaction, block) {
             console.log(`Comando usado no server: ${interaction.guild?.name} pelo usuário: ${interaction.user.displayName} o comando: ${interaction.commandName}, data: ${new Date().toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo" })}`)
+
+            if (isReseting && interaction.user.id !== "1171963692984844401") {
+                await interaction.reply(res.warning(`**${icon.error} | Eu estou sendo reiniciada! por favor aguarde um pouco antes que você pode usar algum comando meu novamente**`, { flags: [] }))
+                block();
+                return;
+            }
 
             const blacklisted = isBlacklisted(interaction.user.id);
             if (blacklisted) {
@@ -281,6 +289,12 @@ export const { createCommand, createEvent, createResponder } = setupCreators({
             return await discordErrorHandler(interaction, error);
         },
         async middleware(interaction, block) {
+            if (isReseting && interaction.user.id !== "1171963692984844401") {
+                await interaction.reply(res.warning(`**${icon.error} | Eu estou sendo reiniciada! por favor aguarde um pouco antes que você pode usar algum comando meu novamente**`, { flags: [] }))
+                block();
+                return;
+            }
+
             const blacklisted = isBlacklisted(interaction.user.id);
             if (blacklisted) {
                 await interaction.deferReply({ flags })

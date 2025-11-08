@@ -1,13 +1,15 @@
-import { createEvent } from "#base";
+import { createEvent, createResponder, ResponderType } from "#base";
 import { prisma, redis } from "#database";
 import { onMention } from "./onMention.js";
 import { xpSystem } from "./chat/xpSystem.js";
 import { onAfkMentioned } from "./onAfkMentioned.js";
 import { onResponseTryviaGame } from "./tryvia/response.js";
 import { Gender, PersonalityTrait } from "#prisma";
-import { icon, registerFootballGames, res, updateGames } from "#functions";
-import { brBuilder } from "@magicyan/discord";
+import { getBrazilTime, icon, registerFootballGames, res, updateGames } from "#functions";
+import { brBuilder, createSection, createSeparator, createTextDisplay } from "@magicyan/discord";
 import { footballSdk } from "#tools";
+import { ButtonBuilder, ButtonStyle, roleMention } from "discord.js";
+import { menus } from "#menus";
 
 createEvent({
     name: "onMessage",
@@ -192,7 +194,7 @@ createEvent({
                     const lastDayGames = response.matches;
 
                     const text = lastDayGames.map(game => `**${game.homeTeam.name}** ${game.score.fullTime.home} x ${game.score.fullTime.away} **${game.awayTeam.name}** status: **${game.status}**`).join("\n");
-                    
+
                     const maxLength = 2500;
                     for (let i = 0; i < text.length; i += maxLength) {
                         const chunk = text.slice(i, i + maxLength);
@@ -200,6 +202,53 @@ createEvent({
                     }
                     break;
                 }
+                case "s.att18": {
+                    await message.delete();
+
+                    const components = [
+                        createTextDisplay(`## ${icon.trophy} **Atualização 1.8.0 ╺╸ Sistema de Apostas em Futebol e Presenças Dinâmicas**`),
+                        createSeparator(),
+                        createSection(brBuilder(
+                            `### :soccer: **Sistema de Apostas em Partidas Reais**`,
+                            `A Éris agora permite apostar em jogos de futebol reais!`,
+                            "Você pode arriscar parte do seu saldo tentando prever os resultados das partidas — acerte e ganhe, erre e perca.",
+                            "As apostas usam dados oficiais e atualizam automaticamente assim que o jogo termina.",
+                            "Tudo é feito com segurança e registrado no histórico de apostas.",
+                        ), new ButtonBuilder({
+                            style: ButtonStyle.Secondary,
+                            label: "Abrir /football",
+                            customId: "att/18/football"
+                        })),
+                        createSeparator(),
+                        createSection(brBuilder(
+                            "### :dizzy: **Presenças Dinâmicas e Personalizadas**",
+                            "Os status da Éris foram totalmente reformulados!",
+                            "Agora existem seções temáticas que mudam de acordo com eventos recentes — e você pode aparecer nelas.",
+                            "Use o comando `/presença` para permitir que seu nome apareça nos status dinâmicos e fazer parte da exibição da Éris.",
+                        ), new ButtonBuilder({
+                            style: ButtonStyle.Secondary,
+                            label: "Abrir /presença",
+                            customId: "att/18/presence"
+                        })),
+                        createSeparator(),
+                        createTextDisplay(brBuilder(
+                            "### :arrows_counterclockwise: **Modo de Reinicialização**",
+                            "Durante atualizações ou manutenções, a Éris exibirá automaticamente “Eu estou reiniciando...” ao tentar usar comandos — garantindo mais clareza e evitando respostas incorretas.",
+                        )),
+                        createSeparator(),
+                        createTextDisplay(brBuilder(
+                            `### ${icon.Eris_trusting} **Melhorias Internas**`,
+                            "Pequenas otimizações e ajustes de estabilidade foram aplicados ao núcleo do bot."
+                        )),
+                        createTextDisplay(`-# ${roleMention("1397521296790650891")}`)
+                    ];
+
+                    await message.channel.send({
+                        components,
+                        flags: ["IsComponentsV2"]
+                    })
+                }
+
                 default: {
                     break;
                 }
@@ -210,4 +259,98 @@ createEvent({
         onAfkMentioned(message);
         onResponseTryviaGame(message);
     }
+});
+
+createResponder({
+    customId: "att/:att/:section",
+    types: [ResponderType.Button], cache: "cached",
+    async run(interaction, { att, section }) {
+        switch (att) {
+            case "18": {
+                switch (section) {
+                    case "football": {
+                        await interaction.deferReply({ flags });
+                        const now = getBrazilTime();
+
+                        const dateFrom = new Date(now);
+                        dateFrom.setHours(0, 0, 0, 0);
+
+                        const dateTo = new Date(now);
+                        dateTo.setHours(23, 59, 59, 999);
+
+                        const matches = await prisma.footballMatch.findMany({
+                            where: {
+                                startAt: {
+                                    gte: dateFrom,
+                                    lte: dateTo
+                                }
+                            },
+                            include: {
+                                homeTeam: true,
+                                awayTeam: true,
+                                competition: true
+                            },
+                            orderBy: [
+                                { competition: { name: "asc" } },
+                                { startAt: "asc" }
+                            ]
+                        });
+
+                        await interaction.editReply(menus.football.matches.matchesMenu(matches, interaction.user.displayAvatarURL(), now))
+                        return;
+                    }
+                    case "presence": {
+                        await interaction.deferReply({ flags });
+
+                        const user = await prisma.user.upsert({
+                            where: {
+                                id: interaction.user.id
+                            },
+                            create: {
+                                id: interaction.user.id
+                            },
+                            update: {}
+                        });
+
+                        if (user.showNameInPresence) {
+                            await prisma.user.update({
+                                where: {
+                                    id: interaction.user.id
+                                },
+                                data: {
+                                    showNameInPresence: false
+                                }
+                            })
+
+                            await interaction.editReply(res.success(
+                                brBuilder(
+                                    `## Nome na presença desabilitado!`,
+                                )
+                            ))
+                        } else {
+                            await prisma.user.update({
+                                where: {
+                                    id: interaction.user.id
+                                },
+                                data: {
+                                    showNameInPresence: true
+                                }
+                            })
+
+                            await interaction.editReply(res.success(
+                                brBuilder(
+                                    `## Nome na presença habilitado!`,
+                                    `Agora, quando ocorrer algo interessante, seu nome pode aparecer em meu status!`
+                                )
+                            ))
+                        }
+                        return;
+                    }
+                }
+            }
+            default:
+                await interaction.reply(res.danger(`${icon.error} | Botão não encontrado!`));
+                break;
+        }
+    },
 });

@@ -180,7 +180,7 @@ export async function setNextPresence(client: Client<true>) {
     ]
 
     petDied && petPresences.push({
-        name: `Rip ${petDied.name} ${petDied.user.showNameInPresence ? `de: ${await getUser(petDied.user.id) ?? "desconhecido"}` : ""}`,
+        name: `Rip ${petDied.name} ${petDied.user.showNameInPresence ? `de: ${(await getUser(petDied.user.id))?.displayName ?? "desconhecido"}` : ""}`,
         time: 12
     });
 

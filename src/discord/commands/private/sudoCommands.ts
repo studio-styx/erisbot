@@ -696,13 +696,13 @@ createCommand({
                             const id = commandsManager.get.highestId() + 1;
                             await commandsManager.addAndUpdate({ id, name, description, category, isAvaible, siteAvaible: false })
 
-                            interaction.editReply(res.success(`Comando adicionado com sucesso!, id: ${id}`));
+                            await interaction.editReply(res.success(`Comando adicionado com sucesso!, id: ${id}`));
                             break;
                         }
                         case "remove": {
                             const id = options.getInteger("name", true);
                             await commandsManager.removeAndUpdate.id(id);
-                            interaction.editReply(res.success(`Comando removido com sucesso!`));
+                            await interaction.editReply(res.success(`Comando removido com sucesso!`));
                             break;
                         }
                         case "edit": {
@@ -729,10 +729,11 @@ createCommand({
                             }
 
                             await commandsManager.setAndUpdate.id(id, newCommand);
-                            interaction.editReply(res.success(`Comando editado com sucesso! novos dados: \n **nome:** \`${newCommand.name}\`\n **descrição:** \`${newCommand.description}\`\n **categoria:** \`${newCommand.category}\`\n **disponível:** \`${newCommand.isAvaible ? "sim" : "não"}\``));
+                            await interaction.editReply(res.success(`Comando editado com sucesso! novos dados: \n **nome:** \`${newCommand.name}\`\n **descrição:** \`${newCommand.description}\`\n **categoria:** \`${newCommand.category}\`\n **disponível:** \`${newCommand.isAvaible ? "sim" : "não"}\``));
                             break;
                         }
                     }
+                    return;
                 }
                 case "football": {
                     await interaction.deferReply();
