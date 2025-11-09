@@ -21,7 +21,7 @@
     "bravery": "#9c84ef"
   },
   "bot": {
-    "version": "1.8.1",
+    "version": "1.8.2",
     "ownerId": "1171963692984844401",
     "support": {
       "supportGuild": "1172930138770526248",
@@ -30,8 +30,8 @@
   },
   "sdk": {
     "version": {
-      "latest": "1.0.3",
-      "minimalRequired": "1.0.1"
+      "latest": "1.1.0",
+      "minimalRequired": "1.1.0"
     }
   }
 }
