@@ -214,7 +214,7 @@ export async function setNextPresence(client: Client<true>) {
 
     for (const presence of shuffledPresences) {
         const shufledDefaultPresences = shuffleArray(defaultPresences);
-        if (calculateProbability(60)) {
+        if (calculateProbability(55)) {
             presence.push(...shufledDefaultPresences);
         }
         const shufledSubPresences = shuffleArray(presence);
