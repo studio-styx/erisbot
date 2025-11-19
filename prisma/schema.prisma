@@ -100,6 +100,8 @@ model WorkChallenges {
   challenge String
   response  String
 
+  bonus     Int       @default(0)
+
   createdAt DateTime @default(now())
 }
 

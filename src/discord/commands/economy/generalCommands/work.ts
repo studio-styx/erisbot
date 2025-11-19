@@ -127,7 +127,11 @@ export async function EconomyWorkCommand(interaction: ChatInputCommandInteractio
             id: interaction.user.id
         },
         include: {
-            company: true,
+            contract: {
+                include: {
+                    company: true
+                }
+            },
             cooldowns: true,
             activePet: {
                 include: {
