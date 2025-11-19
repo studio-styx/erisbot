@@ -761,7 +761,7 @@ createCommand({
                             if (!match) throw new ErisError("Não foi possivel encontrar essa partida");
 
                             let valueFormatted: string | number | null | Date | bigint = null;
-                            
+
                             if (value !== "null") {
                                 switch (data) {
                                     case "startAt": {
@@ -917,8 +917,8 @@ createCommand({
                     console.error(error);
                     await interaction.editReply(res.danger("Erro ao criar pet!"));
                 }
-            }
                 return;
+            }
             case "database": {
                 await interaction.deferReply();
                 /*
