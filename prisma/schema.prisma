@@ -35,7 +35,9 @@ model User {
   showNameInPresence Boolean        @default(false)
   gender             Gender?
 
-  contract           Contract?
+  contract           Contract?     @relation("ActiveContract", fields: [contractId], references: [id], onDelete: SetNull)
+
+  contracts          Contract[]    @relation("UserContracts") // histórico
 
   activePet          UserPet?       @relation("ActivePetRelation", fields: [activePetId], references: [id], onDelete: SetNull)
 
@@ -69,7 +71,8 @@ model Contract {
   userId    String   @unique
   companyId Int
 
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user      User      @relation("UserContracts", fields: [userId], references: [id])
+  activeFor User?     @relation("ActiveContract")
   company   Company  @relation(fields: [companyId], references: [id])
 
   createdAt DateTime @default(now())
