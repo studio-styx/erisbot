@@ -36,9 +36,9 @@ export function adoptionCenterMenu<R>(allPets: (AdoptionCenter & { userPet: (Use
                     label: "Adotar",
                     style: ButtonStyle.Success
                 })
-            )
+            ),
+            createSeparator()
         )
-        createSeparator()
     }
 
     components.push(

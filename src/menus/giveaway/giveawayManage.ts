@@ -137,12 +137,12 @@ export function giveawayManageMenu<R>(userId: string, data: GiveawayManageDataIn
                 disabled: guildsPage < 1,
             }),
             new ButtonBuilder({
-                customId: `giveaway/manage/clearCache/connectedGuilds/${userId}/${guildsPage - 1}`,
+                customId: `giveaway/manage/clearCache/connectedGuilds/${userId}/${guildsPage}`,
                 label: "Limpar cache",
                 style: ButtonStyle.Danger,
             }),
             new ButtonBuilder({
-                customId: `giveaway/manage/button/connectedGuilds/${userId}/${guildsPage + 2}`,
+                customId: `giveaway/manage/button/connectedGuilds/${userId}/${guildsPage + 1}`,
                 label: "Próximo",
                 style: ButtonStyle.Secondary,
                 disabled: guildsPage === guilds.length - 1,
