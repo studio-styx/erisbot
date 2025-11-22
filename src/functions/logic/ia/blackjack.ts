@@ -439,6 +439,7 @@ export class BlackjackIA {
                 polary += 0.3; // Jogador tem carta baixa
             }
         }
+        
         if (erisHand > 17) polary -= 0.2;
         if (erisHand > 19) polary -= 0.2;
 
